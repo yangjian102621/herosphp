@@ -1,0 +1,10 @@
+/**
+ * 登录页面的css代码 
+ * @author      yangjian<yangjian102621@gmail.com>   
+ */
+body {background: url(../images/admin-bg-login.gif) repeat transparent;}
+
+/* 重置底部背景颜色 */
+#footer_bg {
+    background-color:#666666;
+}

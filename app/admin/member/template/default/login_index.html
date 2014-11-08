@@ -1,0 +1,75 @@
+{include admin:common.logintop}
+
+<div id="content" style="margin-top:6%;">
+	
+    <form class="form-signin" role="form" action="/admin/member/login/signin" method="post" >
+        <h2 class="form-signin-heading"><span class="glyphicon glyphicon-user"></span> 塑搜数据管理</h2>
+        <input type="text" id="username" class="form-control username" placeholder="Username" required autofocus>
+        <input type="password" id="password" class="form-control password" placeholder="Password" required>
+        
+		<div class="form-group">
+		    <input type="text" id="safecode" class="form-control safecode" placeholder="Safecode" required>
+		    <img src="{$site_url}/libs/public/code.php?size=big" data-toggle="tooltip" title="点击图片刷新验证码，字母不区分大小写" id="tip-tools" onclick="this.src='{$site_url}/libs/public/code.php?size=big&run='+Math.random();"/>
+		</div>
+		
+		<button type="button" id="form_login_button" class="btn btn-lg btn-primary btn-block" data-loading-text="正在登录...">立即登录</button>
+   </form>
+</div>
+{res:js public:jquery-1.7.1.min.js}
+{res:js public:bootstrap.min.js}
+{res:js public:JDialog.min.js}
+<script>
+
+$(document).ready(function() {
+	
+	//激活提示工具
+	$('#tip-tools').tooltip({placement:'right'});
+	
+	//设置底部copyRight 样式
+	$('#footer_bg').css({
+		'opacity' : 0.4,
+		'position' : 'absolute',
+		'width' : $('#footer').width() + 'px',
+		'height' : $('#footer').height() + 20 + 'px',
+		'left' : 0,
+		'top' : 0
+	});
+	
+	//绑定登录事件
+	$('#form_login_button').click(function() {
+		
+		var __username = $('#username').val();
+        var __password = $('#password').val();
+        var __safecode = $('#safecode').val();
+        if ( __username == '' ) {return showErrorMessage('请填写用户名！');}
+        if ( __password == '' ) {return showErrorMessage('请填写密码！');}
+        if ( __safecode == '' ) {return showErrorMessage('请填写验证码！');}
+        
+        $(this).button('loading');
+     	//验证登录
+        $.post('{$index_url}/signin.html', {
+            'username' : __username,
+            'password' : __password,
+            'safecode' : __safecode,
+            'act' : 'login_check'
+        }, function( res ) {
+        	
+        	$('#form_login_button').button('reset');
+            JDialog.tip.work({type:res.state, content:res.message, timer:3000});
+            if ( res.state == 'ok' ) window.location.href  = '{$app_url}/common/ucenter/index.html';
+           	
+        }, 'json')
+	});
+	
+});
+
+/* 显示错误信息 */
+function showErrorMessage( msg ) {
+	
+	JDialog.tip.work({type:'error', content:msg, timer:2000});
+	$('#form_login_button').button('reset');
+	return 0;
+}
+
+</script>
+{include admin:common.footer}

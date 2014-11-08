@@ -1,0 +1,33 @@
+﻿系统文件说明
+1.libs		系统的所有类库文件
+	(1) core	系统的核心类文件夹
+	(2) utils 	系统的工具类文件夹(文件上传，生成验证码，图片处理，数据自动验证)
+	(3)	plug-ins	系统插件文件夹(生成sql查询，生成Ajax组件, 生成javascript组件，form组件
+		ImportComponent引入静态文件.css和javascript)
+	(4) common	系统的公共内容，如公共函数，公用模板等
+
+2.config 系统配置文件夹，内置所有系统配置相关的文件
+
+3.manager 系统后台文件
+
+4.static	系统的所有静态文件(css, images,js),可以放置在其他服务器上
+
+5.uploadfiles	上传文件夹，系统上传文件所在的文件夹，可放置在其他服务器
+
+6.serv_tools	静态工具(如编辑器，js上传插件, js弹出窗口)
+
+7.cache		动态缓存文件夹
+
+8.home 		应用程序主文件夹
+	(1).controls	控制器文件夹
+
+	(2).module   编译后的PHP文件放置的文件夹
+
+	(3).template	模板文件夹
+
+分布式搭建
+数据库放置到一个服务器
+会话，缓存保存到memCache服务器
+静态文件同步放置到一个服务器(uploadfiles 和 static皮肤)
+在讲源程序拷贝一份放置到不同的服务器就ok了;
+

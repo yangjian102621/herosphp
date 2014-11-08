@@ -1,0 +1,7 @@
+.idea/
+.project
+.svn/
+.git/
+.htaccess
+runtime/
+

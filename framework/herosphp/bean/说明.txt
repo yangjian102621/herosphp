@@ -1,0 +1,22 @@
+>>Bean属性名必须与@作为开头
+>>一个Bean的配置包括下面属性:
+	@type[string]:指定bean的类型，object为对象，object_array为对象数组，暂时只支持这两种，如果不指定，则当普通数组
+	@class[string]：指定Bean的类名
+	@params[array]:初始化时传递给构造函数的的值
+	@attributes[array]:创建Bean时需要设置的属性列表，列表项语法参考[attributes项语法说明]
+	@invokes[array]:创建Bean时需要调用的方法列表，列表项语法参考[invokes项语法说明]
+	@single[boolean]:是否单例，如果不指定，默认为true.
+
+>>attributes项语法说明
+	属性名可以是简单的字符串，如果是简单的字符串，则不会对属性值进行任何的处理。
+	属性名也可以是以"@*/"开头的Bean属性，这种格式相当于对属性值类型进行说明,现支持两种类型:
+	@id:说明属性值是一个id指向的Bean项，需要调用Beans::get($id)获得正确的bean.
+	@bean:说明属性值是一个Bean项配置，程序需要创建这个bean，这个类型通常用于创建匿名Bean
+		
+>>invokes项语法说明
+	方法名可以是简单的字符串，如果是简单的字符串，则不会对参数值进行任何的处理。
+	方法名也可以是以"@*/"开头的Bean属性，这种格式相当于对参数值类型进行说明,现支持两种类型:
+	@id:说明属性值是一个id指向的Bean项，需要调用Beans::get($id)获得正确的bean.
+	@bean:说明属性值是一个Bean项配置，程序需要创建这个bean，这个类型通常用于创建匿名Bean
+	
+	
