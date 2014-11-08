@@ -1,11 +1,39 @@
 <?php
-/**
- * 前台统一入口文件
- */
-header("Content-Type:text/html; charset=utf-8");  //设置系统的输出字符为utf-8
-define("ROOT", dirname(__FILE__));	//系统根目录
-define("DIR_OS", DIRECTORY_SEPARATOR);	//目录分隔符
-require ROOT.DIR_OS.'libs'.DIR_OS.'Heros.const.php';    //常量文件
-require ROOT.DIR_OS.'libs'.DIR_OS.'Herosphp.class.php';	//包含系统框架的统一入口文件
+/*---------------------------------------------------------------------
+ * 应用程序入口文件
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ *-----------------------------------------------------------------------*/
+
+//设置页面编码
+header("Content-Type:text/html; charset=utf-8");
+
+// 检测PHP环境
+if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
+
+// 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false
+define('APP_DEBUG', true);
+
+// 定义系统根目录
+define('APP_ROOT', __DIR__.'/');
+
+//定义应用根目录
+define('APP_PATH', APP_ROOT."app/");
+
+//定义框架根目录
+define('APP_FRAME_PATH', APP_ROOT.'/framework/herosphp/');
+
+//引入系统常量文件
+require APP_FRAME_PATH.'Heros.const.php';
+
+//包含系统框架的统一入口文件
+require APP_FRAME_PATH.'Herosphp.class.php';
+
+//启动应用程序
 Herosphp::run();
+
 ?>
