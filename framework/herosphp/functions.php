@@ -46,67 +46,35 @@ function __print() {
 
 /**
  * 计算字符创的hash值
- * @param       string          $_key
+ * @param       string          $key
  * @return      int 
  */
-function bkdrHash( $_key ) {
+function bkdrHash( $key ) {
 
-    $_key = $_key.'';    //将key转换成字符串
+    $key = $key.'';    //将key转换成字符串
     $hcode = 0;
-    $len = strlen($_key);
+    $len = strlen($key);
     for ( $i = 0; $i < $len; $i++ ) {
-        $hcode = (int) ($hcode * 1331 + ord($_key[$i]));
+        $hcode = (int) ($hcode * 131 + ord($key[$i]));
     }
     return ($hcode & 0x7FFFFFFF);
 }
 
 /**
- * 更改hash数组的key值, 注意：如果key不唯一则会产生覆盖
- * @param           array $_arr
- * @param           string $_key
- * @return          array
+ * get format filesize string(获取格式化文件大小字符串)
+ * @param 	int			$size
+ * @return  string 		$size_str
  */
-function changeArrayKey( $_arr, $_key='id' ) {
-    $_new_arr = array();
-    foreach ( $_arr as $_v ) $_new_arr[$_v[$_key]] = $_v;
-    $_arr = null; 
-    unset($_arr);
-    return $_new_arr;
-}
-
-/**
- * 将小写数字转为大写
- * @param       double $num 要转换的数字
- * @param       bool $flag  是否需要单位
- */
-function numberToBig( $num, $flag = TRUE )  {
-	  
-    $d = array('零','壹','贰','叁','肆','伍','陆','柒','捌','玖');  
-    $e = array('元','拾','佰','仟','万','拾万','佰万','仟万','亿','拾亿','佰亿','仟亿','万亿');
-    $p = array('分','角');  
-    $zheng='整'; //追加"整"字   
-}
-
-/**
- * 按照某一键值过滤数组，只适用与 key => value数组
- *
- * @param       string $_key 要筛选的键
- * @param       mixed $_val 筛选的边界值(多个边界值可以用数组)
- * @param       array $_arr 被筛选的数组
- * @param       array       返回被筛选后的数组
- * @return array
- */
-function &filterArrayByKey( $_key, $_val, &$_arr ) {
-    
-    $_new_arr = array();
-    foreach ( $_arr as $_v ) {
-        
-        if ( $_v[$_key]  == $_val 
-            || (is_array($_val) && in_array($_v[$_key], $_val)) )
-            $_new_arr[] = $_v;
-            
+function formatFileSize( $size ) {
+    if ( $size/1024 < 1 ) {
+        return $size ." B";
+    } else if ( $size/1024 > 1 && $size/(1024*1024) < 1 ) {
+        return number_format($size/1024, 2, '.', '') .'KB';
+    } else if ( $size/(1024*1024) > 1 && $size/(1024*1024*1024)< 1 ) {
+        return number_format($size/(1024*1024), 2, '.', '') ." MB";
+    } else {
+        return number_format($size/(1024*1024*1024), 2, '.', '')." GB";
     }
-    return $_new_arr;
 }
 
 /**
