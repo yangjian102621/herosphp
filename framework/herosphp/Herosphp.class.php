@@ -11,7 +11,9 @@
 
 include APP_FRAME_PATH.'functions.php';      //包含框架全局函数
 include APP_FRAME_PATH.'core/Loader.class.php';     //包含资源加载器
+
 use herosphp\core\Loader;
+use herosphp\core\WebApplication;
 
 class Herosphp {
 
@@ -40,7 +42,8 @@ class Herosphp {
         }
 
         $configs = Loader::config();    //加载系统全局配置
-        __print($configs);
+        $application = WebApplication::getInstance();
+        $application->execute($configs);
 
     }
 
@@ -50,8 +53,8 @@ class Herosphp {
      */
     private static function _loadBaseLib() {
         self::$LIB_CLASS = array(
-            'herosphp\core\HttpRequest'          => 'core.HttpRequest',
-            'herosphp\core\Webapplication'       => 'core.Webapplication',
+            'herosphp\http\HttpRequest'          => 'http.HttpRequest',
+            'herosphp\core\WebApplication'       => 'core.WebApplication',
             'herosphp\core\Debug'       => 'core.Debug',
             'herosphp\core\Loader'       => 'core.Loader',
             'HomecommonAction'  => 'core.HomecommonAction',

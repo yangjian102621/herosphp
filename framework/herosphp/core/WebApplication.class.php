@@ -13,12 +13,15 @@
 namespace herosphp\core;
 
 use herosphp\core\interfaces\IApplication;
+use herosphp\http\HttpRequest;
+
+Loader::import('core.interfaces.IApplication', IMPORT_FRAME);
 
 class WebApplication implements IApplication {
 
     /**
      * http 请求对象
-     * @var \herosphp\core\HttpRequest
+     * @var \herosphp\http\HttpRequest
      */
     private $httpRequest;
 
@@ -38,8 +41,18 @@ class WebApplication implements IApplication {
 
     /**
      * 执行应用程序
+     * @param array 系统配置信息
      */
-    public function execute() {
+    public function execute( $configs ) {
+
+        $this->setConfigs($configs);
+        $this->requestInit();
+
+        //invoker 方法调用
+        $this->actionInvoke();
+
+        //发送响应
+        $this->sendResponse();
 
     }
 
@@ -56,7 +69,8 @@ class WebApplication implements IApplication {
      */
     public function requestInit()
     {
-
+        $this->httpRequest = new HttpRequest();
+        $this->httpRequest->parseURL();
     }
 
     /**
@@ -75,5 +89,44 @@ class WebApplication implements IApplication {
         // TODO: Implement sendResponse() method.
     }
 
+    /**
+     * @param array $configs
+     */
+    public function setConfigs($configs)
+    {
+        $this->configs = $configs;
+    }
 
-} 
+    /**
+     * @return array
+     */
+    public function getConfigs()
+    {
+        return $this->configs;
+    }
+
+    /**
+     * 获取指定key的配置值
+     * @param $key 配置key
+     */
+    public function getConfig( $key ) {
+        return $this->configs[$key];
+    }
+
+    /**
+     * @param \herosphp\http\HttpRequest $httpRequest
+     */
+    public function setHttpRequest($httpRequest)
+    {
+        $this->httpRequest = $httpRequest;
+    }
+
+    /**
+     * @return \herosphp\http\HttpRequest
+     */
+    public function getHttpRequest()
+    {
+        return $this->httpRequest;
+    }
+
+}

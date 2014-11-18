@@ -3,5 +3,5 @@
 .svn/
 .git/
 .htaccess
-runtime/
+runtime/views/
 

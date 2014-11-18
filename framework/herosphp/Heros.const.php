@@ -15,6 +15,7 @@
 //定义请求访问模式
 define('__PATH_INFO_REQUEST__', 1);       //pathinfo 访问模式
 define('__NORMAL_REQUEST__', 2);      //常规访问模式
+define('__CLIENT_REQUEST__', 3);    //客户端请求模式
 define('__REQUEST_MODE__', __PATH_INFO_REQUEST__);
 
 //定义编译路径
@@ -32,4 +33,6 @@ define('IMPORT_CUSTOM', 3); //加载自定义路径中的class
 
 define('EXT_PHP', '.class.php');   //加载php文件
 define('EXT_HTML', '.html');    //加载html文件
+
+define('URI_EXT', '.html');     //uri 伪静态路径后缀
 ?>

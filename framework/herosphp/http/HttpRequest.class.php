@@ -10,7 +10,9 @@
  * ---------------------------------------------------------------------
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
-namespace herosphp\core;
+namespace herosphp\http;
+
+use herosphp\core\Loader;
 
 class HttpRequest {
 
@@ -45,46 +47,79 @@ class HttpRequest {
     private $parameters = array();
 
     /**
-     * 解析url成pathinfo形式，并获取参数， 如：
-     * /index.php/home/aricle/list/index/?mid=3&id=100
-     * @param     int         $_flag          访问模式
+     * 解析url成pathinfo形式，并获取参数
+     * http://www.herosphp.my/admin/member-login-index.html?id=12
      */
-    public static function parseURL( $_flag = __PATH_INFO_REQUEST__ ) {
+    public function parseURL() {
 
-        $_path_info = parse_url($_SERVER['REQUEST_URI']);
-        $_url = $_path_info['path'];
-        if ( ($_pos = strpos($_url, '.html') ) !== FALSE ) $_url = substr($_url, 0, $_pos);
-        switch ( $_flag ) {
+        $sysConfig = Loader::config();
+        $defaultUrl = $sysConfig['default_url'];
+        $appName = '';  //当前访问的应用名称
+        switch ( __REQUEST_MODE__ ) {
             case __PATH_INFO_REQUEST__ :    //path info 访问模式
-                if ( ($_pos_1 = strpos($_url, '.php')) !== FALSE ) $_path = substr($_url, $_pos_1+5);
-                else $_path = substr($_url, 1);
+                $urlInfo = parse_url($_SERVER['REQUEST_URI']);
+                if ( $urlInfo['path'] ) {
+                    $filename = rtrim($urlInfo['path'], URI_EXT);
+                    $pathInfo = explode('/', $filename);
+                    if ( $pathInfo[1] ) $appName = $pathInfo[1];
+                    else $appName = $defaultUrl['app'];
 
-                $_path_info = explode('/', $_path);
-                if ( isset($_path_info[1]) && $_path_info[1] == SysCfg::$static_dir ) return;      //静态文件直接访问,不需要解析
-                self::$_request['app_name'] = (isset($_path_info[0]) && $_path_info[0] !='') ? $_path_info[0] : DEFAULT_APP;
-                self::$_request['module'] = (isset($_path_info[1]) && $_path_info[1] !='') ? $_path_info[1] : SysCfg::$dft_module;
-                self::$_request['action'] = (isset($_path_info[2]) && $_path_info[2] !='') ? $_path_info[2] : SysCfg::$dft_action;
-                self::$_request['method'] = (isset($_path_info[3]) && $_path_info[3] !='') ? $_path_info[3] : SysCfg::$dft_method;
+                    if ( isset($pathInfo[2]) ) {
+                        $actionMap = explode('-', $pathInfo[2]);
+                        if ( isset($actionMap[0]) ) $this->setModule($actionMap[0]);
+                        else $this->setAction($defaultUrl['module']);
+
+                        if ( isset($actionMap[1]) ) $this->setAction($actionMap[1]);
+                        else $this->setAction($defaultUrl['action']);
+
+                        if ( isset($actionMap[2]) ) $this->setMethod($actionMap[2]);
+                        else $this->setMethod($defaultUrl['method']);
+                    }
+
+                    $this->setParameters($_REQUEST);    //设置参数
+                }
                 break;
 
             case __NORMAL_REQUEST__ :   //常规访问模式
-                self::$_request['app_name'] = isset($_GET['app_name']) ? trim($_GET['app_name']) : DEFAULT_APP;
-                self::$_request['module'] = isset($_GET['module']) ? $_GET['module'] : SysCfg::$dft_module;
-                self::$_request['action'] = isset($_GET['action']) ? $_GET['action'] : SysCfg::$dft_action;
-                self::$_request['method'] = isset($_GET['method']) ? $_GET['method'] : SysCfg::$dft_method;
+                if ( isset($_GET['app']) ) $appName = $_GET['app'];
+                else $appName = $defaultUrl['app'];
+
+                if ( isset($_GET['module']) ) $this->setModule(trim($_GET['module']));
+                else $this->setModule($defaultUrl['module']);
+
+                if ( isset($_GET['action']) ) $this->setAction(trim($_GET['action']));
+                else $this->setAction($defaultUrl['module']);
+
+                if ( isset($_GET['method']) ) $this->setMethod(trim($_GET['method']));
+                else $this->setMethod($defaultUrl['method']);
+
                 break;
         }
 
-        self::$_request['app_home'] = ROOT.DIR_OS.self::$_request['app_name'];
-        //当前应用的配置文件目录
-        self::$_request['app_config'] = ROOT.DIR_OS.SysCfg::$config_dir.DIR_OS.self::$_request['app_name'];
-        Herosphp::$_APP_NAME = self::$_request['app_name'];         //初始化当前app名称
-
-        //初始化用户配置信息
-        self::$_config = include ROOT.DIR_OS.SysCfg::$config_dir.DIR_OS.'common'.DIR_OS.'common.config.php';
+        define(APP_NAME, $appName);
     }
 
-    public function getParameter() {
+    /**
+     * Get a parameter's value.
+     * @param string $name
+     * 参数名称
+     * @param $func_str
+     * 函数名称，参数需要用哪些函数去处理
+     * @param boolean $setParam 是否重置参数
+     * @return int|string
+     */
+    public function getParameter($name, $func_str=null, $setParam=false) {
+        if ( !$func_str ) return $this->parameters[$name];
+
+        $funcs = explode("|", $func_str);
+        $args = $this->parameters[$name];
+        foreach ( $funcs as $func ) {
+            $args = call_user_func($func, $args);
+        }
+        if ( $setParam ) {
+            $this->parameters[$name] = $args;
+        }
+        return $args;
 
     }
 

@@ -20,6 +20,12 @@ class Loader {
     private static $IMPORTED_FILES = array();
 
     /**
+     * 已经导入的配置文档
+     * @var array
+     */
+    private static $CONFIGS = array();
+
+    /**
      * 加载一个类或者加载一个包
      * 如果加载的包中有子文件夹不进行循环加载
      * 参数格式：'article.model.articleModel'
@@ -80,17 +86,20 @@ class Loader {
 
     /**
      * 加载配置信息
-     * @param string $key 配置文件名称key
-     * @param string $section 配置文档所属片区|模块
+     * @param string $key 配置文件名称key， 如果没有指定则加载所有配置文档
+     * @param string $section 配置文档所属片区|模块，如果没有指定则加载配置文档根目录的所有文件
      * @return array
      */
-    public static function config( $key=null, $section=null ) {
+    public static function config( $key='*', $section='root' ) {
 
+        if ( isset(self::$CONFIGS[$section][$key]) ) {
+            return self::$CONFIGS[$section][$key];
+        }
         $configDir = APP_CONFIG_PATH;
-        if ( $section != null ) $configDir .= $section.'/';
-        if ( $key != null ) {
+        if ( $section != 'root' ) $configDir .= $section.'/';     //默认加载配置根目录的配置文档
+        if ( $key != '*' ) {
             $configFile = $configDir.$key.'.config.php';
-            return include $configFile;
+            self::$CONFIGS[$section][$key] = include $configFile;
         } else {
             chdir($configDir);
             $configFiles = glob("*.config.php");
@@ -99,7 +108,9 @@ class Loader {
                 $tempConfig = include APP_CONFIG_PATH.$file;
                 $configs = array_merge($configs, $tempConfig);
             }
-            return $configs;
+            self::$CONFIGS[$section][$key] = &$configs;
         }
+
+        return self::$CONFIGS[$section][$key];
     }
 } 
