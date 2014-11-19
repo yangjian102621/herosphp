@@ -35,4 +35,12 @@ define('EXT_PHP', '.class.php');   //加载php文件
 define('EXT_HTML', '.html');    //加载html文件
 
 define('URI_EXT', '.html');     //uri 伪静态路径后缀
+
+/**
+ * 以下订制数据库访问策略，提供单台服务器访问和读写分离集群访问模式
+ * 如果采用集群访问模式请在 /config/db/host.config.php文件中设置好你的数据库集群配置
+ */
+define('DB_ACCESS_SINGLE', 1);  //单台服务器访问模式
+define('DB_ACCESS_CLUSTERS', 2);  //数据库服务器集群调度访问模式
+define('DB_ACCESS', DB_ACCESS_SINGLE);
 ?>

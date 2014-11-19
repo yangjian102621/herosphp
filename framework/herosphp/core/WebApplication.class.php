@@ -78,7 +78,10 @@ class WebApplication implements IApplication {
      */
     public function actionInvoke()
     {
-        // TODO: Implement actionInvoke() method.
+
+        //加载控制器Action文件
+
+
     }
 
     /**

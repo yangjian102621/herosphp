@@ -38,13 +38,26 @@ class HttpRequest {
      * 本次请求的url
      * @var string
      */
-    private $requestUrl;
+    private $requestUri;
+
+    /**
+     * 上次请求的url
+     * @var
+     */
+    private $referer;
 
     /**
      * 请求参数
      * @var array
      */
     private $parameters = array();
+
+    public function __construct() {
+
+        $this->requestUri = $_SERVER['REQUEST_URI'];
+        $this->referer = $_SERVER['HTTP_REFERER'];
+
+    }
 
     /**
      * 解析url成pathinfo形式，并获取参数
@@ -57,7 +70,7 @@ class HttpRequest {
         $appName = '';  //当前访问的应用名称
         switch ( __REQUEST_MODE__ ) {
             case __PATH_INFO_REQUEST__ :    //path info 访问模式
-                $urlInfo = parse_url($_SERVER['REQUEST_URI']);
+                $urlInfo = parse_url($this->requestUri);
                 if ( $urlInfo['path'] ) {
                     $filename = rtrim($urlInfo['path'], URI_EXT);
                     $pathInfo = explode('/', $filename);
@@ -108,7 +121,8 @@ class HttpRequest {
      * @param boolean $setParam 是否重置参数
      * @return int|string
      */
-    public function getParameter($name, $func_str=null, $setParam=false) {
+    public function getParameter( $name, $func_str=null, $setParam=false ) {
+
         if ( !$func_str ) return $this->parameters[$name];
 
         $funcs = explode("|", $func_str);
@@ -190,7 +204,7 @@ class HttpRequest {
     /**
      * @param string $requestUrl
      */
-    public function setRequestUrl($requestUrl)
+    public function setRequestUri($requestUrl)
     {
         $this->requestUrl = $requestUrl;
     }
@@ -198,9 +212,25 @@ class HttpRequest {
     /**
      * @return string
      */
-    public function getRequestUrl()
+    public function getRequestUri()
     {
-        return $this->requestUrl;
+        return $this->requestUri;
+    }
+
+    /**
+     * @param mixed $referer
+     */
+    public function setReferer($referer)
+    {
+        $this->referer = $referer;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReferer()
+    {
+        return $this->referer;
     }
 
 }

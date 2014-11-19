@@ -57,6 +57,8 @@ class Herosphp {
             'herosphp\core\WebApplication'       => 'core.WebApplication',
             'herosphp\core\Debug'       => 'core.Debug',
             'herosphp\core\Loader'       => 'core.Loader',
+            'herosphp\core\Template'       => 'core.Template',
+            'herosphp\core\Controller'       => 'core.Controller',
             'HomecommonAction'  => 'core.HomecommonAction',
             'AjaxResult'        => 'public.AjaxResult');
     }

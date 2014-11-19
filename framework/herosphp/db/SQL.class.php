@@ -199,6 +199,7 @@ class SQL {
     
     //build conditions
     public function buildConditions() {
+
         if ( !is_array($this->_where) ) return '';
         $_conditions = '';
         foreach ( $this->_where as $_value ) {
