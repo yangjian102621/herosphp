@@ -7,6 +7,7 @@
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * ---------------------------------------------------------------------
  * Author: <yangjian102621@gmail.com>
+ * @version 1.2.1
  *-----------------------------------------------------------------------*/
 
 include APP_FRAME_PATH.'functions.php';      //包含框架全局函数
@@ -59,6 +60,7 @@ class Herosphp {
             'herosphp\core\Loader'       => 'core.Loader',
             'herosphp\core\Template'       => 'core.Template',
             'herosphp\core\Controller'       => 'core.Controller',
+            'herosphp\exception\HeroException'       => 'exception.HeroException',
             'HomecommonAction'  => 'core.HomecommonAction',
             'AjaxResult'        => 'public.AjaxResult');
     }

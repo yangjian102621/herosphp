@@ -78,6 +78,17 @@ function formatFileSize( $size ) {
 }
 
 /**
+ * 抛出异常
+ * @param $message
+ * @param int $code
+ * @throws herosphp\exception\HeroException
+ */
+function E( $message, $code=0 ) {
+    echo '<pre>';
+    throw new \herosphp\exception\HeroException($message, $code);
+}
+
+/**
  * 获取当前时间
  * @return 		int 
  */

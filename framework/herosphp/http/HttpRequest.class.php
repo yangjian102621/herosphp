@@ -67,6 +67,7 @@ class HttpRequest {
 
         $sysConfig = Loader::config();
         $defaultUrl = $sysConfig['default_url'];
+        $this->requestUri = $sysConfig['site_url'].$this->requestUri;
         $appName = '';  //当前访问的应用名称
         switch ( __REQUEST_MODE__ ) {
             case __PATH_INFO_REQUEST__ :    //path info 访问模式
@@ -79,31 +80,30 @@ class HttpRequest {
 
                     if ( isset($pathInfo[2]) ) {
                         $actionMap = explode('-', $pathInfo[2]);
-                        if ( isset($actionMap[0]) ) $this->setModule($actionMap[0]);
-                        else $this->setAction($defaultUrl['module']);
-
-                        if ( isset($actionMap[1]) ) $this->setAction($actionMap[1]);
-                        else $this->setAction($defaultUrl['action']);
-
-                        if ( isset($actionMap[2]) ) $this->setMethod($actionMap[2]);
-                        else $this->setMethod($defaultUrl['method']);
+                        if ( $actionMap[0] ) $this->setModule($actionMap[0]);
+                        if ( $actionMap[1] ) $this->setAction($actionMap[1]);
+                        if ( $actionMap[2] ) $this->setMethod($actionMap[2]);
                     }
+
+                    if ( !$this->module ) $this->setModule($defaultUrl['module']);
+                    if ( !$this->action ) $this->setAction($defaultUrl['action']);
+                    if ( !$this->method ) $this->setMethod($defaultUrl['method']);
 
                     $this->setParameters($_REQUEST);    //设置参数
                 }
                 break;
 
             case __NORMAL_REQUEST__ :   //常规访问模式
-                if ( isset($_GET['app']) ) $appName = $_GET['app'];
+                if ( trim($_GET['app']) != '' ) $appName = $_GET['app'];
                 else $appName = $defaultUrl['app'];
 
-                if ( isset($_GET['module']) ) $this->setModule(trim($_GET['module']));
+                if ( trim($_GET['module']) != '' ) $this->setModule(trim($_GET['module']));
                 else $this->setModule($defaultUrl['module']);
 
-                if ( isset($_GET['action']) ) $this->setAction(trim($_GET['action']));
+                if ( trim($_GET['action']) != '' ) $this->setAction(trim($_GET['action']));
                 else $this->setAction($defaultUrl['module']);
 
-                if ( isset($_GET['method']) ) $this->setMethod(trim($_GET['method']));
+                if ( trim($_GET['method']) != '' ) $this->setMethod(trim($_GET['method']));
                 else $this->setMethod($defaultUrl['method']);
 
                 break;
@@ -194,6 +194,16 @@ class HttpRequest {
     }
 
     /**
+     * 添加参数
+     * @param $name
+     * @param $value
+     */
+    public function addparmeter( $name, $value ) {
+        if ( $name && $value )
+            $this->parameters[$name] = $value;
+    }
+
+    /**
      * @return array
      */
     public function getParameters()
@@ -202,11 +212,11 @@ class HttpRequest {
     }
 
     /**
-     * @param string $requestUrl
+     * @param string $url
      */
-    public function setRequestUri($requestUrl)
+    public function setRequestUri($url)
     {
-        $this->requestUrl = $requestUrl;
+        $this->requestUri = $url;
     }
 
     /**

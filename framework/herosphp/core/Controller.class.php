@@ -32,6 +32,14 @@ abstract class Controller extends Template {
     public function setView( $view ) {
         $this->view = $view;
     }
+
+    /**
+     * 获取视图
+     * @return string
+     */
+    public function getView() {
+        return $this->view;
+    }
     
 	/*
 	 * 用于在控制器中进行位置重定向

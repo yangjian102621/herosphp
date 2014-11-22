@@ -88,10 +88,7 @@ class Template {
 		if ( isset($_config["tpl_dir"]) ) $this->templateDir = $_config['tpl_dir'];
 		if ( isset($_config["user_rules"]) ) $this->userRules = $_config["user_rules"];
 		if ( isset($_config["cache"]) ) $this->cache = $_config["cache"];
-		
-		$this->module = HttpRequest::$_request['module'];
-		if ( $this->module == "" ) $this->module = SysCfg::$dft_module;
-		
+
 	}
 	
 	/**

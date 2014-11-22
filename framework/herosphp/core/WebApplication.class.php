@@ -8,6 +8,7 @@
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * ---------------------------------------------------------------------
  * Author: <yangjian102621@gmail.com>
+ * @version 1.2.1
  *-----------------------------------------------------------------------*/
 
 namespace herosphp\core;
@@ -30,6 +31,12 @@ class WebApplication implements IApplication {
      * @var array
      */
     private $configs = array();
+
+    /**
+     * action 实例
+     * @var Object
+     */
+    private $actionInstance = null;
 
     /**
      * 应用程序唯一实例
@@ -78,10 +85,31 @@ class WebApplication implements IApplication {
      */
     public function actionInvoke()
     {
-
         //加载控制器Action文件
+        $module = $this->httpRequest->getModule();
+        $action = $this->httpRequest->getAction();
+        $method = $this->httpRequest->getMethod();
+        $actionDir = APP_PATH.APP_NAME."/{$module}/action/";
+        $actionFile = ucfirst($action).'Action.class.php';
+        $filename = $actionDir.$actionFile;
+        if ( !file_exists($filename) ) {
+            E("Action file {$actionFile} not found. ");
+        }
+        include $filename;
+        $className = "\\{$module}\\action\\".ucfirst($action)."Action";
+        $this->actionInstance = new $className();
 
+        //调用初始化方法
+        if ( method_exists($this->actionInstance, 'C_start') ) {
+            $this->actionInstance->C_start();
+        }
 
+        //根据动作去找对应的方法
+        if ( method_exists($this->actionInstance, $method) ) {
+            $this->actionInstance->$method($this->httpRequest);
+        } else {
+            E("Method {$className}::{$method} not found!");
+        }
     }
 
     /**
@@ -89,7 +117,8 @@ class WebApplication implements IApplication {
      */
     public function sendResponse()
     {
-        // TODO: Implement sendResponse() method.
+        //加载并显示视图
+        $this->actionInstance->display($this->actionInstance->getView());
     }
 
     /**

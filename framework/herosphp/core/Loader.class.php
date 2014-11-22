@@ -47,7 +47,6 @@ class Loader {
         if ( isset(self::$IMPORTED_FILES[$classKey]) )  return;
 
         //组合文件路径
-        $path = '';
         switch ( $type ) {
             case IMPORT_APP :
                 $path = APP_PATH;
@@ -112,5 +111,13 @@ class Loader {
         }
 
         return self::$CONFIGS[$section][$key];
+    }
+
+    /**
+     * 加载modelDao
+     * @param $modelName
+     */
+    public static function model( $modelName ) {
+
     }
 } 
