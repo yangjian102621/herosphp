@@ -26,6 +26,11 @@ $config = array(
      * -1 : 不管模板有没有修改都不重新编译，节省模板修改时间判断，性能较高(建议正式部署阶段开启)
      */
     'temp_cache' => 0,
+    /**
+     * 用户自定义模板标签编译规则
+     * array( 'search_pattern' => 'replace_pattern'  );
+     */
+    'temp_rules' => array(),
 );
 
 return $config;

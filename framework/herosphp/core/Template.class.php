@@ -11,95 +11,140 @@
 
 namespace herosphp\core;
 
-class Template {
-	//通过assign函数传入的变量临时存放数组
-	private $templateVar = array();
-	//模板目录
-	private $templateDir = "";
-	//编译目录
-	private $compileDir = "";
-	//模板文件名称
-	private $fileName = "";
-	//组件标签开始
-	public static $compBegin = "{com:}";
-	//组件标签结尾
-	public static $compEnd = "{:com}";
-	//是否缓存编译文件
-	private $cache = false;
+use herosphp\core\WebApplication;
 
-	/*系统定义的模板编译规则*/
-	private $sysRules = array(
-		/*<?*/
-		'/{:([^=:])}/'    => '<?php echo ${1}?>',
-		/*{$name}*/
-		'/{\$([0-9a-z_]{1,})}/i'	=> '<?php echo \$${1}?>',
-		/*{$arr.key}*/
-		'/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i'	=> '<?php echo \$${1}[\'${2}\']?>',
-		/*{$arr.key1.key2}*/
-		'/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i'	=> '<?php echo \$${1}[\'${2}\'][\'${3}\']?>',
-		/*{$arr['key']}*/
-		'/{\$([^\}]{1,})}/i' => '<?php echo \$${1}?>',
-			
-		/* foreach ( $_arr as $_key => $_val ) */
-        '/{loop\s+\$([0-9a-z_]{1,})\s+\$([0-9a-z_]{1,})\s+\$([0-9a-z_]{1,})\s*}/i'   => '<?php foreach ( \$${1} as \$${2} => \$${3} ) { ?>',
+class Template {
+    /**
+     * 通过assign函数传入的变量临时存放数组
+     * @var array
+     */
+    private $templateVar = array();
+
+    /**
+     * 模板目录
+     * @var string
+     */
+    private $templateDir = "";
+
+    /**
+     * 编译目录
+     * @var string
+     */
+    private $compileDir = "";
+
+    /**
+     * 模板编译缓存配置
+     * 0 : 不启用缓存，每次请求都重新编译(建议开发阶段启用)
+     * 1 : 开启部分缓存， 如果模板文件有修改的话则放弃缓存，重新编译(建议测试阶段启用)
+     * -1 : 不管模板有没有修改都不重新编译，节省模板修改时间判断，性能较高(建议正式部署阶段开启)
+     * @var int
+     */
+    private $cache = 0;
+
+    /**
+     * 模板编译规则
+     * @var array
+     */
+    private static $tempRules = array(
+        /**
+         * 输出变量,数组
+         * {$varname}, {$array['key']}
+         */
+        '/{\$([^\}]{1,})}/i' => '<?php echo \$${1}?>',
+        /**
+         * 以 {$array.key} 形式输出一维数组元素
+         */
+        '/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i'	=> '<?php echo \$${1}[\'${2}\']?>',
+        /**
+         * 以 {$array.key1.key2} 形式输出二维数组
+         */
+        '/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i'	=> '<?php echo \$${1}[\'${2}\'][\'${3}\']?>',
+
+        /**
+         * foreach key => value 形式循环输出
+         * foreach ( $array as $key => $value )
+         */
+        '/{loop\s+\$([^\}]{1,})\s+\$([^\}]{1,})\s+\$([^\}]{1,})\s*}/i'   => '<?php foreach ( \$${1} as \$${2} => \$${3} ) { ?>',
         '/{\/loop}/i'    => '<?php } ?>',
-        
-		/*foreach ( $_arr : $_val )  */
-		'/{loop\s+\$(.*?)\s+\$([0-9a-z_]{1,})\s*}/i'	=> '<?php foreach ( \$${1} as \$${2} ) { ?>',
+
+        /**
+         * foreach 输出
+         * foreach ( $array as $value )
+         */
+        '/{loop\s+\$(.*?)\s+\$([0-9a-z_]{1,})\s*}/i'	=> '<?php foreach ( \$${1} as \$${2} ) { ?>',
 		'/{\/loop}/i'	=> '<?php } ?>',
-		
-        /* expression */
+
+        /**
+         * {run}标签： 执行php表达式
+         * {expr}标签：输出php表达式
+         */
         '/{run\s+(.*?)}/i'   => '<?php ${1} ?>',
         '/{expr\s+(.*?)}/i'   => '<?php echo ${1} ?>',
-        
-        /* if () {} elseif {} */
+
+        /**
+         * if语句标签
+         * if () {} elseif {}
+         */
         '/{if\s+(.*?)}/i'   => '<?php if ( ${1} ) { ?>',
         '/{else}/i'   => '<?php } else { ?>',
         '/{elseif\s+(.*?)}/i'   => '<?php } elseif ( ${1} ) { ?>',
         '/{\/if}/i'    => '<?php } ?>',
-        
-		/*require|include*/
-		'/{(require|include)\s{1,}([0-9a-z_\.\:]{1,})\s*}/i'
+
+        /**
+         * 导入模板
+         * require|include
+         */
+        '/{(require|include)\s{1,}([0-9a-z_\.\:]{1,})\s*}/i'
 							=> '<?php include $this->getIncludePath(\'${2}\')?>',
-		'/{(res):([a-z]{1,})\s{1,}([0-9a-z_\.\:\-\/]{1,})\s*}/i'
-							=> '<?php echo $this->importResource(\'${2}\', \'${3}\')?>'			
+
+        /**
+         * 引入静态资源 css file,javascript file
+         */
+        '/{([res|gres]):([a-z]{1,})\s{1,}([0-9a-z_\.\:\-\/]{1,})\s*}/i'
+							=> '<?php echo $this->importResource(\'${1}\', \'${2}\', \'${3}\')?>'
 	);
-	
-	/* 静态资源模板 */
-	private static $_res_template = array(
+
+    /**
+     * 模板编译配置
+     * @var array
+     */
+    private $configs = array();
+
+    /**
+     * 静态资源模板
+     * @var array
+     */
+    private static $resTemplate = array(
 		'css'	=> "<link rel=\"stylesheet\" type=\"text/css\" href=\"{url}\" />\n",
 		'js'	=> "<script charset=\"utf-8\" type=\"text/javascript\" src=\"{url}\"></script>\n"
 	);
 
-	/* 用户自定义的模板编译规则 */
-	private $userRules = array();
-
-	/* 当前访问的模块 */
-	private $module;
-
 	/**
 	 * 构造函数
-	 * @param  string    $_config    模板配置参数数组
 	 */
-	public function __construct( $_config = NULL ) {
-		
-		if ( $_config == NULL ) $_config = $GLOBALS['temp_config'];
-		if ( isset($_config["comp_dir"]) ) $this->compileDir = $_config['comp_dir'];
-		if ( isset($_config["tpl_dir"]) ) $this->templateDir = $_config['tpl_dir'];
-		if ( isset($_config["user_rules"]) ) $this->userRules = $_config["user_rules"];
-		if ( isset($_config["cache"]) ) $this->cache = $_config["cache"];
+	public function __construct() {
+
+        $webApp = WebApplication::getInstance();
+        $this->configs = $webApp->getConfigs();
+        $this->cache = $this->configs['temp_cache'];
+        //添加用户自定义的模板编译规则
+        $this->addRules($this->configs['temp_rules']);
+
+        //初始化模板目录和编译目录
+        $request = $webApp->getHttpRequest();
+        $this->configs['module'] = $request->getModule();
+        $this->templateDir = APP_PATH.APP_NAME.'/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
+        $this->compileDir = APP_RUNTIME_PATH.'views/'.APP_NAME.'/'.$this->configs['module'].'/';
 
 	}
 	
 	/**
 	 * 增加模板替换规则
-	 * @param 	string 		$pattern 		要搜索的模式
-	 * @param 	string 		$replacement 	用于替换的字符串	
+     * @param array $rules
 	 */
-	public  function addRules( $pattern, $replacement ) {
-		if ( isset($pattern) && isset($replacement) ) {
-			$this->sysRules[$pattern] = $replacement;
-		}
+	public  function addRules( $rules ) {
+        if ( is_array($rules) && !empty($rules) )
+		    self::$tempRules = array_merge(self::$tempRules, $rules);
 	}
 
     /**

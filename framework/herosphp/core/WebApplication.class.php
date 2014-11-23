@@ -140,6 +140,7 @@ class WebApplication implements IApplication {
     /**
      * 获取指定key的配置值
      * @param $key 配置key
+     * @return mixed
      */
     public function getConfig( $key ) {
         return $this->configs[$key];
