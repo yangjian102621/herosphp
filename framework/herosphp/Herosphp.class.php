@@ -61,6 +61,10 @@ class Herosphp {
             'herosphp\core\Template'       => 'core.Template',
             'herosphp\core\Controller'       => 'core.Controller',
             'herosphp\exception\HeroException'       => 'exception.HeroException',
+            'herosphp\utils\FileUtils'       => 'utils.FileUtils',
+            'herosphp\utils\ArrayUtils'       => 'utils.ArrayUtils',
+            'herosphp\utils\AjaxResult'       => 'utils.AjaxResult',
+            'herosphp\utils\WebUtils'       => 'utils.WebUtils',
             'HomecommonAction'  => 'core.HomecommonAction',
             'AjaxResult'        => 'public.AjaxResult');
     }

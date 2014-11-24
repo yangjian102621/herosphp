@@ -17,8 +17,8 @@ class LoginAction extends Controller {
      */
     public function index( HttpRequest $request ) {
 
-        __print($request);
         __print("invoking the index method....");
+        $this->assign('include', '{include admin:member.top}');
 
     }
 
@@ -27,8 +27,6 @@ class LoginAction extends Controller {
      * @param HttpRequest $request
      */
     public function signin( HttpRequest $request ) {
-
-        __print($request->getParameters());
         __print("sign in operation....");
     }
 

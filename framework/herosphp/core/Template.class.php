@@ -11,7 +11,7 @@
 
 namespace herosphp\core;
 
-use herosphp\core\WebApplication;
+use herosphp\utils\FileUtils;
 
 class Template {
     /**
@@ -133,6 +133,8 @@ class Template {
         //初始化模板目录和编译目录
         $request = $webApp->getHttpRequest();
         $this->configs['module'] = $request->getModule();
+        $this->configs['action'] = $request->getAction();
+        $this->configs['method'] = $request->getMethod();
         $this->templateDir = APP_PATH.APP_NAME.'/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
         $this->compileDir = APP_RUNTIME_PATH.'views/'.APP_NAME.'/'.$this->configs['module'].'/';
 
@@ -149,211 +151,106 @@ class Template {
 
     /**
      * 将变量分配到模板
-     * @param       $var_name
-     * @param       string $value 变量值
+     * @param  string $varname
+     * @param  string $value 变量值
      */
-	public function assign( $var_name, $value ) {
-		$this->templateVar[$var_name] = $value;
+	public function assign( $varname, $value ) {
+		$this->templateVar[$varname] = $value;
 	}
 	
 	/**
 	 * 获取模板变量
-	 * @param		string		$_var_name 变量名 
+	 * @param string $varname 变量名
+     * @return mixed
 	 */
-	public function getTemplateVar( $_var_name ) {
-		return $this->templateVar[$_var_name];
+	public function getTemplateVar( $varname ) {
+		return $this->templateVar[$varname];
 	}
 
 	/**
 	 * 编译模板
-	 * @param 		string 		$_tempFile 	 	模板文件路径
-	 * @param		string		$_compileFile	编译文件路径
+	 * @param 		string 		$tempFile 	 	模板文件路径
+	 * @param		string		$compileFile	编译文件路径
 	 */
-	private function complieTemplate( $_tempFile, $_compileFile ) {
-		//获取模板文件
-		$_tempContent = @file_get_contents($_tempFile);
-		if ( $_tempContent == FALSE ) {
-			Debug::appendMessage("加载模板文件 {".$_tempFile."} 失败！请在相应的目录建立模板文件。");
-			//写入错误日志
-			trigger_error("加载模板文件 {".$_tempFile."} 失败！请在相应的目录建立模板文件。");
-		}
-		//合并用户和系统的模板替换规则
-		$rules = array_merge($this->sysRules, $this->userRules);
-		//替换模板
-		$_tempContent = preg_replace(array_keys($rules), $rules, $_tempContent);
-		
-		//complie components
-		//$this->complieComponents($_tempContent);
-		
-		//生成编译目录
-		if ( !file_exists(dirname($_compileFile)) ) 
-			Utils::makeFileDirs(dirname($_compileFile));
-		//生成php文件
-		if ( !file_put_contents($_compileFile, $_tempContent, LOCK_EX) ) {
-			//生成调试信息
-			Debug::appendMessage("生成编译文件 {".$_compileFile."} 失败。");
-			//写入错误日志
-			trigger_error("生成编译文件 {".$_compileFile."} 失败。");
-		}
+	private function complieTemplate( $tempFile, $compileFile ) {
+
+        //根据缓存情况编译模板
+        if ( !file_exists($compileFile)
+            || ($this->cache == 1 && filemtime($compileFile) < filemtime($tempFile))
+            || $this->cache == 0 ) {
+
+            //获取模板文件
+            $content = @file_get_contents($tempFile);
+            if ( $content == FALSE ) {
+                E("加载模板文件 {".$tempFile."} 失败！请在相应的目录建立模板文件。");
+            }
+            //替换模板
+            $content = preg_replace(array_keys(self::$tempRules), self::$tempRules, $content);
+            //生成编译目录
+            if ( !file_exists(dirname($compileFile)) ) {
+                FileUtils::makeFileDirs(dirname($compileFile));
+            }
+
+            //生成php文件
+            if ( !file_put_contents($compileFile, $content, LOCK_EX) ) {
+                E("生成编译文件 {$compileFile} 失败。");
+            }
+        }
 
 	}
 
-    /**
-     * compile the components
-     * @param        string $_html template content.
-     * @internal param string $_temp template content after complied.
-     */
-	private function complieComponents( &$_html ) {
-		
-		$_pattern = "/".self::$compBegin."(.*?)".self::$compEnd."/is";
-		$_m = preg_match_all($_pattern, $_html, $_matches);
-		
-		if ( $_m != FALSE ) {
-			$i = 0;
-			foreach ( $_matches[1] as $_val ) {
-				$_args = explode(':', $_val);
-				$_var = array();
-				foreach ( $_args as $_v ) {
-					$this->getArgs($_var, $_v);
-				}
-				
-				if ( !isset($_var['name']) || $_var['name'] == '' ) {
-					echo '非法的组件名称！';
-					continue;
-				}
-				$_comp = CompFactory::createComp($_var['name']);
-				$_script = $_comp->getCompScript($_var);
-				$_html = str_replace($_matches[0][$i], $_script, $_html);
-				$i++;
-			}
-		}
-		
-	} 
-	
 	/**
 	 * 显示模板
-	 * @param		string		$_tpl_file		模板文件路径
-	 * @param 		string 		$_app_path 		应用程序主目录/也即要显示那主应用下的模板
+	 * @param		string		$tempFile		模板文件名称
 	 */
-	public function display( $_tpl_file=NULL, $_app_path = NULL ) {
+	public function display( $tempFile=null ) {
 		
 		//如果没有传入模板文件，则访问默认模块下的默认模板
-		if ( $_tpl_file == NULL ) $_tpl_file = HttpRequest::$_request['action'].'_'.HttpRequest::$_request['method'].'.html';
-		if ( !$_tpl_file ) $_tpl_file = SysCfg::$dft_action.'_'.SysCfg::$dft_method.'.html';
-		
-		if ( strpos($_tpl_file, ".html") === FALSE ) $_tpl_file .= '.html';
-		
-		$this->fileName = $_tpl_file;
-		$_compile_file = $this->get_compile_file();
-		$_temp_file = $this->get_tpl_file();
-		
-		if ( file_exists($_temp_file) ) {
-			//查看编译文件是否存在或者模板文件是否修改
-			if ( !file_exists($_compile_file) 
-			     || (!$this->cache && filemtime($_compile_file) < filemtime($_temp_file))
-				 || $this->cache == -1 ) {
-				$this->complieTemplate($_temp_file, $_compile_file);
-			} 
+        if ( !$tempFile ) {
+            $tempFile = $this->configs['action'].'_'.$this->configs['method'].URI_EXT;
+        }
+        $compileFile = $tempFile.'.php';
+		if ( file_exists($this->templateDir.$tempFile) ) {
+            $this->complieTemplate($this->templateDir.$tempFile, $this->compileDir.$compileFile);
 			extract($this->templateVar);	//分配变量
-			include $_compile_file;		//包含编译生成的文件
+			include $this->compileDir.$compileFile;		//包含编译生成的文件
 		} else {
-			Debug::appendMessage("要编译的模板[{$_temp_file}] 不存在！");	//调试输出
-			trigger_error("要编译的模板[{$_temp_file}] 不存在！");	//写入错误日志
+			E("要编译的模板[{$tempFile}] 不存在！");
 		}
 		
 	}
 
-	/**
- 	 * 获取当前模板文件路径
- 	 * @return  string 		返回模板文件路径
-	 */
-	private function get_tpl_file( $filename = NULL ) {
-		if ( is_null($filename) ) $filename = $this->fileName;
-		//获取当前模板文件目录
-		$_tpl_dir = $this->templateDir;
-		if ( strpos("../", $filename) === FALSE ) {
-			$_path = explode("/", $filename);
-			foreach ( $_path as $_file ) {
-				if ( $_file == ".." ) {
-					$_tpl_dir = dirname($_tpl_dir);
-				}
-			}
-			$filename = str_replace("../", "", $filename);
-		}
-		$filename = str_replace("/", DIR_OS, $filename);
-		$_tpl_file = $_tpl_dir.DIR_OS.$filename;
-		return $_tpl_file;
-	}
-
-	/**
-   	 * 获取当前编译文件路径
-   	 * @return  string 		返回编译文件路径
-	 */
-	private function get_compile_file( $filename = NULL ) {
-		if ( $filename == NULL ) $filename = $this->fileName;
-		//获取当前模板文件目录
-		$_comp_dir = $this->compileDir.DIR_OS.$this->module;
-		if ( strpos("../", $filename) === FALSE ) {
-			$_path = explode("/", $filename);
-			foreach ( $_path as $_file ) {
-				if ( $_file == ".." ) {
-					$_comp_dir = dirname($_comp_dir);
-				}
-			}
-			$filename = str_replace("../", "", $filename);
-		}
-		$filename = str_replace("/", DIR_OS, $filename);
-		$_comp_file = $_comp_dir.DIR_OS.$filename.".php";
-		return $_comp_file;
-	}
-	
-	/**
-	 * get args from arguments string
-	 * @param		array		$_var		变量数组
-	 * @param		string		$_str		参数字符串
-	 * @param	 	string		$_limit		参数分隔符
-	 */
-	private function getArgs(&$_var, $_str, $_limit = NULL ) {
-		
-		if ( $_limit == NULL ) $_limit = '=';
-		$_idx = strpos($_str, $_limit);
-		$_name = '';
-		$_val = '';
-		if ( $_idx !== FALSE ) {
-			$_name = trim(substr($_str, 0, $_idx));
-			$_val = trim(substr($_str, $_idx + strlen($_limit)));
-		}
-		if ( $_name != '' ) $_var[$_name] = $_val;
-		
-	}
-	
 	/**
 	 * 获取include路径
-     * 参数格式说明：'home:public.top'
-     * home 应用名称，应用名称与路径信息用‘:’号分隔, 如果没有申明应用则默认以当前的应用为相对路径
-	 * @param		string		$_file_path	        被包含的文件路径
+     * 参数格式说明：app:module.templateName
+     * 'home:public.top'
+     * 如果没有申明应用则默认以当前的应用为相对路径
+	 * @param string $tempPath	        被包含的模板路径
+     * @return string
 	 */
-	public function getIncludePath( $_file_path = NULL ) {
+	public function getIncludePath( $tempPath = null ) {
 		
-	    if ( !$_file_path ) return;
-        $_home = HttpRequest::$_request['app_name'];         //默认使用当前应用的目录
-        if ( ($_pos_1 = strpos($_file_path, ':')) !== FALSE ) $_home = substr($_file_path, 0, $_pos_1);
-        if ( ($_pos_2 = strrpos($_file_path, '.')) !== FALSE ) $_file = substr($_file_path, $_pos_2+1);
-        else return '';
-        if ( $_pos_1 !== FALSE ) $_path_org = substr($_file_path, $_pos_1+1, ($_pos_2-$_pos_1));
-        $_path = ROOT.DIR_OS.$_home.DIR_OS.str_replace('.', DIR_OS, $_path_org);
-         
-		$_tpl_file = $_path. SysCfg::$temp_dir.DIR_OS.Herosphp::getAppConfig('temp_dir').DIR_OS.$_file.'.html';
-		$_comp_file = $this->compileDir.DIR_OS.str_replace('.', DIR_OS, $_path_org).$_file.'.html.php';
-		
-		//编译包含的文件
-		if ( !file_exists($_comp_file) 
-		|| (!$this->cache && filemtime($_tpl_file) > filemtime($_comp_file))
-		|| $this->cache == -1 ) {
-			$this->complieTemplate($_tpl_file, $_comp_file);	
-		}
-		return $_comp_file;
-	
+	    if ( !$tempPath ) return '';
+        if ( strpos($tempPath, ':') === FALSE ) {
+            $appName = APP_NAME;    //默认为当前应用
+        } else {
+            $pathInfo = explode(':', $tempPath);
+            $appName = $pathInfo[0];
+            $tempPath = $pathInfo[1];
+        }
+        //切割module.templateName,找到对应模块的模板
+        $moduleInfo = explode('.', $tempPath);
+
+        $this->templateDir = APP_PATH.APP_NAME.'/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
+        $this->compileDir = APP_RUNTIME_PATH.'views/'.APP_NAME.'/'.$this->configs['module'].'/';
+        $tempDir = APP_PATH.APP_NAME.'/'.$moduleInfo[0].'/template/'.$this->configs['template'].'/';
+        $compileDir = APP_RUNTIME_PATH.'views/'.$appName.'/'.$moduleInfo[0].'/';
+        $filename = $moduleInfo[1].URI_EXT;   //模板文件名称
+        $tempFile = $tempDir.$filename;
+        $compileFile = $compileDir.$filename.'.php';
+        //编译文件
+        $this->complieTemplate($tempFile, $compileFile);
+		return $compileFile;
 	}
 	
 	/**
@@ -363,7 +260,8 @@ class Template {
 	 * @param		string		$_file_path 资源路径
 	 */
 	public function importResource( $_type, $_file_path ) {
-		
+
+        return false;
 		if ( $_type == '' || $_file_path == '' ) return;
 		
 		$_temp = self::$_res_template[$_type];
@@ -387,18 +285,17 @@ class Template {
 	}
 
 	/**
-	 * get the executed static html content. <br />
-	 * 获取模板执行后的代码
-	 * @param	$_tpl_file
-	 * @return	$_html
+	 * 获取页面执行后的代码
+	 * @param	string $tempFile
+	 * @return	string $html
 	*/
-	public function &getExecutedHtml( $_tpl_file = NULL ) {
+	public function &getExecutedHtml( $tempFile ) {
 		
 		ob_start();
-		$this->display( $_tpl_file );
-		$_html = ob_get_contents();
+		$this->display( $tempFile );
+        $html = ob_get_contents();
 		ob_end_clean();
-		return  $_html;
+		return  $html;
 	
 	}
 

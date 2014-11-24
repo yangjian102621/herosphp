@@ -24,8 +24,6 @@ class FileUtils {
 		$dir = '';
 		foreach ( $files as $value ) {
             $dir .= $value.DIRECTORY_SEPARATOR;
-            if ( !is_readable($dir) ) continue;     //如果目录不可读则跳过
-
 			if ( !file_exists($dir) ) {
 				if ( !mkdir($dir) ) return false;
 			}
