@@ -6,7 +6,7 @@ HerosPHP UTF-8 @version 1.1
 2. 新增生成统计图表功能。支持饼状图，折线图，柱形图2D，柱形图3D
 3. 更新了模板引擎，增加模板组件解析。
 
-HerosPHP UTF-8 @version 1.2
+HerosPHP UTF-8 @version 1.2.1
 1. 更改了缓存系统，增加了缓存回收机制，即在接口ICache.class.php中增加了gc方法。
 2. 更改了数据库访问模式，所有数据库访问采用prepare预处理方式，增加了pdo访问模式。
 
