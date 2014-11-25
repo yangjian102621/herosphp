@@ -1,9 +1,13 @@
 <?php
-/**
- * create SQL and bind params
- * model : select id, name from user where age > 30 AND sex='male' OR sex='female' order by id desc 
- * model : select id, name from user where id < 20 group by shop_id asc having avg(price) > 4000
- */
+/*---------------------------------------------------------------------
+ * 创建SQL查询语句
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ *-----------------------------------------------------------------------*/
  
 class SQL {
     
@@ -36,7 +40,7 @@ class SQL {
     private $_limit = NULL;
         
     //constructor
-    public function construct() {}
+    private function construct() {}
     
     /**
      * create sql

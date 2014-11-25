@@ -1,5 +1,5 @@
 <?php
-namespace modphp\db\interfaces;
+namespace herosphp\db\interfaces;
 
 /**
  * 数据库操作通用接口，所有数据操作类必须实现这一接口。

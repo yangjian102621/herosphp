@@ -100,7 +100,7 @@ class Template {
         /**
          * 引入静态资源 css file,javascript file
          */
-        '/{([res|gres]):([a-z]{1,})\s{1,}([0-9a-z_\.\:\-\/]{1,})\s*}/i'
+        '/{(res|gres):([a-z]{1,})\s+([^\}]+)\s*}/i'
 							=> '<?php echo $this->importResource(\'${1}\', \'${2}\', \'${3}\')?>'
 	);
 
@@ -255,33 +255,28 @@ class Template {
 	
 	/**
 	 * 引进静态资源如css，js
-	 * 
-	 * @param		string		$_type 资源类别
-	 * @param		string		$_file_path 资源路径
+     * @param string $section 资源所属片区(res => 模块内部的资源, gres => 全局资源)
+	 * @param string $type 资源类别
+	 * @param string $path 资源路径
+     * @return string
 	 */
-	public function importResource( $_type, $_file_path ) {
+	public function importResource( $section, $type, $path ) {
+        //获取资源的目录
+        $resUrl = $this->configs['res_url'].RES_PATH;
+        if ( $section == 'gres' ) {
+            $resUrl .= 'global/';
+        } else {
+            $resUrl .= 'app/'.APP_NAME."/{$this->configs['template']}/";
+        }
+        if ( $type == 'css' && $section == 'res' ) {
+            $resUrl .= "skin/{$this->configs['skin']}/";
+        }
 
-        return false;
-		if ( $_type == '' || $_file_path == '' ) return;
-		
-		$_temp = self::$_res_template[$_type];
-		$_url = SysCfg::$static_url.'/'.SysCfg::$static_dir.'/';
-		$_file_info = explode(":", $_file_path);
-		$_url .= $_file_info[0].'/';
-		//js文件放在应用的res根目录,css放入皮肤文件夹
-		if ( $_file_info[0] != 'public' && $_type == 'css' ) 
-			$_url .= 'skin/'.Herosphp::getAppConfig('skin').'/';
-		
-		if ( $_type == 'packcss' || $_type == 'packjs' ) {
-			$_url .= $_file_info[1];
-			$__type = str_replace("pack", '', $_type);
-			$_temp = self::$_res_template[$__type];
-		} else {
-			$_url .= $_type.'/'.$_file_info[1];
-		}
-		
-		return str_replace('{url}', $_url, $_temp);
+        $resUrl .= $type.'/'.$path;
+        $template = self::$resTemplate[$type];
+        $result = str_replace('{url}', $resUrl, $template);
 
+        return $result;
 	}
 
 	/**

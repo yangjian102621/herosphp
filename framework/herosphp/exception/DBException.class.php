@@ -1,11 +1,9 @@
 <?php
-namespace modphp\db;
-
-use modphp\common\ModException;
+namespace herosphp\exception;
 /**
  * 数据库异常处理类
  */
-class DBException extends ModException {
+class DBException extends HeroException {
 
     protected $query;       /* 查询语句 */
 
@@ -14,17 +12,19 @@ class DBException extends ModException {
     }
 
     /**
-     * 设置SQL
+     * @param mixed $query
      */
-    public  function  setQuery( $query ) {
+    public function setQuery($query)
+    {
         $this->query = $query;
     }
 
     /**
-     * 设置错误代码
+     * @return mixed
      */
-    public  function  setCode( $code ) {
-        $this->code = $code;
+    public function getQuery()
+    {
+        return $this->query;
     }
 
 }

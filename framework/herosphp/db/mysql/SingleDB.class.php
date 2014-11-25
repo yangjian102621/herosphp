@@ -1,10 +1,9 @@
 <?php
 namespace modphp\db;
 
-use modphp\db\interfaces\Idb;
+use herosphp\db\interfaces\Idb;
 use \PDO;
 use \PDOException;
-use modphp\debug\Debug;
 /**
  * 单数居库服务器操作的PDO实现
  * @author      yangjian102621@gmail.com
