@@ -1,34 +1,53 @@
 <?php
-namespace modphp\db;
+/*---------------------------------------------------------------------
+ * 单数居库服务器操作的PDO实现
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ *-----------------------------------------------------------------------*/
 
+namespace herosphp\db\mysql;
+
+use herosphp\core\Loader;
 use herosphp\db\interfaces\Idb;
+use herosphp\exception\DBException;
 use \PDO;
 use \PDOException;
-/**
- * 单数居库服务器操作的PDO实现
- * @author      yangjian102621@gmail.com
- * @since       2014-06-06
- */
 
+Loader::import('db.interfaces.Idb', IMPORT_FRAME);
 class SingleDB implements Idb {
 
-    private $link;      /* PDO 数据库链接实例 */
+    /**
+     * PDO 数据库连接实例
+     * @var \PDO
+     */
+    private $link;
 
-    private $config = NULL;      /* 数据库配置参数 */
+    /**
+     * 数据库配置参数
+     * @var array
+     */
+    private $config = array();
 
-    /* 创建一个数据库操作对象 */
+    /**
+     * 创建一个数据库操作对象,初始化配置参数
+     * @param $config
+     */
     public  function __construct( $config ) {
         $this->config = $config;
     }
     
     /**
-     * connect database
+     * @see \herosphp\db\interfaces\Idb::connect()
      * @throws DBException
-     * @return      resource of database connection.
+     * @return Resource
      */
     public function connect()
     {
-        if ( $this->link != NULL ) return TRUE;
+        if ( $this->link != null ) return TRUE;
         $_config = $this->config;
         $_dsn="{$_config['db_type']}:host={$_config['db_host']};dbname={$_config['db_name']}";
         try {
@@ -52,14 +71,12 @@ class SingleDB implements Idb {
     }
 
     /**
-     * execute an SQL
-     * @param        string $_query query string
+     * @see \herosphp\db\interfaces\Idb::query()
      * @throws DBException
-     * @return \PDOStatement
      */
     public function query($_query)
     {
-        if ( $this->link == NULL ) $this->connect();
+        if ( $this->link == null ) $this->connect();
         try {
             $_result = $this->link->query($_query);
         } catch ( PDOException $e ) {
@@ -72,10 +89,7 @@ class SingleDB implements Idb {
     }
 
     /**
-     * insert a record to database.
-     * @param        string $_table table name
-     * @param         array $_array
-     * @return        int        return the last insert id
+     * @see \herosphp\db\interfaces\Idb::insert()
      */
     public function insert($_table, &$_array)
     {	
@@ -92,7 +106,7 @@ class SingleDB implements Idb {
 			
 		}
 
-		if ( $_fileds !== NULL ) {
+		if ( $_fileds !== null ) {
 			$_query = "INSERT INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";			
 			
 			if ( $this->query( $_query ) != FALSE ){
@@ -103,10 +117,7 @@ class SingleDB implements Idb {
     }
 
     /**
-     * insert a record, if the record exists update it.
-     * @param $_table
-     * @param $_array
-     * @return      boolean
+     * @see \herosphp\db\interfaces\Idb::replace()
      */
     public function replace($_table, &$_array ) {
 
@@ -122,7 +133,7 @@ class SingleDB implements Idb {
             $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
         }
 
-        if ( $_fileds !== NULL ) {
+        if ( $_fileds !== null ) {
             $_query = "REPLACE INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";
             if ( $this->query( $_query ) != FALSE )
                 return TRUE;
@@ -131,25 +142,19 @@ class SingleDB implements Idb {
     }
 
     /**
-     * delete a record from table.
-     * @param        string $_table table name
-     * @param        string $_conditons query condition.
-     * @return        mixed
+     *  @see \herosphp\db\interfaces\Idb::delete()
      */
-    public function delete($_table, $_conditons = NULL)
+    public function delete($_table, $_conditons = null)
     {
         $_sql = "DELETE FROM ".$_table;
-        if ( $_conditons != NULL ) $_sql .= " WHERE ".$_conditons;
+        if ( $_conditons != null ) $_sql .= " WHERE ".$_conditons;
         $_result = $this->query($_sql);
         if ( $_result ) return true;
         return FALSE;
     }
 
     /**
-     * Get a list of data records.
-     * @param           $_query    the query string
-     * @param int|\modphp\db\interfaces\type|\modphp\db\type $_type type of array to the result
-     * @return          array
+     * @see \herosphp\db\interfaces\Idb::getItems()
      */
     public function &getItems($_query, $_type = PDO::FETCH_ASSOC)
     {
@@ -164,10 +169,7 @@ class SingleDB implements Idb {
     }
 
     /**
-     * get one data records
-     * @param        string $_query query string
-     * @param int|\modphp\db\interfaces\type|\modphp\db\type $_type type of array to the result
-     * @return        array
+     * @see \herosphp\db\interfaces\Idb::getItem()
      */
     public function &getItem($_query, $_type = PDO::FETCH_ASSOC)
     {
@@ -180,11 +182,7 @@ class SingleDB implements Idb {
     }
 
     /**
-     * 更新一条记录
-     * @param    string $_table table name
-     * @param    array $_array data array  name => value
-     * @param    string $_conditons query conditions.
-     * @return    int
+     * @see \herosphp\db\interfaces\Idb::update()
      */
     public function update($_table, &$_array, $_conditons)
     {
@@ -204,11 +202,9 @@ class SingleDB implements Idb {
     }
 
     /**
-     * get total records rows number.(获取总记录数)
-     * @param        string $_table table name
-     * @param        string $_conditons query conditions
+     * @see \herosphp\db\interfaces\Idb::count()
      */
-    public function count($_table, $_conditons = NULL)
+    public function count($_table, $_conditons = null)
     {
         $_query = "SELECT count(*) as total FROM {$_table}";
         if ( $_conditons ) $_query .= " WHERE ".SQL::createCondition($_conditons);
@@ -218,31 +214,31 @@ class SingleDB implements Idb {
     }
 
     /**
-     * begin transaction (事物开启)
+     * @see \herosphp\db\interfaces\Idb::beginTransaction()
      */
     public function beginTransaction()
     {
-        if ( $this->link == NULL ) $this->connect();
+        if ( $this->link == null ) $this->connect();
         $this->link->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
         $this->link->beginTransaction();
     }
 
     /**
-     * commit transaction (事物提交)
+     * @see \herosphp\db\interfaces\Idb::commit()
      */
     public function commit()
     {
-        if ( $this->link == NULL ) $this->connect();
+        if ( $this->link == null ) $this->connect();
         $this->link->commit();
         $this->link->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
     }
 
     /**
-     * roll back (事物回滚)
+     * @see \herosphp\db\interfaces\Idb::rollBack()
      */
     public function rollBack()
     {
-        if ( $this->link == NULL ) $this->connect();
+        if ( $this->link == null ) $this->connect();
         $this->link->rollBack();
     }
 
@@ -269,7 +265,7 @@ class SingleDB implements Idb {
      */
     public function __destruct() {
 
-        if ( $this->link ) $this->link = NULL;
+        if ( $this->link ) $this->link = null;
     }
     
 	/**

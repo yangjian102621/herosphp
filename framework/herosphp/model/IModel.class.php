@@ -1,113 +1,163 @@
 <?php
-/**
- * Interface model for database access.(数据库访问模型接口) 
- * 
- * @author      yangjian<yangjian102621@gmail.com>
- * @since       2013.10.08
- */
+/*---------------------------------------------------------------------
+ * Interface model for database access.(数据库访问模型接口)
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ * @version 1.2.1
+ *-----------------------------------------------------------------------*/
+
+namespace herosphp\model;
+
  interface IModel {
-     
+
      /**
-      * send a SQL to database, and get the excuted result
-      * 
-      * @param      string          $_sql 
+      * 执行一条sql语句
+      * @param $sql
+      * @return mixed
       */
-     public function query( $_sql );
-     
+     public function query( $sql );
+
      /**
-      * insert a record to database
-      * 
-      * @param      array           $_data         data array.
-      * @return     int             return last insert id            
+      * 添加数据
+      * @param $data
+      * @return int
       */
-     public function insert( $_data );
-     
+     public function insert( $data );
+
      /**
-      * insert or update a record to database
-      * 
-      * @param      array           $_data         data array.
-      * @return     boolean           
+      * 替换数据
+      * @param $data
+      * @return boolean
       */
-     public function replace( $_data );
-     
+     public function replace( $data );
+
      /**
-      * delete a records from database.
-      * 
-      * @param      int         $_id  
-      * @return     boolean      
+      * 删除指定id的数据
+      * @param $id
+      * @return boolean
       */
-     public function delete( $_id );
-     
+     public function delete( $id );
+
      /**
-      * delete records base conditions
-      * 
-      * @param      string | array      $_conditions 
-      * @return      boolean
+      * 删除指定条件的数据
+      * @param $conditions
+      * @return boolean
       */
-     public function deletes( $_conditions );
-     
+     public function deletes( $conditions );
+
      /**
-      * get data collections
-      * 
-      * @param      string | array          $_fields
-      * @param      string | array          $_conditions 
-      * @param      string | array          $_order
-      * @param      string | array          $_group
-      * @param      string | array          $_having
-      * @param      int | string | array    $_limit
-      * @return     array
+      * 获取数据列表
+      * @param $conditions 查询条件
+      * @param $fields 查询字段
+      * @param $order 排序
+      * @param $page 当前页
+      * @param $pagesize 每页数量
+      * @param $group 分组字段
+      * @param $having 分组条件
+      * @return array
       */
-     public function getList( $_conditions, $_fields, $_order, $_limit, $_group, $_having );
+     public function getItems( $conditions, $fields, $order, $page, $pagesize, $group, $having );
+
+     /**
+      * 获取单条数据
+      * @param $conditions 查询条件
+      * @param $fields 查询字段
+      * @param $order 排序
+      * @param $group 分组字段
+      * @param $having 分组条件
+      * @return mixed
+      */
+     public function getItem( $conditions, $fields, $order, $group, $having );
+
+     /**
+      * 更新一条数据
+      * @param $data
+      * @param $id
+      * @return boolean
+      */
+     public function update( $data, $id );
+
+     /**
+      * 批量更新数据
+      * @param $data
+      * @param $conditions
+      * @return mixed
+      */
+     public function updates( $data, $conditions );
+
+     /**
+      * 获取指定条件的记录总数
+      * @param $conditions
+      * @return int
+      */
+     public function count( $conditions );
+
+     /**
+      * 增加某一字段的值
+      * @param $field
+      * @param $offset 增量
+      * @param $id
+      * @return boolean
+      */
+     public function increase( $field, $offset, $id );
+
+     /**
+      * 批量增加指定字段的值
+      * @param $field
+      * @param $offset
+      * @param $conditions
+      * @return mixed
+      */
+     public function batchIncrease( $field, $offset, $conditions );
+
+     /**
+      * 减少某一字段的值
+      * @param $field
+      * @param $offset
+      * @param $id
+      * @return mixed
+      */
+     public function reduce( $field, $offset, $id );
+
+     /**
+      * 批量减少某一字段的值
+      * @param $field
+      * @param $offset
+      * @param $conditions
+      * @return mixed
+      */
+     public function batchReduce( $field, $offset, $conditions );
+
+     /**
+      * 更新某一字段的值(快捷方法，一次只能更新一个字段)
+      * @param $field
+      * @param $value
+      * @param $id
+      * @return mixed
+      */
+     public function set($field, $value, $id);
+
+     /**
+      * 批量更新某一字段的值
+      * @see set()
+      * @param $field
+      * @param $value
+      * @param $conditions
+      * @return mixed
+      */
+     public function sets( $field, $value, $conditions );
      
-      /**
-      * get one record
-      * 
-      * @param      string | array          $_fields
-      * @param      string | array          $_conditions 
-      * @param      string | array          $_order
-      * @param      string | array          $_group
-      * @param      string | array          $_having
-      * @return     array
-      */
-     public function getOneRow( $_conditions, $_fields, $_order, $_group, $_having );
+    //开启事务
+     public function beginTransaction();
     
-      /**
-      * delete the specified record.
-      * 
-      * @param      array          $_data
-      * @param      int            $_id
-      * @return     boolean
-      */
-     public function update( $_data, $_id );
-     
-     /**
-      * delete records as conditions
-      * 
-      * @param      array                     $_data
-      * @param      array | string            $_conditions
-      * @return     boolean
-      */
-     public function updates( $_data, $_conditions );
-     
-     /**
-      * get the total number of records
-      * 
-      * @param      string      $_condi (conditions for query)
-      */
-     public function count( $_condi );
-     
-     /**
-      * get the affected rows
-      */
-     public function affectedRows();
-     
-    //begin transaction 
-     public function begin();
-    
-    //commit
+    //提交更改
      public function commit();
      
-     //rollback
+     //回滚
      public function rollback();
  }
 ?>

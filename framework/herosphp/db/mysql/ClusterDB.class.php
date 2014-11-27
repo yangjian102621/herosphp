@@ -1,15 +1,29 @@
 <?php
-namespace modphp\db;
+/*---------------------------------------------------------------------
+ * 数据库集群 => 数据库操作服务实现类。
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ *-----------------------------------------------------------------------*/
 
-use modphp\db\interfaces\ImultiDB;
+namespace herosphp\db\mysql;
+
+use herosphp\core\Loader;
+use herosphp\exception\DBException;
+use modphp\db\interfaces\ICusterDB;
 use \PDO;
 use \PDOException;
+
+Loader::import('db.interfaces.ICusterDB', IMPORT_FRAME);
 
 /**
  * 多数据库连接操作类
  * @author          yangjian102621@gmail.com
  */
-class MultiDB implements ImultiDB {
+class ClusterDB implements ICusterDB {
 
     protected static $_READ_POOL = array();     /* 读服务器连接池 */
 
@@ -26,9 +40,8 @@ class MultiDB implements ImultiDB {
     public  function __construct() {}
 
     /**
-     * connect database
+     * @see \herosphp\db\interfaces\ICusterDB::connect()
      * @throws DBException
-     * @return      resource of database connection.
      */
     public function connect()
     {
@@ -36,11 +49,35 @@ class MultiDB implements ImultiDB {
     }
 
     /**
+     * 创建数据库连接, 本类采用PDO的实现方式
+     */
+    protected function getDBconnect( $config ) {
+
+        $_dsn="{$config['db_type']}:host={$config['db_host']};dbname={$config['db_name']}";
+        try {
+            $_pdo = new PDO($_dsn, $config['db_user'], $config['db_pass'], array(PDO::ATTR_PERSISTENT=>true));
+            $_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            //设置数据库编码，默认使用UTF8编码
+            $_charset = $config['db_charset'];
+            if ( !$_charset ) $_charset = 'UTF8';
+            $_pdo->query("SET names {$_charset}");
+            $_pdo->query("SET character_set_client = {$_charset}");
+            $_pdo->query("SET character_set_results = {$_charset}");
+        } catch ( PDOException $e ) {
+            $_exception = new DBException("数据库连接失败".$e->getMessage());
+            $_exception->setCode($e->getCode());
+            throw $_exception;
+        }
+        return $_pdo;
+    }
+
+    /**
      * 执行一条SQL语句，不同类型的SQL语句发送到不同的服务器去执行。
      * 1. 读的SQL语句发送到读服务器
      * 2. 写入SQL语句发送到写服务器
      * 3. 此方法将抛出异常
-     * @param        string $_query query string
+     * @see \herosphp\db\interfaces\ICusterDB::query()
      * @throws DBException
      */
     public function query($_query)
@@ -54,7 +91,7 @@ class MultiDB implements ImultiDB {
         try {
             $_result = $_db->query($_query);
         } catch ( PDOException $e ) {
-            $_exception = new DBException("SQL错误");
+            $_exception = new DBException("SQL错误!".$e->getMessage());
             $_exception->setCode($e->getCode());
             $_exception->setQuery($_query);
             throw $_exception;
@@ -64,10 +101,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * insert a record to database.
-     * @param        string $_table table name
-     * @param         array $_array
-     * @return        int        return the last insert id
+     * @see \herosphp\db\interfaces\ICusterDB::insert()
      */
     public function insert($_table, &$_array)
     {
@@ -92,10 +126,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * insert a record, if the record exists update it.
-     * @param $_table
-     * @param $_array
-     * @return      boolean
+     * @see \herosphp\db\interfaces\ICusterDB::replace()
      */
     public function replace( $_table, &$_array ) {
 
@@ -120,10 +151,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * delete a record from table.
-     * @param        string $_table table name
-     * @param        string $_conditons query condition.
-     * @return        mixed
+     * @see \herosphp\db\interfaces\ICusterDB::delete()
      */
     public function delete($_table, $_conditons = NULL)
     {
@@ -135,10 +163,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * Get a list of data records.
-     * @param           $_query    the query string
-     * @param int|type $_type type of array to the result
-     * @return          array
+     * @see \herosphp\db\interfaces\ICusterDB::getItems()
      */
     public function &getItems($_query, $_type = PDO::FETCH_ASSOC)
     {
@@ -153,10 +178,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * get one data records
-     * @param        string $_query query string
-     * @param       int|type $_type type of array to the result
-     * @return        array
+     * @see \herosphp\db\interfaces\ICusterDB::getItem()
      */
     public function &getItem($_query, $_type = PDO::FETCH_ASSOC)
     {
@@ -169,11 +191,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * 更新一条记录
-     * @param    string $_table table name
-     * @param    array $_array data array  name => value
-     * @param    string $_conditons query conditions.
-     * @return    int
+     * @see \herosphp\db\interfaces\ICusterDB::update()
      */
     public function update($_table, &$_array, $_conditons)
     {
@@ -193,9 +211,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * get total records rows number.(获取总记录数)
-     * @param        string $_table table name
-     * @param        string $_conditons query conditions
+     * @see \herosphp\db\interfaces\ICusterDB::count()
      */
     public function count($_table, $_conditons=NULL)
     {
@@ -207,7 +223,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * begin transaction (事物开启)
+     * @see \herosphp\db\interfaces\ICusterDB::beginTransaction()
      */
     public function beginTransaction()
     {
@@ -217,7 +233,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * commit transaction (事物提交)
+     * @see \herosphp\db\interfaces\ICusterDB::commit()
      */
     public function commit()
     {
@@ -227,7 +243,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * roll back (事物回滚)
+     * @see \herosphp\db\interfaces\ICusterDB::rollBack()
      */
     public function rollBack()
     {
@@ -255,8 +271,7 @@ class MultiDB implements ImultiDB {
     }
 
     /**
-     * 添加一个读数据库服务器
-     * @param       array       数据库服务配置参数
+     * @see \herosphp\db\interfaces\ICusterDB::addReadServer()
      */
     public function addReadServer($config)
     {
@@ -269,7 +284,6 @@ class MultiDB implements ImultiDB {
      * 获取读服务器配置池
      */
     public function getReadServer() {
-
         return self::$_READ_POOL;
     }
 
@@ -277,13 +291,11 @@ class MultiDB implements ImultiDB {
      * 获取写服务器配置池
      */
     public function getWriteServer() {
-
         return self::$_WRITE_POOL;
     }
 
     /**
-     * 添加一个写数据库服务器
-     * @param       array       数据库配置参数
+     * @see \herosphp\db\interfaces\ICusterDB::addWriteServer()
      */
     public function addWriteServer($config)
     {
@@ -347,30 +359,6 @@ class MultiDB implements ImultiDB {
     protected function getWritePloy() {
         //1.随机策略实现
         return self::$_WRITE_POOL[mt_rand(0, count(self::$_WRITE_POOL)-1 )];
-    }
-
-    /**
-     * 创建数据库连接, 本类采用PDO的实现方式
-     */
-    protected function getDBconnect( $config ) {
-
-        $_dsn="{$config['db_type']}:host={$config['db_host']};dbname={$config['db_name']}";
-        try {
-            $_pdo = new PDO($_dsn, $config['db_user'], $config['db_pass'], array(PDO::ATTR_PERSISTENT=>true));
-            $_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            //设置数据库编码，默认使用UTF8编码
-            $_charset = $config['db_charset'];
-            if ( !$_charset ) $_charset = 'UTF8';
-            $_pdo->query("SET names {$_charset}");
-            $_pdo->query("SET character_set_client = {$_charset}");
-            $_pdo->query("SET character_set_results = {$_charset}");
-        } catch ( PDOException $e ) {
-            $_exception = new DBException("数据库连接失败".$e->getMessage());
-            $_exception->setCode($e->getCode());
-            throw $_exception;
-        }
-        return $_pdo;
     }
 
 }

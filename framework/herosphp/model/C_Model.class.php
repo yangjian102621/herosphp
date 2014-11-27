@@ -1,13 +1,18 @@
 <?php
-Herosphp::import("libs:model.IModel");
-Herosphp::import("libs:db.SQL");
-/**
- * MySQL database access model implemented.(数据库访问模型的MySQL实现) 
- * 
- * @author      yangjian<yangjian102621@gmail.com>
- * @since       2013.10.08
- */
- class MysqlModelDao implements IModel {
+/*---------------------------------------------------------------------
+ * 数据库访问模型的MySQL实现
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ * @version 1.2.1
+ *-----------------------------------------------------------------------*/
+
+namespace herosphp\model;
+
+ class C_Model implements IModel {
      
      /**
       * instance to mysqli

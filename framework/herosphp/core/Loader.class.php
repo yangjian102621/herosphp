@@ -37,14 +37,14 @@ class Loader {
      * @param $classPath
      * @param $type
      * @param $extension
-     * @return bool
+     * @return boolean
      */
     public static function import( $classPath, $type = IMPORT_APP, $extension=EXT_PHP ) {
 
-        if ( !$classPath ) return;
+        if ( !$classPath ) return false;
         //如果该文件已经导入了，就不再导入
         $classKey = $classPath.'_'.$type.'_'.$extension;
-        if ( isset(self::$IMPORTED_FILES[$classKey]) )  return;
+        if ( isset(self::$IMPORTED_FILES[$classKey]) )  return false;
 
         //组合文件路径
         switch ( $type ) {
@@ -98,8 +98,10 @@ class Loader {
         if ( $section != 'root' ) $configDir .= $section.'/';     //默认加载配置根目录的配置文档
         if ( $key != '*' ) {
             $configFile = $configDir.$key.'.config.php';
-            self::$CONFIGS[$section][$key] = include $configFile;
-        } else {
+            if ( file_exists($configFile) ) {
+                self::$CONFIGS[$section][$key] = include $configFile;
+            }
+        } else if ( file_exists($configDir) ) {
             chdir($configDir);
             $configFiles = glob("*.config.php");
             $configs = array();
@@ -110,7 +112,11 @@ class Loader {
             self::$CONFIGS[$section][$key] = &$configs;
         }
 
-        return self::$CONFIGS[$section][$key];
+        if ( self::$CONFIGS[$section][$key] ) {
+            return self::$CONFIGS[$section][$key];
+        } else {
+            return array();
+        }
     }
 
     /**

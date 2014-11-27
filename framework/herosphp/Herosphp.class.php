@@ -15,6 +15,7 @@ include APP_FRAME_PATH.'core/Loader.class.php';     //包含资源加载器
 
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
+use herosphp\core\Debug;
 
 class Herosphp {
 
@@ -34,6 +35,7 @@ class Herosphp {
         date_default_timezone_set(TIME_ZONE);  //设置默认时区
 
         if ( APP_DEBUG ) {
+            Debug::start();
             error_reporting(E_ALL);
             //设置捕获系统异常
             set_error_handler(array('herosphp\core\Debug', 'customError'));
@@ -46,6 +48,7 @@ class Herosphp {
         $application = WebApplication::getInstance();
         $application->execute($configs);
 
+        //Debug::printMessage();
     }
 
     /**
@@ -65,6 +68,8 @@ class Herosphp {
             'herosphp\utils\ArrayUtils'       => 'utils.ArrayUtils',
             'herosphp\utils\AjaxResult'       => 'utils.AjaxResult',
             'herosphp\utils\WebUtils'       => 'utils.WebUtils',
+            'herosphp\db\DBFactory'       => 'db.DBFactory',
+            'herosphp\db\SQL'       => 'db.SQL',
             'HomecommonAction'  => 'core.HomecommonAction',
             'AjaxResult'        => 'public.AjaxResult');
     }

@@ -1,6 +1,6 @@
 <?php
 /*---------------------------------------------------------------------
- * 数据库异常处理类
+ * 数据库集群 => 数据库操作服务类接口。
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -9,30 +9,22 @@
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
-namespace herosphp\exception;
+namespace herosphp\db\interfaces;
+use herosphp\core\Loader;
 
-class DBException extends HeroException {
-
-    protected $query;       /* 查询语句 */
-
-    public function __contruct( $message ) {
-        parent::__contruct($message);
-    }
+Loader::import('db.interfaces.Idb', IMPORT_FRAME);
+interface ICusterDB extends Idb {
 
     /**
-     * @param mixed $query
+     * 添加一个读数据库服务器
+     * @param       array       数据库服务配置参数
      */
-    public function setQuery($query)
-    {
-        $this->query = $query;
-    }
+    public  function addReadServer( $config );
 
     /**
-     * @return mixed
+     * 添加一个写数据库服务器
+     * @param       array       数据库配置参数
      */
-    public function getQuery()
-    {
-        return $this->query;
-    }
+    public function addWriteServer( $config );
 
 }

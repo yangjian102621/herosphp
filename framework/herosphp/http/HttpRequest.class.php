@@ -109,7 +109,7 @@ class HttpRequest {
                 break;
         }
 
-        define(APP_NAME, $appName);
+        defined('APP_NAME') OR define('APP_NAME', $appName);
     }
 
     /**

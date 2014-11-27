@@ -1,83 +1,86 @@
 <?php
+/*---------------------------------------------------------------------
+ * 数据库操作通用接口，所有数据操作类必须实现这一接口。
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ *-----------------------------------------------------------------------*/
+
 namespace herosphp\db\interfaces;
 
-/**
- * 数据库操作通用接口，所有数据操作类必须实现这一接口。
- * database operate class common interface.
- * ----------------------------------------------------------
- * @author 	    yangjian<yangjian102621@gmail.com>
- * @version     1.0
- * @since	    2014-06-06
- */
 interface Idb {
 
     /**
-     * connect database
-     * @return      resource of database connection.
+     * 连接数据库
+     * @return mixed
      */
-    public  function connect();
+    public function connect();
 
     /**
-     * execute an SQL
-     * @param		string  	$_query		query string
+     * 执行一条SQL语句
+     * @param string $query 查询语句
      * @return \PDOStatement
      */
-    public function query( $_query );
+    public function query( $query );
 
     /**
-     * insert a record to database.
-     * @param        string      $_table table name
-     * @param         array      $_array
-     * @return        int        return the last insert id
+     * 插入数据
+     * @param string $table 数据表
+     * @param array $data 数据载体
+     * @return int 最后插入数据id
      */
-    public function insert( $_table, &$_array);
+    public function insert( $table, &$data );
 
     /**
-     * insert a record, if the record exists update it.
-     * @param $_table
-     * @param $_array
-     * @return      boolean
+     * 插入一条数据，如果数据存在就更新它
+     * @param string $table 数据表
+     * @param array $data 数据载体
+     * @return boolean
      */
-    public function replace($_table, &$_array );
+    public function replace($table, &$data );
 
     /**
-     * delete a record from table.
-     * @param		string		$_table  	table name
-     * @param		string		$_conditons		query condition.
-     * @return 		boolean
+     * @param string $table 删除数据
+     * @param string $condition 查询条件
+     * @return boolean
      */
-    public function delete( $_table, $_conditons = NULL );
+    public function delete( $table, $condition = null );
 
     /**
-     * Get a list of data records.
-     * @param           $_query    the query string
-     * @param int|type $_type   type of array to the result
-     * @return          array
+     * 获取数据列表
+     * @param string $query
+     * @param int $resultType 返回结果类（默认为关联数组）
+     * @return array
      */
-    public function &getItems( $_query, $_type = MYSQL_ASSOC );
+    public function &getItems( $query, $resultType = MYSQL_ASSOC );
 
     /**
-     * get one data records
-     * @param        string $_query        query string
-     * @param       int|type $_type      type of array to the result
-     * @return        array
+     * 获取一条数据
+     * @param sting $query
+     * @param int $resultType 返回结果类（默认为关联数组）
+     * @return array
      */
-    public function &getItem( $_query, $_type = MYSQL_ASSOC );
+    public function &getItem( $query, $resultType = MYSQL_ASSOC );
 
     /**
-     * update a record from table
-     * @param	string		$_table		table name
-     * @param	array		$_array 	data array  name => value
-     * @param	string		$_conditons		query conditions.
+     * 更新数据
+     * @param string $table 数据表名
+     * @param array $data 数据载体
+     * @param string $condition 查询条件
+     * @return boolean
      */
-    public function update( $_table, &$_array, $_conditons );
+    public function update( $table, &$data, $condition = null );
 
     /**
-     * get total records rows number.(获取总记录数)
-     * @param		string 		$_table 	table name
-     * @param		string		$_conditons		query conditions
+     * 获取总记录数
+     * @param string $table
+     * @param string $conditions
+     * @return int
      */
-    public function count( $_table, $_conditons = NULL );
+    public function count( $table, $conditions = null );
 
     /**
      * begin transaction (事物开启)

@@ -63,19 +63,19 @@ class Debug {
 	  	self::appendMessage($err_str, 'run');
 	 }
 
-	 /**
- 	  * 添加调试错误信息
- 	  * @param 		string 		$_msg 		提示内容
-	  * @param		string		$type		消息类别,默认是运行时错误。
-	  */
-	 public static function appendMessage( $_msg, $_type='run' ) {
+    /**
+     * 添加调试错误信息
+     * @param string $message 错误信息
+     * @param string $msgType 信息类别
+     */
+    public static function appendMessage( $message, $msgType='run' ) {
 	 	if ( APP_DEBUG ) {
-	 		switch ( $_type ) {
+	 		switch ( $msgType ) {
 				case 'run' :
-					array_push(self::$error_msg, $_msg );
+					array_push(self::$error_msg, $message );
 					break;
 				case 'sql' :
-					array_push(self::$sql_msg, $_msg);
+					array_push(self::$sql_msg, $message);
 					break;
 			}
 	 	}

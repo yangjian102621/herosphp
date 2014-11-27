@@ -1,6 +1,8 @@
 <?php
 /*---------------------------------------------------------------------
  * 创建SQL查询语句
+ * SELECT id,name,count(*) as total FROM table WHERE 1 GROUP BY pid
+ * HAVING total > 5 ORDER BY total desc LIMIT 1, 100
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -8,274 +10,232 @@
  * ---------------------------------------------------------------------
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
- 
+
+namespace herosphp\db;
+
 class SQL {
-    
-    private static $_instance = NULL;
-    
-    private $_query = '';
-    
-    //primary key
-    private $_pri = 'id';
-    
-    //table to deal with
-    private $_table = NULL;
-    
-    //fields to query
-    private $_fields = NULL;
-    
-    //conditions of query string
-    private $_where = NULL;
-    
-    //order way 
-    private $_order = NULL;
-    
-    //group way
-    private $_group = NULL;
-    
-    //having conditions
-    private $_having = NULL;
-    
-    //limit of query records
-    private $_limit = NULL;
-        
-    //constructor
-    private function construct() {}
-    
+
     /**
-     * create sql
-     * @return      SQL              
+     * 数据表
+     * @var string
      */
-    public static function create() {
-        if ( self::$_instance == NULL ) 
-            self::$_instance = new self();
-        return self::$_instance;
+    private $table;
+
+    /**
+     * 查询字段
+     * @var string | array
+     */
+    private $fields = '*';
+
+    /**
+     * 查询条件
+     * @var string | array
+     */
+    private $where;
+
+    /**
+     * 排序方式
+     * @var string | array
+     */
+    private $order;
+
+    /**
+     * 分组方式
+     * @var string
+     */
+    private $group;
+
+    /**
+     * 分组条件
+     * @var string
+     */
+    private $having;
+
+    /**
+     * 查询偏移量
+     * @var string | array
+     */
+    private $limit;
+
+    /**
+     * 数据表的主键
+     * @var string
+     */
+    private $priKey = 'id';
+
+    /**
+     * SQL唯一实例
+     * @var SQL
+     */
+    private static $instance = null;
+
+    private function __construct( $priKey = null ) {
+        if ( $priKey != null ) $this->priKey = $priKey;
     }
 
     /**
-     * query fields
-     * @param       string | array $_fields 查询字段
-     * @return $this
+     * 创建实例
+     * @param string $priKey  数据表主键
+     * @return SQL
      */
-    public function fields( $_fields ) {
-        if ( !$_fields ) $_fields = '*';
-        $this->_fields = $_fields;
-        return $this;
-    }
-
-    /**
-     * query conditions
-     * @param       mixed(int, array, string) $_where
-     * @return $this
-     */
-    public function where( $_where ) {
-        $this->_where = func_get_args();
-        return $this;
-    }
-
-    /**
-     * order way
-     * @param       string | array $_order
-     * @return $this
-     */
-    public function order( $_order ) {
-        if ( $_order ) $this->_order = $_order;
-        return $this;
-    }
-
-    /**
-     * group by and group way
-     * @param       string | array $_group
-     * @return $this
-     */
-    public function group( $_group ) {
-        if ( $_group ) $this->_group = $_group;
-        return $this;
-    }
-
-    /**
-     * group conditions
-     * @param       string | array $_having
-     * @return $this
-     */
-    public function having( $_having ) {
-        if ( $_having  ) $this->_having = $_having;
-        return $this;
-    }
-    
-    /**
-     * limit of query result
-     * @param       string | array         $_limit 
-     */
-    public function limit( $_limit ) {
-        if ( $_limit ) $this->_limit = $_limit;
-        return $this;
-    }
-
-    /**
-     * name of data table
-     * @param       string $_table
-     * @return  $this
-     */
-    public function table( $_table ) {
-        if ( $_table ) $this->_table = $_table;
-        return $this;
-    }
-    
-    //create qurey string
-    public function getSQL() {
-        
-        if ( !$this->_table ) {
-            Debug::appendMessage("找不到数据表！", "sql");
-            return '';
+    public static function create( $priKey = null ) {
+        if ( self::$instance != null ) {
+            self::$instance = new self($priKey);
         }
-        
-        $this->_query = "SELECT ";
-        
-        //bulid fields
-        if ( $this->_fields == NULL ) $this->_fields();
-        if ( is_string($this->_fields) ) {
-            $this->_query .= $this->_fields;
-        } else if ( is_array($this->_fields) ) {
-            $this->_query .= implode(',', $this->_fields);
-        }
-        
-        $this->_query .= " FROM ".$this->_table;
-        
-        //build conditions(组合查询条件)
-        $_conditions = $this->buildConditions();
-        if ( $_conditions != '' ) $this->_query .= " WHERE {$_conditions}";
-        
-        //build group by string 处理分组
-        $_group = '';
-        if ( is_string($this->_group) ) {
-            $_group = $this->_group;
-        } else if ( is_array($this->_group) ) {
-            foreach ( $this->_group as $_name => $_val ) {
-                $_group .= $_group == '' ? "{$_name} $_val" : ", {$_name} {$_val}";
+        return self::$instance;
+    }
+
+    public function table( $table = null ) {
+        if ( $table != null ) $this->table = $table;
+    }
+
+    /**
+     * 获取查询字段
+     * @param $fields
+     * @return $this
+     */
+    public function fields( $fields = null ) {
+        if ( $fields ) {
+            if ( is_array($fields) ) {
+                $this->fields = implode(',', $fields);
+            } else {
+                $this->fields = $fields;
             }
         }
-        if ( $_group != '' ) $this->_query .= " GROUP BY {$_group}";
-        
-        //build having string
-        $_having = '';
-        if ( is_string($this->_having) ) {
-            $_having = $this->_having;
-        } else if ( is_array($this->_having) ) {
-            foreach ( $this->_having as $_name => $_val ) {
-                $_having .= $_having == '' ? "{$_name} $_val" : ", {$_name} {$_val}";
-            }
-        }
-        if ( $_having != '' ) $this->_query .= " HAVING {$_having}";
-        
-        //build order by string 处理排序
-        $_order = '';
-        if ( is_string($this->_order) ) {
-            $_order = $this->_order;
-        } else if ( is_array($this->_order) ) {
-            foreach ( $this->_order as $_name => $_val ) {
-                $_order .= $_order == '' ? "{$_name} $_val" : ", {$_name} {$_val}";
-            }
-        }
-        if ( $_order != '' ) $this->_query .= " ORDER BY {$_order}";
-        
-        //build limit string
-        $_limit = '';
-        //1. limit(10);
-        if ( is_numeric($this->_limit) ) {
-            $_limit = "0, {$this->_limit}"; 
-            
-            //2. limit("10, 50")
-        } else if ( is_string( $this->_limit ) ) {
-            $_limit = $this->_limit;
-            
-            //3. limit(array(10, 20))
-        } else if ( is_array($this->_limit) ) {
-            $_limit = implode(',', $this->_limit);
-        }
-        if ( $_limit != '' ) $this->_query .= " LIMIT {$_limit}";
-        
-        $_query = $this->_query;
-        $this->sqlReset();
-        return $_query;
-
+        return $this;
     }
-    
-    //build conditions
-    public function buildConditions() {
 
-        if ( !is_array($this->_where) ) return '';
-        $_conditions = '';
-        foreach ( $this->_where as $_value ) {
-            if ( is_string($_value) ) {
-                //1. id 字符串
-                $_args = explode(',', $_value);
-                if ( is_numeric($_args[0]) ) {
-                    if ( count($_args) == 1 ) {
-                    	$_conditions .= "{$this->_pri}={$_value} ";
-                    } else {
-                    	$_conditions .= "{$this->_pri} IN ({$_value}) ";
-                    }
+    /**
+     * @param $where
+     * @return $this
+     */
+    public function where( $where ) {
+        $this->where = $this->buildConditions($where);
+        return $this;
+    }
+
+    /**
+     * 组合查询条件
+     * @param $where
+     * @return null|string
+     */
+    public function buildConditions( $where ) {
+
+        if ( !$where ) return null;
+        if ( is_numeric($where) ) return "{$this->priKey}={$where}";
+        if ( is_string($where) ) return $where;
+        //数组条件
+        if ( is_array($where) ) {
+            //1. array(1, 2, 3)
+            if ( is_numeric($where[0]) ) {
+                return " {$this->priKey} in(".implode(',', $where).")";
+            }
+            //2. array('name' => 'zhangsan', '|age' => '>24')
+            $condi = array();
+            foreach ( $where as $key => $value ) {
+
+                if ( $key[0] == '|' ) {
+                    $condi[] = "OR";
+                    $key = substr($key, 1);
                 } else {
-                    $_conditions .= $_value;
+                    $condi[] = "AND";
                 }
-            } else if ( is_numeric($_value) ) {
-                //2. 传入的 是id筛选
-                $_conditions .= "{$this->_pri} = {$_value} ";
-            } else if ( is_array($_value) ) {
-                //3. 一维数组如 array(1,2,3,4)
-                if ( isset($_value[0]) ) {
-                    $_conditions .= "{$this->_pri} IN (".implode(',', $_value).")";
-                    $_conditions .= " OR ";
-                    continue;
-                }
-                
-                //如果传入的是 key => value 数组
-                foreach ( $_value as $_name => $_val ) {
-                    if ( is_string($_val) ) $_val = trim($_val);
-                    //5. 如果是二维数组如：array('id' => array(1,2,3,4))
-                    if ( is_array($_val) ) {
-                        $_conditions .= "{$this->_pri} IN (".implode(',', $_val).")";
-                        
-                        //6.条件中包含>,<, >=, <=等符号的如：array('id >=' => 12)
-                    } else if ( strpos($_name, ' ') !== FALSE ) {
-                        $_conditions .= "{$_name} {$_val}";
-                        
-                        //7.条件中有模糊搜索的如： array( 'name' => '%zhangsan%' )
-                    } else if ( $_val[0] == '%' && substr($_val, -1) == '%' ) {
-                        $_conditions .= "{$_name} LIKE '{$_val}'";
-                        
-                        //8. 普通名值等于的形式如：array('name' => 'zhangsan', 'sex' => 'man')
-                    } else {
-                        $_conditions .= "{$_name}={$_val}";
-                    }
-                    
-                    //逻辑与 AND
-                    $_conditions .= " AND ";
-                }
+                $condi[] = "{$key}{$value}";
             }
-            
-            $_conditions = rtrim($_conditions, " AND ");
-            //逻辑或 OR
-            $_conditions .= " OR ";
+            return implode(' ', $condi);
         }
-        $_conditions = trim(rtrim($_conditions, " OR "));
-        
-        return $_conditions;
     }
 
-    //reset sql conditions
-    private function sqlReset() {
-        $this->_query = '';
-        $this->_where = NULL;
-        $this->_table = NULL;
-        $this->_order = NULL;
-        $this->_fields = NULL;
-        $this->_group = NULL;
-        $this->_having = NULL;
-        $this->_limit = NULL;
+    /**
+     * 设置分组
+     * @param  $group
+     * @return $this
+     */
+    public function group( $group = null ) {
+        if ( $group ) $this->group = $group;
+        return $this;
     }
-    
+
+    /**
+     * 设置分组条件( build having string )
+     * @param $having
+     * @return $this
+     */
+    public function having( $having ) {
+        if ( is_string($having) ) {
+            $this->having = $having;
+        } else if ( is_array($having) ) {
+            foreach ( $having as $key => $value ) {
+                $this->having .= $this->having  ? "{$key} $value" : ", {$key} {$value}";
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * 处理排序
+     * @param $order
+     * @return $this
+     */
+    public function order( $order = null ) {
+        if ( $order ) {
+            $orderWays = array();
+            //1. array('id' => 'desc', 'hits' => 'desc')
+            if ( is_array( $order ) ) {
+                foreach ( $order as $key => $value ) {
+                    $orderWays[] = "{$key} {$value}";
+                }
+                $this->order = implode(',', $orderWays);
+
+                //2. id desc, name asc
+            } else {
+                $this->order = $order;
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * 设置查询偏移
+     * @param $limit
+     * @return $this
+     */
+    public function limit( $limit ) {
+        //1. limit(10);
+        if ( is_numeric($limit) ) {
+            $this->limit = "0, {$limit}";
+
+            //2. limit("10, 50")
+        } else if ( is_string( $limit ) ) {
+            $this->limit = $limit;
+
+            //3. limit(array(10, 20))
+        } else if ( is_array($limit) ) {
+            $this->limit = implode(',', $limit);
+        }
+        return $this;
+    }
+
+    /**
+     * 创建SQL语句
+     * @return string
+     * @throws \herosphp\exception\HeroException
+     */
+    public function buildQueryString() {
+        if ( !$this->table ) {
+            E("找不到数据表!");
+        }
+        $query = "SELECT {$this->fields} FROM ".$this->table;
+
+        if ( $this->where ) $query .= " WHERE " .$this->where;
+        if ( $this->group ) $query .= " GROUP BY ".$this->group;
+        if ( $this->having ) $query .= " HAVING ".$this->having;
+        if ( $this->order ) $query .= " ORDER BY ".$this->order;
+        if ( $this->limit ) $query .= " LIMIT ".$this->limit;
+
+        return $query;
+    }
+
 }
 
 ?>
