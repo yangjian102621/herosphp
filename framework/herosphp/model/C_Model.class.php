@@ -1,6 +1,6 @@
 <?php
 /*---------------------------------------------------------------------
- * 数据库访问模型的MySQL实现
+ * 数据库访问模型model dao实现
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -12,203 +12,288 @@
 
 namespace herosphp\model;
 
- class C_Model implements IModel {
-     
-     /**
-      * instance to mysqli
-      * 
-      * @var    DMysqli     
-      */
-     private $_db = NULL;
-     
-     /**
-      * database table for model (当前要操作的表)
-      * 
-      * @var        string
-      */
-     private $_table = NULL;
-     
-     /**
-      * primary key of table
-      * @var        string (数据表的主键)
-      */
-     private  $_primary_key = 'id';
-     
-     //constructor
-     public function __construct( $_table, $_db_config = NULL ) {
-     	
-         $this->_table = SysCfg::$db_table[$_table];
-         //默认使用第一数据库
-         if ( $_db_config == NULL ) $_db_config = SysCfg::$db_info[0];
-         //获取数据库的访问模式
-         $_access = SysCfg::$db_access;
-         $this->_db = DBFactory::createDB($_access, $_db_config);
-		 
-     }
-     
-     /**
-      * set primary key of table(设置主键) 
-      */
-     public function setPrimaryKey( $_key ) {
-         $this->_primary_key = $_key;
-         
-     }
-     
-     /**
-      * @see        IModel::query(); 
-      */
-     public function query( $_sql ) {
-         return $this->_db->query($_sql);
-     }
-        
-     /**
-      * @see        IModel::insert()
-      */
-     public function insert( $_data ) {
-     	
-		 //净化数据
-		 if ( !get_magic_quotes_gpc() ) {
-			if ( is_array($_data) ) {
-				foreach ( $_data as $_name => $_v ) {
-					$_data[$_name] = mysql_real_escape_string($_v);
-				}
-			}
-		 }
-		 
-         return $this->_db->insert($this->_table, $_data);
-     }
-     
-      /**
-      * @see        IModel::replace()
-      */
-     public function replace( $_data ) {
-         return $this->_db->replace($this->_table, $_data);
-     }
-     
-      /**
-      * @see        IModel::delete()
-      */
-     public function delete( $_id ) {
-         return $this->_db->delete($this->_table, "id={$_id}");
-     }
-     
-      /**
-      * @see        IModel::deletes()
-      */
-     public function deletes( $_conditions ) {
-     	
-         $_conditions = SQL::create()->where($_conditions)->buildConditions();
-         return $this->_db->delete($this->_table, $_conditions);
-		 
-     }
-     
-      /**
-      * @see        IModel::getList()
-      */
-     public function getList( $_conditions, $_fields, $_order, $_limit, $_group, $_having ) {
-     	
-         $_sql = SQL::create()->fields($_fields)->table($this->_table)->where($_conditions)->order($_order)
-                ->group($_group)->having($_having)->limit($_limit)->getSQL();
+use herosphp\core\Loader;
+use herosphp\db\DBFactory;
+use herosphp\db\SQL;
 
-         return  $this->_db->getList($_sql);
-		 
-     }
-     
-     //创建 SQL   
-     public function createSQL( $_conditions, $_fields, $_order, $_limit, $_group, $_having ) {
-     	
-         $_sql = SQL::create()->fields($_fields)->table($this->_table)->where($_conditions)->order($_order)
-                ->group($_group)->having($_having)->limit($_limit)->getSQL();
-         return  $_sql;
-     }
-     
-     //通过SQL获取多条记录
-     public function getItems($_sql) {
-         return  $this->_db->getList($_sql);
-     }
-     
-      /**
-      * @see        IModel::getOneRow()
-      */
-     public function getOneRow( $_conditions, $_fields, $_order, $_group, $_having ) {
-     	
-         $_sql = SQL::create()->fields($_fields)->table($this->_table)->where($_conditions)->order($_order)
-                ->group($_group)->having($_having)->getSQL();
-				
-         return $this->_db->getOneRow($_sql);
-     
-	 }
-     
-     //通过SQL获取单条记录
-     public function getOneItem( $_sql ) {
-         return $this->_db->getOneRow($_sql);
-     }
-      /**
-      * @see        IModel::update()
-      */
-     public function update( $_data, $_id ) {
-         return $this->_db->update($this->_table, $_data, "{$this->_primary_key}='{$_id}'");
-     }
-     
-     /**
-      * @see        IModel::updates()
-      */
-     public function updates( $_data, $_conditions ) {
-         $_conditions = SQL::create()->where($_conditions)->buildConditions();
-         return $this->_db->update($this->_table, $_data, $_conditions);
-     }
-     
-     /**
-      * @see        IModel::count(); 
-      */
-     public function count( $_condi ) {
-         return $this->_db->count($this->_table, $_condi);
-     }
-     
-      /**
-      * @see        IModel::affectedRows(); 
-      */
-     public function affectedRows( $_condi = NULL, $_fields="id" ) {
-         return $this->_db->affectedRows();
-     }
-     
-     /**
-      * @see        IModel::begin()
-      */
-     public function begin() {
-         $this->_db->begin();
-     }
-    
-     /**
-      * @see        IModel::commit()
-      */
-     public function commit() {
-         $this->_db->commit();
-     }
-     
-      /**
-      * @see        IModel::rollback()
-      */
-     public function rollback() {
-         $this->_db->rollBack();
-     }
-     
-     /**
-      * get database size 
-      */
-     public function getDataSize() {
-         return DMysqli::getDataSize();
-     }
-     
-     /**
-      * get database version  
-      */
-     public function getDBVersion() {
-         return DMysqli::dbVersion();
-     }
-	 
-	 public function getDB() {
-	 	return $this->_db;
-	 }
- }
+Loader::import('model.IModel', IMPORT_FRAME);
+class C_Model implements IModel {
+
+    /**
+     * 数据库连接资源
+     * @var Resource
+     */
+    private $db;
+
+    /**
+     * 数据表主键
+     * @var string
+     */
+    private $primaryKey = 'id';
+
+    /**
+     * 数据表名称
+     * @var string
+     */
+    private $table;
+
+    /**
+     * 字段映射
+     * @var array
+     */
+    private $mapping = array();
+
+    /**
+     * 数据过滤规则
+     * @var array
+     */
+    private $rules = array();
+
+    /**
+     * 初始化数据库连接
+     * @param string $table 数据表
+     * @param array $config 数据库配置信息
+     */
+    public function __construct( $table, $config = null ) {
+
+        //加载数据表配置
+        $tableConfig = Loader::config('table', 'db');
+        $this->table = $tableConfig[$table];
+
+        //初始化数据库配置
+        if ( !$config ) {
+            //默认使用一个数据库服务器配置
+            $dbConfigs = Loader::config('hosts', 'db');
+            $db_config = $dbConfigs[DB_TYPE];
+            if ( DB_ACCESS == DB_ACCESS_SINGLE ) {  //单台服务器
+                $config = $db_config[0];
+            } else if ( DB_ACCESS == DB_ACCESS_CLUSTERS ) { //多台服务器
+                $config = $db_config;
+            }
+        }
+        //创建数据库
+        $this->db = DBFactory::createDB(DB_ACCESS, $config);
+    }
+
+    /**
+     * @see IModel::query()
+     */
+    public function query($sql)
+    {
+
+    }
+
+    /**
+     * @see IModel::insert()
+     */
+    public function insert($data)
+    {
+        // TODO: Implement insert() method.
+    }
+
+    /**
+     * @see IModel::replace()
+     */
+    public function replace($data)
+    {
+        // TODO: Implement replace() method.
+    }
+
+    /**
+     * @see IModel::delete()
+     */
+    public function delete($id)
+    {
+        // TODO: Implement delete() method.
+    }
+
+    /**
+     * @see IModel::deletes()
+     */
+    public function deletes($conditions)
+    {
+        // TODO: Implement deletes() method.
+    }
+
+    /**
+     * @see IModel::getItems()
+     */
+    public function getItems($conditions, $fields, $order, $page, $pagesize, $group, $having)
+    {
+        $limit = null;
+        if ( $pagesize > 10 && $page > 0 ) $limit = ($page-1) * $pagesize;
+        $sql = SQL::create($this->primaryKey)->table($this->table)->where($conditions)->fields($fields)
+            ->order($order)->group($group)->having($having)->limit($limit)->buildQueryString();
+        return $this->db->getItems($sql);
+    }
+
+    /**
+     * @see IModel::getItem()
+     */
+    public function getItem($conditions, $fields, $order, $group, $having)
+    {
+        // TODO: Implement getItem() method.
+    }
+
+    /**
+     * @see IModel::update()
+     */
+    public function update($data, $id)
+    {
+        // TODO: Implement update() method.
+    }
+
+    /**
+     * @see IModel::updates()
+     */
+    public function updates($data, $conditions)
+    {
+        // TODO: Implement updates() method.
+    }
+
+    /**
+     * @see IModel::count()
+     */
+    public function count($conditions)
+    {
+        // TODO: Implement count() method.
+    }
+
+    /**
+     * @see IModel::increase()
+     */
+    public function increase($field, $offset, $id)
+    {
+        // TODO: Implement increase() method.
+    }
+
+    /**
+     * @see IModel::batchIncrease()
+     */
+    public function batchIncrease($field, $offset, $conditions)
+    {
+        // TODO: Implement batchIncrease() method.
+    }
+
+    /**
+     * @see IModel::reduce()
+     */
+    public function reduce($field, $offset, $id)
+    {
+        // TODO: Implement reduce() method.
+    }
+
+    /**
+     * @see IModel::batchReduce()
+     */
+    public function batchReduce($field, $offset, $conditions)
+    {
+        // TODO: Implement batchReduce() method.
+    }
+
+    /**
+     * @see IModel::set()
+     */
+    public function set($field, $value, $id)
+    {
+        // TODO: Implement set() method.
+    }
+
+    /**
+     * @see IModel::sets()
+     */
+    public function sets($field, $value, $conditions)
+    {
+        // TODO: Implement sets() method.
+    }
+
+    /**
+     * @see IModel::beginTransaction()
+     */
+    public function beginTransaction()
+    {
+        // TODO: Implement beginTransaction() method.
+    }
+
+    /**
+     * @see IModel::commit()
+     */
+    public function commit()
+    {
+        // TODO: Implement commit() method.
+    }
+
+    /**
+     * @see IModel::rollback()
+     */
+    public function rollback()
+    {
+        // TODO: Implement rollback() method.
+    }
+
+    /**
+     * @param array $mapping
+     */
+    public function setMapping($mapping)
+    {
+        $this->mapping = $mapping;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMapping()
+    {
+        return $this->mapping;
+    }
+
+    /**
+     * @param string $primaryKey
+     */
+    public function setPrimaryKey($primaryKey)
+    {
+        $this->primaryKey = $primaryKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrimaryKey()
+    {
+        return $this->primaryKey;
+    }
+
+    /**
+     * @param array $rules
+     */
+    public function setRules($rules)
+    {
+        $this->rules = $rules;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRules()
+    {
+        return $this->rules;
+    }
+
+    /**
+     * @param string $table
+     */
+    public function setTable($table)
+    {
+        $this->table = $table;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
+
+}
 ?>

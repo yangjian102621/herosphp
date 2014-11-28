@@ -64,12 +64,14 @@ class Herosphp {
             'herosphp\core\Template'       => 'core.Template',
             'herosphp\core\Controller'       => 'core.Controller',
             'herosphp\exception\HeroException'       => 'exception.HeroException',
+            'herosphp\exception\DBException'       => 'exception.DBException',
             'herosphp\utils\FileUtils'       => 'utils.FileUtils',
             'herosphp\utils\ArrayUtils'       => 'utils.ArrayUtils',
             'herosphp\utils\AjaxResult'       => 'utils.AjaxResult',
             'herosphp\utils\WebUtils'       => 'utils.WebUtils',
             'herosphp\db\DBFactory'       => 'db.DBFactory',
             'herosphp\db\SQL'       => 'db.SQL',
+            'herosphp\model\C_Model'       => 'model.C_Model',
             'HomecommonAction'  => 'core.HomecommonAction',
             'AjaxResult'        => 'public.AjaxResult');
     }

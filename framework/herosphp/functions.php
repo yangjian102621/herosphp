@@ -84,8 +84,8 @@ function formatFileSize( $size ) {
  * @throws herosphp\exception\HeroException
  */
 function E( $message, $code=0 ) {
-    //echo '<pre>';
-    throw new \herosphp\exception\HeroException($message, $code);
+    $exception = new \herosphp\exception\HeroException($message, $code);
+    __print($exception); die();
 }
 
 /**

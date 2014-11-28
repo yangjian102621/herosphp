@@ -34,9 +34,18 @@ define('IMPORT_FRAME', 2);  //加载框架中的class
 define('IMPORT_CUSTOM', 3); //加载自定义路径中的class
 
 define('EXT_PHP', '.class.php');   //加载php文件
+define('EXT_MODEL', '.model.php');   //加载model文件
 define('EXT_HTML', '.html');    //加载html文件
 
+define('TPL_EXT', '.html');     //模板文件后缀
 define('URI_EXT', '.html');     //uri 伪静态路径后缀
+
+/**
+ * 以下定义数据库类别
+ */
+define('DB_TYPE_MYSQL', 1);     //mysql数据库
+define('DB_TYPE_POSTGRE', 1);   //PostgreSQL数据库
+define('DB_TYPE', DB_TYPE_MYSQL);   //默认使用mysql数据库
 
 /**
  * 以下订制数据库访问策略，提供单台服务器访问和读写分离集群访问模式
@@ -44,5 +53,5 @@ define('URI_EXT', '.html');     //uri 伪静态路径后缀
  */
 define('DB_ACCESS_SINGLE', 1);  //单台服务器访问模式
 define('DB_ACCESS_CLUSTERS', 2);  //数据库服务器集群调度访问模式
-define('DB_ACCESS', DB_ACCESS_SINGLE);
+define('DB_ACCESS', DB_ACCESS_SINGLE);  //默认使用单台数据库服务器
 ?>

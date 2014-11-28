@@ -121,9 +121,15 @@ class Loader {
 
     /**
      * 加载modelDao
-     * @param $modelName
+     * @param string $modelName
+     * @return \herosphp\model\IModel
      */
     public static function model( $modelName ) {
+
+        $modelName = ucfirst($modelName);
+        Loader::import('configs.models.'.$modelName, IMPORT_CUSTOM, EXT_MODEL);
+        $className = 'models\\'.$modelName.'Model';
+        return new $className();
 
     }
 } 

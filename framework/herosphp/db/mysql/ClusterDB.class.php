@@ -34,10 +34,24 @@ class ClusterDB implements ICusterDB {
     protected $currentWriteServer = NULL;       /* 当前写连接服务器 */
 
     /**
-     * 创建一个数据库操作对象
-     * 采用单厂模式，私有化构造方法
+     * 创建一个数据库操作对象,初始化配置参数
+     * @param $configs
      */
-    public  function __construct() {}
+    public  function __construct( $configs ) {
+
+        if ( !is_array($configs) || empty($configs) ) {
+            E("必须传入数据库的配置信息！");
+        }
+        foreach ( $configs as $value ) {
+            if ( $value['serial'] == 'db-write' ) {
+                $this->addWriteServer($value);
+            } else if ( $value['serial'] == 'db-read' ) {
+                $this->addReadServer($value);
+            }
+
+        }
+
+    }
 
     /**
      * @see \herosphp\db\interfaces\ICusterDB::connect()

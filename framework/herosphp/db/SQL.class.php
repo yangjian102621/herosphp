@@ -79,14 +79,20 @@ class SQL {
      * @return SQL
      */
     public static function create( $priKey = null ) {
-        if ( self::$instance != null ) {
+        if ( self::$instance == null ) {
             self::$instance = new self($priKey);
         }
         return self::$instance;
     }
 
+    /**
+     * 初始化数据表
+     * @param null $table
+     * @return $this
+     */
     public function table( $table = null ) {
         if ( $table != null ) $this->table = $table;
+        return $this;
     }
 
     /**

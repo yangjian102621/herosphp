@@ -37,6 +37,10 @@ class SingleDB implements Idb {
      * @param $config
      */
     public  function __construct( $config ) {
+
+        if ( !is_array($config) || empty($config) ) {
+            E("必须传入数据库的配置信息！");
+        }
         $this->config = $config;
     }
     
@@ -49,7 +53,7 @@ class SingleDB implements Idb {
     {
         if ( $this->link != null ) return TRUE;
         $_config = $this->config;
-        $_dsn="{$_config['db_type']}:host={$_config['db_host']};dbname={$_config['db_name']}";
+        $_dsn="{$_config['db_type']}:host={$_config['db_host']};port={$_config['db_port']};dbname={$_config['db_name']}";
         try {
             $this->link = new PDO($_dsn, $_config['db_user'], $_config['db_pass'], array(PDO::ATTR_PERSISTENT=>true));
             $this->link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -62,11 +66,8 @@ class SingleDB implements Idb {
             $this->link->query("SET character_set_results = {$_charset}");
 
         } catch (PDOException $e ) {
-            $_exception = new DBException("数据库连接失败".$e->getMessage());
-            $_exception->setCode($e->getCode());
-            throw $_exception;
+            E("数据库连接失败".$e->getMessage());
         }
-
         return $this->link;
     }
 
@@ -83,7 +84,7 @@ class SingleDB implements Idb {
             $_exception = new DBException("SQL错误:" . $e->getMessage());
             $_exception->setCode($e->getCode());
             $_exception->setQuery($_query);
-            throw $_exception;
+            __print($_exception); die();
         }
         return $_result;
     }
@@ -184,7 +185,7 @@ class SingleDB implements Idb {
     /**
      * @see \herosphp\db\interfaces\Idb::update()
      */
-    public function update($_table, &$_array, $_conditons)
+    public function update($_table, &$_array, $_conditons = null)
     {
         $_T_fields = $this->getTableFields($_table);
         $_keys = '';

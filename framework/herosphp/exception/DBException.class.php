@@ -35,4 +35,11 @@ class DBException extends HeroException {
         return $this->query;
     }
 
+    /**
+     * @param $code
+     */
+    public function setCode($code) {
+        $this->code = $code;
+    }
+
 }
