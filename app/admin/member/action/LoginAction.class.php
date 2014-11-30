@@ -2,6 +2,7 @@
 namespace member\action;
 
 use herosphp\core\Controller;
+use herosphp\core\Debug;
 use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
 
@@ -21,9 +22,9 @@ class LoginAction extends Controller {
         __print("invoking the index method....");
         $this->assign('include', '{include admin:member.top}');
         $model = Loader::model('article');
-        $items = $model->getItems(null, "Id, mtitle");
-        __print($items);
+        $items = $model->getItems(null, "id, url, title", null, 1, 20);
 
+        $this->assign('items', $items);
     }
 
     /**

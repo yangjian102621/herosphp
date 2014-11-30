@@ -29,7 +29,18 @@ return array(
             'db_port'      => 3306,
             'db_user'      => 'root',
             'db_pass'      => '123456',
-            'db_name'      => 'heroscms',
+            'db_name'      => 'test',
+            'db_charset'   => 'utf8',
+            'serial'       => 'db-read',   //读服务器,如果没有配置读写分离，则此处不用理它
+        ),
+
+        array(
+            'db_type'      => 'mysql',
+            'db_host'      => '192.168.1.40',
+            'db_port'      => 3306,
+            'db_user'      => 'root',
+            'db_pass'      => '123456',
+            'db_name'      => 'test',
             'db_charset'   => 'utf8',
             'serial'       => 'db-read',   //读服务器,如果没有配置读写分离，则此处不用理它
         ),

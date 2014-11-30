@@ -45,19 +45,13 @@ function __print() {
 }
 
 /**
- * 计算字符创的hash值
- * @param       string          $key
- * @return      int 
+ * 计算字符串的hash值
+ * @param string  $str
+ * @return int
  */
-function bkdrHash( $key ) {
+function getHashCode( $str ) {
 
-    $key = $key.'';    //将key转换成字符串
-    $hcode = 0;
-    $len = strlen($key);
-    for ( $i = 0; $i < $len; $i++ ) {
-        $hcode = (int) ($hcode * 131 + ord($key[$i]));
-    }
-    return ($hcode & 0x7FFFFFFF);
+    return \herosphp\utils\HashUtils::BKDRHash($str);
 }
 
 /**

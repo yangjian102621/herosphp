@@ -1,30 +1,92 @@
 <?php
-/**
- * 缓存抽象类
- * @author      yangjian102621@gmail.com
- */
+/*---------------------------------------------------------------------
+ * 文件缓存抽象类
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ *-----------------------------------------------------------------------*/
+
+namespace herosphp\cache;
+
 Abstract class ACache {
 
-    protected static $_FILE_OPACITY = 1000;        /* 每个文件夹的文件容量 */
+    /**
+     * 每个缓存文件夹的文件容量
+     * @var int
+     */
+    protected static $_FILE_OPACITY = 1000;
 
-    protected $config = array();       /* 缓存配置参数 */
+    /**
+     * 缓存配置参数
+     * @var array
+     */
+    protected $configs = array();
+
+    /**
+     * 缓存的基础路径,最好有语义,推荐使用action名称,  如article
+     * @var string
+     */
+    protected $baseKey = 'default';
+
+    /**
+     * 缓存分类目录， 推荐使用当前调用的method操作,如 index,list,detail等
+     * @var string
+     */
+    protected $ftype = null;
+
+    /**
+     * 缓存的分类因子,一般来说
+     * 1. 如果是列表页,推荐使用页码$page
+     * 2. 如果是详情页，推荐使用$id
+     * @var int
+     */
+    protected $factor = null;
+
+    /**
+     * 缓存key,对于没有规则的杂乱缓存，必须为其设置一个key作为hash散列作为文件分类
+     * @var string
+     */
+    protected $key = null;
+
+    /**
+     * 初始化缓存配置信息
+     * @param array $configs 缓存配置信息
+     */
+    public function __construct( $configs ) {
+        if ( !$configs ) {
+            E("必须传入缓存配置信息！");
+        }
+        $this->configs = $configs;
+    }
+
+    /**
+     * 设置当前baseKey
+     * @param $baseKey
+     */
+    public function baseKey( $baseKey = null ) {
+        if ( $baseKey )
+            $this->baseKey = $baseKey;
+    }
+
+    /**
+     *
+     * @param $factor
+     */
+    public function factor( $factor ) {
+
+    }
 
     /**
      * 获取缓存文件路径
-     * @param       $_key       缓存key
      * @return      string
      */
-    public function getCacheFile( $_key )
+    public function getCacheFile()
     {
-        $_request = HttpRequest::getRequest();
-        $_path = $this->config['cdir'].DIR_OS.$_request['module'].DIR_OS.$_request['action'];
+        $cacheDir = $this->configs['cache_dir'];
 
-        //通过hash映射到对应的缓存文件夹
-        $_path .= DIR_OS.( bkdrHash($_key) % self::$_FILE_OPACITY );
-        if ( !file_exists($_path) ) Utils::makeFileDirs($_path);
-        $_filename = $_path .DIR_OS. md5($_key);
-
-        return $_filename;
     }
 
 

@@ -121,7 +121,7 @@ class C_Model implements IModel {
     public function getItems($conditions, $fields, $order, $page, $pagesize, $group, $having)
     {
         $limit = null;
-        if ( $pagesize > 10 && $page > 0 ) $limit = ($page-1) * $pagesize;
+        if ( $pagesize > 0 && $page > 0 ) $limit = array(($page-1) * $pagesize, $pagesize);
         $sql = SQL::create($this->primaryKey)->table($this->table)->where($conditions)->fields($fields)
             ->order($order)->group($group)->having($having)->limit($limit)->buildQueryString();
         return $this->db->getItems($sql);

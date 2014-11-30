@@ -11,9 +11,10 @@
 
 namespace herosphp\db\mysql;
 
+use herosphp\core\Debug;
 use herosphp\core\Loader;
+use herosphp\db\interfaces\ICusterDB;
 use herosphp\exception\DBException;
-use modphp\db\interfaces\ICusterDB;
 use \PDO;
 use \PDOException;
 
@@ -59,7 +60,8 @@ class ClusterDB implements ICusterDB {
      */
     public function connect()
     {
-        throw new DBException("暂时不支持该方法！");
+        return false;
+        //throw new DBException("暂时不支持该方法！");
     }
 
     /**
@@ -79,9 +81,7 @@ class ClusterDB implements ICusterDB {
             $_pdo->query("SET character_set_client = {$_charset}");
             $_pdo->query("SET character_set_results = {$_charset}");
         } catch ( PDOException $e ) {
-            $_exception = new DBException("数据库连接失败".$e->getMessage());
-            $_exception->setCode($e->getCode());
-            throw $_exception;
+            E("数据库连接失败".$e->getMessage());
         }
         return $_pdo;
     }
@@ -108,9 +108,11 @@ class ClusterDB implements ICusterDB {
             $_exception = new DBException("SQL错误!".$e->getMessage());
             $_exception->setCode($e->getCode());
             $_exception->setQuery($_query);
-            throw $_exception;
+            __print($_exception); die();
         }
-
+        if ( APP_DEBUG ) {
+            Debug::appendMessage($_query, 'sql');   //添加调试信息
+        }
         return $_result;
     }
 
@@ -167,7 +169,7 @@ class ClusterDB implements ICusterDB {
     /**
      * @see \herosphp\db\interfaces\ICusterDB::delete()
      */
-    public function delete($_table, $_conditons = NULL)
+    public function delete($_table, $_conditons = null)
     {
         $_sql = "DELETE FROM ".$_table;
         if ( $_conditons != NULL ) $_sql .= " WHERE ".$_conditons;
@@ -207,7 +209,7 @@ class ClusterDB implements ICusterDB {
     /**
      * @see \herosphp\db\interfaces\ICusterDB::update()
      */
-    public function update($_table, &$_array, $_conditons)
+    public function update($_table, &$_array, $_conditons=null)
     {
         $_T_fields = $this->getTableFields($_table);
         $_keys = '';
@@ -227,7 +229,7 @@ class ClusterDB implements ICusterDB {
     /**
      * @see \herosphp\db\interfaces\ICusterDB::count()
      */
-    public function count($_table, $_conditons=NULL)
+    public function count($_table, $_conditons=null)
     {
         $_query = "SELECT count(*) as total FROM {$_table}";
         if ( $_conditons ) $_query .= " WHERE ".SQL::createCondition($_conditons);

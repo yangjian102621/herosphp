@@ -1,4 +1,28 @@
-1. 数据的自动验证的规则和报错信息配置在model中， 模仿jquery validata, 约定格式，不提供配置。
-2. 数据缓存模块修复开发。
-3. 前端采用purecss框架进行二次开发。
+数据库模块开发
+	mysql单服务器测试 (done)
+  	mysql服务器测试 (done)
+
+引进资源，新增{cres:js sea.js} 引进用户自定义的css|js文件 (done)
+
+
+数据缓存模块开发。
+	动态文件缓存(加上缓存分类)
+	静态文件缓存
+	memcache缓存
+	redis缓存
+	agent缓存(发送头信息浏览器缓存) （暂时不开发）
+
+前端采用purecss框架进行二次开发。
+
+服务的bean管理
+
+发送http请求工具
+	采用fsocketopen实现 (done)
+	curl 带cookie访问登陆
+
+实现数据过滤器和自动验证功能
+
+完善框架的开发文档
+
+实现前端的js表单数据验证功能
 

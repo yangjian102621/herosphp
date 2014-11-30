@@ -1,8 +1,12 @@
 {include admin:member.top}
 
-<h1>这是登陆页面</h1>
+    <h1>这是登陆页面</h1>
+    {loop $items $value}
+        <h3>{$value.title}</h3>
+    {/loop}
 {res:js jquery-1.7.1.min.js}
 {gres:js bootstrap.min.js}
 {gres:js bootstrap.min.css}
+{cres:js sea.js}
 {res:js JDialog.js}
 {res:css JDialog.css}

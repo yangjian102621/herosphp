@@ -11,6 +11,7 @@
 
 namespace herosphp\db\mysql;
 
+use herosphp\core\Debug;
 use herosphp\core\Loader;
 use herosphp\db\interfaces\Idb;
 use herosphp\exception\DBException;
@@ -85,6 +86,9 @@ class SingleDB implements Idb {
             $_exception->setCode($e->getCode());
             $_exception->setQuery($_query);
             __print($_exception); die();
+        }
+        if ( APP_DEBUG ) {
+            Debug::appendMessage($_query, 'sql');   //添加调试信息
         }
         return $_result;
     }

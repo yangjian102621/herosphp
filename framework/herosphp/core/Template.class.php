@@ -50,7 +50,7 @@ class Template {
          * 输出变量,数组
          * {$varname}, {$array['key']}
          */
-        '/{\$([^\}]{1,})}/i' => '<?php echo \$${1}?>',
+        '/{\$([^\}|\.]{1,})}/i' => '<?php echo \$${1}?>',
         /**
          * 以 {$array.key} 形式输出一维数组元素
          */
@@ -100,7 +100,7 @@ class Template {
         /**
          * 引入静态资源 css file,javascript file
          */
-        '/{(res|gres):([a-z]{1,})\s+([^\}]+)\s*}/i'
+        '/{(res|gres|cres):([a-z]{1,})\s+([^\}]+)\s*}/i'
 							=> '<?php echo $this->importResource(\'${1}\', \'${2}\', \'${3}\')?>'
 	);
 
@@ -263,16 +263,28 @@ class Template {
 	public function importResource( $section, $type, $path ) {
         //获取资源的目录
         $resUrl = $this->configs['res_url'].RES_PATH;
-        if ( $section == 'gres' ) {
-            $resUrl .= 'global/';
-        } else {
-            $resUrl .= 'app/'.APP_NAME."/{$this->configs['template']}/";
+
+        switch ( $section ) {
+            case 'gres':
+                $resUrl .= 'global/';
+                break;
+
+            case 'res' :
+                $resUrl .= 'app/'.APP_NAME."/{$this->configs['template']}/";
+                break;
+
+            case 'cres' :
+                break;
         }
         if ( $type == 'css' && $section == 'res' ) {
             $resUrl .= "skin/{$this->configs['skin']}/";
         }
 
-        $resUrl .= $type.'/'.$path;
+        if ( $section != 'cres' ) { //包含全局或应用的静态资源
+            $resUrl .= $type.'/'.$path;
+        } else {    //包含自定义路径静态资源
+            $resUrl .= $path;
+        }
         $template = self::$resTemplate[$type];
         $result = str_replace('{url}', $resUrl, $template);
 
