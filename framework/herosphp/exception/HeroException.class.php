@@ -13,7 +13,29 @@ namespace herosphp\exception;
 
 class HeroException extends \Exception {
 
+    /**
+     * 异常数据
+     * @var array
+     */
+    private  $data = array();
+
     public function __construct( $message, $code ){
         parent::__construct($message, $code);
+    }
+
+    /**
+     * 添加数据
+     * @param $key
+     * @param $value
+     */
+    public function putData( $key, $value ) {
+        $this->data[$key] = $value;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData() {
+        return $this->data;
     }
 } 

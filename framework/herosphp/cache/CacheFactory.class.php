@@ -1,63 +1,59 @@
 <?php
-/**
+/*---------------------------------------------------------------------
  * 缓存实例化工厂类(缓存集合set)
- * --------------------------------------------------------
- * 版权所有 (C) 2013.03-now 网络星空工作室研发中心 并保留所有权利。 
- * ----------------------------------------------------------
- * @author 	yangjian<yangjian102621@gmail.com>
- * @completed	2013-04-09
- */
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ *-----------------------------------------------------------------------*/
 
-include __DIR__.DIR_OS.'ICache.class.php';
-include __DIR__.DIR_OS.'ACache.class.php';
+namespace herosphp\cache;
 
+use herosphp\core\Loader;
+
+Loader::import('cache.ACache', IMPORT_FRAME);
+Loader::import('cache.interfaces.ICache', IMPORT_FRAME);
 class CacheFactory {
 
-    protected static $fileCache = NULL;     /* 文件缓存 */
+    private static $CACHE_SET = array();
 
-    protected static $htmlCache = NULL;     /* HTML缓存 */
-
-    protected static $memCache = NULL;      /* memory cache 缓存 */
-
-    /**
-     * 获取文件缓存对象
-     * @param       $config     缓存配置参数
-     * @return      FileCache
-     */
-    public static function getFileCache( $config )
-    {
-        if ( self::$fileCache == NULL ) {
-            include __DIR__.DIR_OS.'FileCache.class.php';
-            self::$fileCache = new FileCache($config);
-        }
-        return self::$fileCache;
-    }
+    private static $CACHE_BEAN = array(
+        'file' => array(
+            'class' => 'herosphp\cache\FileCache',
+            'path' => 'cache.FileCache'
+        ),
+        'html' => array(
+            'class' => 'herosphp\cache\HtmlCache',
+            'path' => 'cache.HtmlCache'
+        ),
+        'memo' => array(
+            'class' => 'herosphp\cache\MemoCache',
+            'path' => 'cache.MemoCache'
+        )
+    );
 
     /**
-     * @param       $config     缓存配置参数
-     * @return      HtmlCache
+     * 创建缓存
+     * @param $key
+     * @param array $configs
+     * @return \herosphp\cache\interfaces\ICache
      */
-    public static function getHtmlCache( $config )
-    {
-        if ( self::$htmlCache == NULL ) {
-            include __DIR__.DIR_OS.'HtmlCache.class.php';
-            self::$htmlCache = new HtmlCache($config);
-        }
-        return self::$htmlCache;
-    }
-
-    /**
-     * @param       $config     缓存配置参数
-     * @return      MemoCache
-     */
-    public static function getMemCache( $config )
-    {
-        if ( self::$memCache == NULL ) {
-            include __DIR__.DIR_OS.'MemoCache.class.php';
-            self::$memCache = new MemoCache($config);
+    public static function  create( $key, $configs = null ) {
+        //如果缓存对象已经创建，则则直接返回
+        if ( isset(self::$CACHE_SET[$key]) ) {
+            return self::$CACHE_SET[$key];
         }
 
-        return self::$memCache;
+        if ( $configs == null ) {
+            $configs = Loader::config($key, 'cache');
+        }
+        $className = self::$CACHE_BEAN[$key]['class'];
+        Loader::import(self::$CACHE_BEAN[$key]['path'], IMPORT_FRAME);
+        self::$CACHE_SET[$key] = new $className($configs);
+        return self::$CACHE_SET[$key];
+
     }
 }
 ?>

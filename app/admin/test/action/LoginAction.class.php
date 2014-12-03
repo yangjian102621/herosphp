@@ -1,13 +1,12 @@
 <?php
-namespace member\action;
+namespace test\action;
 
 use herosphp\core\Controller;
-use herosphp\core\Debug;
 use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
 
 /**
- * 用户action
+ * 模板解析测试
  * @since           2013-12-28
  * @author          yangjian<yangjian102621@gmail.com>
  */
@@ -25,6 +24,7 @@ class LoginAction extends Controller {
         $items = $model->getItems(null, "id, url, title", null, 1, 20);
 
         $this->assign('items', $items);
+
     }
 
     /**

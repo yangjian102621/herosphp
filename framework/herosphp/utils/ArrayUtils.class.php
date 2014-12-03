@@ -46,4 +46,14 @@ class ArrayUtils {
         }
         return $newArray;
     }
+
+    /**
+     * 判断一个数组是否是序列化数组
+     * @param $data
+     * @return bool
+     */
+    public static function isSerializedArray( $data ) {
+        $data = trim( $data );
+        return (unserialize($data) != false);
+    }
 } 

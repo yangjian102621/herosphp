@@ -72,6 +72,7 @@ class Herosphp {
             'herosphp\db\DBFactory'       => 'db.DBFactory',
             'herosphp\db\SQL'       => 'db.SQL',
             'herosphp\model\C_Model'       => 'model.C_Model',
+            'herosphp\cache\CacheFactory'       => 'cache.CacheFactory',
             'HomecommonAction'  => 'core.HomecommonAction',
             'AjaxResult'        => 'public.AjaxResult');
     }

@@ -1,55 +1,59 @@
 <?php
-namespace modphp\bean;
+/*---------------------------------------------------------------------
+ * Beans 创建工具类
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@gmail.com>
+ *-----------------------------------------------------------------------*/
 
-use modphp\common\ModException;
+namespace herosphp\bean;
+
+use herosphp\exception\BeanException;
 use \ReflectionClass;
-use modphp\bean\exception\MethodInvokeException;
-use modphp\debug\Debug;
-/**
- * This class is a tool class use to service for beans
- * @author blueyb.java@gmail.com
- * @since 1.0 - 2010-12-17
- */
-class BeanUtil{
-	
-	/**
-	 * Create a object instance.
-	 * @param string $class
-	 */
-	public static function builtInstance($clazz, $params=null){
-		if(!is_string($clazz)){
-			return $clazz;
-		}
+
+class BeanUtil {
+
+    /**
+     * 创建Bean实例
+     * @param string $classPath 要创建的对象的类路径
+     * @param array $params 参数列表，可以是数组或者单个参数
+     * @return object|ReflectionClass
+     * @throws \Exception
+     */
+    public static function builtInstance( $classPath, $params=null ) {
+
+		if( !is_string($classPath) ) return null;
 		try{
-			$clazz = new ReflectionClass($clazz);
-			if(is_array($params)){
-				return $clazz->newInstanceArgs($params);
+            $instance = new ReflectionClass($classPath);
+			if( is_array($params) ){
+				return $instance->newInstanceArgs($params);
 			}elseif($params){
-				return $clazz->newInstance($params);
+				return $instance->newInstance($params);
 			}else{
-				return $clazz->newInstance();
+				return $instance->newInstance();
 			}
-		}catch(\Exception $e){
+		} catch ( \Exception $e ){
 			throw $e;
 		}
 	}
-	
-	/**
-	 * Set up the property for the bean.
-	 * @param $clazz 
-	 * 	String or Object type, if it is String, We will use this string to create a object.
-	 * @param array $properties 
-	 * 	This is a property array, it contains the propery names and values which
-	 *  you want to set to the object.
-	 * @return Any object which had been set up.
-	 */
-	public static function install($clazz, $properties){
-		if(!$properties) return;
-		if(is_string($clazz)){
+
+    /**
+     * 给对象装配属性，如果对象不存在则创建对象
+     * @param string | object $clazz
+     * @param $properties
+     * @return object
+     * @throws BeanException
+     */
+    public static function install($clazz, $properties){
+		if( !$properties ) return;
+        //字符串类路径
+		if( is_string($clazz) ) {
 			$refClass =new ReflectionClass($clazz);
 			$obj = $refClass->newInstance();
-		}else{
-			// is object
+		} else {    //安装对象
 			$obj = $clazz;
 			$refClass =new ReflectionClass($obj);
 		}
@@ -62,21 +66,11 @@ class BeanUtil{
 				try{
 					$method->invoke($obj, $properties[$key]);
 				}catch(\Exception $e){
-					throw new MethodInvokeException($e->getMessage());
+					throw new BeanException($e->getMessage());
 				}
 			}
 		}
 		return $obj;
-	}
-	
-	/**
-	 * Copy the attributs from a bean and set them to anthor bean.
-	 * @access public
-	 * @param stdclass $beanTo	The bean which want to setting attribute.
-	 * @param stdclass $beanFrom The bean which use to be copy attributes.
-	 */
-	public static function attributeCopys($beanTo, $beanFrom){
-		throw new ModException('attributeCopys is not support yet!');
 	}
 	
 	/**
@@ -97,6 +91,7 @@ class BeanUtil{
 	 * @param object $object 被调用的对象
 	 * @param string $methodName 方法名
 	 * @param mixed $params 参数
+     *  @throws BeanException
 	 * @return mixed 返回被调用方法的返回值
 	 */
 	public static function invokeMethod($object, $methodName, $params){
@@ -110,7 +105,7 @@ class BeanUtil{
 				return $method->invoke($object, $params);
 			}
 		}catch(\Exception $e){
-			throw new MethodInvokeException($e->getMessage());
+			throw new BeanException($e->getMessage());
 		}
 	}
 }

@@ -73,7 +73,7 @@ class HttpRequest {
             case __PATH_INFO_REQUEST__ :    //path info 访问模式
                 $urlInfo = parse_url($this->requestUri);
                 if ( $urlInfo['path'] ) {
-                    $filename = rtrim($urlInfo['path'], URI_EXT);
+                    $filename = str_replace(URI_EXT, '', $urlInfo['path']);
                     $pathInfo = explode('/', $filename);
                     if ( $pathInfo[1] ) $appName = $pathInfo[1];
                     else $appName = $defaultUrl['app'];

@@ -26,7 +26,7 @@ interface ICache {
 	 * @param string $expire  缓存有效期
      * @return mixed
 	 */
-	public function get( $key, $expire );
+	public function get( $key, $expire=null );
 	
 	/**
 	 * 添加|更新缓存

@@ -14,7 +14,7 @@ $config = array(
     //默认访问的页面
     'default_url' => array(
         'app' => 'admin',
-        'module' => 'member',
+        'module' => 'test',
         'action' => 'login',
         'method' => 'index' ),
     'template' => 'default',    //默认模板

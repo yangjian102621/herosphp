@@ -21,7 +21,7 @@ class C_Model implements IModel {
 
     /**
      * 数据库连接资源
-     * @var Resource
+     * @var \herosphp\db\interfaces\Idb
      */
     private $db;
 
@@ -80,7 +80,7 @@ class C_Model implements IModel {
      */
     public function query($sql)
     {
-
+        return $this->db->query($sql);
     }
 
     /**
@@ -132,7 +132,9 @@ class C_Model implements IModel {
      */
     public function getItem($conditions, $fields, $order, $group, $having)
     {
-        // TODO: Implement getItem() method.
+        $sql = SQL::create($this->primaryKey)->table($this->table)->where($conditions)->fields($fields)
+            ->order($order)->group($group)->having($having)->buildQueryString();
+        return $this->db->getItem($sql);
     }
 
     /**

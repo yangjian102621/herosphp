@@ -46,12 +46,6 @@ Abstract class ACache {
     protected $factor = null;
 
     /**
-     * 缓存key,对于没有规则的杂乱缓存，必须为其设置一个key作为hash散列作为文件分类
-     * @var string
-     */
-    protected $key = null;
-
-    /**
      * 初始化缓存配置信息
      * @param array $configs 缓存配置信息
      */
@@ -63,29 +57,60 @@ Abstract class ACache {
     }
 
     /**
-     * 设置当前baseKey
-     * @param $baseKey
+     * @param string $baseKey
+     * @return $this
      */
     public function baseKey( $baseKey = null ) {
-        if ( $baseKey )
-            $this->baseKey = $baseKey;
+        if ( $baseKey ) $this->baseKey = $baseKey;
+        return $this;
+
     }
 
     /**
-     *
-     * @param $factor
+     * @param int $factor
+     * @return $this
      */
-    public function factor( $factor ) {
+    public function factor( $factor = null ) {
+        if ( $factor )  $this->factor = $factor;
+        return $this;
 
+    }
+
+    /**
+     * @param string $ftype
+     * @return $this
+     */
+    public function ftype( $ftype = null ) {
+        if ( $ftype ) $this->ftype = $ftype;
+        return $this;
     }
 
     /**
      * 获取缓存文件路径
-     * @return      string
+     * @param string $key
+     * @param string $extension 缓存后缀
+     * @return string
      */
-    public function getCacheFile()
+    public function getCacheFile( $key = null, $extension='.cache' )
     {
         $cacheDir = $this->configs['cache_dir'];
+        if ( $key ) {
+            $dir = getHashCode($key) % self::$_FILE_OPACITY;
+            $cacheDir .= "common/{$dir}/";
+            return $cacheDir."{$key}.cache";
+        } else {
+            $cacheDir .= $this->baseKey.'/';
+            $filename = $this->baseKey;
+            if ( $this->ftype ) {
+                $cacheDir .= $this->ftype .'/';
+                $filename .= '_'.$this->ftype;
+            }
+            if ( $this->factor ) {
+                $cacheDir .= ($this->factor % self::$_FILE_OPACITY).'/';
+                $filename .= '_'.$this->factor;
+            }
+            return $cacheDir.$filename.$extension;
+        }
 
     }
 
