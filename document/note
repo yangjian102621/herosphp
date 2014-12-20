@@ -11,8 +11,12 @@
 	memcache缓存 (done)
 	redis缓存
 	agent缓存(发送头信息浏览器缓存) （暂时不开发）
+	
+HttpRequest 类功能修改，使用短连接 http://www.herosphp.my/admin_member_login_index/catid-12-page-1.html
 
 前端采用purecss框架进行二次开发。
+
+更改Heros.const.php常量后缀 TPL_EXT URI_EXT
 
 服务的bean管理
 
