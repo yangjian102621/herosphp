@@ -6,7 +6,7 @@ namespace common\utils;
  * 给图片添加水印, 支持jpg, png, gif格式的图片.<br />
  * 支持图片水印和文字水印， 有7种水印字体可选。
  * Image processing class, resize img and add watermark.
- * @author 	yangjian<yangjian102621@gmail.com>
+ * @author 	yangjian<yangjian102621@163.com>
  * @version  1.2
  * @since 	2014.04.11
  * ******************************************************************************/

@@ -2,7 +2,7 @@
 /**
  * 管理员服务接口类
  * 
- * @author          yangjian<yangjian102621@gmail.com>
+ * @author          yangjian<yangjian102621@163.com>
  * @since           2014.01.05 
  * @link            http://www.lionsoul.org
  */

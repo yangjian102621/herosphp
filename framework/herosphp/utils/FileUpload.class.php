@@ -3,7 +3,7 @@ namespace common\utils;
 
 /**
  * 文件上传类, 支持多文件上传不重名覆盖。支持base64编码文件上传
- * @author 	yangjian<yangjian102621@gmail.com>
+ * @author 	yangjian<yangjian102621@163.com>
  * @version  1.4
  * @since	2014.04.11
  * ******************************************************************************/

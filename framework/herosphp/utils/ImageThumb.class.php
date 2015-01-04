@@ -4,7 +4,7 @@ namespace common\utils;
 
 /**
  * Class ImageThumb 缩略图生成类。支持jpg, png, gif格式的图片
- * @author yangjian<yangjian102621@gmail.com>
+ * @author yangjian<yangjian102621@163.com>
  * @since version 1.2 2014-10-13
  */
 class ImageThumb {

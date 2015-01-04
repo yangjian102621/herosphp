@@ -6,62 +6,62 @@
  * ---------------------------------------------------------------------
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * ---------------------------------------------------------------------
- * Author: <yangjian102621@gmail.com>
+ * Author: <yangjian102621@163.com>
  *-----------------------------------------------------------------------*/
 
 namespace herosphp\exception;
 
 class BeanException extends HeroException{
-	
-	/**
-	 * Bean
-	 * @var
-	 */
-	private $bean;
-	
-	/**
-	 * 属性
-	 * @var mixed
-	 */
-	private $attributes;
+
+    /**
+     * Bean
+     * @var
+     */
+    private $bean;
+
+    /**
+     * 属性
+     * @var mixed
+     */
+    private $attributes;
 
     /**
      * 调用的方法
      * @var string
      */
     private $method;
-	
-	function __construct( $message, $code ){
-		parent::__construct( $message, $code );
-	}
-	
-	/**
-	 * @return \herosphp\bean\Beans
-	 */
-	public function getBean() {
-		return $this->bean;
-	}
 
-	/**
-	 * @return the $attributes
-	 */
-	public function getAttributes() {
-		return $this->attributes;
-	}
+    function __construct( $message, $code ){
+        parent::__construct( $message, $code );
+    }
 
-	/**
-	 * @param \herosphp\bean\Beans $bean
-	 */
-	public function setBean($bean) {
-		$this->bean = $bean;
-	}
+    /**
+     * @return \herosphp\bean\Beans
+     */
+    public function getBean() {
+        return $this->bean;
+    }
 
-	/**
-	 * @param  $attributes
-	 */
-	public function setAttributes($attributes) {
-		$this->attributes = $attributes;
-	}
+    /**
+     * @return the $attributes
+     */
+    public function getAttributes() {
+        return $this->attributes;
+    }
+
+    /**
+     * @param \herosphp\bean\Beans $bean
+     */
+    public function setBean($bean) {
+        $this->bean = $bean;
+    }
+
+    /**
+     * @param  $attributes
+     */
+    public function setAttributes($attributes) {
+        $this->attributes = $attributes;
+    }
 
     /**
      * @param string $method

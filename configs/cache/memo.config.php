@@ -1,7 +1,7 @@
 <?php
 /**
  * memory cache 缓存配置
- * @author yangjian <yangjian102621@gmail.com>
+ * @author yangjian <yangjian102621@163.com>
  */
 return array(
     //缓存服务器

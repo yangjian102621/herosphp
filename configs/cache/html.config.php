@@ -1,7 +1,7 @@
 <?php
 /**
  * 缓存配置信息
- * @author yangjian <yangjian102621@gmail.com>
+ * @author yangjian <yangjian102621@163.com>
  */
 return array(
 

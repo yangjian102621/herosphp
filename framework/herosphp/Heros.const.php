@@ -6,7 +6,7 @@
  * ---------------------------------------------------------------------
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * ---------------------------------------------------------------------
- * Author: <yangjian102621@gmail.com>
+ * Author: <yangjian102621@163.com>
  *-----------------------------------------------------------------------*/
 
 
@@ -37,8 +37,8 @@ define('EXT_PHP', '.class.php');   //加载php文件
 define('EXT_MODEL', '.model.php');   //加载model文件
 define('EXT_HTML', '.html');    //加载html文件
 
-define('TPL_EXT', '.html');     //模板文件后缀
-define('URI_EXT', '.html');     //uri 伪静态路径后缀
+define('EXT_TPL', '.html');     //模板文件后缀
+define('EXT_URI', '.html');     //uri 伪静态路径后缀
 
 /**
  * 以下定义数据库类别

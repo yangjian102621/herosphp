@@ -8,7 +8,7 @@
  * ---------------------------------------------------------------------
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * ---------------------------------------------------------------------
- * Author: <yangjian102621@gmail.com>
+ * Author: <yangjian102621@163.com>
  *-----------------------------------------------------------------------*/
 namespace herosphp\http;
 
@@ -73,7 +73,7 @@ class HttpRequest {
             case __PATH_INFO_REQUEST__ :    //path info 访问模式
                 $urlInfo = parse_url($this->requestUri);
                 if ( $urlInfo['path'] ) {
-                    $filename = str_replace(URI_EXT, '', $urlInfo['path']);
+                    $filename = str_replace(EXT_URI, '', $urlInfo['path']);
                     $pathInfo = explode('/', $filename);
                     if ( $pathInfo[1] ) $appName = $pathInfo[1];
                     else $appName = $defaultUrl['app'];

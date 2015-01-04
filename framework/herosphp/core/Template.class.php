@@ -6,7 +6,7 @@
  * ---------------------------------------------------------------------
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * ---------------------------------------------------------------------
- * Author: <yangjian102621@gmail.com>
+ * Author: <yangjian102621@163.com>
  *-----------------------------------------------------------------------*/
 
 namespace herosphp\core;
@@ -207,7 +207,7 @@ class Template {
 		
 		//如果没有传入模板文件，则访问默认模块下的默认模板
         if ( !$tempFile ) {
-            $tempFile = $this->configs['action'].'_'.$this->configs['method'].TPL_EXT;
+            $tempFile = $this->configs['action'].'_'.$this->configs['method'].EXT_TPL;
         }
         $compileFile = $tempFile.'.php';
 		if ( file_exists($this->templateDir.$tempFile) ) {
@@ -245,7 +245,7 @@ class Template {
         $this->compileDir = APP_RUNTIME_PATH.'views/'.APP_NAME.'/'.$this->configs['module'].'/';
         $tempDir = APP_PATH.APP_NAME.'/'.$moduleInfo[0].'/template/'.$this->configs['template'].'/';
         $compileDir = APP_RUNTIME_PATH.'views/'.$appName.'/'.$moduleInfo[0].'/';
-        $filename = $moduleInfo[1].TPL_EXT;   //模板文件名称
+        $filename = $moduleInfo[1].EXT_TPL;   //模板文件名称
         $tempFile = $tempDir.$filename;
         $compileFile = $compileDir.$filename.'.php';
         //编译文件

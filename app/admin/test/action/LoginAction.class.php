@@ -8,7 +8,7 @@ use herosphp\http\HttpRequest;
 /**
  * 模板解析测试
  * @since           2013-12-28
- * @author          yangjian<yangjian102621@gmail.com>
+ * @author          yangjian<yangjian102621@163.com>
  */
 class LoginAction extends Controller {
 
