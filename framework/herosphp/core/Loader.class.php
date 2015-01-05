@@ -106,7 +106,7 @@ class Loader {
             $configFiles = glob("*.config.php");
             $configs = array();
             foreach ( $configFiles as $file ) {
-                $tempConfig = include APP_CONFIG_PATH.$file;
+                $tempConfig = include $configDir.$file;
                 $configs = array_merge($configs, $tempConfig);
             }
             self::$CONFIGS[$section][$key] = &$configs;

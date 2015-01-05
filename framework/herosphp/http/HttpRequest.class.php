@@ -67,19 +67,14 @@ class HttpRequest {
 
         $sysConfig = Loader::config();
         $defaultUrl = $sysConfig['default_url'];
-        $this->requestUri = $sysConfig['site_url'].$this->requestUri;
-        $appName = '';  //当前访问的应用名称
         switch ( __REQUEST_MODE__ ) {
             case __PATH_INFO_REQUEST__ :    //path info 访问模式
                 $urlInfo = parse_url($this->requestUri);
                 if ( $urlInfo['path'] ) {
                     $filename = str_replace(EXT_URI, '', $urlInfo['path']);
                     $pathInfo = explode('/', $filename);
-                    if ( $pathInfo[1] ) $appName = $pathInfo[1];
-                    else $appName = $defaultUrl['app'];
-
-                    if ( isset($pathInfo[2]) ) {
-                        $actionMap = explode('-', $pathInfo[2]);
+                    if ( isset($pathInfo[1]) ) {
+                        $actionMap = explode('_', $pathInfo[1]);
                         if ( $actionMap[0] ) $this->setModule($actionMap[0]);
                         if ( $actionMap[1] ) $this->setAction($actionMap[1]);
                         if ( $actionMap[2] ) $this->setMethod($actionMap[2]);
@@ -89,13 +84,20 @@ class HttpRequest {
                     if ( !$this->action ) $this->setAction($defaultUrl['action']);
                     if ( !$this->method ) $this->setMethod($defaultUrl['method']);
 
-                    $this->setParameters($_REQUEST);    //设置参数
+                    //提取参数
+                    if ( isset($pathInfo[2]) ) {
+                        $params = explode('-', $pathInfo[2]);
+                        for ( $i = 0; $i < count($params); $i++ ) {
+                            if ( $i % 2 == 0 ) {
+                                $_GET[$params[$i]] = $params[$i+1];
+                            }
+                        }
+                    }
+
                 }
                 break;
 
             case __NORMAL_REQUEST__ :   //常规访问模式
-                if ( trim($_GET['app']) != '' ) $appName = $_GET['app'];
-                else $appName = $defaultUrl['app'];
 
                 if ( trim($_GET['module']) != '' ) $this->setModule(trim($_GET['module']));
                 else $this->setModule($defaultUrl['module']);
@@ -108,8 +110,7 @@ class HttpRequest {
 
                 break;
         }
-
-        defined('APP_NAME') OR define('APP_NAME', $appName);
+        $this->setParameters($_GET + $_POST);
     }
 
     /**

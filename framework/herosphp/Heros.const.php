@@ -9,13 +9,11 @@
  * Author: <yangjian102621@163.com>
  *-----------------------------------------------------------------------*/
 
-
 ! defined('DEFAULT_APP') && define('DEFAULT_APP', 'admin');       //默认访问的应用名称
 
 //定义请求访问模式
 define('__PATH_INFO_REQUEST__', 1);       //pathinfo 访问模式
 define('__NORMAL_REQUEST__', 2);      //常规访问模式
-define('__CLIENT_REQUEST__', 3);    //客户端请求模式
 define('__REQUEST_MODE__', __PATH_INFO_REQUEST__);
 
 //定义编译路径

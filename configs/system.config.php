@@ -13,9 +13,8 @@ $config = array(
     'res_url' => 'http://www.herosphp.my',      //静态资源的服务器地址(css, image)
     //默认访问的页面
     'default_url' => array(
-        'app' => 'admin',
         'module' => 'test',
-        'action' => 'login',
+        'action' => 'article',
         'method' => 'index' ),
     'template' => 'default',    //默认模板
     'skin' => 'default',    //默认皮肤

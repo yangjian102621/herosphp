@@ -10,7 +10,7 @@ use herosphp\http\HttpRequest;
  * @since           2013-12-28
  * @author          yangjian<yangjian102621@163.com>
  */
-class LoginAction extends Controller {
+class ArticleAction extends Controller {
 
     /**
      * 首页方法
@@ -18,6 +18,7 @@ class LoginAction extends Controller {
      */
     public function index( HttpRequest $request ) {
 
+        __print($request->getParameters());
         __print("invoking the index method....");
         $this->assign('include', '{include admin:member.top}');
         $model = Loader::model('article');
