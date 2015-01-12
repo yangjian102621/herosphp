@@ -1,9 +1,24 @@
 {include blog:test.top}
 
+<body>
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            height: 40px;
+            width: 100%; border: 1px solid red;
+            background: rgb(24, 33, 61);
+            color: #fff;
+        }
+    </style>
+    <div class="sidebar"></div>
     <h1>这是登陆页面</h1>
     {loop $items $value}
-        <h3>{$value.title}</h3>
+    <h3>{$value.title}</h3>
     {/loop}
+</body>
+
 {res:js jquery-1.7.1.min.js}
 {gres:js bootstrap.min.js}
 {gres:js bootstrap.min.css}

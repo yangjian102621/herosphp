@@ -18,8 +18,6 @@ class ArticleAction extends Controller {
      */
     public function index( HttpRequest $request ) {
 
-        __print($request->getParameters());
-        __print("invoking the index method....");
         $this->assign('include', '{include admin:member.top}');
         $model = Loader::model('article');
         $items = $model->getItems(null, "id, url, title", null, 1, 20);
@@ -29,11 +27,14 @@ class ArticleAction extends Controller {
     }
 
     /**
-     * 登录操作
      * @param HttpRequest $request
+     * 文章详情
      */
-    public function signin( HttpRequest $request ) {
-        __print("sign in operation....");
+    public function detail( HttpRequest $request ) {
+        $model = Loader::model('article');
+        $item = $model->getItem(299);
+        __print($item);
+        exit();
     }
 
   

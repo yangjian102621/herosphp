@@ -96,7 +96,7 @@ class WebApplication implements IApplication {
         $actionFile = ucfirst($action).'Action.class.php';
         $filename = $actionDir.$actionFile;
         if ( !file_exists($filename) ) {
-            E("Action file {$actionFile} not found. ");
+            E("Action file {$filename} not found. ");
         }
         include $filename;
         $className = "\\{$module}\\action\\".ucfirst($action)."Action";
