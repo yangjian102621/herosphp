@@ -20,7 +20,8 @@ class ArticleAction extends Controller {
 
         $this->assign('include', '{include admin:member.top}');
         $model = Loader::model('article');
-        $items = $model->getItems(null, "id, url, title", null, 1, 20);
+        $conditions = array("id" => ">300");
+        $items = $model->getItems($conditions, "id, url, title", null, 1, 20);
 
         $this->assign('items', $items);
 
@@ -31,8 +32,10 @@ class ArticleAction extends Controller {
      * 文章详情
      */
     public function detail( HttpRequest $request ) {
+        $id = $request->getParameter('id', 'intval');
+        if ( $id <= 0 ) $id = 299;
         $model = Loader::model('article');
-        $item = $model->getItem(299);
+        $item = $model->getItem($id);
         __print($item);
         exit();
     }

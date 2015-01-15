@@ -30,5 +30,5 @@ HttpRequest 类功能修改，使用短连接 http://www.herosphp.my/admin_membe
 
 实现前端的js表单数据验证功能
 
-数据SQL创建的时候需要增加 like 查询
+数据SQL创建的时候需要增加 like 查询和比较查询(done)
 

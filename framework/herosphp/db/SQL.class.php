@@ -64,6 +64,14 @@ class SQL {
     private $priKey = 'id';
 
     /**
+     * 字段比较操作符
+     * @var array
+     */
+    private static  $operator = array(
+        '>', '<', '>=', '<=', '!='
+    );
+
+    /**
      * SQL唯一实例
      * @var SQL
      */
@@ -137,7 +145,7 @@ class SQL {
                 return " {$this->priKey} in(".implode(',', $where).")";
             }
             //2. array('name' => 'zhangsan', '|age' => '>24')
-            $condi = array();
+            $condi = array(" 1 ");
             foreach ( $where as $key => $value ) {
 
                 if ( $key[0] == '|' ) {
@@ -146,10 +154,34 @@ class SQL {
                 } else {
                     $condi[] = "AND";
                 }
-                $condi[] = "{$key}{$value}";
+                $condi[] = "{$key} ".self::getFormatValue($value);
             }
             return implode(' ', $condi);
         }
+    }
+
+    /**
+     * 获取文档
+     * @param $value
+     * @return string
+     */
+    public static function getFormatValue( $value ) {
+
+        //1. 包含操作符的
+        $opt = substr($value, 0, 2);
+        if ( in_array($value[0], self::$operator)
+            || in_array($opt, self::$operator)) {
+            return $value;
+        }
+        //2. null, !null
+        if ( $value == 'null' ) return "is null";
+        if ( $value == '!null' ) return "is not null";
+        //3. %value, %value%, value%
+        if ( $value[0] == '%' || $value[strlen($value)-1] == '%' ) {
+            return "LIKE '{$value}'";
+        }
+
+        return "={$value}";
     }
 
     /**

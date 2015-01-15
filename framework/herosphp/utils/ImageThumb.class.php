@@ -1,6 +1,6 @@
 <?php
 
-namespace common\utils;
+namespace herosphp\utils;
 
 /**
  * Class ImageThumb 缩略图生成类。支持jpg, png, gif格式的图片
@@ -200,8 +200,9 @@ class ImageThumb {
     protected function  &getImageSource($filename) {
 
         $img = NULL;
-        $extension = $this->getFileExt($filename);
-        switch ( $extension ) {
+        $image = getimagesize($filename);
+        $extension = explode('/', $image['mime']);
+        switch ( $extension[1] ) {
 
             case 'gif':
                 $img = imagecreatefromgif($filename);

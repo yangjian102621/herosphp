@@ -1,4 +1,5 @@
 <?php
+namespace herosphp\utils;
 /**
  * 图表生成工厂类
  * The factory class to make chart

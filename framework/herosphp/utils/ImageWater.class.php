@@ -1,6 +1,6 @@
 <?php
 
-namespace common\utils;
+namespace herosphp\utils;
 
 /********************************************************************************
  * 给图片添加水印, 支持jpg, png, gif格式的图片.<br />

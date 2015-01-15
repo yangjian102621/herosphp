@@ -26,7 +26,7 @@ class CacheAction extends Controller {
             $model = Loader::model('article');
             $item = $model->getItems(null,null,"id desc",1,20);
             if ( $CACHER->set(null, $item) ) {
-                __print("生成缓存成功！");
+                __print("生成动态缓存成功！");
             }
 
         } else {
@@ -45,6 +45,7 @@ class CacheAction extends Controller {
             $model = Loader::model('article');
             $item = $model->getItem(299);
             $CACHER->set(null, $item);
+            __print("生成动态缓存成功！");
         } else {
             __print($item);
         }
@@ -63,7 +64,7 @@ class CacheAction extends Controller {
             $this->assign('item', $item);
             $html = $this->getExecutedHtml();
             if ( $CACHER->set(null, $html) ) {
-                __print("生成缓存成功！");
+                __print("生成静态缓存成功！");
             }
 
         } else {
