@@ -1,6 +1,6 @@
 <?php
 
-namespace common\utils;
+namespace herosphp\utils;
 
 /**
  * Verify code class. 验证码生成类 <br />
@@ -34,7 +34,7 @@ class VerifyCode {
 	/**
 	 * get the instance of the VerifyCode.
 	 *
-	 * @return	$_instance
+	 * @return	\herosphp\utils\VerifyCode
 	*/
 	public static function getInstance() {
 		if ( ! (self::$_instance instanceof self) ) {
@@ -56,14 +56,14 @@ class VerifyCode {
 		}
 		return self::$_instance;
 	}
-	
-	/**
-	 * generate some new verify code chars
-	 *	and draw them on the image. <br />
-	 *
-	 * @param	$_size		number of chars to generate
-	 * @return	$_codes
-	 */
+
+    /**
+     * generate some new verify code chars
+     *    and draw them on the image. <br />
+     *
+     * @param int $_size number of chars to generate
+     * @return  string
+     */
 	public function generate( $_size = 3 ) {
 		assert($_size > 0);
 		
@@ -92,11 +92,11 @@ class VerifyCode {
 		//imagefilter($this->_image, IMG_FILTER_EMBOSS);
 		
 		switch ( mt_rand() % 5 ) {
-		case 0:	$_color = imagecolorallocate($this->_image, 128, 128, 128);	break;	//gray
-		case 1:	$_color = imagecolorallocate($this->_image, 16, 9, 140);	break;	//blue
-		case 2: $_color = imagecolorallocate($this->_image, 65, 125, 0);	break;	//green
-		case 3: $_color = imagecolorallocate($this->_image, 255, 75, 45);	break;	//read
-		case 4: $_color = imagecolorallocate($this->_image, 238, 175, 7);	break;	//orange
+            case 0:	$_color = imagecolorallocate($this->_image, 128, 128, 128);	break;	//gray
+            case 1:	$_color = imagecolorallocate($this->_image, 16, 9, 140);	break;	//blue
+            case 2: $_color = imagecolorallocate($this->_image, 65, 125, 0);	break;	//green
+            case 3: $_color = imagecolorallocate($this->_image, 255, 75, 45);	break;	//read
+            case 4: $_color = imagecolorallocate($this->_image, 238, 175, 7);	break;	//orange
 		}
 		//$_color = imagecolorallocate($this->_image, 238, 175, 7);
 		$_font = __DIR__ . DIRECTORY_SEPARATOR . 'fonts' . DIRECTORY_SEPARATOR . 'ariblk.ttf';
@@ -114,12 +114,13 @@ class VerifyCode {
 							$_color, $_font, $this->_codes[$i]);
 		}
 	}
-	
-	/**
-	 * save the image resource to a file. <br />
-	 *
-	 * @param	$_file
-	 */
+
+    /**
+     * save the image resource to a file. <br />
+     *
+     * @param    $_file
+     * @throws Exception
+     */
 	public function saveToFile( $_file ) {
 		throw new Exception('Invalid call to function saveToFile.');
 	}
@@ -128,7 +129,7 @@ class VerifyCode {
 	 * show the image resource to the browser
 	 *	by send a header message. <br />
 	 *
-	 * @param	$_suffix image suffix
+	 * @param	string $_suffix image suffix
 	 */
 	public function show( $_suffix = 'png' ) {
 		//echo implode(',', $this->_codes);

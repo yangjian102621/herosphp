@@ -18,7 +18,7 @@ HttpRequest 类功能修改，使用短连接 http://www.herosphp.my/admin_membe
 
 更改Heros.const.php常量后缀 TPL_EXT URI_EXT, 更改邮箱yangjian102621@gmail.com yangjian102621@163.com (done)
 
-服务的bean管理
+服务的bean管理(done)
 
 发送http请求工具
 	采用fsocketopen实现 (done)

@@ -1,4 +1,5 @@
 <?php
+namespace herosphp\utils;
 /**
  * PHP 生成zip压缩文件类(pack and compress the point file or direcoty to zip file) <br />
  * 支持两种形式传入文件 <br/>
@@ -27,9 +28,6 @@ class PHPZip {
 	/* 各个文件夹在压缩包中的相对路径, hash数组 */
 	private $zip_dir = array();
 	
-	/* 是否开启调试信息 */
-	private $_debug = FALSE;
-	
 	/**
 	 * constructor (构造函数)
 	 * @param	$_file		file to be pack and compressed.
@@ -37,8 +35,7 @@ class PHPZip {
 	public function __construct( $_file ) {
 		//check the Apache server is surpport zip compress.
 		if ( !@extension_loaded('zip') && !@function_exists("gzcompress") ) {
-			$this->showErrorMessage("当前服务器不支持压缩，请开启相关配置。");
-			exit();
+			E("当前服务器不支持压缩，请更改PHP的相关配置。");
 		}
 		@set_time_limit(0);
 		$this->file_path = $_file;
@@ -46,10 +43,8 @@ class PHPZip {
 			if ( file_exists($_file) ) {
 				$path_info = pathinfo($this->file_path);
 				$this->zip_name = dirname($this->file_path).'/'.$path_info['filename'].'.zip';
-				if ( $this->_debug )
-					$this->showErrorMessage("zip压缩文件的路径是：".$this->zip_name); 
 			} else {
-				$this->showErrorMessage("您要压缩的文件或目录不存在，请选择正确的文件路径。");	
+				E("您要压缩的文件或目录不存在，请选择正确的文件路径。");
 			}
 		} else {
 			//将指定的多个文件打包, 默认生成的文件名称为test.zip
@@ -61,7 +56,6 @@ class PHPZip {
 	/**
 	 * create zip file method.
 	 * 
-	 * @param	$_file		file or dir to be compressed.
 	 * @param	$_zip_name	filename of zip file.
 	 * @return	boolean 	TRUE for success and FALSE for faild.	
 	 */
@@ -73,13 +67,11 @@ class PHPZip {
 		$this->zip = new ZipArchive();
 		if ( !file_exists($this->zip_name) ) {
 			if ( $this->zip->open($this->zip_name, ZIPARCHIVE::CREATE) == FALSE ) {
-				$this->showErrorMessage("创建压缩文件失败");
-				return FALSE;	
+				E("创建压缩文件失败");
 			}
 		} else {
 			if ( $this->zip->open($this->zip_name, ZIPARCHIVE::OVERWRITE) == FALSE ) {
-				$this->showErrorMessage("创建压缩文件失败");
-				return FALSE;	
+				E("创建压缩文件失败");
 			}	
 		}
 		
@@ -97,13 +89,12 @@ class PHPZip {
 			return FALSE;	
 		}
 	}
-	
-	/**
-	 * method to add files to zip pack file. (添加文件到zip压缩包,如果是目录采用递归添加)
-	 * 
-	 * @param		$_files    files or directory to pack. (需要打包的文件或者文件夹)
-	 * @param		$zip_dir	zip file directory. (文件在zip文件的相对路径)	
-	 */
+
+    /**
+     * method to add files to zip pack file. (添加文件到zip压缩包,如果是目录采用递归添加)
+     * @param string $_files 需要打包的文件或者文件夹
+     * @param string $_zip_dir
+     */
 	private function addFilesToZip( $_files, $_zip_dir = NULL ) {
 		
 		if ( is_dir($_files) ) {
@@ -124,9 +115,6 @@ class PHPZip {
 						} else {
 							$zip_name = empty($this->zip_dir) ? $filename : $this->zip_dir[$_files].'/'.$filename;
 							$this->zip->addFile($_files.'/'.$filename, $zip_name);
-							
-							if ( $this->_debug )
-								$this->showErrorMessage("需要打包文件路径：".$_files.'/'.$filename.'----压缩文件路径：'.$this->zip_dir[$_files]); 
 						}
 					}
 				}
@@ -137,10 +125,5 @@ class PHPZip {
 		}
 	}
 	
-	/* show error message */
-	private function showErrorMessage( $_msg ) {
-		echo '<div style="color:red;">'.$_msg.'</div>';
-	}
- 	
 }
 ?>
