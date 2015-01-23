@@ -32,3 +32,8 @@ HttpRequest 类功能修改，使用短连接 http://www.herosphp.my/admin_membe
 
 数据SQL创建的时候需要增加 like 查询和比较查询(done)
 
+
+测试
+C_Model类测试 (done)
+bean测试(done)
+

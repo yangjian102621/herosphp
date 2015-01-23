@@ -29,7 +29,7 @@ define('APP_ROOT', __DIR__.'/');
 define('APP_PATH', APP_ROOT."app/");
 
 //定义框架根目录
-define('APP_FRAME_PATH', APP_ROOT.'/framework/herosphp/');
+define('APP_FRAME_PATH', APP_ROOT.'framework/herosphp/');
 
 //引入系统常量文件
 require APP_FRAME_PATH.'Heros.const.php';

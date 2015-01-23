@@ -51,24 +51,24 @@ namespace herosphp\model;
 
      /**
       * 获取数据列表
-      * @param $conditions 查询条件
-      * @param $fields 查询字段
-      * @param $order 排序
-      * @param $page 当前页
-      * @param $pagesize 每页数量
-      * @param $group 分组字段
-      * @param $having 分组条件
+      * @param string|array $conditions 查询条件
+      * @param string|array $fields 查询字段
+      * @param string|array $order 排序
+      * @param int $page 当前页
+      * @param int $pagesize 每页数量
+      * @param string $group 分组字段
+      * @param string|array $having 分组条件
       * @return array
       */
      public function getItems( $conditions, $fields, $order, $page, $pagesize, $group, $having );
 
      /**
       * 获取单条数据
-      * @param $conditions 查询条件
-      * @param $fields 查询字段
-      * @param $order 排序
-      * @param $group 分组字段
-      * @param $having 分组条件
+      * @param string|array $conditions 查询条件
+      * @param string|array $fields 查询字段
+      * @param string|array $order 排序
+      * @param string $group 分组字段
+      * @param string|array $having 分组条件
       * @return mixed
       */
      public function getItem( $conditions, $fields, $order, $group, $having );
@@ -98,36 +98,36 @@ namespace herosphp\model;
 
      /**
       * 增加某一字段的值
-      * @param $field
-      * @param $offset 增量
-      * @param $id
+      * @param tring $field
+      * @param int $offset 增量
+      * @param int $id
       * @return boolean
       */
      public function increase( $field, $offset, $id );
 
      /**
       * 批量增加指定字段的值
-      * @param $field
-      * @param $offset
-      * @param $conditions
+      * @param string $field
+      * @param int $offset 增量
+      * @param array|string $conditions
       * @return mixed
       */
      public function batchIncrease( $field, $offset, $conditions );
 
      /**
       * 减少某一字段的值
-      * @param $field
-      * @param $offset
-      * @param $id
+      * @param string $field
+      * @param int $offset 增量
+      * @param int $id
       * @return mixed
       */
      public function reduce( $field, $offset, $id );
 
      /**
       * 批量减少某一字段的值
-      * @param $field
-      * @param $offset
-      * @param $conditions
+      * @param string $field
+      * @param int $offset 增量
+      * @param array|string $conditions
       * @return mixed
       */
      public function batchReduce( $field, $offset, $conditions );

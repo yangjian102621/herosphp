@@ -35,7 +35,7 @@ class Loader {
      * 加载一个类的参数方式：'article.model.articleModel'
      * 加载一个包的参数方式：'article.service.*'
      * @param $classPath
-     * @param $type
+     * @param int $type 导入了类包的类别，详情见Herosphp.const.php
      * @param $extension
      * @return boolean
      */
@@ -48,8 +48,12 @@ class Loader {
 
         //组合文件路径
         switch ( $type ) {
-            case IMPORT_APP :
+            case IMPORT_APP_ROOT :
                 $path = APP_PATH;
+                break;
+
+            case IMPORT_APP :
+                $path = APP_PATH.APP_NAME.'/';
                 break;
 
             case IMPORT_FRAME :

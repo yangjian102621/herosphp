@@ -27,9 +27,10 @@ define('RES_PATH', '/res/');
 define('TIME_ZONE', 'PRC');
 
 //定义import加载类的类别
-define('IMPORT_APP', 1);    //加载应用模块中的class
-define('IMPORT_FRAME', 2);  //加载框架中的class
-define('IMPORT_CUSTOM', 3); //加载自定义路径中的class
+define('IMPORT_APP', 1);    //加载当前应用模块中的class
+define('IMPORT_APP_ROOT', 2);    //加载应用根目录模块中的class
+define('IMPORT_FRAME', 3);  //加载框架中的class
+define('IMPORT_CUSTOM', 4); //加载自定义路径中的class
 
 define('EXT_PHP', '.class.php');   //加载php文件
 define('EXT_MODEL', '.model.php');   //加载model文件

@@ -40,6 +40,32 @@ class ArticleAction extends Controller {
         exit();
     }
 
+    /**
+     * 更新
+     * @param HttpRequest $request
+     */
+    public function update( HttpRequest $request ) {
+
+        $model = Loader::model('article');
+        $id = 4779;
+        //$model->increase('hits', 10, $id); //点击率+10
+        //$model->reduce('hits', 5, $id);    //点击率-5
+        $model->set('hits', 100, $id);   //设置点击率为100
+        __print("更新文章 4779 点击量");die();
+    }
+
+    /**
+     * @param HttpRequest $request
+     */
+    public function delete( HttpRequest $request ) {
+
+        $id = $request->getParameter('id', 'intval');
+        $model = Loader::model('article');
+        if ( $id > 0 ) {
+            var_dump($model->delete($id));
+        }
+        die();
+    }
   
 }
 ?>

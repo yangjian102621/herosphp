@@ -88,7 +88,7 @@ class C_Model implements IModel {
      */
     public function insert($data)
     {
-        // TODO: Implement insert() method.
+        return $this->db->insert($this->table, $data);
     }
 
     /**
@@ -96,7 +96,7 @@ class C_Model implements IModel {
      */
     public function replace($data)
     {
-        // TODO: Implement replace() method.
+        return $this->db->replace($this->table, $data);
     }
 
     /**
@@ -104,7 +104,7 @@ class C_Model implements IModel {
      */
     public function delete($id)
     {
-        // TODO: Implement delete() method.
+        return $this->db->delete($this->table, "{$this->primaryKey}={$id}");
     }
 
     /**
@@ -112,7 +112,7 @@ class C_Model implements IModel {
      */
     public function deletes($conditions)
     {
-        // TODO: Implement deletes() method.
+        return $this->db->delete($this->table, $conditions);
     }
 
     /**
@@ -142,7 +142,7 @@ class C_Model implements IModel {
      */
     public function update($data, $id)
     {
-        // TODO: Implement update() method.
+        return $this->db->update($this->table, $data, "{$this->primaryKey}={$id}");
     }
 
     /**
@@ -150,7 +150,7 @@ class C_Model implements IModel {
      */
     public function updates($data, $conditions)
     {
-        // TODO: Implement updates() method.
+        return $this->db->update($this->table, $data, $conditions);
     }
 
     /**
@@ -158,7 +158,7 @@ class C_Model implements IModel {
      */
     public function count($conditions)
     {
-        // TODO: Implement count() method.
+        return $this->db->count($this->table, $conditions);
     }
 
     /**
@@ -166,7 +166,9 @@ class C_Model implements IModel {
      */
     public function increase($field, $offset, $id)
     {
-        // TODO: Implement increase() method.
+        $conditions = SQL::create($this->primaryKey)->buildConditions($id);
+        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
+        return $this->db->query($query);
     }
 
     /**
@@ -174,7 +176,9 @@ class C_Model implements IModel {
      */
     public function batchIncrease($field, $offset, $conditions)
     {
-        // TODO: Implement batchIncrease() method.
+        $conditions = SQL::create($this->primaryKey)->buildConditions($conditions);
+        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
+        return $this->db->query($query);
     }
 
     /**
@@ -182,7 +186,9 @@ class C_Model implements IModel {
      */
     public function reduce($field, $offset, $id)
     {
-        // TODO: Implement reduce() method.
+        $conditions = SQL::create($this->primaryKey)->buildConditions($id);
+        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
+        return $this->db->query($query);
     }
 
     /**
@@ -190,7 +196,9 @@ class C_Model implements IModel {
      */
     public function batchReduce($field, $offset, $conditions)
     {
-        // TODO: Implement batchReduce() method.
+        $conditions = SQL::create($this->primaryKey)->buildConditions($conditions);
+        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
+        return $this->db->query($query);
     }
 
     /**
@@ -198,7 +206,8 @@ class C_Model implements IModel {
      */
     public function set($field, $value, $id)
     {
-        // TODO: Implement set() method.
+        $data = array($field => $value);
+        return $this->db->update($this->table, $data, "{$this->primaryKey}={$id}");
     }
 
     /**
@@ -206,7 +215,8 @@ class C_Model implements IModel {
      */
     public function sets($field, $value, $conditions)
     {
-        // TODO: Implement sets() method.
+        $data = array($field => $value);
+        return $this->db->update($this->table, $data, $conditions);
     }
 
     /**
@@ -214,7 +224,7 @@ class C_Model implements IModel {
      */
     public function beginTransaction()
     {
-        // TODO: Implement beginTransaction() method.
+        $this->db->beginTransaction();
     }
 
     /**
@@ -222,7 +232,7 @@ class C_Model implements IModel {
      */
     public function commit()
     {
-        // TODO: Implement commit() method.
+        $this->db->commit();
     }
 
     /**
@@ -230,7 +240,7 @@ class C_Model implements IModel {
      */
     public function rollback()
     {
-        // TODO: Implement rollback() method.
+        $this->db->rollBack();
     }
 
     /**
@@ -279,22 +289,6 @@ class C_Model implements IModel {
     public function getRules()
     {
         return $this->rules;
-    }
-
-    /**
-     * @param string $table
-     */
-    public function setTable($table)
-    {
-        $this->table = $table;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTable()
-    {
-        return $this->table;
     }
 
 }

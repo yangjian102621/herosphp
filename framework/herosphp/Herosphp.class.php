@@ -79,7 +79,7 @@ class Herosphp {
             'herosphp\db\SQL'       => 'db.SQL',
             'herosphp\model\C_Model'       => 'model.C_Model',
             'herosphp\cache\CacheFactory'       => 'cache.CacheFactory',
-            'HomecommonAction'  => 'core.HomecommonAction',
+            'herosphp\bean\Beans'  => 'bean.Beans',
             'AjaxResult'        => 'public.AjaxResult');
     }
 

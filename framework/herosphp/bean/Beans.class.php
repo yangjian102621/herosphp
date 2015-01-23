@@ -13,6 +13,8 @@ namespace herosphp\bean;
 use herosphp\core\Loader;
 use herosphp\exception\BeanException;
 
+Loader::import('exception.BeanException', IMPORT_FRAME);
+Loader::import('bean.BeanUtil', IMPORT_FRAME);
 abstract class Beans {
 
     /**
@@ -94,7 +96,7 @@ abstract class Beans {
         if( is_array($beanConfig) && $beanConfig['@type'] ){
             switch ( $beanConfig['@type'] ) {
                 //单个对象
-                case Beans::TYPE_OBJECT:
+                case Beans::BEAN_OBJECT:
                     $bean = BeanUtil::builtInstance($beanConfig['@class'], $beanConfig['@params']);
                     //属性装载
                     $attributes = $beanConfig['@attributes'];
@@ -109,7 +111,7 @@ abstract class Beans {
                     return $bean;
 
                 //对象数组
-                case Beans::TYPE_OBJECT_ARRAY:
+                case Beans::BEAN_OBJECT_ARRAY:
                     $beans = array();
                     $bean = null;
                     foreach($beanConfig['@attributes'] as $beanKey=>$subBeanConfig){
