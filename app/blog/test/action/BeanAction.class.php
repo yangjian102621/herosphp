@@ -8,7 +8,7 @@ use herosphp\http\HttpRequest;
 
 /**
  * Bean工具测试
- * @since           2013-12-28
+ * @since           2015-01-28
  * @author          yangjian<yangjian102621@163.com>
  */
 class BeanAction extends Controller {
@@ -19,6 +19,7 @@ class BeanAction extends Controller {
      */
     public function index( HttpRequest $request ) {
 
+        __print($request->getParameters());
         __print("Bean 模块测试，使用bean来管理服务。");
         $userService = Beans::get('test.user.service');
         $userService->login();

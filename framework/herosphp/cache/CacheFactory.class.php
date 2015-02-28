@@ -40,7 +40,7 @@ class CacheFactory {
      * @param array $configs
      * @return \herosphp\cache\interfaces\ICache
      */
-    public static function  create( $key, $configs = null ) {
+    public static function  create( $key='file', $configs = null ) {
         //如果缓存对象已经创建，则则直接返回
         if ( isset(self::$CACHE_SET[$key]) ) {
             return self::$CACHE_SET[$key];

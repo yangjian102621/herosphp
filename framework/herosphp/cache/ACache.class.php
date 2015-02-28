@@ -94,6 +94,10 @@ Abstract class ACache {
     public function getCacheFile( $key = null, $extension='.cache' )
     {
         $cacheDir = $this->configs['cache_dir'];
+        /**
+         * 1. 如果有传入了缓存key,则默认为公共缓存，缓存文件全部放入公共缓存中
+         * 2. 如果key=null,则认为是模块的特殊缓存，按照模块将缓存分类
+         */
         if ( $key ) {
             $dir = getHashCode($key) % self::$_FILE_OPACITY;
             $cacheDir .= "common/{$dir}/";

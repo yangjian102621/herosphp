@@ -9,7 +9,6 @@
  * Author: <yangjian102621@163.com>
  * @version 1.2.1
  *-----------------------------------------------------------------------*/
-
 //设置页面编码
 header("Content-Type:text/html; charset=utf-8");
 
@@ -39,5 +38,3 @@ require APP_FRAME_PATH.'Herosphp.class.php';
 
 //启动应用程序
 Herosphp::run();
-
-?>

@@ -26,9 +26,11 @@ HttpRequest 类功能修改，使用短连接 http://www.herosphp.my/admin_membe
 
 实现数据过滤器和自动验证功能
 
-完善框架的开发文档
+完善框架的开发文档(done)
 
 实现前端的js表单数据验证功能
+
+session 会话重写实现
 
 数据SQL创建的时候需要增加 like 查询和比较查询(done)
 
