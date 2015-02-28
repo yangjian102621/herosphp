@@ -3,7 +3,6 @@ namespace test\action;
 
 use herosphp\bean\Beans;
 use herosphp\core\Controller;
-use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
 
 /**
