@@ -8,7 +8,7 @@ use herosphp\http\HttpRequest;
 
 /**
  * 缓存测试
- * @since           2013-12-28
+ * @since           2015-01-28
  * @author          yangjian<yangjian102621@163.com>
  */
 class CacheAction extends Controller {
@@ -35,6 +35,20 @@ class CacheAction extends Controller {
 
         die();
 
+    }
+
+    /**
+     * 通用缓存
+     * @param HttpRequest $request
+     */
+    public function common( HttpRequest $request ) {
+
+        $CACHE = CacheFactory::create('file');
+        $key  = 'test.cache.key';
+        $CACHE->set($key, 'this is the test cache data. fuck it what ever!');
+        $data = $CACHE->get($key);
+        __print($data);
+        die();
     }
 
     public function detail( HttpRequest $request ) {

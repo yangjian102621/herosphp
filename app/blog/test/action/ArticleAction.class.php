@@ -7,7 +7,7 @@ use herosphp\http\HttpRequest;
 
 /**
  * 模板解析测试
- * @since           2013-12-28
+ * @since           2015-01-12
  * @author          yangjian<yangjian102621@163.com>
  */
 class ArticleAction extends Controller {

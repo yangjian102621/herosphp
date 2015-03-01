@@ -40,7 +40,6 @@ HerosPHP框架
 
 5. 数据验证类
 
-6. 输出统计图
 
 四、组件的解析 ，插件开发。(暂缓开发)
 	(1) sql组件：解析并生成SQL语句
@@ -52,7 +51,7 @@ HerosPHP框架
 
 2. 实现URL的path-info 访问模式 , Urlparse.class.php
 
-3. 实现首页, 定义好系统常量，配置好系统的配置文件。 index.php  SysCfg.class.php
+3. 实现首页, 定义好系统常量，配置好系统的配置文件。 index.php
 
 4. 实现系统框架的统一入口文件 初始化系统的配置全局变量
 

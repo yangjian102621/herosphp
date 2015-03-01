@@ -80,6 +80,7 @@ class Herosphp {
             'herosphp\model\C_Model'       => 'model.C_Model',
             'herosphp\cache\CacheFactory'       => 'cache.CacheFactory',
             'herosphp\bean\Beans'  => 'bean.Beans',
+            'herosphp\session\Session'  => 'session.Session',
             'AjaxResult'        => 'public.AjaxResult');
     }
 

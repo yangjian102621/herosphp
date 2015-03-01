@@ -9,8 +9,6 @@
  * Author: <yangjian102621@163.com>
  *-----------------------------------------------------------------------*/
 
-! defined('DEFAULT_APP') && define('DEFAULT_APP', 'admin');       //默认访问的应用名称
-
 //定义请求访问模式
 define('__PATH_INFO_REQUEST__', 1);       //pathinfo 访问模式
 define('__NORMAL_REQUEST__', 2);      //常规访问模式
@@ -37,13 +35,13 @@ define('EXT_MODEL', '.model.php');   //加载model文件
 define('EXT_HTML', '.html');    //加载html文件
 
 define('EXT_TPL', '.html');     //模板文件后缀
-define('EXT_URI', '.html');     //uri 伪静态路径后缀
+define('EXT_URI', '.shtml');     //uri 伪静态路径后缀
 
 /**
  * 以下定义数据库类别
  */
 define('DB_TYPE_MYSQL', 1);     //mysql数据库
-define('DB_TYPE_POSTGRE', 1);   //PostgreSQL数据库
+define('DB_TYPE_POSTGRE', 2);   //PostgreSQL数据库
 define('DB_TYPE', DB_TYPE_MYSQL);   //默认使用mysql数据库
 
 /**
@@ -53,4 +51,10 @@ define('DB_TYPE', DB_TYPE_MYSQL);   //默认使用mysql数据库
 define('DB_ACCESS_SINGLE', 1);  //单台服务器访问模式
 define('DB_ACCESS_CLUSTERS', 2);  //数据库服务器集群调度访问模式
 define('DB_ACCESS', DB_ACCESS_SINGLE);  //默认使用单台数据库服务器
-?>
+
+/**
+ * 定义session介质
+ * 1. file => 文件介质存储 (default)
+ * 2. memo => memcache介质存储
+ */
+define('SESSION_HANDLER', 'memo');
