@@ -12,7 +12,7 @@
 
 $config = array(
     'template' => 'default',    //默认模板
-    'skin' => 'blue',    //默认皮肤
+    'skin' => 'default',    //默认皮肤
     'temp_cache' => 0,
 );
 

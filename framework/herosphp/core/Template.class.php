@@ -208,6 +208,8 @@ class Template {
 		//如果没有传入模板文件，则访问默认模块下的默认模板
         if ( !$tempFile ) {
             $tempFile = $this->configs['action'].'_'.$this->configs['method'].EXT_TPL;
+        } else {
+            $tempFile .= EXT_TPL;
         }
         $compileFile = $tempFile.'.php';
 		if ( file_exists($this->templateDir.$tempFile) ) {

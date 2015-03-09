@@ -81,6 +81,7 @@ class Herosphp {
             'herosphp\cache\CacheFactory'       => 'cache.CacheFactory',
             'herosphp\bean\Beans'  => 'bean.Beans',
             'herosphp\session\Session'  => 'session.Session',
+            'herosphp\filter\Filter'  => 'filter.Filter',
             'AjaxResult'        => 'public.AjaxResult');
     }
 

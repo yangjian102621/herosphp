@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>表单验证测试</title>
+    {gres:css pure-min.css}
+    {gres:js zepto.min.js}
+    {gres:js JForm.js}
+    {cres:css global/js/icheck/css/icheck_all.css}
+    {cres:js global/js/icheck/icheck.min.js}
+</head>
+<body>
+    <div style="padding: 20px;">
+        <form class="pure-form pure-form-stacked" id="register-form" autocomplete="off">
+            <fieldset>
+                <legend>表单数据验证</legend>
+
+                <label for="email">邮箱</label>
+                <input id="email" type="text" dtype="email" ajax="/test_form_email.shtml" placeholder="邮箱" required>
+
+                <label for="password">密码</label>
+                <input id="password" type="text" dtype="password" placeholder="密码" required>
+
+                <label for="password">重复密码</label>
+                <input id="repass" type="text" dtype="repass" for-password="password" placeholder="重复密码" required>
+
+                <label for="password">姓名</label>
+                <input id="name" type="text" dtype="string" max-length="20" min-length="6" placeholder="姓名" required>
+
+                <label for="password">身份证号码</label>
+                <input id="idnum" type="text" dtype="idnum" max-length="20" min-length="6" placeholder="身份证号码" required>
+
+                <label for="state">省份</label>
+                <select id="state" placeholder="省份">
+                    <option>湖南省</option>
+                    <option>广东省</option>
+                    <option>湖北省</option>
+                </select>
+
+                <label class="pure-checkbox">兴趣爱好</label>
+                <input name="cbox" type="checkbox" placeholder="复选框" max-check="3" min-check="1"> 看书
+                <input name="cbox" type="checkbox"> 音乐
+                <input name="cbox" type="checkbox"> 绘画
+                <input name="cbox" type="checkbox"> 运动
+
+                <p>
+                    <button type="submit" class="pure-button pure-button-primary" onclick="return checkForm();">立即注册</button>
+                </p>
+            </fieldset>
+        </form>
+    </div>
+
+    <script>
+        function checkForm() {
+
+            var __form = new JForm({
+                formId : 'register-form',
+                showMessage : function( type, message, ele ) {
+                    alert(type+message);
+                },
+                continueCheck : false
+            });
+
+            alert(__form.checkFormData());
+
+        }
+
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-blue',
+            increaseArea: '20%' // optional
+        });
+
+    </script>
+</body>
+</html>
