@@ -14,6 +14,7 @@ namespace herosphp\db\mysql;
 use herosphp\core\Debug;
 use herosphp\core\Loader;
 use herosphp\db\interfaces\Idb;
+use herosphp\db\SQL;
 use herosphp\exception\DBException;
 use \PDO;
 use \PDOException;
@@ -212,7 +213,7 @@ class SingleDB implements Idb {
     public function count($_table, $_conditons = null)
     {
         $_query = "SELECT count(*) as total FROM {$_table}";
-        if ( $_conditons ) $_query .= " WHERE ".SQL::createCondition($_conditons);
+        if ( $_conditons ) $_query .= " WHERE ".SQL::buildConditions($_conditons);
         $_result = $this->query($_query);
         $_res = $_result->fetch(PDO::FETCH_ASSOC);
         return $_res['total'];
@@ -245,6 +246,15 @@ class SingleDB implements Idb {
     {
         if ( $this->link == null ) $this->connect();
         $this->link->rollBack();
+    }
+
+    /**
+     * @see \herosphp\db\interfaces\Idb::inTransaction()
+     */
+    public function inTransaction()
+    {
+        if ( $this->link == null ) $this->connect();
+        return $this->link->inTransaction();
     }
 
     /***

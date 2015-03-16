@@ -1,6 +1,10 @@
 <?php
+
+namespace herosphp\utils;
+
 /*---------------------------------------------------------------------
  * HerosPHP 文件操作工具类
+ * @package herosphp\utils
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -8,8 +12,6 @@
  * ---------------------------------------------------------------------
  * Author: <yangjian102621@163.com>
  *-----------------------------------------------------------------------*/
-
-namespace herosphp\utils;
 
 class FileUtils {
 
@@ -47,16 +49,27 @@ class FileUtils {
      * @return boolean
      */
     public static function removeDirs( $dir ) {
-        if ( self::isEmptyDir($dir) ) return @rmdir($dir);
-        chdir($dir);    //切换到指定目录
-        $files = glob("*");    //获取该目录下的所有文件
-        foreach ( $files as $filename ) {
-            //如果是目录，递归删除
-            $file = $dir.'/'.$filename;
-            if ( is_dir($file) ) return self::removeDirs($file);
-            if ( is_file($file) ) @unlink($file);
+
+        $handle = opendir($dir);
+        //删除文件夹下面的文件
+        while ( $file=readdir($handle) ) {
+            if( $file != "." && $file != ".." ) {
+                $filename = $dir."/".$file;
+                if( !is_dir($filename) ) {
+                    @unlink($filename);
+                } else {
+                    self::removeDirs($filename);
+                }
+            }
         }
-        return  true;
+        closedir($handle);
+
+        //删除当前文件夹
+        if( rmdir($dir) ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

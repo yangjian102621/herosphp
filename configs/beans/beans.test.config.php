@@ -12,6 +12,10 @@ $beans = array(
         '@class' => 'test\service\UserService'
     ),
 
+    'test.user.service' => array(
+        '@type' => Beans::BEAN_OBJECT,
+        '@class' => 'test\service\UserService'
+    ),
 
 );
 return $beans;

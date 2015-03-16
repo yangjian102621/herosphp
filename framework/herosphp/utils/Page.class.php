@@ -1,24 +1,26 @@
 <?php
-/**
+
+namespace herosphp\utils;
+
+/*---------------------------------------------------------------------
  * 此类实现分页, 不依赖数据数的分页 <br /> content paging class.
- * 注：此类为转为HerosPHP设计，如果不使用HerosPHP，请使用常规访式版本page_commom.class.php
- * *******************************************************************************
- * 许可声明：此为专门为网络星空PHP高性能建站班级量身定制的"轻量级"PHP框架
- * 版权所有 (C) 2013.03-now 网络星空工作室研发中心 并保留所有权利。   
- * ********************************************************************************
- * @author 	yangjian<yangjian10262@gmail.com>
- * @version	1.2
- * @link 	http://www.blog518.com
- */
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@163.com>
+ *-----------------------------------------------------------------------*/
+
 //定制分页打印页数
-define( 'TOTAL_NUM', 1<<0 );        //打印总页数
+define( 'PAGE_TOTAL_NUM', 1<<0 );        //打印总页数
 define( 'PAGE_PREV', 1<<1 );        //打印上一页
 define( 'PAGE_DOT', 1<< 2);         //打印省略号
 define( 'PAGE_LIST', 1<<3 );        //打印列表页
 define( 'PAGE_NEXT', 1<<4 );        //打印下一页
 define( 'PAGE_INPUT', 1<<5 );       //打印跳转页
-define( 'DEFAULT_STYLE', TOTAL_NUM | PAGE_PREV | PAGE_LIST | PAGE_NEXT | PAGE_INPUT );  //默认样式
-define( 'FULL_STYLE', DEFAULT_STYLE | PAGE_DOT );
+define( 'DEFAULT_PAGE_STYLE', PAGE_TOTAL_NUM | PAGE_PREV | PAGE_LIST | PAGE_NEXT | PAGE_INPUT );  //默认样式
+define( 'FULL_PAGE_STYLE', DEFAULT_PAGE_STYLE | PAGE_DOT );
 
 class Page {
     /* 总记录数 */
@@ -46,7 +48,7 @@ class Page {
     
     private $_limit = ' LIMIT 0, 10';
     
-    public function __construct( $rows_num, $pagesize, $page_now, $_out_page=3 ) {
+    public function __construct( $rows_num, $pagesize, $page_now, $_out_page=2 ) {
         
         $this->_rows_num = $rows_num;
         $this->_pagesize = $pagesize;
@@ -77,26 +79,26 @@ class Page {
     
     /**
      * 获取url
-     * @param   string      $_args      用户参数
+     * @return string
      */
     private function getUrl() {
-        $_path_info = parse_url($_SERVER['REQUEST_URI']);
-        $_url = $_path_info['path'].'?';
-        if ( isset($_path_info['query']) ) {
-            parse_str($_path_info['query'], $_query);
-            if ( isset($_query['pageNow']) ) unset($_query['pageNow']);
-            $_url .= http_build_query($_query);
+        $url = url($_SERVER['REQUEST_URI']);
+        $url = removeUrlArgs($url, 'pageNow');
+        $url = trim($url, '/');
+        $pos = strrpos($url, '/');
+        //判断是否还有其他参数
+        if ( $pos === false ) {
+            return '/'.$url.'/pageNow'.PARAM_SEP;
+        } else {
+            return '/'.$url.PARAM_SEP.'pageNow'.PARAM_SEP;
         }
-        if ( !empty($_query) ) $_url .= '&pageNow=';
-        else $_url .= 'pageNow='; 
-        return $_url;
     }
     
     /* 打印上一页 */
     private function prevPage() {
         $_str = '';
         if ( $this->_pagenow > 1 ) {
-            $_str .= '<li><a href="'.$this->_url.($this->_pagenow - 1).'">'.$this->_page_prev_txt.'</a></li>'; 
+            $_str .= '<li><a href="'.url($this->_url.($this->_pagenow - 1)).'">'.$this->_page_prev_txt.'</a></li>';
         } else {
             $_str .= '<li class="disabled"><a href="#">'.$this->_page_prev_txt.'</a></li>';
         }   
@@ -107,16 +109,17 @@ class Page {
     private function nextPage() {
         $_str = '';
         if ( $this->_pagenow < $this->_pagenum ) {
-            $_str .= '<li><a href="'.$this->_url.($this->_pagenow + 1).'">'.$this->_page_next_txt.'</a></li>'; 
+            $_str .= '<li><a href="'.url($this->_url.($this->_pagenow + 1)).'">'.$this->_page_next_txt.'</a></li>';
         } else {
             $_str .= '<li class="disabled"><a href="#">'.$this->_page_next_txt.'</a><li>';
         }   
         return $_str;   
     }
-    
+
     /**
      * 打印中间页码列表，以 $_pageNow 为基准， 两边各输出 $_out_page 页
-     * @param           int             $_style     分页样式
+     * @param $_style 分页样式
+     * @return string
      */
     private function printPageList( $_style ) {
     	
@@ -124,18 +127,18 @@ class Page {
         //打印左边页码
         $_left = '';
         if ( ($this->_pagenow - $this->_out_page) > 3  ) {
-            $_left .= '<li><a href="'.$this->_url.'1" class="page_list page_Rounded5">1</a></li>';
-            $_left .= '<li><a href="'.$this->_url.'2" class="page_list page_Rounded5">2</a></li>';
+            $_left .= '<li><a href="'.url($this->_url.'1').'" class="page_list page_Rounded5">1</a></li>';
+            $_left .= '<li><a href="'.url($this->_url.'2').'" class="page_list page_Rounded5">2</a></li>';
             
             //打印左边省略号
             if ( $_style & PAGE_DOT ) $_left .= '<li class="disabled"><a href="#">...</a></li>';
             
             for ( $i = ($this->_pagenow - $this->_out_page); $i < $this->_pagenow; $i++ ) {
-                $_left .= '<li><a href="'.$this->_url.$i.'">'.$i.'</a></li>';
+                $_left .= '<li><a href="'.url($this->_url.$i).'">'.$i.'</a></li>';
             }
         } else {
             for ( $i = 1; $i < $this->_pagenow; $i++ ) {
-                $_left .= '<li><a href="'.$this->_url.$i.'">'.$i.'</a></li>';
+                $_left .= '<li><a href="'.url($this->_url.$i).'">'.$i.'</a></li>';
             }   
         }
         $_page_list .= $_left;
@@ -147,17 +150,17 @@ class Page {
         $_right = '';   
         if ( $this->_pagenum >= ($this->_pagenow + $this->_out_page + 3) ) {
             for ( $i = $this->_pagenow+1; $i <= $this->_pagenow + $this->_out_page; $i++ ) {
-                $_right .= '<li><a href="'.$this->_url.$i.'">'.$i.'</a></li>';
+                $_right .= '<li><a href="'.url($this->_url.$i).'">'.$i.'</a></li>';
             }
             
             //打印右边省略号
             if ( $_style & PAGE_DOT ) $_right .= '<li class="disabled"><a href="#">...</a></li>';
             
-            $_right .= '<li><a href="'.$this->_url.($this->_pagenum - 1).'">'.($this->_pagenum - 1).'</a></li>';
-            $_right .= '<li><a href="'.$this->_url.$this->_pagenum.'">'.$this->_pagenum.'</a></li>';
+            $_right .= '<li><a href="'.url($this->_url.($this->_pagenum - 1)).'">'.($this->_pagenum - 1).'</a></li>';
+            $_right .= '<li><a href="'.url($this->_url.$this->_pagenum).'">'.$this->_pagenum.'</a></li>';
         } else {
             for ( $i = ($this->_pagenow + 1); $i <= $this->_pagenum; $i++  ) {
-                $_right .=  '<li><a href="'.$this->_url.$i.'">'.$i.'</a></li>';
+                $_right .=  '<li><a href="'.url($this->_url.$i).'">'.$i.'</a></li>';
             }   
         }
         $_page_list .= $_right;
@@ -193,10 +196,10 @@ class Page {
     /**
      * 打印分页列表
      */
-    public function showPageHandle( $_style = DEFAULT_STYLE ) {
+    public function showPageHandle( $_style = DEFAULT_PAGE_STYLE ) {
     	
         $_html = '';
-        if ( $_style & TOTAL_NUM ) $_html .= '<li class="disabled"><a href="#">总记录：'.$this->_rows_num.'</a></li>';
+        if ( $_style & PAGE_TOTAL_NUM ) $_html .= '<li class="disabled"><a href="#">总记录：'.$this->_rows_num.'</a></li>';
         if ( $_style & PAGE_PREV ) $_html .= $this->prevPage();
         if ( $_style & PAGE_LIST ) $_html .= $this->printPageList($_style);
         if ( $_style & PAGE_NEXT ) $_html .= $this->nextPage();

@@ -97,5 +97,11 @@ interface Idb {
      */
     public function rollBack();
 
+    /**
+     * 检查是否开启了事物
+     * @return boolean
+     */
+    public function inTransaction();
+
 }
 ?>

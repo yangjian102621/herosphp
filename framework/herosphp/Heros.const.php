@@ -8,12 +8,6 @@
  * ---------------------------------------------------------------------
  * Author: <yangjian102621@163.com>
  *-----------------------------------------------------------------------*/
-
-//定义请求访问模式
-define('__PATH_INFO_REQUEST__', 1);       //pathinfo 访问模式
-define('__NORMAL_REQUEST__', 2);      //常规访问模式
-define('__REQUEST_MODE__', __PATH_INFO_REQUEST__);
-
 //定义编译路径
 define('APP_RUNTIME_PATH', APP_ROOT.'runtime/');
 //定义配置文档路径
@@ -38,6 +32,12 @@ define('EXT_TPL', '.html');     //模板文件后缀
 define('EXT_URI', '.shtml');     //uri 伪静态路径后缀
 
 /**
+ * 定义参数和actionMap分割符号
+ */
+define('PARAM_SEP', '-');   //参数分割符
+define('ACMAP_SEP', '_');   //actionMap分割符
+
+/**
  * 以下定义数据库类别
  */
 define('DB_TYPE_MYSQL', 1);     //mysql数据库
@@ -57,4 +57,4 @@ define('DB_ACCESS', DB_ACCESS_SINGLE);  //默认使用单台数据库服务器
  * 1. file => 文件介质存储 (default)
  * 2. memo => memcache介质存储
  */
-define('SESSION_HANDLER', 'memo');
+define('SESSION_HANDLER', 'file');

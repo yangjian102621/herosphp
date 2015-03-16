@@ -67,49 +67,34 @@ class HttpRequest {
 
         $sysConfig = Loader::config();
         $defaultUrl = $sysConfig['default_url'];
-        switch ( __REQUEST_MODE__ ) {
-            case __PATH_INFO_REQUEST__ :    //path info 访问模式
-                $urlInfo = parse_url($this->requestUri);
-                if ( $urlInfo['path'] ) {
-                    $filename = str_replace(EXT_URI, '', $urlInfo['path']);
-                    $pathInfo = explode('/', $filename);
-                    if ( isset($pathInfo[1]) ) {
-                        $actionMap = explode('_', $pathInfo[1]);
-                        if ( $actionMap[0] ) $this->setModule($actionMap[0]);
-                        if ( $actionMap[1] ) $this->setAction($actionMap[1]);
-                        if ( $actionMap[2] ) $this->setMethod($actionMap[2]);
+        $urlInfo = parse_url($this->requestUri);
+        if ( $urlInfo['path'] ) {
+            $filename = str_replace(EXT_URI, '', $urlInfo['path']);
+            $pathInfo = explode('/', $filename);
+            if ( isset($pathInfo[1]) ) {
+                $actionMap = explode(ACMAP_SEP, $pathInfo[1]);
+                if ( $actionMap[0] ) $this->setModule($actionMap[0]);
+                if ( $actionMap[1] ) $this->setAction($actionMap[1]);
+                if ( $actionMap[2] ) $this->setMethod($actionMap[2]);
+            }
+
+            //提取参数
+            if ( isset($pathInfo[2]) ) {
+                $params = explode(PARAM_SEP, $pathInfo[2]);
+                for ( $i = 0; $i < count($params); $i++ ) {
+                    if ( $i % 2 == 0 ) {
+                        $_GET[$params[$i]] = $params[$i+1];
                     }
-
-                    if ( !$this->module ) $this->setModule($defaultUrl['module']);
-                    if ( !$this->action ) $this->setAction($defaultUrl['action']);
-                    if ( !$this->method ) $this->setMethod($defaultUrl['method']);
-
-                    //提取参数
-                    if ( isset($pathInfo[2]) ) {
-                        $params = explode('-', $pathInfo[2]);
-                        for ( $i = 0; $i < count($params); $i++ ) {
-                            if ( $i % 2 == 0 ) {
-                                $_GET[$params[$i]] = $params[$i+1];
-                            }
-                        }
-                    }
-
                 }
-                break;
+            }
 
-            case __NORMAL_REQUEST__ :   //常规访问模式
-
-                if ( trim($_GET['module']) != '' ) $this->setModule(trim($_GET['module']));
-                else $this->setModule($defaultUrl['module']);
-
-                if ( trim($_GET['action']) != '' ) $this->setAction(trim($_GET['action']));
-                else $this->setAction($defaultUrl['module']);
-
-                if ( trim($_GET['method']) != '' ) $this->setMethod(trim($_GET['method']));
-                else $this->setMethod($defaultUrl['method']);
-
-                break;
         }
+
+        //如果没有任何参数，则访问默认页面。如http://www.herosphp.my这种格式
+        if ( !$this->module ) $this->setModule($defaultUrl['module']);
+        if ( !$this->action ) $this->setAction($defaultUrl['action']);
+        if ( !$this->method ) $this->setMethod($defaultUrl['method']);
+
         $this->setParameters($_GET + $_POST);
     }
 

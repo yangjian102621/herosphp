@@ -2,11 +2,17 @@
 
 namespace herosphp\utils;
 
-/**
+/*---------------------------------------------------------------------
  * Verify code class. 验证码生成类 <br />
- * @author yangjian
  * @package common\utils
- */
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@163.com>
+ *-----------------------------------------------------------------------*/
+
 class VerifyCode {
 	
 	/**letters generator array.*/

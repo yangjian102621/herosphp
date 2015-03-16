@@ -1,19 +1,20 @@
 <?php
+
 namespace herosphp\utils;
-/**
+
+/*---------------------------------------------------------------------
  * PHP 生成zip压缩文件类(pack and compress the point file or direcoty to zip file) <br />
- * 支持两种形式传入文件 <br/>
+ *  支持两种形式传入文件 <br/>
  * 	1.直接传入需要打包的文件的路径( String of path) <br />
  * 	2.通过表单浏览上传多个文件进行打包 ( Array of filename ) <br />
- * *******************************************************************************
- * 许可声明：此为专门为网络星空PHP高性能建站班级量身定制的"轻量级"PHP框架
- * 版权所有 (C) 2013.03-now 网络星空工作室研发中心 并保留所有权利。   
- * ********************************************************************************
- * @author	yangjian<yangjian102621@163.com>
- * @version	1.0
- * @completed	2013.03.14
- * @lastupdate  2013.-04-22
- */
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@163.com>
+ *-----------------------------------------------------------------------*/
+
 class PHPZip {
 	
 	/* 要压缩的文件路径 */
@@ -30,47 +31,40 @@ class PHPZip {
 	
 	/**
 	 * constructor (构造函数)
-	 * @param	$_file		file to be pack and compressed.
 	 */
-	public function __construct( $_file ) {
+	public function __construct() {
 		//check the Apache server is surpport zip compress.
 		if ( !@extension_loaded('zip') && !@function_exists("gzcompress") ) {
 			E("当前服务器不支持压缩，请更改PHP的相关配置。");
 		}
 		@set_time_limit(0);
-		$this->file_path = $_file;
-		if ( !is_array($_file) ) {
-			if ( file_exists($_file) ) {
-				$path_info = pathinfo($this->file_path);
-				$this->zip_name = dirname($this->file_path).'/'.$path_info['filename'].'.zip';
-			} else {
-				E("您要压缩的文件或目录不存在，请选择正确的文件路径。");
-			}
-		} else {
-			//将指定的多个文件打包, 默认生成的文件名称为test.zip
-			$this->file_path = $_file;
-			$this->zip_name = dirname(__FILE__).'/test.zip';	
-		}
+
+        //实例化压缩类
+        $this->zip = new \ZipArchive();
 	}
-	
-	/**
-	 * create zip file method.
-	 * 
-	 * @param	$_zip_name	filename of zip file.
-	 * @return	boolean 	TRUE for success and FALSE for faild.	
-	 */
-	public function createZip( $_zip_name = NULL ) {
-		if ( $_zip_name != NULL ) 
-			$this->zip_name = $_zip_name;
-			
-		//实例化压缩类，创建压缩文件
-		$this->zip = new ZipArchive();
+
+    /**
+     * 创建zip压缩文件
+     * @param $src
+     * @param $zip
+     * @return bool
+     */
+    public function createZip( $src, $zip ) {
+
+		if ( !file_exists($src) ) E("压缩源文件不存在!");
+
+        if ( !$zip ) E("压缩目标文件不能为空！");
+
+        $this->file_path = $src;
+        $this->zip_name = $zip;
+
+		//创建压缩文件
 		if ( !file_exists($this->zip_name) ) {
-			if ( $this->zip->open($this->zip_name, ZIPARCHIVE::CREATE) == FALSE ) {
+			if ( $this->zip->open($this->zip_name, \ZIPARCHIVE::CREATE) == FALSE ) {
 				E("创建压缩文件失败");
 			}
 		} else {
-			if ( $this->zip->open($this->zip_name, ZIPARCHIVE::OVERWRITE) == FALSE ) {
+			if ( $this->zip->open($this->zip_name, \ZIPARCHIVE::OVERWRITE) == FALSE ) {
 				E("创建压缩文件失败");
 			}	
 		}
@@ -89,6 +83,20 @@ class PHPZip {
 			return FALSE;	
 		}
 	}
+
+    /**
+     * 解压文件到目标位置
+     * @param $zip  zip文件
+     * @param $dst  目标文件
+     * @return boolean
+     */
+    public function extractZip($zip, $dst) {
+
+        if ( $this->zip->open($zip) == TRUE ) {
+           return $this->zip->extractTo($dst);
+        }
+        return false;
+    }
 
     /**
      * method to add files to zip pack file. (添加文件到zip压缩包,如果是目录采用递归添加)

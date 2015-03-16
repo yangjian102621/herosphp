@@ -74,6 +74,7 @@ class Herosphp {
             'herosphp\utils\ImageWater'       => 'utils.ImageWater',
             'herosphp\utils\Page'       => 'utils.Page',
             'herosphp\utils\PHPZip'       => 'utils.PHPZip',
+            'herosphp\utils\Smtp'       => 'utils.Smtp',
             'herosphp\utils\VerifyCode'       => 'utils.VerifyCode',
             'herosphp\db\DBFactory'       => 'db.DBFactory',
             'herosphp\db\SQL'       => 'db.SQL',

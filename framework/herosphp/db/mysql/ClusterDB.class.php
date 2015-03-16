@@ -232,7 +232,7 @@ class ClusterDB implements ICusterDB {
     public function count($_table, $_conditons=null)
     {
         $_query = "SELECT count(*) as total FROM {$_table}";
-        if ( $_conditons ) $_query .= " WHERE ".SQL::createCondition($_conditons);
+        if ( $_conditons ) $_query .= " WHERE ".SQL::buildConditions($_conditons);
         $_result = $this->query($_query);
         $_res = $_result->fetch(PDO::FETCH_ASSOC);
         return $_res['total'];
@@ -265,6 +265,16 @@ class ClusterDB implements ICusterDB {
     {
         $_db = $this->selectWriteServer();
         $_db->rollBack();
+    }
+
+    /**
+     * @see \herosphp\db\interfaces\ICusterDB::inTransaction()
+     */
+    public function inTransaction()
+    {
+        if ( $this->link == null ) $this->connect();
+        $_db = $this->selectWriteServer();
+        return $_db->inTransaction();
     }
 
     /***
