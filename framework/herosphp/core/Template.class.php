@@ -264,7 +264,7 @@ class Template {
 	 */
 	public function importResource( $section, $type, $path ) {
         //获取资源的目录
-        $resUrl = $this->configs['res_url'].RES_PATH;
+        $resUrl = $this->configs['res_url'].RES_URL;
 
         switch ( $section ) {
             case 'gres':

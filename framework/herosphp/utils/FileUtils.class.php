@@ -21,16 +21,16 @@ class FileUtils {
 	 * @return 	boolean     成功时返回true，失败则返回false;
 	 */
 	public static function makeFileDirs( $path ) {
-		//必须考虑 "/" 和 "\" 两种目录分隔符
-		$files = preg_split('/\/|\\\\/', $path);
-		$dir = '';
-		foreach ( $files as $value ) {
-            $dir .= $value.DIRECTORY_SEPARATOR;
-			if ( !file_exists($dir) ) {
-				if ( !mkdir($dir) ) return false;
-			}
-		}
-		return  true;
+        //必须考虑 "/" 和 "\" 两种目录分隔符
+        $files = preg_split('/[\/|\\\]/s', $path);
+        $_dir = '';
+        foreach ($files as $value) {
+            $_dir .= $value.DIRECTORY_SEPARATOR;
+            if ( !file_exists($_dir) ) {
+                mkdir($_dir);
+            }
+        }
+        return true;
 	}
 
 	/**

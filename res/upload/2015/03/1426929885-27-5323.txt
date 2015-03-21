@@ -1,0 +1,81 @@
+东莞服务器：
+
+>IP：
+>>14.152.90.58/122.13.162.58
+
+>用户:
+>>root/rTYop%ld73$6dafg6%20fd
+>>monda/md^r4las$%jhds8sapw234
+>>mondaTest/md#@%TESThds8sapw234
+>>juke123.com/jk236HGD$*$(005)2-%s
+>>juke123.image/jki8278_s524$0&23A
+>>tuonews.com/tn^&34dfJds&$7
+>>fiidee.com/dt&4%jdfLGH650$)32KJGY
+>>tips.fiidee.com/PQ&4%jdfas%&)32KJGY
+>>ad.juke123.com/JK&4%jdfafss%&)32KJAD
+>>mv.juke123.com/MVASA&*1sdsadASD
+>>oa.juke123.com/OAfuckit&*1sdsadASD
+>>uc.juke123.com/UCasdhs$s#@sdaddhit
+
+>SSH:
+>>port:12580	
+
+>MySQL:
+phpMyadmin : pma.juke123.com
+>>root/8S8Qye4%#923dsLd73
+>>juke123.com/4hLc26T3JNyh9hsM
+>>tuonews/ecNnBaQ3TPf4ZqK5
+>>test.juke123.com/e9XGFZV4zEraQC82
+>>fiidee.com/q3u5KzuyPQA87dMb
+>>fiideeTips/FDCEE*Da#$sdsaDAS
+>>ad_juke123_com/AD^&@#HJASJK789
+>>mv_juke123_com/MJKsa$@d68#5234
+>>oa_juke123/OAfuckit&^#&juke123
+>>ucenter.monda/UCasdhs$s#@sdadjuke
+
+聚客后台
+testadmin
+juke123_admin_pass
+
+聚客OA后台
+10004
+juke_oa_admin_pass
+
+项目信息
+FiideeTips test.tips.fiidee.com
+
+广告系统 test.ad.juke123.com
+
+一键搬家 test.moving.juke123.com
+
+创建账户
+useradd username
+-c comment 指定一段注释性描述。
+-d 目录 指定用户主目录，如果此目录不存在，则同时使用-m选项，可以创建主目录。
+-g 用户组 指定用户所属的用户组。
+-G 用户组，用户组 指定用户所属的附加组。
+-s Shell文件 指定用户的登录Shell。
+-u 用户号 指定用户的用户号，如果同时有-o选项，则可以重复使用其他用户的标识号。
+
+编辑用户
+usermod user1
+
+删除用户
+userdel user1
+
+用户组
+groupadd group1
+groupmod group1
+groupdel group1
+
+更改密码
+passwd user1
+
+
+
+
+
+
+
+
+

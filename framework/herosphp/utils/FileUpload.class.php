@@ -1,5 +1,5 @@
 <?php
-namespace common\utils;
+namespace herosphp\utils;
 
 /*---------------------------------------------------------------------
  * 文件上传类, 支持多文件上传不重名覆盖。支持base64编码文件上传
@@ -18,8 +18,8 @@ class FileUpload {
      */
     protected $config = array(
         'upload_dir' => __DIR__,
-        'allow_ext' => 'jpg|png|gif',
-        'max_size' =>  2097152,     /* 文件的最大尺寸默认 2MB */
+        'allow_ext' => 'jpg|png|gif|txt|pdf|rar|zip|swf|bmp|c|java|mp3',
+        'max_size' =>  8388608,     /* 文件size的最大 8MB */
      );
 
     /**
@@ -32,7 +32,6 @@ class FileUpload {
      * is_image => 是否是图片
      * image_width => 图片宽度
      * image_height => 图片高度
-     * image_size_str => 图片尺寸字符串 width="396" height="341"
      * file_path => 文件的绝对路径
      * file_name => 文件名(带后缀)
      * file_ext => 文件后缀
@@ -95,14 +94,14 @@ class FileUpload {
 			$this->errNum = 6;
 			return false;
 		}
-		
+
 		$_localFile = $_FILES[$_field]['name'];
 		$_tempFile = $_FILES[$_field]['tmp_name'];
 		$_error_no = $_FILES[$_field]['error'];
-        $this->fileInfo['client_name'] = $_localFile;
+        $this->fileInfo['file_type'] = $_FILES[$_field]['type'];
+        $this->fileInfo['local_name'] = $_localFile;
         $this->fileInfo['file_size'] = floatval($_FILES[$_field]['size'] / 1024);
 
-		$_filename = '';
         $this->errNum = $_error_no;
         if ( $this->errNum == 0 ) {
             $this->checkFileType($_localFile);
@@ -120,6 +119,8 @@ class FileUpload {
                             $this->fileInfo['file_ext'] =  $pathinfo['extension'];
                             $this->fileInfo['raw_name'] = $pathinfo['filename'];
 
+                            return $this->fileInfo;
+
                         } else {
                             $this->errNum = 7;
                         }
@@ -127,22 +128,45 @@ class FileUpload {
                 }
             }
         }
-		return $_filename;
+		return false;
 
 	}
 
-	/**
-	 * 接收base64位参数，转存图片
-	 */
-	protected function makeBase64Image( $_base64_data ) {
+    /**
+     * 接收base64位参数，转存图片
+     * @param $_base64_data
+     * @return bool|string
+     */
+    protected function makeBase64Image( $_base64_data ) {
 
 		$_img = base64_decode($_base64_data);
-		$_filename = time().rand( 1 , 1000 ).".png";
-		if ( file_put_contents($this->config['upload_dir'].DIRECTORY_SEPARATOR.$_filename, $_img) ) {
-			return $_filename;
+		$_filename = $this->getFileName("123.png");
+        $this->fileInfo['file_path'] = $this->config['upload_dir'].DIRECTORY_SEPARATOR.$_filename;
+		if ( file_put_contents($this->fileInfo['file_path'], $_img) ) {
+
+            $size = getimagesize($this->fileInfo['file_path']);
+            if ( ($this->config['max_width'] > 0 && $size[0] > $this->config['max_width'])
+                || ($this->config['max_height'] > 0 && $size[1] > $this->config['max_height']) )  {
+
+                $this->errNum = 9;
+                return false;
+
+            }
+            $this->fileInfo['image_width'] = $size[0];
+            $this->fileInfo['image_height'] = $size[1];
+            //初始化mimeType
+            $this->fileInfo['file_type'] = "image/png";
+            $this->fileInfo['is_image'] = 1;
+
+            $pathinfo = pathinfo($this->fileInfo['file_path']);
+            $this->fileInfo['file_ext'] =  $pathinfo['extension'];
+            $this->fileInfo['raw_name'] = $pathinfo['filename'];
+
+            return $this->fileInfo;
 		}
 		$this->errNum = 8;
 
+        return false;
 	}
 
     /**
@@ -185,6 +209,7 @@ class FileUpload {
             }
         }
         return true;
+
     }
 
     /**
@@ -237,21 +262,12 @@ class FileUpload {
             }
             $this->fileInfo['image_width'] = $size[0];
             $this->fileInfo['image_height'] = $size[1];
-            $this->fileInfo['image_size_str'] = $size[3];
 
         } else {
 
             $this->fileInfo['is_image'] = 0;
         }
 	}
-
-    /**
-     * 获取上传文件信息
-     */
-    public function getFileInfo() {
-
-        return $this->fileInfo;
-    }
 
     /**
      * get upload message

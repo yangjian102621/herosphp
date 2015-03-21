@@ -13,7 +13,8 @@ define('APP_RUNTIME_PATH', APP_ROOT.'runtime/');
 //定义配置文档路径
 define('APP_CONFIG_PATH', APP_ROOT.'configs/');
 
-define('RES_PATH', '/res/');
+define('RES_PATH', APP_ROOT.'res/');    //静态资源的根目录
+define('RES_URL', '/res/');     //静态资源的根url
 
 //定义时区
 define('TIME_ZONE', 'PRC');

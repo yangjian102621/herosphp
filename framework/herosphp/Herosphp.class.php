@@ -66,6 +66,7 @@ class Herosphp {
             'herosphp\exception\HeroException'       => 'exception.HeroException',
             'herosphp\exception\DBException'       => 'exception.DBException',
             'herosphp\utils\FileUtils'       => 'utils.FileUtils',
+            'herosphp\utils\FileUpload'       => 'utils.FileUpload',
             'herosphp\utils\ArrayUtils'       => 'utils.ArrayUtils',
             'herosphp\utils\AjaxResult'       => 'utils.AjaxResult',
             'herosphp\utils\WebUtils'       => 'utils.WebUtils',
