@@ -159,5 +159,8 @@ namespace herosphp\model;
      
      //回滚
      public function rollback();
+
+     //判断是否开启了事物
+     public function inTransaction();
  }
 ?>

@@ -1,6 +1,6 @@
 <?php
 /*---------------------------------------------------------------------
- * 应用程序入口文件
+ * 命令行任务入口文件
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -18,14 +18,8 @@ if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
 // 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false
 define('APP_DEBUG', true);
 
-// 定义当前访问的应用
-define('APP_NAME', 'blog');
-
 // 定义系统根目录
 define('APP_ROOT', __DIR__.'/');
-
-//定义应用根目录
-define('APP_PATH', APP_ROOT."app/");
 
 //定义框架根目录
 define('APP_FRAME_PATH', APP_ROOT.'framework/herosphp/');
@@ -39,5 +33,8 @@ require APP_FRAME_PATH.'Herosphp.class.php';
 //包含公共函数页面
 require APP_ROOT.'functions.php';
 
+//接收命令行参数
+$taskName = $_SERVER['argv'][1];
+
 //启动应用程序
-Herosphp::run();
+Herosphp::runClient($taskName);

@@ -21,7 +21,7 @@ define('TIME_ZONE', 'PRC');
 
 //定义import加载类的类别
 define('IMPORT_APP', 1);    //加载当前应用模块中的class
-define('IMPORT_APP_ROOT', 2);    //加载应用根目录模块中的class
+define('IMPORT_CLIENT', 2);    //加载客户端脚本的class
 define('IMPORT_FRAME', 3);  //加载框架中的class
 define('IMPORT_CUSTOM', 4); //加载自定义路径中的class
 
@@ -31,12 +31,6 @@ define('EXT_HTML', '.html');    //加载html文件
 
 define('EXT_TPL', '.html');     //模板文件后缀
 define('EXT_URI', '.shtml');     //uri 伪静态路径后缀
-
-/**
- * 定义参数和actionMap分割符号
- */
-define('PARAM_SEP', '-');   //参数分割符
-define('ACMAP_SEP', '_');   //actionMap分割符
 
 /**
  * 以下定义数据库类别

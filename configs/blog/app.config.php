@@ -11,6 +11,16 @@
  *-----------------------------------------------------------------------*/
 
 $config = array(
+    'site_url' => 'http://www.herosphp.my',     //主服务器地址
+    'res_url' => 'http://www.herosphp.my',      //静态资源的服务器地址(css, image)
+    //默认访问的页面
+    'default_url' => array(
+        'module' => 'test',
+        'action' => 'article',
+        'method' => 'index' ),
+    'template' => 'default',    //默认模板
+    'skin' => 'default',    //默认皮肤
+
     'template' => 'default',    //默认模板
     'skin' => 'default',    //默认皮肤
     'temp_cache' => 0,

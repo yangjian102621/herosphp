@@ -35,7 +35,7 @@ class ArrayUtils {
      * @param   array $array 被筛选的数组
      * @return  array
      */
-    function &filterArrayByKey( $key, $val, &$array ) {
+    public static function &filterArrayByKey( $key, $val, &$array ) {
 
         $newArray = array();
         foreach ( $array as $value ) {

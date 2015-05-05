@@ -17,6 +17,8 @@ use herosphp\db\DBFactory;
 use herosphp\db\SQL;
 
 Loader::import('model.IModel', IMPORT_FRAME);
+
+
 class C_Model implements IModel {
 
     /**
@@ -40,6 +42,8 @@ class C_Model implements IModel {
     /**
      * 字段映射
      * @var array
+     * 别名 => 字段名
+     * addTime => add_time
      */
     private $mapping = array();
 
@@ -47,7 +51,7 @@ class C_Model implements IModel {
      * 数据过滤规则
      * @var array
      */
-    private $rules = array();
+    private $filter = array();
 
     /**
      * 初始化数据库连接
@@ -112,6 +116,7 @@ class C_Model implements IModel {
      */
     public function deletes($conditions)
     {
+        $conditions = SQL::create()->buildConditions($conditions);
         return $this->db->delete($this->table, $conditions);
     }
 
@@ -124,7 +129,21 @@ class C_Model implements IModel {
         if ( $pagesize > 0 && $page > 0 ) $limit = array(($page-1) * $pagesize, $pagesize);
         $sql = SQL::create($this->primaryKey)->table($this->table)->where($conditions)->fields($fields)
             ->order($order)->group($group)->having($having)->limit($limit)->buildQueryString();
-        return $this->db->getItems($sql);
+        $items =  $this->db->getItems($sql);
+
+        //做字段别名映射
+        if ( !empty($items) ) {
+            $mappings = $this->getMapping();
+            if ( !empty($mappings) ) {
+                foreach ($items as $key => $value) {
+                    foreach ( $mappings as $name => $val ) {
+                        $items[$key][$name] = $value[$val];
+                        unset($items[$key][$val]);
+                    }
+                }
+            }
+        }
+        return $items;
     }
 
     /**
@@ -134,7 +153,17 @@ class C_Model implements IModel {
     {
         $sql = SQL::create($this->primaryKey)->table($this->table)->where($conditions)->fields($fields)
             ->order($order)->group($group)->having($having)->buildQueryString();
-        return $this->db->getItem($sql);
+        $item = $this->db->getItem($sql);
+
+        //做字段别名映射
+        $mappings = $this->getMapping();
+        if ( !empty($mappings) ) {
+            foreach ( $mappings as $name => $val ) {
+                $item[$name] = $item[$val];
+                unset($item[$val]);
+            }
+        }
+        return $item;
     }
 
     /**
@@ -158,6 +187,7 @@ class C_Model implements IModel {
      */
     public function count($conditions)
     {
+        $conditions = SQL::create()->buildConditions($conditions);
         return $this->db->count($this->table, $conditions);
     }
 
@@ -216,6 +246,7 @@ class C_Model implements IModel {
     public function sets($field, $value, $conditions)
     {
         $data = array($field => $value);
+        $conditions = SQL::create()->buildConditions($conditions);
         return $this->db->update($this->table, $data, $conditions);
     }
 
@@ -224,7 +255,10 @@ class C_Model implements IModel {
      */
     public function beginTransaction()
     {
-        $this->db->beginTransaction();
+        //如果当前上下文已经开启了事物，则不重复开启
+        if ( !$this->db->inTransaction() ) {
+            $this->db->beginTransaction();
+        }
     }
 
     /**
@@ -241,6 +275,14 @@ class C_Model implements IModel {
     public function rollback()
     {
         $this->db->rollBack();
+    }
+
+    /**
+     * @see IModel::inTransaction()
+     */
+    public function inTransaction()
+    {
+        return $this->db->inTransaction();
     }
 
     /**
@@ -276,19 +318,19 @@ class C_Model implements IModel {
     }
 
     /**
-     * @param array $rules
+     * @param array $filter
      */
-    public function setRules($rules)
+    public function setFilter($filter)
     {
-        $this->rules = $rules;
+        $this->filter = $filter;
     }
 
     /**
      * @return array
      */
-    public function getRules()
+    public function getFilter()
     {
-        return $this->rules;
+        return $this->filter;
     }
 
 }

@@ -1,20 +1,13 @@
 <?php
-/*********************************************************************************
- * 公共的常用的全局函数
- *
- * @author			yangjian<yangjian102621@163.com> QQ:906388445
- * ******************************************************************************/
-
- /**
-  * 创建modelDao对象
-  * @param      $_model         数据库模型的名称(一般为数据表名或者表名的映射)
-  * @param      $_db_config     要使用的数据库的配置信息
-  * @return mixed
-  */
-function MD( $_model, $_db_config = NULL ) {
-     if ( $_model != '' ) return new MysqlModelDao($_model, $_db_config);
-     return FALSE;
-}
+/*---------------------------------------------------------------------
+ * 框架公共的常用的全局函数
+ * ---------------------------------------------------------------------
+ * Copyright (c) 2013-now http://blog518.com All rights reserved.
+ * ---------------------------------------------------------------------
+ * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+ * ---------------------------------------------------------------------
+ * Author: <yangjian102621@163.com>
+ *-----------------------------------------------------------------------*/
 
 /**
  * 打印函数, 打印变量(数据)
@@ -23,7 +16,7 @@ function __print() {
     $_args = func_get_args();  //获取函数的参数
     
     if( count($_args) < 1 ) {
-        Debug::appendMessage('必须为myprint()参数');
+        \herosphp\core\Debug::appendMessage('必须为myprint()参数');
         trigger_error('必须为myprint()参数');
         return;
     }   
@@ -42,6 +35,36 @@ function __print() {
         }
     }
     echo '</pre></div>';    
+}
+
+/**
+ * 终端高亮打印绿色
+ * @param $message
+ */
+function tprintOk( $message ) {
+
+   printf("\033[32m\033[1m{$message}\033[0m\n");
+
+}
+
+/**
+ * 终端高亮打印红色
+ * @param $message
+ */
+function tprintError( $message ) {
+
+    printf("\033[31m\033[1m{$message}\033[0m\n");
+
+}
+
+/**
+ * 终端高亮打印黄色
+ * @param $message
+ */
+function tprintWarning( $message ) {
+
+    printf("\033[31m\033[1m{$message}\033[0m\n");
+
 }
 
 /**
@@ -99,7 +122,8 @@ function timer() {
  */
 function url( $url ) {
 
-    $sysConfig = \herosphp\core\Loader::config();
+    $webApp = \herosphp\core\WebApplication::getInstance();
+    $sysConfig = $webApp->getConfigs();
     $defaultUrl = $sysConfig['default_url'];
     $actionMap = array();
     $args = '';
@@ -117,8 +141,8 @@ function url( $url ) {
         }
 
         if ( $urlInfo['query'] ) {
-            $query = preg_replace('/[&|=]/', PARAM_SEP, $urlInfo['query']);
-            if ( $query ) $args .= $args == '' ? $query : PARAM_SEP.$query;
+            $query = preg_replace('/[&|=]/', '-', $urlInfo['query']);
+            if ( $query ) $args .= $args == '' ? $query : '-'.$query;
         }
 
     }
@@ -128,7 +152,7 @@ function url( $url ) {
     if ( !$actionMap[1] ) $actionMap[1] = $defaultUrl['action'];
     if ( !$actionMap[2] ) $actionMap[2] = $defaultUrl['method'];
 
-    $newUrl = '/'.implode(ACMAP_SEP, $actionMap);
+    $newUrl = '/'.implode('_', $actionMap);
     if ( trim($args) != '' ) $newUrl .= '/'.$args;
     $newUrl .= EXT_URI;
     return $newUrl;
@@ -181,9 +205,9 @@ function addUrlArgs($url, $key, $value) {
     //移除后缀
     $url = str_replace(EXT_URI, '', $url);
     if ( $pos === FALSE ) {
-        return '/'.$url.'/'.$key.PARAM_SEP.$value.EXT_URI;
+        return '/'.$url.'/'.$key.'-'.$value.EXT_URI;
     } else {
-        return '/'.$url.PARAM_SEP.$key.PARAM_SEP.$value.EXT_URI;
+        return '/'.$url.'-'.$key.'-'.$value.EXT_URI;
     }
 
 }

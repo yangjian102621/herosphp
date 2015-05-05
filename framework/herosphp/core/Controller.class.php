@@ -23,7 +23,12 @@ abstract class Controller extends Template {
 	/**
      * 控制器初始化方法，每次请求必须先调用的方法，action子类可以重写这个方法进行页面的初始化
 	 */
-	public function C_start() {}
+	public function C_start() {
+
+        $webApp = WebApplication::getInstance();
+        $this->assign('appConfigs', $webApp->getConfigs());
+
+    }
     
     /**
      * 设置视图模板

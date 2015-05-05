@@ -77,9 +77,12 @@ class Template {
         /**
          * {run}标签： 执行php表达式
          * {expr}标签：输出php表达式
+         * {url}标签：输出格式化的url
          */
         '/{run\s+(.*?)}/i'   => '<?php ${1} ?>',
         '/{expr\s+(.*?)}/i'   => '<?php echo ${1} ?>',
+        '/{url\s+(.*?)}/i'   => '<?php echo url("${1}") ?>',
+        '/{date\s+(.*?)(\s+(.*?))?}/i'   => '<?php echo $this->getDate(${1}, "${2}") ?>',
 
         /**
          * if语句标签
@@ -159,13 +162,22 @@ class Template {
 	}
 	
 	/**
-	 * 获取模板变量
+	 * 获取指定模板变量
 	 * @param string $varname 变量名
      * @return mixed
 	 */
 	public function getTemplateVar( $varname ) {
 		return $this->templateVar[$varname];
 	}
+
+    /**
+     * 获取所有模板变量
+     * @param string $varname 变量名
+     * @return mixed
+     */
+    public function getTemplateVars( $varname ) {
+        return $this->templateVar;
+    }
 
 	/**
 	 * 编译模板
@@ -254,6 +266,19 @@ class Template {
         $this->complieTemplate($tempFile, $compileFile);
 		return $compileFile;
 	}
+
+    /**
+     * 获取日期
+     * @param $time
+     * @param $format
+     * @return string
+     */
+    private function getDate( $time, $format ) {
+
+        if ( !$time ) return '';
+        if ( !$format ) $format = 'Y-m-d H:i:s';
+        return date($format, $time);
+    }
 	
 	/**
 	 * 引进静态资源如css，js

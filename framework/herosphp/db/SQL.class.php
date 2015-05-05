@@ -88,10 +88,7 @@ class SQL {
      * @return SQL
      */
     public static function create( $priKey = null ) {
-        if ( self::$instance == null ) {
-            self::$instance = new self($priKey);
-        }
-        return self::$instance;
+        return new self($priKey);
     }
 
     /**
@@ -148,7 +145,6 @@ class SQL {
             //2. array('name' => 'zhangsan', '|age' => '>24')
             $condi = array(" 1 ");
             foreach ( $where as $key => $value ) {
-
                 if ( $key[0] == '|' ) {
                     $condi[] = "OR";
                     $key = substr($key, 1);
@@ -162,7 +158,7 @@ class SQL {
     }
 
     /**
-     * 获取文档
+     * 获取正确格式的字段值
      * @param $value
      * @return string
      */
@@ -175,14 +171,15 @@ class SQL {
             return $value;
         }
         //2. null, !null
-        if ( $value == 'null' ) return "is null";
-        if ( $value == '!null' ) return "is not null";
+        if ( $value === 'null' ) return "is null";
+        if ( $value === '!null' ) return "is not null";
+
         //3. %value, %value%, value%
         if ( $value[0] == '%' || $value[strlen($value)-1] == '%' ) {
             return "LIKE '{$value}'";
         }
 
-        return "={$value}";
+        return "='{$value}'";
     }
 
     /**

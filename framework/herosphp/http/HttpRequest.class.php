@@ -13,6 +13,7 @@
 namespace herosphp\http;
 
 use herosphp\core\Loader;
+use herosphp\core\WebApplication;
 
 class HttpRequest {
 
@@ -65,14 +66,15 @@ class HttpRequest {
      */
     public function parseURL() {
 
-        $sysConfig = Loader::config();
+        $webApp = WebApplication::getInstance();    //获取系统配置信息
+        $sysConfig = $webApp->getConfigs();
         $defaultUrl = $sysConfig['default_url'];
         $urlInfo = parse_url($this->requestUri);
         if ( $urlInfo['path'] ) {
             $filename = str_replace(EXT_URI, '', $urlInfo['path']);
             $pathInfo = explode('/', $filename);
             if ( isset($pathInfo[1]) ) {
-                $actionMap = explode(ACMAP_SEP, $pathInfo[1]);
+                $actionMap = explode('_', $pathInfo[1]);
                 if ( $actionMap[0] ) $this->setModule($actionMap[0]);
                 if ( $actionMap[1] ) $this->setAction($actionMap[1]);
                 if ( $actionMap[2] ) $this->setMethod($actionMap[2]);
@@ -80,7 +82,7 @@ class HttpRequest {
 
             //提取参数
             if ( isset($pathInfo[2]) ) {
-                $params = explode(PARAM_SEP, $pathInfo[2]);
+                $params = explode('-', $pathInfo[2]);
                 for ( $i = 0; $i < count($params); $i++ ) {
                     if ( $i % 2 == 0 ) {
                         $_GET[$params[$i]] = $params[$i+1];

@@ -10,7 +10,7 @@
  * @version 1.2.1
  *-----------------------------------------------------------------------*/
 
-include APP_FRAME_PATH.'functions.php';      //包含框架全局函数
+include APP_FRAME_PATH.'functions.core.php';      //包含框架全局函数
 include APP_FRAME_PATH.'core/Loader.class.php';     //包含资源加载器
 
 use herosphp\core\Loader;
@@ -24,6 +24,12 @@ class Herosphp {
      * @var array
      */
     private static $LIB_CLASS = array();
+
+    /**
+     * 需要自动加载的app服务类
+     * @var array
+     */
+    private static $APP_CLASS = array();
 
     /**
      * 框架启动入口函数
@@ -45,10 +51,39 @@ class Herosphp {
         }
 
         $configs = Loader::config();    //加载系统全局配置
+        $appConfigs = Loader::config('app', APP_NAME); //加载当前应用的配置信息
+        //将应用的配置信息覆盖系统的全局配置信息
+        $configs = array_merge($configs, $appConfigs);
         $application = WebApplication::getInstance();
         $application->execute($configs);
 
         //Debug::printMessage();
+    }
+
+    /**
+     * 执行客户端的php任务
+     * @param string $taskName  任务名称
+     */
+    public static function runClient( $taskName = null ) {
+
+        if ( $taskName == null || $taskName == '' ) {
+            tprintError('请传入需要执行的任务名称！');
+            die();
+        }
+
+        //加载框架核心类
+        self::_loadBaseLib();
+        //设置默认时区
+        date_default_timezone_set(TIME_ZONE);
+        //设置时间用不超时
+        set_time_limit(0);
+
+        //关闭错误
+        error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE & ~E_WARNING);
+        ini_set("display_errors", "Off");
+
+        Loader::import('client.'.$taskName, IMPORT_CUSTOM, '.php');
+
     }
 
     /**
@@ -82,9 +117,10 @@ class Herosphp {
             'herosphp\model\C_Model'       => 'model.C_Model',
             'herosphp\cache\CacheFactory'       => 'cache.CacheFactory',
             'herosphp\bean\Beans'  => 'bean.Beans',
-            'herosphp\session\Session'  => 'session.Session',
-            'herosphp\filter\Filter'  => 'filter.Filter',
-            'AjaxResult'        => 'public.AjaxResult');
+            'herosphp\session\Session'  => 'session.Session');
+
+        self::$APP_CLASS = array(
+            'admin\action\CommonAction'        => 'admin.action.CommonAction');
     }
 
     /**
@@ -92,7 +128,11 @@ class Herosphp {
      * @param $className
      */
     public static function autoLoad($className) {
-        Loader::import(self::$LIB_CLASS[$className], IMPORT_FRAME, EXT_PHP);
+        if ( self::$LIB_CLASS[$className] ) {
+            Loader::import(self::$LIB_CLASS[$className], IMPORT_FRAME, EXT_PHP);
+        } else {
+            Loader::import(self::$APP_CLASS[$className], IMPORT_APP, EXT_PHP);
+        }
     }
     
 }
@@ -101,4 +141,3 @@ class Herosphp {
 function __autoload( $className ) {
     Herosphp::autoLoad($className);
 }
-?>

@@ -78,9 +78,6 @@ class WebApplication implements IApplication {
     {
         $this->httpRequest = new HttpRequest();
         $this->httpRequest->parseURL();
-        //将应用的配置信息覆盖系统的全局配置信息
-        $appConfigs = Loader::config('app', APP_NAME);
-        $this->configs = array_merge($this->configs, $appConfigs);
     }
 
     /**
@@ -142,7 +139,7 @@ class WebApplication implements IApplication {
 
     /**
      * 获取指定key的配置值
-     * @param $key 配置key
+     * @param string $key 配置key
      * @return mixed
      */
     public function getConfig( $key ) {

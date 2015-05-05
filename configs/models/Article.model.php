@@ -15,5 +15,8 @@ class ArticleModel extends C_Model {
 
         parent::__construct('article');
         $this->setPrimaryKey('id');
+        $this->setMapping(array(
+            'bcontent' => 'sdesc',
+        ));
     }
 } 

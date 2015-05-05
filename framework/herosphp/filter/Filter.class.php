@@ -280,7 +280,7 @@ class Filter {
         if ( ( $model[2] & DFILTER_SANITIZE_INT ) != 0 )
             $value = intval( $value );
         if ( ( $model[2] & DFILTER_MAGIC_QUOTES ) != 0
-            && ini_get('magic_quotes_gpc') == 0 )
+            && !get_magic_quotes_gpc() )
             $value = addslashes( $value );
 
         return $value;

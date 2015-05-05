@@ -66,7 +66,7 @@ class FileSession implements ISession {
 			array(__CLASS__,'destroy'),
 			array(__CLASS__,'gc')
 		);
-		session_start();
+		@session_start();
 	}
 	
 	/**

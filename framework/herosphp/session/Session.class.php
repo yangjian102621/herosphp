@@ -21,6 +21,9 @@ class Session {
      */
     public static function start() {
 
+        //如果已经开启了SESSION则直接返回
+        if ( isset($_SESSION) ) return true;
+
         //loading session configures
         $configs = Loader::config('session','session');
         switch ( SESSION_HANDLER ) {

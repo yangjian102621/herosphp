@@ -6,6 +6,8 @@ use herosphp\core\Loader;
 use herosphp\filter\Filter;
 use herosphp\http\HttpRequest;
 
+Loader::import('filter.Filter', IMPORT_FRAME);
+
 /**
  * 数据过滤测试
  * @since           2015-02-21
@@ -18,7 +20,6 @@ class FilterAction extends Controller {
      */
     public function index(HttpRequest $request) {
 
-        Filter::init();
         $filterMap = array(
             'title' => array(DFILTER_STRING, array(6, 12), NULL, '标题'),
             'email' => array(DFILTER_EMAIL, NULL, NULL, '邮箱'),
@@ -29,7 +30,7 @@ class FilterAction extends Controller {
         $data = array(
             'title' => 'xiaoyang333',
             'email' => '906388445@qq.com',
-            'id_number' => '431028198801210838',
+            'id_number' => '431028198801210839',
             'content' => "<span>我有一头'小毛驴'。</span>"
         );
 

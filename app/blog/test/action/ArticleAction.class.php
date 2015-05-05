@@ -33,7 +33,7 @@ class ArticleAction extends Controller {
      */
     public function detail( HttpRequest $request ) {
         $id = $request->getParameter('id', 'intval');
-        if ( $id <= 0 ) $id = 299;
+        if ( $id <= 0 ) $id = 4779;
         $model = Loader::model('article');
         $item = $model->getItem($id);
         __print($item);

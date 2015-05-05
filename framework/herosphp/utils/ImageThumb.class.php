@@ -74,12 +74,13 @@ class ImageThumb {
 
     /**
      * 生成缩略图
-     * @param     array $size new size of image
-     * @param     string $imgSrc Original image file path
-     * @param    int $quality 图片质量(0-100)
+     * @param array $size 缩略图尺寸
+     * @param string $imgSrc 原图路径
+     * @param string $outfile 缩略图输出文件
+     * @param int $quality 图片质量(0-100)
      * @return  mixed
      */
-    public function makeThumb($size, $imgSrc, $quality=75)
+    public function makeThumb($size, $imgSrc, $outfile=null, $quality=75)
     {
         $this->extension = $this->getFileExt($imgSrc);
         $this->sizeSrc = $this->getImageSize($imgSrc);
@@ -94,10 +95,15 @@ class ImageThumb {
             if (!$result) return false;
         }
 
-        $thumbImg = $this->getThumbFilename($imgSrc, $size);
-        $this->saveImage($thumbImg, $quality); //图像输出,保存
+        //如果传入了缩略图的名称则生成指定的缩略图，否则自动生成缩略图名称
+        if ( $outfile != null ) {
+            $this->saveImage($outfile, $quality);
+        } else {
+            $outfile = $this->getThumbFilename($imgSrc, $size);
+            $this->saveImage($outfile, $quality);
+        }
 
-        return $thumbImg;
+        return $outfile;
     }
 
     /**

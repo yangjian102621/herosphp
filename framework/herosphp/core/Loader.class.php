@@ -48,8 +48,8 @@ class Loader {
 
         //组合文件路径
         switch ( $type ) {
-            case IMPORT_APP_ROOT :
-                $path = APP_PATH;
+            case IMPORT_CLIENT :
+                $path = APP_ROOT.'client'.'/';
                 break;
 
             case IMPORT_APP :
@@ -99,7 +99,10 @@ class Loader {
             return self::$CONFIGS[$section][$key];
         }
         $configDir = APP_CONFIG_PATH;
-        if ( $section != 'root' ) $configDir .= $section.'/';     //默认加载配置根目录的配置文档
+        //默认加载配置根目录的配置文档
+        if ( $section != 'root' ) {
+            $configDir .= $section.'/';
+        }
         if ( $key != '*' ) {
             $configFile = $configDir.$key.'.config.php';
             if ( file_exists($configFile) ) {

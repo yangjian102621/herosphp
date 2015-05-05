@@ -45,7 +45,7 @@ abstract class Beans {
      * 获取指定ID的Bean
      * @param string $key Bean的key
      * @param boolean $new 是否创建新的bean,新创建的Bean不会放到容器中，如果要放到容器中，请使用set方法。
-     * @return mixed 返回指定ID的Bean,如果Bean不存在则返回null
+     * @return \common\service\CommonService|mixed 返回指定ID的Bean,如果Bean不存在则返回null
      */
     public static function get( $key, $new=false ){
 
