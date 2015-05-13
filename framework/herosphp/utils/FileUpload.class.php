@@ -17,9 +17,16 @@ class FileUpload {
      * @var array 上传文件配置参数
      */
     protected $config = array(
+        //上传文件的根目录
         'upload_dir' => __DIR__,
+        //允许上传的文件类型
         'allow_ext' => 'jpg|png|gif|txt|pdf|rar|zip|swf|bmp|c|java|mp3',
-        'max_size' =>  8388608,     /* 文件size的最大 8MB */
+        //图片的最大宽度, 0没有限制
+        'max_width' => 0,
+        //图片的最大高度, 0没有限制
+        'max_height' => 0,
+        //文件的最大尺寸
+        'max_size' =>  2048000,     /* 文件size的最大 2MB */
      );
 
     /**
@@ -61,7 +68,8 @@ class FileUpload {
         '5'		=> 	'不允许的文件类型',
         '6'		=> 	'上传目录创建失败',
         '7'		=> 	'文件保存时出错',
-        '8'		=> 	'base64解码IO错误'
+        '8'		=> 	'base64解码IO错误',
+        '9'		=> 	'文件尺寸超出了限制'
 	);
 
     /**
@@ -84,15 +92,15 @@ class FileUpload {
      * @return       mixed        $_filename     filename string of uploaded file.
      */
 	public function upload( $_field, $_base64 = false ) {
-		
+
+        if ( !$this->checkUploadDir() ) {
+            $this->errNum = 6;
+            return false;
+        }
+
 		if ( $_base64 ) {
 			$_data = $_POST[$_field];
 			return $this->makeBase64Image( $_data );
-		}
-		
-		if ( !$this->checkUploadDir() ) {
-			$this->errNum = 6;
-			return false;
 		}
 
 		$_localFile = $_FILES[$_field]['name'];
@@ -100,7 +108,7 @@ class FileUpload {
 		$_error_no = $_FILES[$_field]['error'];
         $this->fileInfo['file_type'] = $_FILES[$_field]['type'];
         $this->fileInfo['local_name'] = $_localFile;
-        $this->fileInfo['file_size'] = floatval($_FILES[$_field]['size'] / 1024);
+        $this->fileInfo['file_size'] = $_FILES[$_field]['size'];
 
         $this->errNum = $_error_no;
         if ( $this->errNum == 0 ) {
@@ -140,9 +148,11 @@ class FileUpload {
     protected function makeBase64Image( $_base64_data ) {
 
 		$_img = base64_decode($_base64_data);
-		$_filename = $this->getFileName("123.png");
+        $this->fileInfo['local_name'] = time().".png";
+		$_filename = $this->getFileName($this->fileInfo['local_name']);
+        $this->fileInfo['file_name'] = $_filename;
         $this->fileInfo['file_path'] = $this->config['upload_dir'].DIRECTORY_SEPARATOR.$_filename;
-		if ( file_put_contents($this->fileInfo['file_path'], $_img) ) {
+		if ( file_put_contents($this->fileInfo['file_path'], $_img) && file_exists($this->fileInfo['file_path']) ) {
 
             $size = getimagesize($this->fileInfo['file_path']);
             if ( ($this->config['max_width'] > 0 && $size[0] > $this->config['max_width'])
@@ -157,6 +167,7 @@ class FileUpload {
             //初始化mimeType
             $this->fileInfo['file_type'] = "image/png";
             $this->fileInfo['is_image'] = 1;
+            $this->fileInfo['file_size'] = filesize($this->fileInfo['file_path']);
 
             $pathinfo = pathinfo($this->fileInfo['file_path']);
             $this->fileInfo['file_ext'] =  $pathinfo['extension'];
@@ -177,8 +188,7 @@ class FileUpload {
     protected function getFileName($filename) {
 
 		$_ext = $this->getFileExt($filename);
-		list($msec, $sec) = explode(' ', microtime());
-		return $sec.'-'.substr($msec, 2, 2).'-'.mt_rand(1000, 9999).'.'.$_ext;
+		return time().'-'.mt_rand(100000, 999999).'.'.$_ext;
 
 	}
 
@@ -252,6 +262,7 @@ class FileUpload {
             $this->fileInfo['file_type'] = mime_content_type($filename);
         }
 
+        //如果是图片还要检查图片的宽度和高度是否超标
         if ( strpos($this->fileInfo['file_type'], 'image') !== FALSE ) {
 
             $this->fileInfo['is_image'] = 1;
@@ -274,6 +285,9 @@ class FileUpload {
      * @return       string
      */
 	public function getUploadMessage() {
+        if ( $this->errNum == 9 ) {
+            return "尺寸超出{$this->config['max_width']}x{$this->config['max_height']}";
+        }
 		return self::$_UPLOAD_STATES[$this->errNum];
 	}
 	

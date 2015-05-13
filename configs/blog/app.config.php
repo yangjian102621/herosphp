@@ -11,19 +11,29 @@
  *-----------------------------------------------------------------------*/
 
 $config = array(
-    'site_url' => 'http://www.herosphp.my',     //主服务器地址
-    'res_url' => 'http://www.herosphp.my',      //静态资源的服务器地址(css, image)
+
+    'site_url' => 'http://blog.fiidee.my',     //网站地址
+    'domain' => 'blog.fiidee.my',     //网站域名
+    'res_url' => 'http://blog.fiidee.my',      //静态资源的服务器地址(css, image)
     //默认访问的页面
     'default_url' => array(
-        'module' => 'test',
-        'action' => 'article',
+        'module' => 'admin',
+        'action' => 'login',
         'method' => 'index' ),
-    'template' => 'default',    //默认模板
-    'skin' => 'default',    //默认皮肤
 
     'template' => 'default',    //默认模板
     'skin' => 'default',    //默认皮肤
-    'temp_cache' => 0,
+    'temp_cache' => 0,      //模板引擎缓存
+
+
+    //应用信息配置
+    'admin_title' => "FiiDee Blog 后台管理",      //后台Project name
+
+    //系统配置分组
+    'system.config.group' => array(
+        'basic' => '基础配置',
+        'email' => '邮件配置',
+    ),
 );
 
 return $config;

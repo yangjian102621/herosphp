@@ -101,7 +101,7 @@ class Loader {
         $configDir = APP_CONFIG_PATH;
         //默认加载配置根目录的配置文档
         if ( $section != 'root' ) {
-            $configDir .= $section.'/';
+            $configDir .= str_replace('.', '/', $section).'/';
         }
         if ( $key != '*' ) {
             $configFile = $configDir.$key.'.config.php';
@@ -134,7 +134,11 @@ class Loader {
     public static function model( $modelName ) {
 
         $modelName = ucfirst($modelName);
-        Loader::import('configs.models.'.$modelName, IMPORT_CUSTOM, EXT_MODEL);
+        $modelPath = 'configs.models';
+        if ( MODELS_PATH != false ) {
+            $modelPath = MODELS_PATH;
+        }
+        Loader::import($modelPath.'.'.$modelName, IMPORT_CUSTOM, EXT_MODEL);
         $className = 'models\\'.$modelName.'Model';
         return new $className();
 

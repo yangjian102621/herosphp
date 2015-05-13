@@ -90,7 +90,7 @@ class Page {
         if ( $pos === false ) {
             return '/'.$url.'/page-';
         } else {
-            return '/'.$url.'page-';
+            return '/'.$url.'-page-';
         }
     }
     
@@ -135,7 +135,9 @@ class Page {
             $pageData['1'] = url($this->_url.'1');
             
             //打印左边省略号
-            if ( $_style & PAGE_DOT ) $_left .= '<li class="disabled"><a href="#">...</a></li>';
+            if ( $_style & PAGE_DOT ) {
+                $_left .= '<li class="disabled"><a href="#">...</a></li>';
+            }
             
             for ( $i = ($this->_pagenow - $this->_out_page); $i < $this->_pagenow; $i++ ) {
                 $_left .= '<li><a href="'.url($this->_url.$i).'">'.$i.'</a></li>';
@@ -162,7 +164,9 @@ class Page {
             }
             
             //打印右边省略号
-            if ( $_style & PAGE_DOT ) $_right .= '<li class="disabled"><a href="#">...</a></li>';
+            if ( $_style & PAGE_DOT ) {
+                $_right .= '<li class="disabled"><a href="#">...</a></li>';
+            }
             
             //$_right .= '<li><a href="'.url($this->_url.($this->_pagenum - 1)).'">'.($this->_pagenum - 1).'</a></li>';
             $_right .= '<li><a href="'.url($this->_url.$this->_pagenum).'">'.$this->_pagenum.'</a></li>';
@@ -237,22 +241,24 @@ class Page {
 
         if ( $this->_pagenum <= 1 ) return array();
 
-        $pages = array('url' => $this->_url);
+        $pages = array('url' => url($this->_url.'{page}'));
         if ( $_style & PAGE_TOTAL_NUM ) $pages['total'] = $this->_rows_num;
         if ( $_style & PAGE_PREV ) {
             if ( $this->_pagenow > 1 ) {
-                $pages['prev'] = $this->_pagenow;
+                $pages['prev'] = url($this->_url.($this->_pagenow -1));
             } else {
                 $pages['prev'] = '#';
             }
         }
 
-        if ( $_style & PAGE_LIST ) $pages['list'] .= $this->printPageList($_style, 'array');
+        if ( $_style & PAGE_LIST ) {
+            $pages['list'] = $this->printPageList($_style, 'array');
+        }
         if ( $_style & PAGE_NEXT ) {
             if ( $this->_pagenow < $this->_pagenum ) {
-                $pages['prev'] = $this->_pagenow;
+                $pages['next'] = url($this->_url.($this->_pagenow +1));
             } else {
-                $pages['prev'] = '#';
+                $pages['next'] = '#';
             }
         }
         return $pages;

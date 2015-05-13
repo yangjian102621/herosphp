@@ -206,8 +206,8 @@ class Filter {
      * @return mixed
      */
     private static function sanitizeScript( &$value ) {
-        //1. clear up the direct script.
-        //2. clear up the onEvent of html node.
+        //1. 去除javascript脚本.
+        //2. 移除html节点js事件.
         $_rules = array(
             '/<script[^>]*?>.*?<\/script\s*>/i',
             '/<([^>]*?)on[a-zA-Z]+\s*=\s*".*?"([^>]*?)>/i',
@@ -227,7 +227,7 @@ class Filter {
     private static function check( &$value, &$model, &$error )
     {
         //1. 数据类型验证
-        if ( $value == NULL ) return '';
+        if ( $value == null ) return '';
 
         $error = $model[3]."填写不合格！";
         if ( ($model[0] & DFILTER_LATIN) != 0 )
@@ -252,9 +252,9 @@ class Filter {
             if ( ! self::pregCheck( $value, $model[1] ) )  return FALSE;
 
         //2. 数据长度验证
-        if ( $model[1] != NULL ) {
+        if ( $model[1] != null ) {
             if ( $model[1][0] > 0 ) {
-                if ( strlen($value) < $model[1][0] ) {
+                if ( mb_strlen($value, "UTF-8") < $model[1][0] ) {
                     $error = $model[3]."数据小于指定长度！";
                     return FALSE;
                 }
@@ -267,10 +267,10 @@ class Filter {
             }
         }
 
-        $error = NULL;
+        $error = null;
 
         //3. 数据净化
-        if ( $model[2] == NULL ) return $value;
+        if ( $model[2] == null ) return $value;
         if ( ( $model[2] & DFILTER_SANITIZE_TRIM ) != 0 )
             $value = trim($value);
         if ( ( $model[2] & DFILTER_SANITIZE_SCRIPT ) != 0 )

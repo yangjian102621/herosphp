@@ -120,11 +120,13 @@ class Herosphp {
             'herosphp\session\Session'  => 'session.Session');
 
         self::$APP_CLASS = array(
-            'admin\action\CommonAction'        => 'admin.action.CommonAction');
+            'admin\action\CommonAction'        => 'admin.action.CommonAction',
+            'common\action\CommonAction'        => 'common.action.CommonAction',
+        );
     }
 
     /**
-     * 自动加载系统框架类
+     * 自动加载系统框架类和app公共类
      * @param $className
      */
     public static function autoLoad($className) {

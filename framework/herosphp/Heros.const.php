@@ -14,6 +14,7 @@ define('APP_RUNTIME_PATH', APP_ROOT.'runtime/');
 define('APP_CONFIG_PATH', APP_ROOT.'configs/');
 
 define('RES_PATH', APP_ROOT.'res/');    //静态资源的根目录
+define('EXT_PATH', APP_ROOT.'extend/');    //外部扩展库根目录
 define('RES_URL', '/res/');     //静态资源的根url
 
 //定义时区

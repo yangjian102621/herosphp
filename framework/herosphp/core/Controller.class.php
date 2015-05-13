@@ -26,6 +26,7 @@ abstract class Controller extends Template {
 	public function C_start() {
 
         $webApp = WebApplication::getInstance();
+        //注册当前app的配置信息
         $this->assign('appConfigs', $webApp->getConfigs());
 
     }

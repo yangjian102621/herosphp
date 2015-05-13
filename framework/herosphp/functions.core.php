@@ -212,3 +212,34 @@ function addUrlArgs($url, $key, $value) {
 
 }
 
+/**
+ * 获取配置文档的值
+ * @param $key
+ * @return mixed
+ */
+function getConfig($key) {
+
+    $webapp = \herosphp\core\WebApplication::getInstance();
+    return $webapp->getConfig($key);
+}
+
+/**
+ * 将中文数组json编码
+ * @param $array
+ * @return string
+ */
+function cn_json_encode($array) {
+    return urlencode(json_encode($array));
+}
+
+/**
+ * 中文 json 数据解码
+ * @param $string
+ * @return mixed
+ */
+function cn_json_decode($string) {
+
+    $string = urldecode($string);
+    return json_decode($string, true);
+}
+

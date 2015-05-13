@@ -50,7 +50,11 @@ abstract class Beans {
     public static function get( $key, $new=false ){
 
         if ( empty(self::$CONFIGS) ) {
-            self::$CONFIGS = Loader::config('*', 'beans');
+            $beansPath = 'beans';
+            if ( BEANS_PATH != false ) {
+                $beansPath = BEANS_PATH;
+            }
+            self::$CONFIGS = Loader::config('*', $beansPath);
             if ( !self::$CONFIGS ) return null;
         }
         $beanConfig = self::$CONFIGS[$key];

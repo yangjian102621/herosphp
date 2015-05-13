@@ -15,6 +15,8 @@ namespace herosphp\model;
 use herosphp\core\Loader;
 use herosphp\db\DBFactory;
 use herosphp\db\SQL;
+use herosphp\filter\Filter;
+use herosphp\utils\AjaxResult;
 
 Loader::import('model.IModel', IMPORT_FRAME);
 
@@ -51,7 +53,7 @@ class C_Model implements IModel {
      * 数据过滤规则
      * @var array
      */
-    private $filter = array();
+    private $filterMap = array();
 
     /**
      * 初始化数据库连接
@@ -61,13 +63,13 @@ class C_Model implements IModel {
     public function __construct( $table, $config = null ) {
 
         //加载数据表配置
-        $tableConfig = Loader::config('table', 'db');
+        $tableConfig = Loader::config(APP_NAME.'.table', 'db');
         $this->table = $tableConfig[$table];
 
         //初始化数据库配置
         if ( !$config ) {
             //默认使用一个数据库服务器配置
-            $dbConfigs = Loader::config('hosts', 'db');
+            $dbConfigs = Loader::config(APP_NAME.'.hosts', 'db');
             $db_config = $dbConfigs[DB_TYPE];
             if ( DB_ACCESS == DB_ACCESS_SINGLE ) {  //单台服务器
                 $config = $db_config[0];
@@ -92,6 +94,7 @@ class C_Model implements IModel {
      */
     public function insert($data)
     {
+        $data = $this->loadFilterData($data);
         return $this->db->insert($this->table, $data);
     }
 
@@ -100,6 +103,7 @@ class C_Model implements IModel {
      */
     public function replace($data)
     {
+        $data = $this->loadFilterData($data);
         return $this->db->replace($this->table, $data);
     }
 
@@ -171,6 +175,7 @@ class C_Model implements IModel {
      */
     public function update($data, $id)
     {
+        $data = $this->loadFilterData($data);
         return $this->db->update($this->table, $data, "{$this->primaryKey}={$id}");
     }
 
@@ -179,6 +184,7 @@ class C_Model implements IModel {
      */
     public function updates($data, $conditions)
     {
+        $data = $this->loadFilterData($data);
         return $this->db->update($this->table, $data, $conditions);
     }
 
@@ -286,6 +292,25 @@ class C_Model implements IModel {
     }
 
     /**
+     * 获取过滤后的数据
+     * @param $data
+     * @return mixed
+     */
+    protected function loadFilterData(&$data) {
+
+        $filterMap = $this->getFilterMap();
+        if ( empty($filterMap) ) {
+            return $data;
+        }
+        $error = null;
+        $_data = Filter::loadFromModel($data, $filterMap, $error);
+        if ( $_data == false ) {
+            AjaxResult::ajaxResult('error', $error);
+        }
+        return $_data;
+    }
+
+    /**
      * @param array $mapping
      */
     public function setMapping($mapping)
@@ -320,17 +345,17 @@ class C_Model implements IModel {
     /**
      * @param array $filter
      */
-    public function setFilter($filter)
+    public function setFilterMap($filter)
     {
-        $this->filter = $filter;
+        $this->filterMap = $filter;
     }
 
     /**
      * @return array
      */
-    public function getFilter()
+    public function getFilterMap()
     {
-        return $this->filter;
+        return $this->filterMap;
     }
 
 }
