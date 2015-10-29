@@ -26,10 +26,11 @@ class HashUtils {
         }
         $hcode = 0;
         $len = strlen($str);
-        $seed = 131;    // 31 131 1313 13131 131313 etc..
+        $seed = 31;    // 31 131 1313 13131 131313 etc..
         for ( $i = 0; $i < $len; $i++ ) {
             $hcode = (int) ($hcode * $seed + ord($str[$i]));
         }
+
         return ($hcode & 0x7FFFFFFF);
     }
 
@@ -55,7 +56,8 @@ class HashUtils {
      */
     public static function DJPHash( $str ) {
 
-        $hcode = 5381;
+        //$hcode = 5381;
+        $hcode = 53;
         $len = strlen($str);
         for ( $i = 0; $i < $len; $i++ ) {
             $hcode += ($hcode << 5) + ord($str[$i]);

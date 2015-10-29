@@ -53,7 +53,7 @@ class Loader {
                 break;
 
             case IMPORT_APP :
-                $path = APP_PATH.APP_NAME.'/';
+                $path = APP_PATH.'/modules/';
                 break;
 
             case IMPORT_FRAME :
@@ -76,11 +76,11 @@ class Loader {
             chdir($dir);
             $classFiles = glob('*'.$extension);
             foreach ($classFiles as $file ) {
-                include $dir.'/'.$file;
+                require $dir.'/'.$file;
             }
 
-        } else {    //包含文件
-            include $path.$classPath.$extension;
+        } else {    //包含单个文件
+            require $path.$classPath.$extension;
         }
 
         self::$IMPORTED_FILES[$classKey] = 1;
@@ -88,20 +88,59 @@ class Loader {
     }
 
     /**
+     * 包含一个文件,并返回该文件的内容
+     *
+     * 包含一个文件的参数方式：'article.model.articleModel'
+     * @param $classPath
+     * @param int $type 导入了类包的类别，详情见Herosphp.const.php
+     * @param $extension
+     * @return boolean
+     */
+    public static function __include( $classPath, $type = IMPORT_APP, $extension=EXT_PHP ) {
+
+        //组合文件路径
+        switch ( $type ) {
+            case IMPORT_CLIENT :
+                $path = APP_ROOT.'client'.'/';
+                break;
+
+            case IMPORT_APP :
+                $path = APP_PATH.'/modules/';
+                break;
+
+            case IMPORT_FRAME :
+                $path = APP_FRAME_PATH;
+                break;
+
+            case IMPORT_CUSTOM :
+                $path = APP_ROOT;
+                break;
+
+            default:
+                return false;
+        }
+
+        $classPath = str_replace('.', '/', $classPath);
+        return include $path.$classPath.$extension;
+    }
+
+    /**
      * 加载配置信息
      * @param string $key 配置文件名称key， 如果没有指定则加载所有配置文档
-     * @param string $section 配置文档所属片区|模块，如果没有指定则加载配置文档根目录的所有文件
+     * @param string $section 配置文档所属片区|模块，如果没有指定则加载配置文档根目录的配置文件
      * @return array
      */
-    public static function config( $key='*', $section='root' ) {
+    public static function config( $key='*', $section=null ) {
 
         if ( isset(self::$CONFIGS[$section][$key]) ) {
             return self::$CONFIGS[$section][$key];
         }
-        $configDir = APP_CONFIG_PATH;
-        //默认加载配置根目录的配置文档
-        if ( $section != 'root' ) {
-            $configDir .= str_replace('.', '/', $section).'/';
+        //加载系统configs文件夹中的配置文档
+        if ($section == 'root' ) {
+            $configDir = APP_CONFIG_PATH;
+        } else {
+            //加载应用configs文件夹中的配置文档
+            $configDir = APP_PATH.'configs/'.str_replace('.', '/', $section).'/';
         }
         if ( $key != '*' ) {
             $configFile = $configDir.$key.'.config.php';
@@ -134,13 +173,10 @@ class Loader {
     public static function model( $modelName ) {
 
         $modelName = ucfirst($modelName);
-        $modelPath = 'configs.models';
-        if ( MODELS_PATH != false ) {
-            $modelPath = MODELS_PATH;
-        }
+        $modelPath = APP_NAME.'.models';
         Loader::import($modelPath.'.'.$modelName, IMPORT_CUSTOM, EXT_MODEL);
-        $className = 'models\\'.$modelName.'Model';
+        $className = APP_NAME.'\\models\\'.$modelName.'Model';
         return new $className();
 
     }
-} 
+}

@@ -78,9 +78,10 @@ class ImageThumb {
      * @param string $imgSrc 原图路径
      * @param string $outfile 缩略图输出文件
      * @param int $quality 图片质量(0-100)
+     * @param boolean $overwrite 是否覆盖原图
      * @return  mixed
      */
-    public function makeThumb($size, $imgSrc, $outfile=null, $quality=75)
+    public function makeThumb($size, $imgSrc, $outfile=null, $overwrite = false, $quality=90)
     {
         $this->extension = $this->getFileExt($imgSrc);
         $this->sizeSrc = $this->getImageSize($imgSrc);
@@ -99,10 +100,55 @@ class ImageThumb {
         if ( $outfile != null ) {
             $this->saveImage($outfile, $quality);
         } else {
-            $outfile = $this->getThumbFilename($imgSrc, $size);
+            //覆盖原图
+            if ( $overwrite ) {
+                $outfile = $imgSrc;
+            } else {
+                $outfile = $this->getThumbFilename($imgSrc, $size);
+            }
             $this->saveImage($outfile, $quality);
         }
 
+        return $outfile;
+    }
+
+    /**
+     * 裁剪图片
+     * @param array $position 裁剪位置 array(x, y);
+     * @param array $size 缩略图尺寸 array(w, h)
+     * @param string $imgSrc 原图路径
+     * @param string $outfile 缩略图输出文件
+     * @param boolean $overwrite 是否覆盖原图
+     * @param int $quality 图片质量(0-100)
+     * @return  mixed
+     */
+    public function crop($position, $size, $imgSrc, $outfile=null, $overwrite=false, $quality=90)
+    {
+        $this->extension = $this->getFileExt($imgSrc);
+        $this->sizeSrc = $this->getImageSize($imgSrc);
+        $this->imgDst = $this->createDstImage($size); //创建目标图像资源
+
+        //目标图片的拷贝
+        $this->imgSrc = $this->getImageSource($imgSrc); //获取图片资源
+        if ($this->imgSrc && $this->imgDst) {
+            $result = imagecopyresampled($this->imgDst, $this->imgSrc, 0, 0, $position[0], $position[1], $this->sizeSrc[0],
+                $this->sizeSrc[1], $this->sizeSrc[0], $this->sizeSrc[1]);
+
+            if (!$result) return false;
+        }
+
+        //如果传入了缩略图的名称则生成指定的缩略图，否则自动生成缩略图名称
+        if ( $outfile != null ) {
+            $this->saveImage($outfile, $quality);
+        } else {
+            //覆盖原图
+            if ( $overwrite ) {
+                $outfile = $imgSrc;
+            } else {
+                $outfile = $this->getCropFilename($imgSrc, $size);
+            }
+            $this->saveImage($outfile, $quality);
+        }
         return $outfile;
     }
 
@@ -152,6 +198,17 @@ class ImageThumb {
     }
 
     /**
+     * 获取cai的名称
+     * @param $filename 文件名称
+     * @param $size 缩放尺寸
+     * @return array
+     */
+    protected function getCropFilename($filename, $size)
+    {
+        return $filename . ".__crop__.{$size[0]}x{$size[1]}." . $this->extension;
+    }
+
+    /**
      * 获取文件后缀名
      * @param $filename
      * @return string
@@ -196,12 +253,14 @@ class ImageThumb {
             case 2:
                 $_ratio = max($size[0] / $this->sizeSrc[0], $size[1] / $this->sizeSrc[1]);
                 if ($_ratio == 0) break;
-                $this->sizeDst[0] = intval($this->sizeSrc[0] * $_ratio);
-                $this->sizeDst[1] = intval($this->sizeSrc[1] * $_ratio);
+                $this->sizeDst[0] = ceil($this->sizeSrc[0] * $_ratio);
+                $this->sizeDst[1] = ceil($this->sizeSrc[1] * $_ratio);
                 break;
         }
-
-        return imagecreatetruecolor($this->sizeDst[0], $this->sizeDst[1]);
+        $image = imagecreatetruecolor($this->sizeDst[0], $this->sizeDst[1]);
+        $color = imagecolorallocate($image, 255, 255, 255);
+        imagefill($image, 0, 0, $color);
+        return $image;
     }
 
     /**

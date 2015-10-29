@@ -35,17 +35,25 @@ class SingleDB implements Idb {
     private $config = array();
 
     /**
+     * 事务的级数，解决事务的嵌套问题
+     * @var int
+     */
+    private $transactions = 0;
+
+    /**
      * 创建一个数据库操作对象,初始化配置参数
      * @param $config
      */
     public  function __construct( $config ) {
 
         if ( !is_array($config) || empty($config) ) {
-            E("必须传入数据库的配置信息！");
+            if ( APP_DEBUG ) {
+                E("必须传入数据库的配置信息！");
+            }
         }
         $this->config = $config;
     }
-    
+
     /**
      * @see \herosphp\db\interfaces\Idb::connect()
      * @throws DBException
@@ -53,11 +61,11 @@ class SingleDB implements Idb {
      */
     public function connect()
     {
-        if ( $this->link != null ) return TRUE;
+        if ( $this->link != null ) return true;
         $_config = $this->config;
         $_dsn="{$_config['db_type']}:host={$_config['db_host']};port={$_config['db_port']};dbname={$_config['db_name']}";
         try {
-            $this->link = new PDO($_dsn, $_config['db_user'], $_config['db_pass'], array(PDO::ATTR_PERSISTENT=>true));
+            $this->link = new PDO($_dsn, $_config['db_user'], $_config['db_pass'], array(PDO::ATTR_PERSISTENT=>false));
             $this->link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             //设置数据库编码，默认使用UTF8编码
@@ -68,7 +76,9 @@ class SingleDB implements Idb {
             $this->link->query("SET character_set_results = {$_charset}");
 
         } catch (PDOException $e ) {
-            E("数据库连接失败".$e->getMessage());
+            if ( APP_DEBUG ) {
+                E("数据库连接失败".$e->getMessage());
+            }
         }
         return $this->link;
     }
@@ -86,7 +96,9 @@ class SingleDB implements Idb {
             $_exception = new DBException("SQL错误:" . $e->getMessage());
             $_exception->setCode($e->getCode());
             $_exception->setQuery($_query);
-            __print($_exception); die();
+            if ( APP_DEBUG ) {
+                __print($_exception); die();
+            }
         }
         if ( APP_DEBUG ) {
             Debug::appendMessage($_query, 'sql');   //添加调试信息
@@ -98,7 +110,7 @@ class SingleDB implements Idb {
      * @see \herosphp\db\interfaces\Idb::insert()
      */
     public function insert($_table, &$_array)
-    {	
+    {
 		$_fileds = '';
 		$_values = '';
 		$_T_fields = $this->getTableFields( $_table );
@@ -109,17 +121,17 @@ class SingleDB implements Idb {
 
 			$_fileds .= ( $_fileds=='' ) ? "`{$_key}`" : ", `{$_key}`" ;
 			$_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
-			
+
 		}
 
 		if ( $_fileds !== null ) {
-			$_query = "INSERT INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";			
-			
-			if ( $this->query( $_query ) != FALSE ){
+			$_query = "INSERT INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";
+
+			if ( $this->query( $_query ) != false ){
 				return $this->link->lastInsertId();
 			}
-		}		
-        return FALSE;
+		}
+        return false;
     }
 
     /**
@@ -141,10 +153,10 @@ class SingleDB implements Idb {
 
         if ( $_fileds !== null ) {
             $_query = "REPLACE INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";
-            if ( $this->query( $_query ) != FALSE )
-                return TRUE;
+            if ( $this->query( $_query ) != false )
+                return true;
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -153,10 +165,14 @@ class SingleDB implements Idb {
     public function delete($_table, $_conditons = null)
     {
         $_sql = "DELETE FROM ".$_table;
-        if ( $_conditons != null ) $_sql .= " WHERE ".$_conditons;
+        if ( $_conditons ) {
+            $_sql .= " WHERE ".$_conditons;
+        } else {
+            return false;
+        }
         $_result = $this->query($_sql);
         if ( $_result ) return true;
-        return FALSE;
+        return false;
     }
 
     /**
@@ -166,9 +182,9 @@ class SingleDB implements Idb {
     {
         $_result = array();
         $_ret = $this->query( $_query );
-        if ( $_ret != FALSE ) {
+        if ( $_ret != false ) {
 
-            while ( ($_rows = $_ret->fetch($_type)) != FALSE )
+            while ( ($_rows = $_ret->fetch($_type)) != false )
                 $_result[]  = $_rows;
         }
         return $_result;
@@ -181,7 +197,7 @@ class SingleDB implements Idb {
     {
         $_result = array();
         $_ret = $this->query( $_query );
-        if ( $_ret != FALSE ) {
+        if ( $_ret != false ) {
             $_result = $_ret->fetch($_type);
         }
         return $_result;
@@ -192,6 +208,8 @@ class SingleDB implements Idb {
      */
     public function update($_table, &$_array, $_conditons = null)
     {
+        if ( !$_conditons ) return false;
+
         $_T_fields = $this->getTableFields($_table);
         $_keys = '';
         foreach ( $_array as $_key => $_val ) {
@@ -202,9 +220,13 @@ class SingleDB implements Idb {
         }
         if ( $_keys !== '' ) {
             $_query = "UPDATE " . $_table . " SET " . $_keys . " WHERE ".$_conditons;
-            if ( $this->query( $_query ) !== FALSE) return TRUE;
+            return $this->query($_query);
+
+            //如果没有传入任何字段则默认也是更新成功的
+        } else {
+            return true;
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -224,9 +246,16 @@ class SingleDB implements Idb {
      */
     public function beginTransaction()
     {
-        if ( $this->link == null ) $this->connect();
-        $this->link->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
-        $this->link->beginTransaction();
+        if ( $this->link == null ) {
+            $this->connect();
+        }
+        ++$this->transactions;
+
+        if ( $this->transactions == 1 ) {
+            $this->link->beginTransaction();
+        }
+
+
     }
 
     /**
@@ -234,9 +263,14 @@ class SingleDB implements Idb {
      */
     public function commit()
     {
-        if ( $this->link == null ) $this->connect();
-        $this->link->commit();
-        $this->link->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
+        if ( $this->link == null ) {
+            $this->connect();
+        }
+        if ( $this->transactions == 1 ) {
+            $this->link->commit();
+        }
+
+        --$this->transactions;
     }
 
     /**
@@ -244,8 +278,18 @@ class SingleDB implements Idb {
      */
     public function rollBack()
     {
-        if ( $this->link == null ) $this->connect();
-        $this->link->rollBack();
+        if ( $this->link == null ) {
+            $this->connect();
+        }
+        if ( $this->transactions == 1 ) {
+
+            $this->transactions = 0;
+            $this->link->rollBack();
+
+        } else {
+            --$this->transactions;
+        }
+
     }
 
     /**
@@ -267,8 +311,8 @@ class SingleDB implements Idb {
         $_sql = "SHOW COLUMNS FROM {$_table}";
         $_ret = $this->query( $_sql );
         $_fields = array();
-        if ( $_ret != FALSE ) {
-            while ( ($_rows = $_ret->fetch()) != FALSE ) {
+        if ( $_ret != false ) {
+            while ( ($_rows = $_ret->fetch()) != false ) {
                 $_fields[] = $_rows[0];
             }
         }
@@ -282,7 +326,7 @@ class SingleDB implements Idb {
 
         if ( $this->link ) $this->link = null;
     }
-    
+
 	/**
 	 * @return the $config
 	 */

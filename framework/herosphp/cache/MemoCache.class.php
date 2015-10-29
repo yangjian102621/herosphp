@@ -20,14 +20,16 @@ class MemoCache implements ICache {
      * @var Memcache|null
      */
     private static $Mem = NULL;
-	
+
     /**
      * 初始化缓存配置信息
      * @param array $configs 缓存配置信息
      */
     public function __construct( $configs ) {
         if ( !$configs ) {
-            E("必须传入缓存配置信息！");
+            if ( APP_DEBUG ) {
+                E("必须传入缓存配置信息！");
+            }
         }
         $this->configs = $configs;
         $Mem = new \Memcache();
@@ -35,24 +37,28 @@ class MemoCache implements ICache {
             call_user_func_array(array($Mem, 'addServer'), $value);
         }
         if ( !$Mem->getstats() ) {
-            E("Unable to connect the Memcache server!");
+            if ( APP_DEBUG ) {
+                E("Unable to connect the Memcache server!");
+            }
         }
         self::$Mem = $Mem;
     }
-	
+
 	/**
 	 * @see	ICache::get()
 	 */
 	public function get( $key, $expire=null ) {
-
-        if ( $expire ) $this->configs['expire'] = $expire;
 		return self::$Mem->get($key);
 	}
-	
+
 	/**
 	 * @see ICache::set()
 	 */
-	public function set( $key, $content ) {
+	public function set( $key, $content, $expire=null) {
+
+        if ( $expire !== null ) {
+            $this->configs['expire'] = $expire;
+        }
 		return self::$Mem->set($key, $content, MEMCACHE_COMPRESSED, $this->configs['expire']);
 	}
 

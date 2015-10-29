@@ -41,7 +41,7 @@ class DBFactory {
             )
         )
     );
-	
+
     /**
      * 创建数据库连接实例
      * @param int $accessType   连接方式（连接单个服务器还是连接集群）
@@ -54,12 +54,13 @@ class DBFactory {
         $classPath = self::$DB_DRIVER[DB_TYPE][$accessType]['path'];
         Loader::import($classPath, IMPORT_FRAME);
         $className = self::$DB_DRIVER[DB_TYPE][$accessType]['class'];
-        if ( !isset(self::$DB_POOL[$classPath]) ) {
-            self::$DB_POOL[$classPath] = new $className($config);
-            self::$DB_POOL[$classPath]->connect();
+        $key = md5($className.$config['flag']);
+        if ( !isset(self::$DB_POOL[$key]) ) {
+            self::$DB_POOL[$key] = new $className($config);
+            self::$DB_POOL[$key]->connect();
         }
-        return self::$DB_POOL[$classPath];
+        return self::$DB_POOL[$key];
 	}
-	
+
 }
 ?>

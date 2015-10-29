@@ -11,6 +11,8 @@
 
 namespace herosphp\cache;
 
+use herosphp\utils\HashUtils;
+
 Abstract class ACache {
 
     /**
@@ -51,7 +53,9 @@ Abstract class ACache {
      */
     public function __construct( $configs ) {
         if ( !$configs ) {
-            E("必须传入缓存配置信息！");
+            if ( APP_DEBUG ) {
+                E("必须传入缓存配置信息！");
+            }
         }
         $this->configs = $configs;
     }
@@ -110,7 +114,12 @@ Abstract class ACache {
                 $filename .= '_'.$this->ftype;
             }
             if ( $this->factor ) {
-                $cacheDir .= ($this->factor % self::$_FILE_OPACITY).'/';
+                if ( is_numeric($this->factor) ) {
+                    $cacheDir .= ($this->factor % self::$_FILE_OPACITY).'/';
+                } else {
+                    $factor = HashUtils::BKDRHash($this->factor);
+                    $cacheDir .= ($factor % self::$_FILE_OPACITY).'/';
+                }
                 $filename .= '_'.$this->factor;
             }
             return $cacheDir.$filename.$extension;

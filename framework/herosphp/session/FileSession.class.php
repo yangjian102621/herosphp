@@ -13,6 +13,7 @@ namespace herosphp\session;
 
 use herosphp\core\Loader;
 use herosphp\session\interfaces\ISession;
+use herosphp\utils\FileUtils;
 
 Loader::import('session.interfaces.ISession', IMPORT_FRAME);
 class FileSession implements ISession {
@@ -26,11 +27,6 @@ class FileSession implements ISession {
      * @var string $sessionSavePath session 文件保存路径
      */
     private static $sessionSavePath;
-
-    /**
-     * @var int 当前时间
-     */
-    private static $ctime;
 
     /**
      * @var string 用户客户端ip
@@ -79,7 +75,7 @@ class FileSession implements ISession {
 			self::$sessionSavePath = $savePath;
 			//创建session目录
 			if ( !file_exists(self::$sessionSavePath) )
-				@mkdir(self::$sessionSavePath);
+                FileUtils::makeFileDirs(self::$sessionSavePath);
 			}
 		//do nothing here
 		return TRUE;
@@ -97,12 +93,12 @@ class FileSession implements ISession {
 	 * @see	\herosphp\session\interfaces\ISession::read().
 	 */
 	public static function read( $sessionId ) {
-		
+
 		$sessionFile = self::$sessionSavePath.DIRECTORY_SEPARATOR.self::$config['session_file_prefix'].$sessionId;
 
 		if ( file_exists($sessionFile) ) {
             //1.if the session data is invalid, destroy session.
-			if ( filemtime($sessionFile) + self::$config['gc_maxlifetime'] < self::$ctime ) {
+			if ( filemtime($sessionFile) + self::$config['gc_maxlifetime'] < time() ) {
 				self::destroy($sessionId);
 				return '';
 			}
@@ -121,13 +117,13 @@ class FileSession implements ISession {
 	 * @see	\herosphp\session\interfaces\ISession::write().
 	 */
 	public static function write( $sessionId, $data ) {
-		
+
 		$sessionFile = self::$sessionSavePath.DIRECTORY_SEPARATOR.self::$config['session_file_prefix'].$sessionId;
         //先获取session数据
         $sessionData = file_get_contents($sessionFile);
         //为减少服务器的负担，每30秒钟更新一次session或者session有改变时
         if ( $sessionData != $data
-            || (filemtime($sessionFile) + self::$config['session_update_interval']) < self::$ctime ) {
+            || (filemtime($sessionFile) + self::$config['session_update_interval']) < time() ) {
 
             return file_put_contents($sessionFile, $data);
         }

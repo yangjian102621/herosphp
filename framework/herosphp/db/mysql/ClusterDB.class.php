@@ -30,9 +30,15 @@ class ClusterDB implements ICusterDB {
 
     protected static $_WRITE_POOL = array();    /* 写服务器连接池 */
 
-    protected $currentReadServer = NULL;       /* 当前读连接服务器 */
+    protected $currentReadServer = null;       /* 当前读连接服务器 */
 
-    protected $currentWriteServer = NULL;       /* 当前写连接服务器 */
+    protected $currentWriteServer = null;       /* 当前写连接服务器 */
+
+    /**
+     * 事务的级数，解决事务的嵌套问题
+     * @var int
+     */
+    private $transactions = 0;
 
     /**
      * 创建一个数据库操作对象,初始化配置参数
@@ -41,7 +47,9 @@ class ClusterDB implements ICusterDB {
     public  function __construct( $configs ) {
 
         if ( !is_array($configs) || empty($configs) ) {
-            E("必须传入数据库的配置信息！");
+            if ( APP_DEBUG ) {
+                E("必须传入数据库的配置信息！");
+            }
         }
         foreach ( $configs as $value ) {
             if ( $value['serial'] == 'db-write' ) {
@@ -71,7 +79,7 @@ class ClusterDB implements ICusterDB {
 
         $_dsn="{$config['db_type']}:host={$config['db_host']};dbname={$config['db_name']}";
         try {
-            $_pdo = new PDO($_dsn, $config['db_user'], $config['db_pass'], array(PDO::ATTR_PERSISTENT=>true));
+            $_pdo = new PDO($_dsn, $config['db_user'], $config['db_pass'], array(PDO::ATTR_PERSISTENT=>false));
             $_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             //设置数据库编码，默认使用UTF8编码
@@ -81,7 +89,9 @@ class ClusterDB implements ICusterDB {
             $_pdo->query("SET character_set_client = {$_charset}");
             $_pdo->query("SET character_set_results = {$_charset}");
         } catch ( PDOException $e ) {
-            E("数据库连接失败".$e->getMessage());
+            if ( APP_DEBUG ) {
+                E("数据库连接失败".$e->getMessage());
+            }
         }
         return $_pdo;
     }
@@ -103,7 +113,9 @@ class ClusterDB implements ICusterDB {
         }
 
         try {
+
             $_result = $_db->query($_query);
+
         } catch ( PDOException $e ) {
             $_exception = new DBException("SQL错误!".$e->getMessage());
             $_exception->setCode($e->getCode());
@@ -133,12 +145,12 @@ class ClusterDB implements ICusterDB {
             $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
         }
 
-        if ( $_fileds !== NULL ) {
+        if ( $_fileds !== null ) {
             $_query = "INSERT INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";
-            if ( $this->query( $_query ) != FALSE )
+            if ( $this->query( $_query ) != false )
                 return $this->currentWriteServer->lastInsertId();
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -158,12 +170,12 @@ class ClusterDB implements ICusterDB {
             $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
         }
 
-        if ( $_fileds !== NULL ) {
+        if ( $_fileds !== null ) {
             $_query = "REPLACE INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";
-            if ( $this->query( $_query ) != FALSE )
-                return TRUE;
+            if ( $this->query( $_query ) != false )
+                return true;
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -172,10 +184,14 @@ class ClusterDB implements ICusterDB {
     public function delete($_table, $_conditons = null)
     {
         $_sql = "DELETE FROM ".$_table;
-        if ( $_conditons != NULL ) $_sql .= " WHERE ".$_conditons;
+        if ( $_conditons ) {
+            $_sql .= " WHERE ".$_conditons;
+        } else {
+            return false;
+        }
         $_result = $this->query($_sql);
         if ( $_result ) return $_result->rowCount();
-        return FALSE;
+        return false;
     }
 
     /**
@@ -185,9 +201,9 @@ class ClusterDB implements ICusterDB {
     {
         $_result = array();
         $_ret = $this->query( $_query );
-        if ( $_ret != FALSE ) {
+        if ( $_ret != false ) {
 
-            while ( ($_rows = $_ret->fetch($_type)) != FALSE )
+            while ( ($_rows = $_ret->fetch($_type)) != false )
                 $_result[]  = $_rows;
         }
         return $_result;
@@ -200,7 +216,7 @@ class ClusterDB implements ICusterDB {
     {
         $_result = array();
         $_ret = $this->query( $_query );
-        if ( $_ret != FALSE ) {
+        if ( $_ret != false ) {
             $_result = $_ret->fetch($_type);
         }
         return $_result;
@@ -211,6 +227,8 @@ class ClusterDB implements ICusterDB {
      */
     public function update($_table, &$_array, $_conditons=null)
     {
+        if ( !$_conditons ) return false;
+
         $_T_fields = $this->getTableFields($_table);
         $_keys = '';
         foreach ( $_array as $_key => $_val ) {
@@ -222,8 +240,12 @@ class ClusterDB implements ICusterDB {
         if ( $_keys !== '' ) {
             $_query = "UPDATE " . $_table . " SET " . $_keys . " WHERE ".$_conditons;
             return $this->query( $_query );
+
+            //如果没有传入任何字段则默认也是更新成功的
+        } else {
+            return true;
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -244,8 +266,10 @@ class ClusterDB implements ICusterDB {
     public function beginTransaction()
     {
         $_db = $this->selectWriteServer();      /* 只有写入服务器需要开启事物 */
-        $_db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
-        $_db->beginTransaction();
+        ++$this->transactions;
+        if ( $this->transactions == 1 ) {
+            $_db->beginTransaction();
+        }
     }
 
     /**
@@ -254,8 +278,9 @@ class ClusterDB implements ICusterDB {
     public function commit()
     {
         $_db = $this->selectWriteServer();
-        $_db->commit();
-        $_db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
+        if ( $this->transactions == 1 ) {
+            $_db->commit();
+        }
     }
 
     /**
@@ -264,7 +289,15 @@ class ClusterDB implements ICusterDB {
     public function rollBack()
     {
         $_db = $this->selectWriteServer();
-        $_db->rollBack();
+        if ( $this->transactions == 1 ) {
+
+            $this->transactions = 0;
+            $_db->rollBack();
+
+        } else {
+            --$this->transactions;
+        }
+
     }
 
     /**
@@ -288,8 +321,8 @@ class ClusterDB implements ICusterDB {
         $_ret = $this->query( $_sql );
 
         $_fields = array();
-        if ( $_ret != FALSE ) {
-            while ( ($_rows = $_ret->fetch(PDO::FETCH_BOTH)) != FALSE ) {
+        if ( $_ret != false ) {
+            while ( ($_rows = $_ret->fetch(PDO::FETCH_BOTH)) != false ) {
                 $_fields[] = $_rows[0];
             }
         }
@@ -345,7 +378,7 @@ class ClusterDB implements ICusterDB {
      */
     protected function selectReadServer() {
 
-        if ( $this->currentReadServer != NULL )
+        if ( $this->currentReadServer != null )
             return $this->currentReadServer;
         //创建读数据库连接
         $_config = $this->getReadPloy();
@@ -360,7 +393,7 @@ class ClusterDB implements ICusterDB {
      */
     protected function selectWriteServer() {
 
-        if ( $this->currentWriteServer != NULL )
+        if ( $this->currentWriteServer != null )
             return $this->currentWriteServer;
 
         //创建写数据库连接

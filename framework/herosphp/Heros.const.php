@@ -14,19 +14,20 @@ define('APP_RUNTIME_PATH', APP_ROOT.'runtime/');
 define('APP_CONFIG_PATH', APP_ROOT.'configs/');
 
 define('RES_PATH', APP_ROOT.'res/');    //静态资源的根目录
-define('EXT_PATH', APP_ROOT.'extend/');    //外部扩展库根目录
+define('EXT_PATH', APP_ROOT.'extends/');    //外部扩展库根目录
 define('RES_URL', '/res/');     //静态资源的根url
 
 //定义时区
 define('TIME_ZONE', 'PRC');
 
 //定义import加载类的类别
-define('IMPORT_APP', 1);    //加载当前应用模块中的class
-define('IMPORT_CLIENT', 2);    //加载客户端脚本的class
-define('IMPORT_FRAME', 3);  //加载框架中的class
-define('IMPORT_CUSTOM', 4); //加载自定义路径中的class
+define('IMPORT_APP', 1);    //加载当前应用模块中的class文件
+define('IMPORT_CLIENT', 2);    //加载客户端脚本的class文件
+define('IMPORT_FRAME', 3);  //加载框架中的class文件
+define('IMPORT_CUSTOM', 4); //加载自定义路径中的class文件
 
-define('EXT_PHP', '.class.php');   //加载php文件
+//采用import加载文件的后缀名常量
+define('EXT_PHP', '.class.php');   //加载php class文件
 define('EXT_MODEL', '.model.php');   //加载model文件
 define('EXT_HTML', '.html');    //加载html文件
 

@@ -14,17 +14,17 @@
  */
 function __print() {
     $_args = func_get_args();  //获取函数的参数
-    
+
     if( count($_args) < 1 ) {
         \herosphp\core\Debug::appendMessage('必须为myprint()参数');
         trigger_error('必须为myprint()参数');
         return;
-    }   
+    }
 
     echo '<div style="width:100%;text-align:left"><pre>';
     //循环输出参数
     foreach( $_args as $_a ){
-        if( is_array($_a) ){  
+        if( is_array($_a) ){
             print_r($_a);
             echo '<br />';
         } else if( is_string($_a) ){
@@ -34,7 +34,7 @@ function __print() {
             echo '<br />';
         }
     }
-    echo '</pre></div>';    
+    echo '</pre></div>';
 }
 
 /**
@@ -108,10 +108,10 @@ function E( $message, $code=0 ) {
 
 /**
  * 获取当前时间
- * @return 		int 
+ * @return 		int
  */
 function timer() {
-    list($msec, $sec) = explode(' ', microtime());  
+    list($msec, $sec) = explode(' ', microtime());
     return ((float)$msec + (float)$sec);
 }
 
@@ -121,6 +121,12 @@ function timer() {
  * @return string
  */
 function url( $url ) {
+
+    $_url = \herosphp\http\HttpRequest::url2Target($url);
+    if ( $_url != $url ) {
+        $_url = rtrim($_url,'/');
+        return $_url;
+    }
 
     $webApp = \herosphp\core\WebApplication::getInstance();
     $sysConfig = $webApp->getConfigs();
@@ -155,7 +161,38 @@ function url( $url ) {
     $newUrl = '/'.implode('_', $actionMap);
     if ( trim($args) != '' ) $newUrl .= '/'.$args;
     $newUrl .= EXT_URI;
+    $newUrl = rtrim($newUrl,'/');
     return $newUrl;
+}
+
+/**
+ * 从标准的连接获取原始连接
+ * @param $url
+ * @return string
+ */
+function getSourceUrl($url) {
+
+    if ( strpos($url, '?') !== false ) {
+        return $url;
+    }
+    $url = trim($url, '/');
+    $url = str_replace(EXT_URI, '', $url);
+    if ( ($pos = strpos($url, '/')) === false ) {
+        return '/'.$url;
+    } else {
+        $query = substr($url, $pos+1);
+        $params = explode('-', $query);
+        $url = substr($url, 0, $pos+1).'?';
+        $length = count($params);
+        $args = array();
+        for ( $i = 0; $i < $length-1; $i++ ) {
+            if ( $i % 2 == 0 ) {
+                $args[$params[$i]] = $params[$i+1];
+            }
+        }
+    }
+    return '/'.$url.http_build_query($args);
+
 }
 
 /**
@@ -241,5 +278,18 @@ function cn_json_decode($string) {
 
     $string = urldecode($string);
     return json_decode($string, true);
+}
+
+//跳转到404页面
+function page404() {
+    header("HTTP/1.0 404 Not Found!");
+    die();
+}
+
+//转跳301页面
+function page301( $url ) {
+    header( "HTTP/1.1 301 Moved Permanently" );
+    header( "Location: {$url}" );
+    die();
 }
 

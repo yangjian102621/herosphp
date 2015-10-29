@@ -16,26 +16,28 @@ namespace herosphp\utils;
  *-----------------------------------------------------------------------*/
 
 class PHPZip {
-	
+
 	/* 要压缩的文件路径 */
 	private $file_path;
-	
+
 	/* 得到的压缩文件名称 */
 	private $zip_name;
-	
+
 	/* ZipArchive类对象的一个引用 */
 	private $zip;
-	
+
 	/* 各个文件夹在压缩包中的相对路径, hash数组 */
 	private $zip_dir = array();
-	
+
 	/**
 	 * constructor (构造函数)
 	 */
 	public function __construct() {
 		//check the Apache server is surpport zip compress.
 		if ( !@extension_loaded('zip') && !@function_exists("gzcompress") ) {
-			E("当前服务器不支持压缩，请更改PHP的相关配置。");
+			if ( APP_DEBUG ) {
+                E("当前服务器不支持压缩，请更改PHP的相关配置。");
+            }
 		}
 		@set_time_limit(0);
 
@@ -51,9 +53,17 @@ class PHPZip {
      */
     public function createZip( $src, $zip ) {
 
-		if ( !file_exists($src) ) E("压缩源文件不存在!");
+		if ( !file_exists($src) ) {
+            if ( APP_DEBUG ) {
+                E("压缩源文件不存在!");
+            }
+        }
 
-        if ( !$zip ) E("压缩目标文件不能为空！");
+        if ( !$zip ) {
+            if ( APP_DEBUG ) {
+                E("压缩目标文件不能为空！");
+            }
+        }
 
         $this->file_path = $src;
         $this->zip_name = $zip;
@@ -61,26 +71,30 @@ class PHPZip {
 		//创建压缩文件
 		if ( !file_exists($this->zip_name) ) {
 			if ( $this->zip->open($this->zip_name, \ZIPARCHIVE::CREATE) == FALSE ) {
-				E("创建压缩文件失败");
+				if ( APP_DEBUG ) {
+                    E("创建压缩文件失败");
+                }
 			}
 		} else {
 			if ( $this->zip->open($this->zip_name, \ZIPARCHIVE::OVERWRITE) == FALSE ) {
-				E("创建压缩文件失败");
-			}	
+				if ( APP_DEBUG ) {
+                    E("创建压缩文件失败");
+                }
+			}
 		}
-		
+
 		if ( !is_array($this->file_path) ) {
 			$this->addFilesToZip($this->file_path);
 		} else {
 			foreach ( $this->file_path as $_val ) {
 				$this->addFilesToZip($_val);
-			}	
+			}
 		}
 		$this->zip->close();
 		if ( file_exists($this->zip_name) ) {
 			return TRUE;
 		} else {
-			return FALSE;	
+			return FALSE;
 		}
 	}
 
@@ -104,7 +118,7 @@ class PHPZip {
      * @param string $_zip_dir
      */
 	private function addFilesToZip( $_files, $_zip_dir = NULL ) {
-		
+
 		if ( is_dir($_files) ) {
 			if ( ($handle = opendir($_files)) != FALSE ) {
 				while ( ($filename = readdir($handle)) != FALSE ) {
@@ -132,6 +146,6 @@ class PHPZip {
 			$this->zip->addFile($_files, basename($_files));
 		}
 	}
-	
+
 }
 ?>

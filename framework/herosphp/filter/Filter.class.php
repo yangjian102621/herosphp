@@ -62,6 +62,7 @@ class Filter {
      * @return bool
      */
     private static function isEmail( &$value ) {
+        if ( $value == '' ) return true;
         return (filter_var($value, FILTER_VALIDATE_EMAIL) != FALSE);
     }
 
@@ -89,6 +90,7 @@ class Filter {
      * @return bool
      */
     private static function isMobile( &$value ) {
+        if ( $value == '' ) return true;
         return (preg_match('/^1[3|5|4|8][0-9]{9}$/', $value) == 1);
     }
 
@@ -107,6 +109,7 @@ class Filter {
      * @return bool
      */
     private static function isIdentity( &$value ) {
+        if ( $value == '' ) return true;
         if ( strlen($value) != 15 && strlen($value) != 18 )
             return false;
         //如果是15位的身份证号码则转换位18位的身份证号码
@@ -227,9 +230,7 @@ class Filter {
     private static function check( &$value, &$model, &$error )
     {
         //1. 数据类型验证
-        if ( $value == null ) return '';
-
-        $error = $model[3]."填写不合格！";
+        $error = $model[3];
         if ( ($model[0] & DFILTER_LATIN) != 0 )
             if ( ! self::isLatin( $value ) )     return FALSE;
         if ( ($model[0] & DFILTER_URL) != 0 )
@@ -255,14 +256,14 @@ class Filter {
         if ( $model[1] != null ) {
             if ( $model[1][0] > 0 ) {
                 if ( mb_strlen($value, "UTF-8") < $model[1][0] ) {
-                    $error = $model[3]."数据小于指定长度！";
+                    $error = $model[3]."数据不能小于{$model[1][0]}！";
                     return FALSE;
                 }
             }
             if ( $model[1][1] > 0 ) {
-                if ( strlen($value) > $model[1][1] ) {
-                    $error = $model[3]."数据大于指定长度！";
-                    return FALSE;
+                if ( mb_strlen($value, "UTF-8") > $model[1][1] ) {
+                    //截去多余的长度
+                    $value = mb_substr($value, 0, $model[1][1], 'UTF-8');
                 }
             }
         }
@@ -306,12 +307,19 @@ class Filter {
      */
     public static function loadFromModel( &$src, $model, &$error )
     {
+        if ( !is_array($src) ) {
+            $error = '数据模型格式错误';
+            return false;
+        }
         $data = array();
         foreach ( $src as $key => $value ) {
             if ( is_array($model[$key]) ) {
+                //过滤数据
                 $result = self::filterVar($value, $model[$key], $error);
 
-                if ( $result === FALSE ) return FALSE;
+                if ( $result === false ) {
+                    return false;
+                }
 
                 //存储过滤后的数据
                 $data[$key] = $result;
@@ -325,4 +333,4 @@ class Filter {
     }
 
 
-} 
+}

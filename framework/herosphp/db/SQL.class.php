@@ -72,12 +72,6 @@ class SQL {
         '>', '<', '>=', '<=', '!='
     );
 
-    /**
-     * SQL唯一实例
-     * @var SQL
-     */
-    private static $instance = null;
-
     private function __construct( $priKey = null ) {
         if ( $priKey != null ) $this->priKey = $priKey;
     }
@@ -150,8 +144,24 @@ class SQL {
                     $key = substr($key, 1);
                 } else {
                     $condi[] = "AND";
+                    /**
+                     * 此处为了解决当一个字段有多个判断条件时的hash冲突
+                     * 如 id > 100 and id < 200的情况，显然写成 array('id' => '>100', 'id' => '<200')是不行的，
+                     * 这时可以写成 array('id' => '>100', '#id' => '<200')
+                     */
+                    if ( $key[0] == '#' || $key[0] == '@' ) {
+                        $key = substr($key, 1);
+                    }
                 }
-                $condi[] = "{$key} ".self::getFormatValue($value);
+
+                //采用find_in_set方式查询
+                if ( strpos($value,'#FD') === 0 )  {
+                    $_value = substr($value, 3);
+                    $condi[] = "FIND_IN_SET('{$_value}',{$key}) ";
+                } else {
+                    $condi[] = "{$key} ".self::getFormatValue($value);
+                }
+
             }
             return implode(' ', $condi);
         }
@@ -166,9 +176,23 @@ class SQL {
 
         //1. 包含操作符的
         $opt = substr($value, 0, 2);
-        if ( in_array($value[0], self::$operator)
-            || in_array($opt, self::$operator)) {
-            return $value;
+        if ( in_array($value[0], self::$operator) && !in_array($opt, self::$operator) ) {
+            //获取真正的value
+            $_value = substr($value, 1);
+            if ( is_numeric($_value) ) {
+                return $value;
+            } else {
+                return $value[0]."'{$_value}'";
+            }
+        }
+        if ( in_array($opt, self::$operator) ) {
+            //获取真正的value
+            $_value = substr($value, 2);
+            if ( is_numeric($_value) ) {
+                return $value;
+            } else {
+                return $opt."'{$_value}'";
+            }
         }
         //2. null, !null
         if ( $value === 'null' ) return "is null";
@@ -179,7 +203,22 @@ class SQL {
             return "LIKE '{$value}'";
         }
 
-        return "='{$value}'";
+        //4. IN(expr)
+        if ( strpos($value,'#IN') === 0 ) {
+            $_value = substr($value, 3);
+            return "IN ({$_value})";
+        }
+        //5. NI(expr) not in()
+        if ( strpos($value,'#NI') === 0 ) {
+            $_value = substr($value, 3);
+            return "NOT IN ({$_value})";
+        }
+
+        if ( is_numeric($value) ) {
+            return "={$value}";
+        } else {
+            return "='{$value}'";
+        }
     }
 
     /**
@@ -259,7 +298,9 @@ class SQL {
      */
     public function buildQueryString() {
         if ( !$this->table ) {
-            E("找不到数据表!");
+            if ( APP_DEBUG ) {
+                E("找不到数据表!");
+            }
         }
         $query = "SELECT {$this->fields} FROM ".$this->table;
 

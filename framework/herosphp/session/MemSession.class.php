@@ -33,7 +33,11 @@ class MemSession implements  ISession {
 	 */
 	public static function start( $config = NULL ) {
 
-        if ( !$config ) E("config should be pass to app");
+        if ( !$config ) {
+            if ( APP_DEBUG ) {
+                E("config should be pass to app");
+            }
+        }
 
         self::$handler = new \Memcache();
         self::$handler->connect($config['host'], $config['port']) or E("could not to connect the memcache server!");
@@ -41,7 +45,7 @@ class MemSession implements  ISession {
         if ( !$config['gc_maxlifetime'] ) {
             self::$config['gc_maxlifetime'] = ini_get('session.gc_maxlifetime');
         }
-		
+
 		session_set_save_handler(
 			array(__CLASS__,'open'),
 			array(__CLASS__,'close'),
@@ -52,7 +56,7 @@ class MemSession implements  ISession {
 		);
 		session_start();
 	}
-	
+
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::open().
 	 */
@@ -60,7 +64,7 @@ class MemSession implements  ISession {
 		//do nothing here.
 		return TRUE;
 	}
-	
+
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::close().
 	 */
@@ -68,7 +72,7 @@ class MemSession implements  ISession {
 		//do nothing here
 		return TRUE;
 	}
-	
+
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::read().
 	 */
@@ -80,7 +84,7 @@ class MemSession implements  ISession {
 		return $data;
 
 	}
-	
+
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::write().
 	 */
@@ -89,21 +93,21 @@ class MemSession implements  ISession {
 		$method = $data ? 'set' : 'replace';
 		return self::$handler->$method( $sessionId, $data,MEMCACHE_COMPRESSED, self::$config['gc_maxlifetime'] );
 	}
-	
+
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::destroy().
 	 */
 	public static function destroy( $sessionId ) {
 		return self::$handler->delete( $sessionId );
 	}
-	
+
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::gc().
 	 */
 	public static function gc( $maxLifeTime ) {
-		//do nothing here.	
+		//do nothing here.
 		return TRUE;
 	}
-	
+
 }
 ?>

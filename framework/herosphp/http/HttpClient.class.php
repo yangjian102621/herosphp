@@ -1,122 +1,166 @@
 <?php
-/*---------------------------------------------------------------------
- * PHP模拟http GET POST 方法
- * ---------------------------------------------------------------------
- * Copyright (c) 2013-now http://blog518.com All rights reserved.
- * ---------------------------------------------------------------------
- * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
- * ---------------------------------------------------------------------
- * Author: <yangjian102621@163.com>
- *-----------------------------------------------------------------------*/
-
 namespace herosphp\http;
 
+/**
+ * 发送http请求类
+ * Class HttpClient
+ * @package herosphp\http
+ */
 class HttpClient {
+	
+	/**
+	 * Set timeout default.
+	 */
+	private $timeout = 30;
+	
+	/**
+	 * Set connect timeout.
+	 */
+    private $connecttimeout = 30;
+	
+	/**
+	 * boundary of multipart
+	 */
+    private static $boundary = '';
+	
+	/**
+	 * http respose code
+	 * @var string
+	 */
+    private $http_code;
+	
+	/**
+	 * http response info
+	 */
+    private $http_info = null;
 
-    public static $time_out = 30;
-
-    /**
-     * 发送POST请求
-     * @param $_url
-     * @param $_array
-     * @return array|bool
-     */
-    public static function post( $_url, $_array ) {
-        //构建参数
-        $urlArr = parse_url($_url);
-        $urlArr['path'] = ($urlArr['path']=='') ? '/':$urlArr['path'];
-        $urlArr['port'] = ($urlArr['port']=='') ? '80':$urlArr['port'];
-
-        //打开socket连接
-        $handle = fsockopen($urlArr['host'], $urlArr['port'], $errorno, $err_str, self::$time_out);
-        if ( $handle == FALSE )
-            return FALSE;
-
-
-        $_arguments = '';
-        foreach ( $_array as $_name => $_value ) {
-            $_item = $_name.'='.$_value;
-            $_arguments .= ($_arguments == '')?$_item:'&'.$_item;
-        }
-
-        //创建请求头信息
-        $_out  = "POST ".$urlArr['path']." HTTP/1.0\r\n";
-        $_out .= "Accept: */*\r\n";
-        $_out .= "Host: ".$urlArr['host']."\r\n";
-        $_out .= "User-Agent: Lowell-Agent\r\n";
-        $_out .= "Content-Type: application/x-www-form-urlencoded\r\n";
-        $_out .= "Content-Length: ".strlen($_arguments)."\r\n";
-        $_out .= "Connection: Close\r\n";
-        $_out .= "\r\n";
-        $_out .= $_arguments."\r\n\r\n";
-
-        //发送请求
-        if ( fwrite($handle, $_out) == FALSE ) {
-            fclose($handle);
-            return FALSE;
-        }
-
-        //获取响应
-        $_return = '';
-        while ( ! feof($handle) )
-            $_return .= fgets( $handle, 2048 );
-
-        $rArr = array();
-        //截取头信息和响应正文
-        $_pos = stripos($_return, "\r\n\r\n");
-        $rArr['head'] = trim(substr($_return, 0, $_pos));
-        $rArr['body'] = trim(substr($_return, $_pos));
-
-        fclose($handle);
-        return $rArr;
-    }
+    private $http_error = null;
 
     /**
-     * 发送GET请求
-     * @param $_url
-     * @return array|bool
+     * Post a http request
+     * @param $url
+     * @param $parameters
+     * @param bool $multi
+     * @return string
      */
-    public static function get( $_url ) {
-        $urlArr = parse_url($_url);
-        $urlArr['path'] = ($urlArr['path']=='') ? '/':$urlArr['path'];
-        $urlArr['port'] = ($urlArr['port']=='') ? '80':$urlArr['port'];
+	public function post($url, $parameters, $multi=false){
+		return $this->request($url, $method='POST', $parameters, $multi);
+	}
 
-        $handle = fsockopen($urlArr['host'], $urlArr['port'], $errorno, $err_str, self::$time_out);
-        if ( $handle == FALSE )
-            return FALSE;
+    /**
+     * Get a http request
+     * @param $url
+     * @param $parameters
+     * @return string
+     */
+	public function get($url, $parameters){
+		return $this->request($url, $method='GET', $parameters);
+	}
 
-        $_query = $urlArr['path'] . ($urlArr['query']==''?'':'?'.$urlArr['query']);
-        $_query = $_query . ($urlArr['fragment']==''?'':'#'.$urlArr['fragment']);
+    /**
+     * Send a Http request
+     * @param $url
+     * @param string $method
+     * @param $parameters
+     * @param bool $multi
+     * @return string
+     */
+	public function request($url, $method='POST', $parameters, $multi = false) {
 
-        //创建http头信息
-        $_out  = "GET ".$_query." HTTP/1.0\r\n";
-        $_out .= "Accept: */*\r\n";
-        $_out .= "Host: ".$urlArr['host']."\r\n";
-        $_out .= "User-Agent: Payb-Agent\r\n";
-        $_out .= "Connection: Close\r\n";
-        $_out .= "\r\n";
+		switch ($method) {
+			case 'GET' :
+				$url = $url . '?' . http_build_query ( $parameters );
+				return $this->http($url, 'GET' );
+			default :
+				$headers = array ();
+				if (! $multi && (is_array ($parameters ) || is_object ( $parameters ))) {
+					$body = http_build_query ( $parameters );
+				} else {
+					$body = self::build_http_query_multi ( $parameters );
+					$headers [] = "Content-Type: multipart/form-data; boundary=" . self::$boundary;
+				}
+				return $this->http($url, $method, $body, $headers);
+		}
+	}
 
-        //发送请求
-        if ( fwrite($handle, $_out) == FALSE ) {
-            fclose($handle);
-            return FALSE;
-        }
+    /**
+     * Make an HTTP request
+     * @param $url
+     * @param $method
+     * @param null $postfields
+     * @param array $headers
+     * @return string
+     * @ignore
+     */
+	private function http($url, $method, $postfields = NULL, $headers = array()) {
 
-        //获取响应
-        $_return = '';
-        while ( ! feof($handle) )
-            $_return .= fgets( $handle, 2048 );
+		$this->http_info = array();
+		$ci = curl_init();
+		/* Curl settings */
+		curl_setopt($ci, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+		curl_setopt($ci, CURLOPT_CONNECTTIMEOUT, $this->connecttimeout);
+		curl_setopt($ci, CURLOPT_TIMEOUT, $this->timeout);
+		curl_setopt($ci, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ci, CURLOPT_HEADER, FALSE);
 
+		switch ($method) {
+			case 'POST':
+				curl_setopt($ci, CURLOPT_POST, TRUE);
+				if (!empty($postfields)) {
+					curl_setopt($ci, CURLOPT_POSTFIELDS, $postfields);
+				}
+				break;
+			case 'DELETE':
+				curl_setopt($ci, CURLOPT_CUSTOMREQUEST, 'DELETE');
+				if (!empty($postfields)) {
+					$url = "{$url}?{$postfields}";
+				}
+		}
 
-        $rArr = array();
-        //截取头信息和响应
-        $_pos = stripos($_return, "\r\n\r\n");
-        $rArr['head'] = trim(substr($_return, 0, $_pos));
-        $rArr['body'] = trim(substr($_return, $_pos));
+		$headers[] = "API-RemoteIP: " . $_SERVER['REMOTE_ADDR'];
+		curl_setopt($ci, CURLOPT_URL, $url );
+		curl_setopt($ci, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE);
 
-        fclose($handle);
-        return $rArr;
-    }
+		$response = curl_exec($ci);
+		$this->http_code = curl_getinfo($ci, CURLINFO_HTTP_CODE);
+        $this->http_error = curl_error($ci);
+		$this->http_info = array_merge($this->http_info, curl_getinfo($ci));
+		curl_close ($ci);
+		return $response;
+	}
 
+	private static function build_http_query_multi($params) {
+		if (!$params) return '';
+
+		uksort($params, 'strcmp');
+
+		self::$boundary = $boundary = uniqid('------------------');
+		$MPboundary = '--'.$boundary;
+		$endMPboundary = $MPboundary. '--';
+		$multipartbody = '';
+
+		foreach ($params as $parameter => $value) {
+
+			if( in_array($parameter, array('pic', 'image')) && $value{0} == '@' ) {
+				$url = ltrim( $value, '@' );
+				$content = file_get_contents( $url );
+				$array = explode( '?', basename( $url ) );
+				$filename = $array[0];
+
+				$multipartbody .= $MPboundary . "\r\n";
+				$multipartbody .= 'Content-Disposition: form-data; name="' . $parameter . '"; filename="' . $filename . '"'. "\r\n";
+				$multipartbody .= "Content-Type: image/unknown\r\n\r\n";
+				$multipartbody .= $content. "\r\n";
+			} else {
+				$multipartbody .= $MPboundary . "\r\n";
+				$multipartbody .= 'content-disposition: form-data; name="' . $parameter . "\"\r\n\r\n";
+				$multipartbody .= $value."\r\n";
+			}
+
+		}
+
+		$multipartbody .= $endMPboundary;
+		return $multipartbody;
+	}
 }
-?>

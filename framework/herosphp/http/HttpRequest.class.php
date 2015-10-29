@@ -12,7 +12,6 @@
  *-----------------------------------------------------------------------*/
 namespace herosphp\http;
 
-use herosphp\core\Loader;
 use herosphp\core\WebApplication;
 
 class HttpRequest {
@@ -48,6 +47,12 @@ class HttpRequest {
     private $referer;
 
     /**
+     * URL映射规则,数组,键为目标链接,值为源链接
+     * @var array
+     */
+    private static $urlMappingRules = array();
+
+    /**
      * 请求参数
      * @var array
      */
@@ -68,8 +73,15 @@ class HttpRequest {
 
         $webApp = WebApplication::getInstance();    //获取系统配置信息
         $sysConfig = $webApp->getConfigs();
+
+        self::$urlMappingRules = $sysConfig['url_mapping_rules'];
+        //优先处理短链接映射
+        $this->requestUri = self::url2source($this->requestUri);
+        $_SERVER['REQUEST_URI'] = $this->requestUri;
+
         $defaultUrl = $sysConfig['default_url'];
         $urlInfo = parse_url($this->requestUri);
+
         if ( $urlInfo['path'] ) {
             $filename = str_replace(EXT_URI, '', $urlInfo['path']);
             $pathInfo = explode('/', $filename);
@@ -80,13 +92,28 @@ class HttpRequest {
                 if ( $actionMap[2] ) $this->setMethod($actionMap[2]);
             }
 
-            //提取参数
+            //提取pathinfo参数
             if ( isset($pathInfo[2]) ) {
                 $params = explode('-', $pathInfo[2]);
                 for ( $i = 0; $i < count($params); $i++ ) {
                     if ( $i % 2 == 0 ) {
+                        if ( trim($params[$i]) == '' ) {
+                            continue;
+                        }
                         $_GET[$params[$i]] = $params[$i+1];
                     }
+                }
+            }
+
+            //提取query参数
+            if ( isset($urlInfo['query']) ) {
+                $params = explode('&', $urlInfo['query']);
+                foreach ( $params as $values ) {
+                    $__p = explode('=', $values);
+                    if ( trim($__p[0]) == '' ) {
+                        continue;
+                    }
+                    $_GET[$__p[0]] = $__p[1];
                 }
             }
 
@@ -101,6 +128,38 @@ class HttpRequest {
     }
 
     /**
+     * URL短链接的目标链接到源链接之间的转换
+     * @param $url
+     * @return mixed
+     */
+    public static function url2source($url) {
+
+        $mappingRules = array();
+        foreach ( self::$urlMappingRules['target_to_source'] as $target => $source ) {
+            $mappingRules['/' . $target . '/iU'] = $source;
+        }
+        return preg_replace(array_keys($mappingRules), $mappingRules, $url);
+
+    }
+
+    /**
+     * URL短链接的源链接到目标链接之间的转换
+     * @param $url
+     * @return mixed
+     */
+    public static function url2Target($url) {
+
+        $mappingRules = array();
+        foreach ( self::$urlMappingRules['source_to_target'] as $target => $source ) {
+            $mappingRules['/' . $target . '/iU'] = $source;
+        }
+        return preg_replace(array_keys($mappingRules), $mappingRules, $url);
+
+        return preg_replace(array_keys($mappingRules), $mappingRules, $url);
+
+    }
+
+    /**
      * Get a parameter's value.
      * @param string $name
      * 参数名称
@@ -109,7 +168,7 @@ class HttpRequest {
      * @param boolean $setParam 是否重置参数
      * @return int|string
      */
-    public function getParameter( $name, $func_str=null, $setParam=false ) {
+    public function getParameter( $name, $func_str=null, $setParam=true ) {
 
         if ( !$func_str ) return $this->parameters[$name];
 
@@ -186,7 +245,7 @@ class HttpRequest {
      * @param $name
      * @param $value
      */
-    public function addparmeter( $name, $value ) {
+    public function addParmeter( $name, $value ) {
         if ( $name && $value )
             $this->parameters[$name] = $value;
     }

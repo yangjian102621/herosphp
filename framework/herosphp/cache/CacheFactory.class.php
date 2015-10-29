@@ -37,22 +37,24 @@ class CacheFactory {
     /**
      * 创建缓存
      * @param $key
-     * @param array $configs
+     * @param bool $single 是否单例模式
      * @return \herosphp\cache\interfaces\ICache
      */
-    public static function  create( $key='file', $configs = null ) {
+    public static function  create( $key='file', $single = true ) {
         //如果缓存对象已经创建，则则直接返回
-        if ( isset(self::$CACHE_SET[$key]) ) {
+        if ( isset(self::$CACHE_SET[$key]) && $single == false ) {
             return self::$CACHE_SET[$key];
         }
 
-        if ( $configs == null ) {
-            $configs = Loader::config($key, 'cache');
-        }
+        $configs = Loader::config($key, 'cache');
         $className = self::$CACHE_BEAN[$key]['class'];
         Loader::import(self::$CACHE_BEAN[$key]['path'], IMPORT_FRAME);
-        self::$CACHE_SET[$key] = new $className($configs);
-        return self::$CACHE_SET[$key];
+        if ( $single ) {
+            self::$CACHE_SET[$key] = new $className($configs);
+            return self::$CACHE_SET[$key];
+        } else {
+            return $className($configs);
+        }
 
     }
 }

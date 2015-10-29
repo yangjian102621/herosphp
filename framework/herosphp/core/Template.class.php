@@ -78,11 +78,14 @@ class Template {
          * {run}标签： 执行php表达式
          * {expr}标签：输出php表达式
          * {url}标签：输出格式化的url
+         * {date}标签：根据时间戳输出格式化日期
+         * {cut}标签：裁剪字指定长度的字符串,注意截取的格式是UTF-8
          */
         '/{run\s+(.*?)}/i'   => '<?php ${1} ?>',
         '/{expr\s+(.*?)}/i'   => '<?php echo ${1} ?>',
         '/{url\s+(.*?)}/i'   => '<?php echo url("${1}") ?>',
         '/{date\s+(.*?)(\s+(.*?))?}/i'   => '<?php echo $this->getDate(${1}, "${2}") ?>',
+        '/{cut\s+(.*?)(\s+(.*?))?}/i'   => '<?php echo $this->cutString(${1}, "${2}") ?>',
 
         /**
          * if语句标签
@@ -119,6 +122,7 @@ class Template {
      */
     private static $resTemplate = array(
 		'css'	=> "<link rel=\"stylesheet\" type=\"text/css\" href=\"{url}\" />\n",
+		'less'	=> "<link rel=\"stylesheet/less\" type=\"text/css\" href=\"{url}\" />\n",
 		'js'	=> "<script charset=\"utf-8\" type=\"text/javascript\" src=\"{url}\"></script>\n"
 	);
 
@@ -138,16 +142,16 @@ class Template {
         $this->configs['module'] = $request->getModule();
         $this->configs['action'] = $request->getAction();
         $this->configs['method'] = $request->getMethod();
-        $this->templateDir = APP_PATH.APP_NAME.'/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
+        $this->templateDir = APP_PATH.'/modules/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
         $this->compileDir = APP_RUNTIME_PATH.'views/'.APP_NAME.'/'.$this->configs['module'].'/';
 
 	}
-	
+
 	/**
 	 * 增加模板替换规则
      * @param array $rules
 	 */
-	public  function addRules( $rules ) {
+    public  function addRules( $rules ) {
         if ( is_array($rules) && !empty($rules) )
 		    self::$tempRules = array_merge(self::$tempRules, $rules);
 	}
@@ -157,10 +161,10 @@ class Template {
      * @param  string $varname
      * @param  string $value 变量值
      */
-	public function assign( $varname, $value ) {
+    public function assign( $varname, $value ) {
 		$this->templateVar[$varname] = $value;
 	}
-	
+
 	/**
 	 * 获取指定模板变量
 	 * @param string $varname 变量名
@@ -172,10 +176,9 @@ class Template {
 
     /**
      * 获取所有模板变量
-     * @param string $varname 变量名
      * @return mixed
      */
-    public function getTemplateVars( $varname ) {
+    public function getTemplateVars() {
         return $this->templateVar;
     }
 
@@ -194,7 +197,9 @@ class Template {
             //获取模板文件
             $content = @file_get_contents($tempFile);
             if ( $content == FALSE ) {
-                E("加载模板文件 {".$tempFile."} 失败！请在相应的目录建立模板文件。");
+                if ( APP_DEBUG ) {
+                    E("加载模板文件 {".$tempFile."} 失败！请在相应的目录建立模板文件。");
+                }
             }
             //替换模板
             $content = preg_replace(array_keys(self::$tempRules), self::$tempRules, $content);
@@ -205,7 +210,9 @@ class Template {
 
             //生成php文件
             if ( !file_put_contents($compileFile, $content, LOCK_EX) ) {
-                E("生成编译文件 {$compileFile} 失败。");
+                if ( APP_DEBUG ) {
+                    E("生成编译文件 {$compileFile} 失败。");
+                }
             }
         }
 
@@ -216,7 +223,7 @@ class Template {
 	 * @param		string		$tempFile		模板文件名称
 	 */
 	public function display( $tempFile=null ) {
-		
+
 		//如果没有传入模板文件，则访问默认模块下的默认模板
         if ( !$tempFile ) {
             $tempFile = $this->configs['action'].'_'.$this->configs['method'].EXT_TPL;
@@ -229,9 +236,11 @@ class Template {
 			extract($this->templateVar);	//分配变量
 			include $this->compileDir.$compileFile;		//包含编译生成的文件
 		} else {
-			E("要编译的模板[{$tempFile}] 不存在！");
+			if ( APP_DEBUG ) {
+                E("要编译的模板[{$tempFile}] 不存在！");
+            }
 		}
-		
+
 	}
 
 	/**
@@ -243,7 +252,7 @@ class Template {
      * @return string
 	 */
 	public function getIncludePath( $tempPath = null ) {
-		
+
 	    if ( !$tempPath ) return '';
         if ( strpos($tempPath, ':') === FALSE ) {
             $appName = APP_NAME;    //默认为当前应用
@@ -254,10 +263,7 @@ class Template {
         }
         //切割module.templateName,找到对应模块的模板
         $moduleInfo = explode('.', $tempPath);
-
-        $this->templateDir = APP_PATH.APP_NAME.'/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
-        $this->compileDir = APP_RUNTIME_PATH.'views/'.APP_NAME.'/'.$this->configs['module'].'/';
-        $tempDir = APP_PATH.APP_NAME.'/'.$moduleInfo[0].'/template/'.$this->configs['template'].'/';
+        $tempDir = APP_ROOT.$appName.'/modules/'.$moduleInfo[0].'/template/'.$this->configs['template'].'/';
         $compileDir = APP_RUNTIME_PATH.'views/'.$appName.'/'.$moduleInfo[0].'/';
         $filename = $moduleInfo[1].EXT_TPL;   //模板文件名称
         $tempFile = $tempDir.$filename;
@@ -279,7 +285,21 @@ class Template {
         if ( !$format ) $format = 'Y-m-d H:i:s';
         return date($format, $time);
     }
-	
+
+    /**
+     * 裁剪字符串，使用utf-8编码裁剪
+     * @param $str 要裁剪的字符串
+     * @param $length 字符串长度
+     * @return string
+     */
+    private function cutString($str, $length) {
+
+        if ( mb_strlen($str, 'UTF-8') <= $length ) {
+            return $str;
+        }
+        return mb_substr($str, 0, $length, 'UTF-8').'...';
+    }
+
 	/**
 	 * 引进静态资源如css，js
      * @param string $section 资源所属片区(res => 模块内部的资源, gres => 全局资源)
@@ -297,23 +317,21 @@ class Template {
                 break;
 
             case 'res' :
-                $resUrl .= 'app/'.APP_NAME."/{$this->configs['template']}/";
+                $resUrl .= APP_NAME.'/';
                 break;
 
             case 'cres' :
                 break;
         }
-        if ( $type == 'css' && $section == 'res' ) {
-            $resUrl .= "skin/{$this->configs['skin']}/";
-        }
 
-        if ( $section != 'cres' ) { //包含全局或应用的静态资源
-            $resUrl .= $type.'/'.$path;
-        } else {    //包含自定义路径静态资源
-            $resUrl .= $path;
+        //组合静态资源的src
+        if ( $type == 'css' || $type == 'less' ) {
+            $src = $resUrl.'style/'.$path;
+        } else if( $type == 'js' ) {
+            $src = $resUrl.'js/'.$path;
         }
         $template = self::$resTemplate[$type];
-        $result = str_replace('{url}', $resUrl, $template);
+        $result = str_replace('{url}', $src, $template);
 
         return $result;
 	}
@@ -324,13 +342,13 @@ class Template {
 	 * @return	string $html
 	*/
 	public function &getExecutedHtml( $tempFile ) {
-		
+
 		ob_start();
 		$this->display( $tempFile );
         $html = ob_get_contents();
 		ob_end_clean();
 		return  $html;
-	
+
 	}
 
 }

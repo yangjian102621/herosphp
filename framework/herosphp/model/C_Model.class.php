@@ -42,6 +42,12 @@ class C_Model implements IModel {
     private $table;
 
     /**
+     * 数据表映射，适合多表水平分割
+     * @var array
+     */
+    private $tableMapping = array();
+
+    /**
      * 字段映射
      * @var array
      * 别名 => 字段名
@@ -63,20 +69,23 @@ class C_Model implements IModel {
     public function __construct( $table, $config = null ) {
 
         //加载数据表配置
-        $tableConfig = Loader::config(APP_NAME.'.table', 'db');
+        $dbConfigPath = 'db';
+        $tableConfig = Loader::config('table', $dbConfigPath);
         $this->table = $tableConfig[$table];
 
         //初始化数据库配置
         if ( !$config ) {
-            //默认使用一个数据库服务器配置
-            $dbConfigs = Loader::config(APP_NAME.'.hosts', 'db');
+            //默认使用第一个数据库服务器配置
+            $dbConfigs = Loader::config('db');
             $db_config = $dbConfigs[DB_TYPE];
             if ( DB_ACCESS == DB_ACCESS_SINGLE ) {  //单台服务器
                 $config = $db_config[0];
             } else if ( DB_ACCESS == DB_ACCESS_CLUSTERS ) { //多台服务器
                 $config = $db_config;
             }
+
         }
+        $this->table = $config['table_prefix'].$table;
         //创建数据库
         $this->db = DBFactory::createDB(DB_ACCESS, $config);
     }
@@ -185,6 +194,7 @@ class C_Model implements IModel {
     public function updates($data, $conditions)
     {
         $data = $this->loadFilterData($data);
+        $conditions = SQL::create()->buildConditions($conditions);
         return $this->db->update($this->table, $data, $conditions);
     }
 
@@ -261,10 +271,7 @@ class C_Model implements IModel {
      */
     public function beginTransaction()
     {
-        //如果当前上下文已经开启了事物，则不重复开启
-        if ( !$this->db->inTransaction() ) {
-            $this->db->beginTransaction();
-        }
+        $this->db->beginTransaction();
     }
 
     /**
@@ -305,6 +312,11 @@ class C_Model implements IModel {
         $error = null;
         $_data = Filter::loadFromModel($data, $filterMap, $error);
         if ( $_data == false ) {
+
+            //如果开启了事物操作，则先回滚
+            if ( $this->inTransaction() ) {
+                $this->rollback();
+            }
             AjaxResult::ajaxResult('error', $error);
         }
         return $_data;
@@ -358,5 +370,36 @@ class C_Model implements IModel {
         return $this->filterMap;
     }
 
+    /**
+     * 设置表名
+     * @param $table
+     */
+    public function setTable($table) {
+        $this->table = $table;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTableMapping()
+    {
+        return $this->tableMapping;
+    }
+
+    /**
+     * @param array $tableMapping
+     */
+    public function setTableMapping($tableMapping)
+    {
+        $this->tableMapping = $tableMapping;
+    }
+
+    /**
+     * 获取数据连接对象
+     * @return \herosphp\db\interfaces\Idb
+     */
+    public function getDB() {
+        return $this->db;
+    }
 }
 ?>

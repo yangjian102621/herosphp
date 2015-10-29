@@ -1,6 +1,6 @@
 <?php
 
-namespace common\utils;
+namespace herosphp\utils;
 
 /*---------------------------------------------------------------------
  * php 采用smtp发送邮件
@@ -20,15 +20,18 @@ class Smtp
     private $Smtp_Pass;
     private $Smtp_Port;
 
-    private $Host_Name = 'localhost';
+    private $Host_Name = 'www.tuonews.com';
+    /**
+     * 是否自动授权
+     * @var boolean
+     */
     private $Smtp_Auth;  //auth or not
     private $Time_Out;
     private $_debug = false;
 
     private $Smtp_Socket = NULL;
 
-    public function __construct($_host, $_port, $_auth = false,
-                                $_user = '', $_pass = '', $time_out = 30)
+    public function __construct($_host, $_port, $_user = '', $_pass = '', $_auth = false, $time_out = 30)
     {
         $this->Smtp_Host = $_host;
         $this->Smtp_Port = $_port;
@@ -45,9 +48,18 @@ class Smtp
         $this->Time_Out  = $time_out;
     }
 
-    /*Main Send Mail*/
+    /**
+     * @param string $_to 收件人
+     * @param string $_from 发件人
+     * @param string $_subject 邮件主题
+     * @param string $_body 邮件主体内容
+     * @param string $mile_Type 邮件类型 text => 普通文本邮件, html => HTML邮件
+     * @param string $_cc 抄送
+     * @param string $additional_headers 自定义头信息
+     * @return bool
+     */
     public function Send_Mail($_to, $_from, $_subject = '', $_body = '',
-                              $mile_Type = '', $_cc = '', $_bcc = '', $additional_headers = '')
+                              $mile_Type = 'text', $_cc = '', $additional_headers = '')
     {
         $from = $this->Get_Address( $this->Strip_Comment($_from) );
         $_body = preg_replace('/(^|(\r\n))(\.)/', "$1.$3", $_body);
@@ -56,7 +68,12 @@ class Smtp
         switch ( strtoupper($mile_Type) )
         {
             case 'HTML':
-                $_header .= "Content-Type: text/html\r\n";
+
+                $_header .= "Content-Type: text/html; charset=utf-8\r\n";
+                break;
+
+            default :
+                $_header .= "Content-Type: text/plain; charset=utf-8\r\n";
                 break;
         }
         $_header .= "TO: ".$_to."\r\n";

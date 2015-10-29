@@ -13,6 +13,7 @@
 
 namespace herosphp\core;
 
+use herosphp\bean\Beans;
 use herosphp\core\interfaces\IApplication;
 use herosphp\http\HttpRequest;
 
@@ -39,12 +40,23 @@ class WebApplication implements IApplication {
     private $actionInstance = null;
 
     /**
+     * 应用程序监听器
+     * @var array
+     */
+    private $listeners = array();
+
+    /**
      * 应用程序唯一实例
      * @var WebApplication
      */
     private static $_INSTANCE = null;
 
-    private function __construct() {}
+    private function __construct() {
+
+        //初始化应用程序监听器
+        $this->listeners = Beans::get(Beans::BEAN_WEBAPP_LISTENER);
+
+    }
 
     /**
      * 执行应用程序
@@ -76,6 +88,12 @@ class WebApplication implements IApplication {
      */
     public function requestInit()
     {
+        //调用生命周期监听器
+        if ( !empty($this->listeners) ) {
+            foreach ( $this->listeners as $lisener ) {
+                $lisener->beforeRequestInit();
+            }
+        }
         $this->httpRequest = new HttpRequest();
         $this->httpRequest->parseURL();
     }
@@ -85,15 +103,24 @@ class WebApplication implements IApplication {
      */
     public function actionInvoke()
     {
+        //调用生命周期监听器
+        if ( !empty($this->listeners) ) {
+            foreach ( $this->listeners as $lisener ) {
+                $lisener->beforeActionInvoke();
+            }
+        }
+
         //加载控制器Action文件
         $module = $this->httpRequest->getModule();
         $action = $this->httpRequest->getAction();
         $method = $this->httpRequest->getMethod();
-        $actionDir = APP_PATH.APP_NAME."/{$module}/action/";
+        $actionDir = APP_PATH."modules/{$module}/action/";
         $actionFile = ucfirst($action).'Action.class.php';
         $filename = $actionDir.$actionFile;
         if ( !file_exists($filename) ) {
-            E("Action file {$filename} not found. ");
+            if ( APP_DEBUG ) {
+                E("Action file {$filename} not found. ");
+            }
         }
         include $filename;
         $className = "\\{$module}\\action\\".ucfirst($action)."Action";
@@ -108,7 +135,9 @@ class WebApplication implements IApplication {
         if ( method_exists($this->actionInstance, $method) ) {
             $this->actionInstance->$method($this->httpRequest);
         } else {
-            E("Method {$className}::{$method} not found!");
+            if ( APP_DEBUG ) {
+                E("Method {$className}::{$method} not found!");
+            }
         }
     }
 
@@ -117,8 +146,22 @@ class WebApplication implements IApplication {
      */
     public function sendResponse()
     {
+        //调用响应发送前生命周期监听器
+        if ( !empty($this->listeners) ) {
+            foreach ( $this->listeners as $lisener ) {
+                $lisener->beforeSendResponse($this->actionInstance);
+            }
+        }
+
         //加载并显示视图
         $this->actionInstance->display($this->actionInstance->getView());
+
+        //调用响应发送后生命周期监听器
+        if ( !empty($this->listeners) ) {
+            foreach ( $this->listeners as $lisener ) {
+                $lisener->afterSendResponse($this->actionInstance);
+            }
+        }
     }
 
     /**

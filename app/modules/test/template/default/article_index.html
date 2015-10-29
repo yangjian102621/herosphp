@@ -1,0 +1,10 @@
+{include test.top}
+
+    <h1>文章列表页面</h1>
+    {loop $items $value}
+        <h3>{$value.title}</h3>
+    {/loop}
+{res:js jquery-1.7.1.min.js}
+{res:js JDialog.js}
+{res:css JDialog.css}
+{res:less article.css}

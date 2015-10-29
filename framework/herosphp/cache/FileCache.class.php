@@ -23,19 +23,25 @@ class FileCache extends ACache implements ICache {
 	 */
 	public function get( $key, $expire=null ) {
 
-        if ( $expire ) $this->configs['expire'] = $expire;
+        if ( $expire !== null ) {
+            $this->configs['expire'] = $expire;
+        }
 	    $cacheFile = $this->getCacheFile($key);
 
         //缓存文件不存在
 		if ( !file_exists($cacheFile) ) {
-            Debug::appendMessage("缓存文件 {$cacheFile} 不存在.");
+            if ( APP_DEBUG ) {
+                Debug::appendMessage("缓存文件 {$cacheFile} 不存在.");
+            }
 			return false;
 		}
-		//缓存过期, 若ctime = -1 则表示缓存永不过期
-		if ( $this->configs['expire'] >= 0 &&
+		//缓存过期, 若$expire = 0 则表示缓存永不过期
+		if ( $this->configs['expire'] > 0 &&
             time() > (filemtime($cacheFile) + $this->configs['expire']) ) {
 
-            Debug::appendMessage("缓存文件 {$cacheFile} 已经过期.");
+            if ( APP_DEBUG ) {
+                Debug::appendMessage("缓存文件 {$cacheFile} 已经过期.");
+            }
 			return false;
 		} else {
 			$content = file_get_contents($cacheFile);
@@ -46,13 +52,13 @@ class FileCache extends ACache implements ICache {
             }
 		}
 	}
-	
-	
+
+
 	/**
 	 * @see   ICache::set();
 	 */
-	public function set( $key, $content ) {
-	    
+	public function set( $key, $content, $expire=null ) {
+
         $cacheFile = $this->getCacheFile($key);
         $dirname = dirname($cacheFile);
         if ( !file_exists($dirname) ) {
@@ -61,7 +67,7 @@ class FileCache extends ACache implements ICache {
         if ( is_array($content) ) $content = serialize($content);
 		return file_put_contents($cacheFile, $content, LOCK_EX);
 	}
-	
+
 	/**
 	 * @see		ICache::delete()
 	 */

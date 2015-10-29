@@ -20,13 +20,13 @@ class FileUpload {
         //上传文件的根目录
         'upload_dir' => __DIR__,
         //允许上传的文件类型
-        'allow_ext' => 'jpg|png|gif|txt|pdf|rar|zip|swf|bmp|c|java|mp3',
+        'allow_ext' => 'jpg|jpeg|png|gif|txt|pdf|rar|zip|swf|bmp|c|java|mp3',
         //图片的最大宽度, 0没有限制
         'max_width' => 0,
         //图片的最大高度, 0没有限制
         'max_height' => 0,
         //文件的最大尺寸
-        'max_size' =>  2048000,     /* 文件size的最大 2MB */
+        'max_size' =>  1024000,     /* 文件size的最大 1MB */
      );
 
     /**
@@ -89,7 +89,7 @@ class FileUpload {
      * upload file method.
      * @param        sting $_field name of form elements.
      * @param        bool $_base64
-     * @return       mixed        $_filename     filename string of uploaded file.
+     * @return       mixed false or file info array.
      */
 	public function upload( $_field, $_base64 = false ) {
 
@@ -104,7 +104,8 @@ class FileUpload {
 		}
 
 		$_localFile = $_FILES[$_field]['name'];
-		$_tempFile = $_FILES[$_field]['tmp_name'];
+		$_tempFile = $_FILES[$_field]['tmp_name'];//原来是这样
+        //$_tempFile = str_replace('\\\\', '\\', $_FILES[$_field]['tmp_name']);//MAGIC_QUOTES_GPC=OFF时，做了这样处理：$_FILES = daddslashes($_FILES);图片上传后tmp_name值变成 X:\\Temp\\php668E.tmp，结果move_uploaded_file() 函数判断为不合法的文件而返回FALSE。
 		$_error_no = $_FILES[$_field]['error'];
         $this->fileInfo['file_type'] = $_FILES[$_field]['type'];
         $this->fileInfo['local_name'] = $_localFile;
@@ -136,6 +137,7 @@ class FileUpload {
                 }
             }
         }
+
 		return false;
 
 	}
@@ -225,14 +227,20 @@ class FileUpload {
     /**
      * 检测文件类型是否合法
      * @param $filename
+     * @return boolean
      */
     protected function checkFileType( $filename ) {
 
+        if ( $this->config['allow_ext'] == '*' ) {
+            return true;
+        }
 		$_ext = self::getFileExt($filename);
         $_allow_ext = explode("|", $this->config['allow_ext']);
 		if ( !in_array($_ext, $_allow_ext) ) {
 			$this->errNum = 5;
+            return false;
 		}
+        return true;
 	}
 
     /**
@@ -255,18 +263,11 @@ class FileUpload {
             $this->errNum = 1;
         }
 
-        if ( function_exists('finfo_open') ) {
-            $finfo = finfo_open(FILEINFO_MIME);
-            $this->fileInfo['file_type'] = finfo_file($finfo, $filename);
-        } else if ( function_exists('mime_content_type') ) {
-            $this->fileInfo['file_type'] = mime_content_type($filename);
-        }
-
         //如果是图片还要检查图片的宽度和高度是否超标
-        if ( strpos($this->fileInfo['file_type'], 'image') !== FALSE ) {
+        $size = getimagesize($filename);
+        if ( $size != false ) {
 
             $this->fileInfo['is_image'] = 1;
-            $size = getimagesize($filename);
             if ( ($this->config['max_width'] > 0 && $size[0] > $this->config['max_width'])
                 || ($this->config['max_height'] > 0 && $size[1] > $this->config['max_height']) )  {
                 $this->errNum = 9;
@@ -277,7 +278,9 @@ class FileUpload {
         } else {
 
             $this->fileInfo['is_image'] = 0;
+
         }
+
 	}
 
     /**
@@ -290,6 +293,6 @@ class FileUpload {
         }
 		return self::$_UPLOAD_STATES[$this->errNum];
 	}
-	
+
 }
 ?>

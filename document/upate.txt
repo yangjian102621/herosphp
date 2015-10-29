@@ -1,4 +1,7 @@
 版本更新记录
+version 2.1.0
+对框架进行了局部重构，使不同的应用的耦合程度降低
+
 version 2.0.0
 对框架进行了局部重构
 1. 调整了URL结构，采用 /user_home_index/userid-100.shtml 代替了以前的 /user/home/index/userid-100.shtml结构，减少了目录级数，对SEO更为友好

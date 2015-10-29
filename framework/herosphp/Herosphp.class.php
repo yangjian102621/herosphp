@@ -43,6 +43,7 @@ class Herosphp {
         if ( APP_DEBUG ) {
             Debug::start();
             error_reporting(E_ALL);
+            ini_set("display_errors", "On");
             //设置捕获系统异常
             set_error_handler(array('herosphp\core\Debug', 'customError'));
         } else {
@@ -50,8 +51,8 @@ class Herosphp {
             ini_set("display_errors", "Off");
         }
 
-        $configs = Loader::config();    //加载系统全局配置
-        $appConfigs = Loader::config('app', APP_NAME); //加载当前应用的配置信息
+        $configs = Loader::config('system', 'root');    //加载系统全局配置
+        $appConfigs = Loader::config('app'); //加载当前应用的配置信息
         //将应用的配置信息覆盖系统的全局配置信息
         $configs = array_merge($configs, $appConfigs);
         $application = WebApplication::getInstance();
@@ -78,11 +79,10 @@ class Herosphp {
         //设置时间用不超时
         set_time_limit(0);
 
-        //关闭错误
+        //设置错误等级
         error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE & ~E_WARNING);
-        ini_set("display_errors", "Off");
 
-        Loader::import('client.'.$taskName, IMPORT_CUSTOM, '.php');
+        Loader::import($taskName, IMPORT_CLIENT, '.php');
 
     }
 
@@ -93,6 +93,7 @@ class Herosphp {
     private static function _loadBaseLib() {
         self::$LIB_CLASS = array(
             'herosphp\http\HttpRequest'          => 'http.HttpRequest',
+            'herosphp\http\HttpClient'          => 'http.HttpClient',
             'herosphp\core\WebApplication'       => 'core.WebApplication',
             'herosphp\core\Debug'       => 'core.Debug',
             'herosphp\core\Loader'       => 'core.Loader',
@@ -117,11 +118,18 @@ class Herosphp {
             'herosphp\model\C_Model'       => 'model.C_Model',
             'herosphp\cache\CacheFactory'       => 'cache.CacheFactory',
             'herosphp\bean\Beans'  => 'bean.Beans',
+            'herosphp\listener\WebApplicationListenerMatcher'  => 'listener.WebApplicationListenerMatcher',
             'herosphp\session\Session'  => 'session.Session');
 
         self::$APP_CLASS = array(
             'admin\action\CommonAction'        => 'admin.action.CommonAction',
             'common\action\CommonAction'        => 'common.action.CommonAction',
+            'media\action\MediaAction'        => 'media.action.MediaAction',
+            'site\action\AbstractAction'        => 'site.action.AbstractAction',
+            'common\action\NeedLoginAction'        => 'common.action.NeedLoginAction',
+            'client\tools\result\AbstractResult'        => 'common.client.result.AbstractResult',
+            'client\tools\result\JsonResult'        => 'common.client.result.JsonResult',
+            'client\tools\result\XmlResult'        => 'common.client.result.XmlResult',
         );
     }
 
@@ -136,7 +144,7 @@ class Herosphp {
             Loader::import(self::$APP_CLASS[$className], IMPORT_APP, EXT_PHP);
         }
     }
-    
+
 }
 
 //自动加载核心类

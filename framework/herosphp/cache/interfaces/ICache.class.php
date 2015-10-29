@@ -23,7 +23,7 @@ interface ICache {
 	 * 获取缓存内容
 	 * 
 	 * @param string $key 缓存的key值,如果设置为null则自动生成key
-	 * @param string $expire  缓存有效期
+	 * @param string $expire  缓存有效期,如果等于0表示永不过期
      * @return mixed
 	 */
 	public function get( $key, $expire=null );
@@ -32,9 +32,10 @@ interface ICache {
 	 * 添加|更新缓存
 	 * @param   string $key 缓存的key值, 如果设置为null则自动生成key
      * @param   string $content 缓存内容
+     * @param string $expire  缓存有效期,如果等于0表示永不过期,只对memcaceh缓存有效
      * @param   boolean
 	 */
-	public function set( $key, $content );
+	public function set( $key, $content, $expire=null );
 	
 	/**
 	 * 删除缓存 

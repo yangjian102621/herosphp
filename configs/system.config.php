@@ -11,7 +11,6 @@
 $config = array(
 
     'template' => 'default',    //默认模板
-    'skin' => 'default',    //默认皮肤
     /**
      * 模板编译缓存配置
      * 0 : 不启用缓存，每次请求都重新编译(建议开发阶段启用)
@@ -20,8 +19,6 @@ $config = array(
      */
     'temp_cache' => 0,
 
-    //文件上传目录
-    'upload_dir' => RES_PATH.'upload/',
     /**
      * 用户自定义模板标签编译规则
      * array( 'search_pattern' => 'replace_pattern'  );

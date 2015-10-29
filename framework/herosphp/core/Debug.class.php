@@ -46,13 +46,9 @@ class Debug {
 		return round((microtime(true) - self::$startTime) , 4); 
 	}
 
-  /**
-   * error handler function 自定义错误处理函数
-   * @param $errno
-   * @param $errstr
-   * @param $errfile
-   * @param $errline
-   */
+	/**
+ 	 * error handler function 自定义错误处理函数
+	 */
 	public static function customError($errno, $errstr, $errfile, $errline) {
 		 
 		if ( !isset(self::$messType[$errno]) ) $errno = "Unkown";

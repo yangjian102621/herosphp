@@ -30,7 +30,7 @@ abstract class Controller extends Template {
         $this->assign('appConfigs', $webApp->getConfigs());
 
     }
-    
+
     /**
      * 设置视图模板
      * @param       string      $view      模板名称
@@ -46,16 +46,17 @@ abstract class Controller extends Template {
     public function getView() {
         return $this->view;
     }
-    
+
 	/*
 	 * 用于在控制器中进行位置重定向
 	 * @param	string	$url	重定向的目标页面
 	 */
 	public function location( $url ){
 
-        header("Location:{$url}"); die();
+        header("Location:{$url}");
+        die();
 
 	}
-    
+
 }
 ?>
