@@ -20,3 +20,5 @@ herosphp    herosphp根目录
 5.runtime	编译运行生成目录
 
 6.document	设计文档
+
+7.client 客户端任务存放目录

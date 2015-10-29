@@ -1,0 +1,19 @@
+版本更新记录
+version 2.0.0
+对框架进行了局部重构
+1. 调整了URL结构，采用 /user_home_index/userid-100.shtml 代替了以前的 /user/home/index/userid-100.shtml结构，减少了目录级数，对SEO更为友好
+3. 新增了WebApplication 层来控制整个web请求的生命周期，控制器中的每个功能方法都需要传入HttpRequest对象
+3. 在根目录下新增了client.php 和 client 目录， 方便执行php的客户端程序。 使用方法详情见操作手册
+4. 新增Beans对象管理工具，可以很方便的配置和管理服务。
+5. 修改了ImageThumb 类，新增了图片裁剪方法。
+6. 修改了数据操作模块，新增了对数据库集群的支持，只需要在herosp.const.php中配置 将DB_ACCESS的值改成B_ACCESS_CLUSTERS
+7. 在utils中新增了邮件发送服务类 Smtp.class.php
+8. 重写了session， 新增了memcache介质存储
+
+version 1.0.0
+实现了框架的基本功能
+1. 项目组织结构
+2. URL解析
+3. 数据DB层的操作
+4. MVC设计模式
+5. 基本工具类，如果文件上传，图片裁剪，生成缩略图，文件处理等

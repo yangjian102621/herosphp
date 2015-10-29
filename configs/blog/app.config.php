@@ -23,7 +23,7 @@ $config = array(
 
     'template' => 'default',    //默认模板
     'skin' => 'default',    //默认皮肤
-    'temp_cache' => 0,      //模板引擎缓存
+    'temp_cache' => 1,      //模板引擎缓存
 
 
     //应用信息配置

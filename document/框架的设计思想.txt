@@ -15,7 +15,6 @@ HerosPHP框架
 	
 二、框架缓存系统
 1. 动态缓存，即数据库的动态缓存(局部缓存，如：缓存某个SQL的查询结果), 考虑数据的水平分割.
-	(已经解决)
 2. 静态缓存，即生成静态文件。
 3. Memcache缓存。
 4. APC缓存，即编译缓存
@@ -29,12 +28,12 @@ HerosPHP框架
 三、框架的工具类
 1. 重写数据库操作类，新增PDO扩展和Mysqli扩展	
 	a.总接口 interface IDB.class.php
-	b.常规操作数据库 Dmysql.class.php implements IDB   (已经解决)
-	c.mysqli扩展类 Dmysqli.class.php implements IDB	(已经解决)
+	b.常规操作数据库 Dmysql.class.php implements IDB   
+	c.mysqli扩展类 Dmysqli.class.php implements IDB	
 	
 2. 文件上传类 upload.class.php
 
-3. 编写图片处理类 image.class.php	缩放，水印，裁剪
+3. 编写图片处理类 image.class.php
 
 4. 验证码类
 
@@ -80,28 +79,6 @@ HerosPHP框架
 		article 	extends 	Controller 		extends 	Template
 		内容控制器--------+-----基类控制器+--------+-----------模板类----
 	所以使用起来非常方便, 每个控制器可以随意调用模板类的所有方法，无需再去实例化模板类
-	访问模式：
-	+--------------------------------------------------------------------------------------
-	index.php ----> SystemInterface.php -------> index.class.php ------> index.html
-	+--------------------------------------------------------------------------------------
-	index.php  	http请求入口
-	systemInterface.php  框架入口
-		(a). 初始化系统所有参数
-		(b). 实现自动包含类
-		(c). 解析URL
-		(b). 根据解析URL得到的参数，加载相应的控制器(如 controls/index/index.class.php)
-	index.class.php  模块控制器
-		(a). 继承基类 Controller
-		(b). 实现主方法(模块的入口方法) main();
-		(c). 加载模板(index.html), 将其编译并输出($this->display())。
-		(d). 可以在此生成静态缓存
-	index.html 模板文件
 	
-	
-七、实现细节
-1. 为了实现全局变量的共享将全局变量存入session中
-	如 绝对网络根地址 $_WEB_URL = http://localhost/HerosPHP;
-	网站根目录  $_WEB_ROOT = 'D:\www\HerosPHP'; 等都可以存入session，方便读取
-	在用户没有登录的情况下购物车的数据也可以暂时存入session中。
 	
 
