@@ -68,11 +68,6 @@ class C_Model implements IModel {
      */
     public function __construct( $table, $config = null ) {
 
-        //加载数据表配置
-        $dbConfigPath = 'db';
-        $tableConfig = Loader::config('table', $dbConfigPath);
-        $this->table = $tableConfig[$table];
-
         //初始化数据库配置
         if ( !$config ) {
             //默认使用第一个数据库服务器配置

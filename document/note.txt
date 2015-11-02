@@ -1,5 +1,0 @@
-1. 删除APP_PATH常量
-2. 修复Loader::import方法和 model方法
-3. 修复数据连接C_Model class
-4. 静态资源加载，包括{res:js} {res:css} {res:less}
-5. 新增page404， page301函数

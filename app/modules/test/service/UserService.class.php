@@ -1,35 +1,24 @@
 <?php
-
 namespace test\service;
 
 use herosphp\core\Loader;
 use test\service\interfaces\IUserService;
-Loader::import('test.service.interfaces.IUserService');
+
+Loader::import('test.service.interfaces.IUserService', IMPORT_APP);
 
 /**
+ * 用户服务实现
  * Class UserService
  * @package test\service
  */
 class UserService implements IUserService {
-    /**
-     * 登录服务
-     * @param $username
-     * @param $password
-     * @return mixed
-     */
-    public function login($username, $password)
+    public function register()
     {
-        __print("Invoked the UserService::login().");
+        __print("调用了 UserService::register 方法");
     }
 
-    /**
-     * 用户注册
-     * @param $userData
-     * @return mixed
-     */
-    public function register($userData)
+    public function login()
     {
-        __print("Invoked the UserService::register().");
+        __print("调用了 UserService::login 方法");
     }
-
-} 
+}

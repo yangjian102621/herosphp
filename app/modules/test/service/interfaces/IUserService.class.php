@@ -3,23 +3,14 @@
 namespace test\service\interfaces;
 
 /**
+ * 用户服务接口
  * Interface IUserService
  */
 interface IUserService {
 
-    /**
-     * 登录服务
-     * @param $username
-     * @param $password
-     * @return mixed
-     */
-    public function login($username, $password);
+    //注册服务
+    public function register();
 
-    /**
-     * 用户注册
-     * @param $userData
-     * @return mixed
-     */
-    public function register( $userData );
+    //登录服务
+    public function login();
 }
-?>

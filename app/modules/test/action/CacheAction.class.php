@@ -21,19 +21,22 @@ class CacheAction extends Controller {
 
         $CACHER = CacheFactory::create('file');
         $CACHER->baseKey('article')->ftype('list')->factor(1);
-        $item = $CACHER->get(null);
-        if ( !$item ) {
+        $items = $CACHER->get(null);
+        if ( !$items ) {
             $model = Loader::model('article');
-            $item = $model->getItems(null,null,"id desc",1,20);
-            if ( $CACHER->set(null, $item) ) {
+            $items = $model->getItems(null,null,"id desc",1,20);
+            if ( $CACHER->set(null, $items) ) {
                 __print("生成动态缓存成功！");
             }
 
-        } else {
-            __print($item);
-        }
+            die();
 
-        die();
+        } else {
+
+            $this->assign('items', $items);
+            $this->setView('article_index');
+
+        }
 
     }
 

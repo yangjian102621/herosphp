@@ -1,6 +1,7 @@
 <?php
 namespace test\action;
 
+use herosphp\bean\Beans;
 use herosphp\core\Controller;
 use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
@@ -18,25 +19,29 @@ class ArticleAction extends Controller {
      */
     public function index( HttpRequest $request ) {
 
+        $args = $request->getParameter('page', 'intval');
         $model = Loader::model('article');
-        $conditions = array("id" => ">300");
-        $items = $model->getItems($conditions, "id, url, title", null, 1, 20);
+        $conditions = array("id" => ">100");
+        $items = $model->getItems($conditions, "id, url, title", null, 1, 30);
 
+        $this->assign('include', "{include:test.top}");
+        $this->assign('args', $args);
         $this->assign('items', $items);
 
     }
 
     /**
-     * @param HttpRequest $request
      * 文章详情
+     * @param HttpRequest $request
      */
     public function detail( HttpRequest $request ) {
         $id = $request->getParameter('id', 'intval');
         if ( $id <= 0 ) $id = 4779;
-        $model = Loader::model('article');
-        $item = $model->getItem($id);
-        __print($item);
-        exit();
+
+        $articleService = Beans::get('test.article.service');
+        $item = $articleService->getItem($id);
+
+        $this->assign('item', $item);
     }
 
     /**

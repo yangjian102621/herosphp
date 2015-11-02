@@ -18,8 +18,14 @@ if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
 // 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false
 define('APP_DEBUG', true);
 
+//定义app名称
+define('APP_NAME', 'app');
+
 // 定义系统根目录
 define('APP_ROOT', __DIR__.'/');
+
+//定义当前应用根目录
+define('APP_PATH', APP_ROOT.APP_NAME."/");
 
 //定义框架根目录
 define('APP_FRAME_PATH', APP_ROOT.'framework/herosphp/');

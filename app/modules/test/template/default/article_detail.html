@@ -22,13 +22,10 @@
 
 <div class="container main" role="main">
 
-	<ol>
-		{loop $items $value}
-		<li>
-			<h4><a href="{url /test_article_detail/?id=$value[id]}" target="_blank">{$value[title]}</a></h4>
-		</li>
-		{/loop}
-	</ol>
+	<div class="container">
+		<h1>{$item[title]}</h1>
+		<div>{$item[content]}</div>
+	</div>
 
 	<br />
 	<footer>
