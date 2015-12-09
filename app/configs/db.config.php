@@ -20,7 +20,7 @@ return array(
             'db_pass'      => '123456',
             'db_name'      => 'test',
             'db_charset'   => 'utf8',
-            'table_prefix'   => 'fiidee_',
+            'table_prefix'   => 'herosphp_',
             'serial'       => 'db-write',      //写服务器,如果没有配置读写分离，则此处不用理它
         ),
 
@@ -32,7 +32,7 @@ return array(
             'db_pass'      => '123456',
             'db_name'      => 'test',
             'db_charset'   => 'utf8',
-            'table_prefix'   => 'fiidee_',
+            'table_prefix'   => 'herosphp_',
             'serial'       => 'db-read',   //读服务器,如果没有配置读写分离，则此处不用理它
         ),
 
@@ -44,7 +44,7 @@ return array(
             'db_pass'      => '123456',
             'db_name'      => 'test',
             'db_charset'   => 'utf8',
-            'table_prefix'   => 'fiidee_',
+            'table_prefix'   => 'herosphp_',
             'serial'       => 'db-read',   //读服务器,如果没有配置读写分离，则此处不用理它
         ),
     ),
@@ -58,4 +58,3 @@ return array(
         'db'        => 'herosphp'
     )
 );
-?>

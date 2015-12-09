@@ -134,16 +134,29 @@ function url( $url ) {
     $actionMap = array();
     $args = '';
     $urlInfo = parse_url($url);
-    if ( $urlInfo['path'] ) {
+    if ( $urlInfo['path'] && $urlInfo['path'] != '/' ) {
         $filename = str_replace(EXT_URI, '', $urlInfo['path']);
+        $filename = rtrim($filename, "/");
         $pathInfo = explode('/', $filename);
-        if ( isset($pathInfo[1]) ) {
-            $actionMap = explode('_', $pathInfo[1]);
-        }
+        array_shift($pathInfo);
 
-        //提取参数
-        if ( isset($pathInfo[2]) ) {
-            $args .= $pathInfo[2];
+        //提取pathinfo参数
+        $paramArr = array();
+        if ( count($pathInfo) > 3 ) {
+            if ( isset($pathInfo[3]) ) {
+                $params = explode('-', $pathInfo[3]);
+                for ( $i = 0; $i < count($params); $i++ ) {
+                    if ( $i % 2 == 0 ) {
+                        if ( trim($params[$i]) == ''
+                            || trim($params[$i+1]) == ''
+                            || strpos($params[$i], '=') != false ) {
+                            continue;
+                        }
+                        $paramArr[] = $params[$i];
+                        $paramArr[] = $params[$i+1];
+                    }
+                }
+            }
         }
 
         if ( $urlInfo['query'] ) {
@@ -158,7 +171,10 @@ function url( $url ) {
     if ( !$actionMap[1] ) $actionMap[1] = $defaultUrl['action'];
     if ( !$actionMap[2] ) $actionMap[2] = $defaultUrl['method'];
 
-    $newUrl = '/'.implode('_', $actionMap);
+    $newUrl = '/'.implode('/', $actionMap);
+    if ( !empty($paramArr) ) {
+        $newUrl .= '/'.implode('-', $paramArr);
+    }
     if ( trim($args) != '' ) $newUrl .= '/'.$args;
     $newUrl .= EXT_URI;
     $newUrl = rtrim($newUrl,'/');

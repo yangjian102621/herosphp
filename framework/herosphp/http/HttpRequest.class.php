@@ -82,25 +82,26 @@ class HttpRequest {
         $defaultUrl = $sysConfig['default_url'];
         $urlInfo = parse_url($this->requestUri);
 
-        if ( $urlInfo['path'] ) {
+        if ( $urlInfo['path'] && $urlInfo['path'] != '/' ) {
             $filename = str_replace(EXT_URI, '', $urlInfo['path']);
+            $filename = rtrim($filename, "/");
             $pathInfo = explode('/', $filename);
-            if ( isset($pathInfo[1]) ) {
-                $actionMap = explode('_', $pathInfo[1]);
-                if ( $actionMap[0] ) $this->setModule($actionMap[0]);
-                if ( $actionMap[1] ) $this->setAction($actionMap[1]);
-                if ( $actionMap[2] ) $this->setMethod($actionMap[2]);
-            }
+            array_shift($pathInfo);
+            if ( $pathInfo[0] ) $this->setModule($pathInfo[0]);
+            if ( $pathInfo[1] ) $this->setAction($pathInfo[1]);
+            if ( $pathInfo[2] ) $this->setMethod($pathInfo[2]);
 
             //提取pathinfo参数
-            if ( isset($pathInfo[2]) ) {
-                $params = explode('-', $pathInfo[2]);
-                for ( $i = 0; $i < count($params); $i++ ) {
-                    if ( $i % 2 == 0 ) {
-                        if ( trim($params[$i]) == '' ) {
-                            continue;
+            if ( count($pathInfo) > 3 ) {
+                if ( isset($pathInfo[3]) ) {
+                    $params = explode('-', $pathInfo[3]);
+                    for ( $i = 0; $i < count($params); $i++ ) {
+                        if ( $i % 2 == 0 ) {
+                            if ( trim($params[$i]) == '' ) {
+                                continue;
+                            }
+                            $_GET[$params[$i]] = $params[$i+1];
                         }
-                        $_GET[$params[$i]] = $params[$i+1];
                     }
                 }
             }
@@ -125,6 +126,8 @@ class HttpRequest {
         if ( !$this->method ) $this->setMethod($defaultUrl['method']);
 
         $this->setParameters($_GET + $_POST);
+
+        //die();
     }
 
     /**

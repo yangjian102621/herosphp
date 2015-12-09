@@ -22,7 +22,7 @@ class ArticleAction extends Controller {
         $args = $request->getParameter('page', 'intval');
         $model = Loader::model('article');
         $conditions = array("id" => ">100");
-        $items = $model->getItems($conditions, "id, url, title", null, 1, 30);
+        $items = $model->getItems($conditions, null, null, 1, 30);
 
         $this->assign('include', "{include:test.top}");
         $this->assign('args', $args);
