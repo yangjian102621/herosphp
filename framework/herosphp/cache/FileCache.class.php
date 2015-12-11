@@ -18,9 +18,12 @@ use herosphp\utils\FileUtils;
 
 class FileCache extends ACache implements ICache {
 
-	/**
-	 * @see        ICache::get()
-	 */
+    /**
+     * @see        ICache::get()
+     * @param string $key
+     * @param null $expire
+     * @return bool|mixed|string
+     */
 	public function get( $key, $expire=null ) {
 
         if ( $expire !== null ) {
@@ -54,9 +57,13 @@ class FileCache extends ACache implements ICache {
 	}
 
 
-	/**
-	 * @see   ICache::set();
-	 */
+    /**
+     * @see   ICache::set();
+     * @param string $key
+     * @param string $content
+     * @param null $expire
+     * @return int
+     */
 	public function set( $key, $content, $expire=null ) {
 
         $cacheFile = $this->getCacheFile($key);
@@ -68,13 +75,14 @@ class FileCache extends ACache implements ICache {
 		return file_put_contents($cacheFile, $content, LOCK_EX);
 	}
 
-	/**
-	 * @see		ICache::delete()
-	 */
+    /**
+     * @see        ICache::delete()
+     * @param string $key
+     * @return bool
+     */
 	public function delete( $key ) {
         $cacheFile = $this->getCacheFile($key);
 		return @unlink($cacheFile);
 	}
 
 }
-?>

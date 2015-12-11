@@ -277,6 +277,15 @@ function getConfig($key) {
 }
 
 /**
+ * 获取应用的全不配置信息
+ * @return array
+ */
+function getConfigs() {
+    $webapp = \herosphp\core\WebApplication::getInstance();
+    return $webapp->getConfigs();
+}
+
+/**
  * 将中文数组json编码
  * @param $array
  * @return string

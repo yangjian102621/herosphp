@@ -12,10 +12,10 @@ $beans = array(
     Beans::BEAN_WEBAPP_LISTENER => array (
         '@type' => Beans::BEAN_OBJECT_ARRAY,
         '@attributes' => array (
-//            array (
-//                '@type' => Beans::BEAN_OBJECT,
-//                '@class' => 'common\listener\URLParseListener'
-//            )
+            array (
+                '@type' => Beans::BEAN_OBJECT,
+                '@class' => 'common\listener\URLParseListener'
+            )
         )
     ),
 

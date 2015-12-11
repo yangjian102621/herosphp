@@ -26,6 +26,7 @@ class PageAction extends Controller {
         if ( $page <= 0 ) $page = 1;
 
         $model = Loader::model('article');
+
         $conditions = array("id" => ">300");
         $total = $model->count($conditions);
         $items = $model->getItems($conditions, "id, url, title", null, $page, $pagesize);

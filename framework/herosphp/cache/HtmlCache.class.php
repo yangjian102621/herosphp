@@ -26,6 +26,9 @@ class HtmlCache extends ACache implements ICache {
 
     /**
      * @see        ICache::get()
+     * @param string $key
+     * @param null $expire
+     * @return bool|mixed|string
      */
     public function get( $key, $expire = null ) {
 
@@ -56,6 +59,10 @@ class HtmlCache extends ACache implements ICache {
 
     /**
      * @see   ICache::set();
+     * @param string $key
+     * @param string $content
+     * @param null $expire
+     * @return int
      */
     public function set( $key, $content, $expire=null ) {
 
@@ -68,11 +75,12 @@ class HtmlCache extends ACache implements ICache {
     }
 
     /**
-     * @see		ICache::delete()
+     * @see        ICache::delete()
+     * @param string $key
+     * @return bool
      */
     public function delete( $key ) {
         $cacheFile = $this->getCacheFile($key, $this->cacheExt);
         return @unlink($cacheFile);
     }
 }
-?>

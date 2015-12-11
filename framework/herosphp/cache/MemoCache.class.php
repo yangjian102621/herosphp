@@ -44,16 +44,23 @@ class MemoCache implements ICache {
         self::$Mem = $Mem;
     }
 
-	/**
-	 * @see	ICache::get()
-	 */
+    /**
+     * @see    ICache::get()
+     * @param string $key
+     * @param null $expire
+     * @return array|mixed|string
+     */
 	public function get( $key, $expire=null ) {
 		return self::$Mem->get($key);
 	}
 
-	/**
-	 * @see ICache::set()
-	 */
+    /**
+     * @see ICache::set()
+     * @param string $key
+     * @param string $content
+     * @param null $expire
+     * @return bool
+     */
 	public function set( $key, $content, $expire=null) {
 
         if ( $expire !== null ) {
@@ -62,9 +69,11 @@ class MemoCache implements ICache {
 		return self::$Mem->set($key, $content, MEMCACHE_COMPRESSED, $this->configs['expire']);
 	}
 
-	/**
-	 * @see	ICache::delete()
-	 */
+    /**
+     * @see    ICache::delete()
+     * @param string $key
+     * @return bool
+     */
 	public function delete( $key ) {
 		return self::$Mem->delete($key, 0);
 	}

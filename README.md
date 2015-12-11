@@ -15,7 +15,6 @@ HerosPHP是一个轻量级PHP web 程序开发框架。作者开发这个框架�
 #项目地址
 * git1 https://git.oschina.net/blackfox/herosphp.git
 * git2 http://git.fiidee.com/git/fiidee-php/herosphp.git
-* 官方博客 http://www.r9it.com
 
 
 #版本更新记录

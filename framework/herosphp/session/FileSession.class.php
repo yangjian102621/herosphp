@@ -32,11 +32,13 @@ class FileSession implements ISession {
      * @var string 用户客户端ip
      */
     private static $userIp;
-	
-	/**
-	 * @see	\herosphp\session\interfaces\ISession::start().
-	 */
-	public static function start( $config = NULL ) {
+
+    /**
+     * @see    \herosphp\session\interfaces\ISession::start().
+     * @param null $config
+     * @return mixed|void
+     */
+	public static function start( $config = null ) {
 
         //初始化配置信息
         if ( !$config ) {
@@ -64,10 +66,13 @@ class FileSession implements ISession {
 		);
 		@session_start();
 	}
-	
-	/**
-	 * @see	\herosphp\session\interfaces\ISession::open().
-	 */
+
+    /**
+     * @see    \herosphp\session\interfaces\ISession::open().
+     * @param string $savePath
+     * @param string $sessionName
+     * @return bool
+     */
 	public static function open( $savePath, $sessionName ) {
 
 		if ( !self::$sessionSavePath ) {
@@ -88,10 +93,12 @@ class FileSession implements ISession {
 		//do nothing here
 		return TRUE;
 	}
-	
-	/**
-	 * @see	\herosphp\session\interfaces\ISession::read().
-	 */
+
+    /**
+     * @see    \herosphp\session\interfaces\ISession::read().
+     * @param string $sessionId
+     * @return string
+     */
 	public static function read( $sessionId ) {
 
 		$sessionFile = self::$sessionSavePath.DIRECTORY_SEPARATOR.self::$config['session_file_prefix'].$sessionId;
@@ -112,10 +119,13 @@ class FileSession implements ISession {
 		}
 		return '';
 	}
-	
-	/**
-	 * @see	\herosphp\session\interfaces\ISession::write().
-	 */
+
+    /**
+     * @see    \herosphp\session\interfaces\ISession::write().
+     * @param string $sessionId
+     * @param array|string $data
+     * @return bool|int
+     */
 	public static function write( $sessionId, $data ) {
 
 		$sessionFile = self::$sessionSavePath.DIRECTORY_SEPARATOR.self::$config['session_file_prefix'].$sessionId;
@@ -131,10 +141,12 @@ class FileSession implements ISession {
         return true;
 
 	}
-	
-	/**
-	 * @see	\herosphp\session\interfaces\ISession::destroy().
-	 */
+
+    /**
+     * @see    \herosphp\session\interfaces\ISession::destroy().
+     * @param string $sessionId
+     * @return bool
+     */
 	public static function destroy( $sessionId ) {
 
         //删除session文件
@@ -144,10 +156,12 @@ class FileSession implements ISession {
 		}
         return false;
 	}
-	
-	/**
-	 * @see	\herosphp\session\interfaces\ISession::gc().
-	 */
+
+    /**
+     * @see    \herosphp\session\interfaces\ISession::gc().
+     * @param int $maxLifeTime
+     * @return bool
+     */
 	public static function gc( $maxLifeTime ) {
 
 		$sessionFiles = glob( self::$sessionSavePath.DIRECTORY_SEPARATOR.self::$config['session_file_prefix'].'*' );

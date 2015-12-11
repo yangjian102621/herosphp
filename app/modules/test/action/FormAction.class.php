@@ -22,6 +22,8 @@ class FormAction extends Controller {
         $this->assign('data', $data);
         $this->setView('form_test');
 
+        $html = $this->getExecutedHtml('form_test');
+
     }
 
     /**

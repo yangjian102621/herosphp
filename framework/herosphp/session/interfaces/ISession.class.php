@@ -20,7 +20,7 @@ interface ISession {
      * @param array $config config for session
      * @return mixed
      */
-    public static function start( $config = NULL );
+    public static function start( $config = null );
 	
 	/**
 	 * session pen handler function. it excuted when the session is being opened.

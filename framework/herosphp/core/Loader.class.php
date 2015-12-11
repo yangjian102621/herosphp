@@ -127,7 +127,7 @@ class Loader {
     /**
      * 加载配置信息
      * @param string $key 配置文件名称key， 如果没有指定则加载所有配置文档
-     * @param string $section 配置文档所属片区|模块，如果没有指定则加载配置文档根目录的配置文件
+     * @param string $section 配置文档所属片区|模块，如果没有指定，则默认加载当前应用配置文档根目录的配置文件
      * @return array
      */
     public static function config( $key='*', $section=null ) {
