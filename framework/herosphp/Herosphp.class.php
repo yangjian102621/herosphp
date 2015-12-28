@@ -148,6 +148,4 @@ class Herosphp {
 }
 
 //自动加载核心类
-function __autoload( $className ) {
-    Herosphp::autoLoad($className);
-}
+spl_autoload_register(array('Herosphp', 'autoLoad'));

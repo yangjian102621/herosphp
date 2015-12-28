@@ -87,6 +87,8 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::query()
+     * @param $sql
+     * @return mixed|\PDOStatement
      */
     public function query($sql)
     {
@@ -95,6 +97,8 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::insert()
+     * @param $data
+     * @return int
      */
     public function insert($data)
     {
@@ -104,6 +108,8 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::replace()
+     * @param $data
+     * @return bool
      */
     public function replace($data)
     {
@@ -113,6 +119,8 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::delete()
+     * @param $id
+     * @return bool
      */
     public function delete($id)
     {
@@ -121,6 +129,8 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::deletes()
+     * @param $conditions
+     * @return bool
      */
     public function deletes($conditions)
     {
@@ -130,6 +140,14 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::getItems()
+     * @param array|string $conditions
+     * @param array|string $fields
+     * @param array|string $order
+     * @param int $page
+     * @param int $pagesize
+     * @param string $group
+     * @param array|string $having
+     * @return array
      */
     public function getItems($conditions, $fields, $order, $page, $pagesize, $group, $having)
     {
@@ -156,6 +174,12 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::getItem()
+     * @param array|string $conditions
+     * @param array|string $fields
+     * @param array|string $order
+     * @param string $group
+     * @param array|string $having
+     * @return array|mixed
      */
     public function getItem($conditions, $fields, $order, $group, $having)
     {
@@ -176,6 +200,9 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::update()
+     * @param $data
+     * @param $id
+     * @return bool
      */
     public function update($data, $id)
     {
@@ -185,6 +212,9 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::updates()
+     * @param $data
+     * @param $conditions
+     * @return bool|mixed
      */
     public function updates($data, $conditions)
     {
@@ -195,6 +225,8 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::count()
+     * @param $conditions
+     * @return int
      */
     public function count($conditions)
     {
@@ -204,6 +236,10 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::increase()
+     * @param tring $field
+     * @param int $offset
+     * @param int $id
+     * @return bool|\PDOStatement
      */
     public function increase($field, $offset, $id)
     {
@@ -214,6 +250,10 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::batchIncrease()
+     * @param string $field
+     * @param int $offset
+     * @param array|string $conditions
+     * @return mixed|\PDOStatement
      */
     public function batchIncrease($field, $offset, $conditions)
     {
@@ -224,6 +264,10 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::reduce()
+     * @param string $field
+     * @param int $offset
+     * @param int $id
+     * @return mixed|\PDOStatement
      */
     public function reduce($field, $offset, $id)
     {
@@ -234,6 +278,10 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::batchReduce()
+     * @param string $field
+     * @param int $offset
+     * @param array|string $conditions
+     * @return mixed|\PDOStatement
      */
     public function batchReduce($field, $offset, $conditions)
     {
@@ -244,6 +292,10 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::set()
+     * @param $field
+     * @param $value
+     * @param $id
+     * @return bool|mixed
      */
     public function set($field, $value, $id)
     {
@@ -253,6 +305,10 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::sets()
+     * @param $field
+     * @param $value
+     * @param $conditions
+     * @return bool|mixed
      */
     public function sets($field, $value, $conditions)
     {
