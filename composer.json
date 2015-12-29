@@ -17,5 +17,5 @@
 	"autoload": {
 		"psr-4": {"herosphp\\": "framework/"}
 	},
-    "minimum-stability": "stable"
+    "minimum-stability": "dev"
 }
