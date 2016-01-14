@@ -10,8 +10,12 @@
  * @version 1.2.1
  *-----------------------------------------------------------------------*/
 
-include APP_FRAME_PATH.'functions.core.php';      //包含框架全局函数
-include APP_FRAME_PATH.'core/Loader.class.php';     //包含资源加载器
+//定义当前应用根目录
+define('APP_PATH', APP_ROOT.APP_NAME."/");
+include APP_FRAME_PATH.'Heros.const.php'; //引入系统常量文件
+include APP_FRAME_PATH.'functions.core.php';//包含框架全局函数
+include APP_ROOT.'functions.php'; //包含公共函数页面
+include APP_FRAME_PATH.'core/Loader.class.php';//包含资源加载器
 
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
