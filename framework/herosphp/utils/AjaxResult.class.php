@@ -13,11 +13,11 @@ namespace herosphp\utils;
 class AjaxResult {
 
     /**
-     * 状态
-     * @var string
-     * ok => 成功, error => 失败
+     * 错误代码
+     * @var int
+     * 0 => 成功, 1 => 失败
      */
-    private $state;
+    private $code;
 
     /**
      * 消息
@@ -31,11 +31,20 @@ class AjaxResult {
      */
     private $data;
 
+    //code for operation successfully
+    const OP_SUCCESS = 0;
+
+    //default code for operation failed
+    const OP_FAILURE = 1;
+
+    //error code 101: Invalid parameter operation
+    const INVALID_PARAM = 101;
+
     /**
      * 显示ajax操作失败默认结果
      */
     public static function ajaxFailtureResult(){
-        $result = new AjaxResult('error', "操作失败!");
+        $result = new AjaxResult(self::OP_FAILURE, "操作失败!");
         die($result->toJsonMessage());
     }
 
@@ -43,48 +52,49 @@ class AjaxResult {
      * 显示ajax操作成功默认结果
      */
     public static function ajaxSuccessResult(){
-        $result = new AjaxResult('ok', "操作成功!");
+        $result = new AjaxResult(self::OP_SUCCESS, "操作成功!");
         die($result->toJsonMessage());
     }
 
     /**
      * 显示ajax操作结果
      */
-    public static function ajaxResult($state, $message, $data=array()){
-        $result = new AjaxResult($state, $message, $data);
+    public static function ajaxResult($code, $message, $data=array()){
+        $result = new AjaxResult($code, $message, $data);
         die($result->toJsonMessage());
     }
 
     /**
      * 返回jsonp数据格式
-     * @param $state
+     * @param $code
      * @param $message
      * @param $callback
      */
-    public static function jsonp($state, $message, $callback){
-        $result = new AjaxResult($state, $message);
+    public static function jsonp($code, $message, $callback){
+        $result = new AjaxResult($code, $message);
         die($callback. "(". $result->toJsonMessage() .")");
     }
 
-    public function __construct($state, $message, $data){
-        $this->setState($state);
+    public function __construct($code, $message, $data){
+        $this->setCode($code);
         $this->setMessage($message);
         $this->setData($data);
     }
 
-
     /**
-     * @return the $state
+     * @return int
      */
-    public function getState() {
-        return $this->state;
+    public function getCode()
+    {
+        return $this->code;
     }
 
     /**
-     * @param number $state
+     * @param int $code
      */
-    public function setState($state) {
-        $this->state = $state;
+    public function setCode($code)
+    {
+        $this->code = $code;
     }
 
     /**
@@ -119,7 +129,7 @@ class AjaxResult {
      * 返回Json格式结果
      */
     public function toJsonMessage(){
-        return json_encode(array('state'=>$this->getState(), 'message'=>$this->getMessage(), 'data'=>$this->getData()));
+        return json_encode(array('code'=>$this->getCode(), 'message'=>$this->getMessage(), 'data'=>$this->getData()));
     }
 }
 
