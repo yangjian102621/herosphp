@@ -7,7 +7,7 @@ use herosphp\core\Loader;
 
 Loader::import('tasks.interfaces.ITask', IMPORT_CLIENT);
 /**
- * @author yangjian102621@163.com
+ * @author yangjian102621@gmail.com
  * @version 1.0.0
  * @since 15-4-27
  */

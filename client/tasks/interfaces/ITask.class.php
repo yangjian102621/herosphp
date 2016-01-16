@@ -1,7 +1,7 @@
 <?php
 /**
  * 客户端任务接口
- * @author yangjian102621@163.com
+ * @author yangjian102621@gmail.com
  * @version 1.0.0
  */
 

@@ -9,7 +9,7 @@ use herosphp\http\HttpRequest;
 /**
  * 缓存测试
  * @since           2015-01-28
- * @author          yangjian<yangjian102621@163.com>
+ * @author          yangjian<yangjian102621@gmail.com>
  */
 class CacheAction extends Controller {
 

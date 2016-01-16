@@ -6,7 +6,7 @@
  * ---------------------------------------------------------------------
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * ---------------------------------------------------------------------
- * Author: <yangjian102621@163.com>
+ * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
 namespace herosphp\db\mysql;
@@ -22,7 +22,7 @@ Loader::import('db.interfaces.ICusterDB', IMPORT_FRAME);
 
 /**
  * 多数据库连接操作类
- * @author          yangjian102621@163.com
+ * @author          yangjian102621@gmail.com
  */
 class ClusterDB implements ICusterDB {
 

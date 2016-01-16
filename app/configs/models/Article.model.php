@@ -1,7 +1,7 @@
 <?php
 /**
  * 文章表数据模型操作类，继承模型基类
- * @author  yangjian <yangjian102621@163.com>
+ * @author  yangjian <yangjian102621@gmail.com>
  */
 
 namespace models;

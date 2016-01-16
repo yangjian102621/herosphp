@@ -11,7 +11,7 @@ use herosphp\utils\PHPZip;
 
 /**
  * zip压缩工具测试
- * @author          yangjian<yangjian102621@163.com>
+ * @author          yangjian<yangjian102621@gmail.com>
  */
 class ZipAction extends Controller {
 

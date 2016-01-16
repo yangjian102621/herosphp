@@ -8,7 +8,7 @@ use herosphp\http\HttpRequest;
 /**
  * Bean工具测试
  * @since           2015-01-28
- * @author          yangjian<yangjian102621@163.com>
+ * @author          yangjian<yangjian102621@gmail.com>
  */
 class BeanAction extends Controller {
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * session configures for all session handlers.
- * @author yangjian<yangjian102621@163.com>
+ * @author yangjian<yangjian102621@gmail.com>
  */
 
 return array(

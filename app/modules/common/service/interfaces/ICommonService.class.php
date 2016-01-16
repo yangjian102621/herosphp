@@ -6,7 +6,7 @@ namespace common\service\interfaces;
  * 通用服务接口
  * Interface ICommonService
  * @package common\service\interfaces
- * @author yangjian102621@163.com
+ * @author yangjian102621@gmail.com
  */
 interface ICommonService {
 

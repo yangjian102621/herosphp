@@ -13,6 +13,6 @@ Loader::import('common.dao.CommonDao');
  * 文章(DAO)接口实现
  * Class ArticleDao
  * @package test\dao
- * @author yangjian102621@163.com
+ * @author yangjian102621@gmail.com
  */
 class ArticleDao extends CommonDao implements IArticleDao {}

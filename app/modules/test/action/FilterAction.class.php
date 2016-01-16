@@ -11,7 +11,7 @@ Loader::import('filter.Filter', IMPORT_FRAME);
 /**
  * 数据过滤测试
  * @since           2015-02-21
- * @author          yangjian<yangjian102621@163.com>
+ * @author          yangjian<yangjian102621@gmail.com>
  */
 class FilterAction extends Controller {
 

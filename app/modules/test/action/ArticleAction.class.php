@@ -9,7 +9,7 @@ use herosphp\http\HttpRequest;
 /**
  * 模板解析测试
  * @since           2015-01-12
- * @author          yangjian<yangjian102621@163.com>
+ * @author          yangjian<yangjian102621@gmail.com>
  */
 class ArticleAction extends Controller {
 

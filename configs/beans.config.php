@@ -3,7 +3,7 @@
 use herosphp\bean\Beans;
 /**
  * 公共模块服务 Beans装配配置
- * @author yangjian102621@163.com
+ * @author yangjian102621@gmail.com
  * @since 1.0 - Nov 26, 2012
  */
 $beans = array(

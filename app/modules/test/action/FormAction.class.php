@@ -9,7 +9,7 @@ use herosphp\utils\AjaxResult;
 /**
  * 表单验证测试
  * @since           2015-02-21
- * @author          yangjian<yangjian102621@163.com>
+ * @author          yangjian<yangjian102621@gmail.com>
  */
 class FormAction extends Controller {
 

@@ -6,7 +6,7 @@
  * ---------------------------------------------------------------------
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * ---------------------------------------------------------------------
- * Author: <yangjian102621@163.com>
+ * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
 /**
@@ -122,6 +122,7 @@ function timer() {
  */
 function url( $url ) {
 
+    $url = ltrim($url, '/');
     $_url = \herosphp\http\HttpRequest::url2Target($url);
     if ( $_url != $url ) {
         $_url = rtrim($_url,'/');
@@ -138,8 +139,6 @@ function url( $url ) {
         $filename = str_replace(EXT_URI, '', $urlInfo['path']);
         $filename = rtrim($filename, "/");
         $pathInfo = explode('/', $filename);
-        array_shift($pathInfo);
-
         //提取pathinfo参数
         $paramArr = array();
         if ( count($pathInfo) > 3 ) {
@@ -167,9 +166,9 @@ function url( $url ) {
     }
 
     //如果没有任何参数，则访问默认页面。如http://www.herosphp.my这种格式
-    if ( !$actionMap[0] ) $actionMap[0] = $defaultUrl['module'];
-    if ( !$actionMap[1] ) $actionMap[1] = $defaultUrl['action'];
-    if ( !$actionMap[2] ) $actionMap[2] = $defaultUrl['method'];
+    $actionMap[0] = $pathInfo[0] ? $pathInfo[0] :$defaultUrl['module'];
+    $actionMap[1] = $pathInfo[1] ? $pathInfo[1] :$defaultUrl['action'];
+    $actionMap[2] = $pathInfo[2] ? $pathInfo[2] :$defaultUrl['method'];
 
     $newUrl = '/'.implode('/', $actionMap);
     if ( !empty($paramArr) ) {

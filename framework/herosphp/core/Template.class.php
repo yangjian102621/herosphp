@@ -6,7 +6,7 @@
  * ---------------------------------------------------------------------
  * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
  * ---------------------------------------------------------------------
- * Author: <yangjian102621@163.com>
+ * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
 namespace herosphp\core;
@@ -325,11 +325,17 @@ class Template {
         }
 
         //组合静态资源的src
-        if ( $type == 'css' || $type == 'less' ) {
-            $src = $resUrl.'style/'.$path;
-        } else if( $type == 'js' ) {
-            $src = $resUrl.'js/'.$path;
+        if ( $section == 'cres' ) {
+            $src = $resUrl.$path;
+        } else {
+
+            if ( $type == 'css' || $type == 'less' ) {
+                $src = $resUrl.'styles/'.$path;
+            } else if( $type == 'js' ) {
+                $src = $resUrl.'js/'.$path;
+            }
         }
+
         $template = self::$resTemplate[$type];
         $result = str_replace('{url}', $src, $template);
 

@@ -6,7 +6,7 @@ namespace common\dao\interfaces;
  * 通用记录访问对象(DAO)接口
  * Interface ICommonDao
  * @package common\dao\interfaces
- * @author yangjian102621@163.com
+ * @author yangjian102621@gmail.com
  */
 interface ICommonDao {
 

@@ -13,7 +13,7 @@ use herosphp\core\WebApplication;
  * URL解析监听器
  * Class URLParseListener
  * @package common\listener
- * @author yangjian102621@163.com
+ * @author yangjian102621@gmail.com
  */
  class URLParseListener extends WebApplicationListenerMatcher implements IWebAplicationListener {
 

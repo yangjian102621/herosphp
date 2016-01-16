@@ -11,7 +11,7 @@ Loader::import('common.dao.interfaces.ICommonDao', IMPORT_APP);
  * 通用记录访问对象(DAO)接口的通用实现
  * Class CommonDao
  * @package common\dao
- * @author yangjian102621@163.com
+ * @author yangjian102621@gmail.com
  */
 abstract class CommonDao implements ICommonDao {
 

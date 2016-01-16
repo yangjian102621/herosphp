@@ -7,7 +7,7 @@ use herosphp\utils\FileUpload;
 
 /**
  * 文件上传测试
- * @author          yangjian<yangjian102621@163.com>
+ * @author          yangjian<yangjian102621@gmail.com>
  */
 class UploadAction extends Controller {
 
