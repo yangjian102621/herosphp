@@ -317,3 +317,11 @@ function page301( $url ) {
     die();
 }
 
+//页面跳转
+function location( $url ){
+
+    header("Location:{$url}");
+    die();
+
+}
+

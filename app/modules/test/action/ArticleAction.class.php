@@ -5,6 +5,7 @@ use herosphp\bean\Beans;
 use herosphp\core\Controller;
 use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
+use herosphp\utils\AjaxResult;
 
 /**
  * 模板解析测试

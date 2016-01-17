@@ -47,16 +47,4 @@ abstract class Controller extends Template {
         return $this->view;
     }
 
-	/*
-	 * 用于在控制器中进行位置重定向
-	 * @param	string	$url	重定向的目标页面
-	 */
-	public function location( $url ){
-
-        header("Location:{$url}");
-        die();
-
-	}
-
 }
-?>
