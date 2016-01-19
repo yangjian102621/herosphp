@@ -53,7 +53,7 @@ class Loader {
                 break;
 
             case IMPORT_APP :
-                $path = APP_PATH.'/modules/';
+                $path = APP_PATH.'modules/';
                 break;
 
             case IMPORT_FRAME :
@@ -173,7 +173,7 @@ class Loader {
     public static function model( $modelName ) {
 
         $modelName = ucfirst($modelName);
-        $modelPath = APP_NAME.'.models';
+        $modelPath = APP_NAME.'.configs.models';
         Loader::import($modelPath.'.'.$modelName, IMPORT_CUSTOM, EXT_MODEL);
         $className = APP_NAME.'\\models\\'.$modelName.'Model';
         return new $className();
