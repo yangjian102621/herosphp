@@ -25,11 +25,13 @@ class PageAction extends Controller {
 
         if ( $page <= 0 ) $page = 1;
 
-        $model = Loader::model('article');
+//        $model = Loader::model('article');
+//
+//        $conditions = array("id" => ">300");
+//        $total = $model->count($conditions);
+//        $items = $model->getItems($conditions, "id, url, title", null, $page, $pagesize);
 
-        $conditions = array("id" => ">300");
-        $total = $model->count($conditions);
-        $items = $model->getItems($conditions, "id, url, title", null, $page, $pagesize);
+        $total = 1000;
 
         //初始化分页类
         $pageHandler = new Page($total, $pagesize, $page);
@@ -54,7 +56,7 @@ class PageAction extends Controller {
         }
 
         $this->assign('pagemenu', $pagemenu);
-        $this->assign('items', $items);
+        //$this->assign('items', $items);
 
         //设置视图
         $this->setView('article_page');

@@ -192,10 +192,13 @@ function getSourceUrl($url) {
     }
     $url = trim($url, '/');
     $url = str_replace(EXT_URI, '', $url);
-    if ( ($pos = strpos($url, '/')) === false ) {
+    //search / number
+    $snum = mb_substr_count($url, '/');
+    if ( $snum < 3 ) {
         return '/'.$url;
     } else {
-        $query = substr($url, $pos+1);
+        $pos = strrpos($url, '/');
+        $query = substr($url, $pos);
         $params = explode('-', $query);
         $url = substr($url, 0, $pos+1).'?';
         $length = count($params);
@@ -205,8 +208,9 @@ function getSourceUrl($url) {
                 $args[$params[$i]] = $params[$i+1];
             }
         }
+        return '/'.$url.http_build_query($args);
     }
-    return '/'.$url.http_build_query($args);
+    return '/'.$url;
 
 }
 

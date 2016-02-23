@@ -4,7 +4,7 @@
  * @author  yangjian <yangjian102621@gmail.com>
  */
 
-namespace models;
+namespace app\models;
 
 use herosphp\model\C_Model;
 

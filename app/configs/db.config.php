@@ -18,9 +18,9 @@ return array(
             'db_port'      => 3306,
             'db_user'      => 'root',
             'db_pass'      => '123456',
-            'db_name'      => 'test',
+            'db_name'      => 'tuonews',
             'db_charset'   => 'utf8',
-            'table_prefix'   => 'herosphp_',
+            'table_prefix'   => 'fiidee_',
             'serial'       => 'db-write',      //写服务器,如果没有配置读写分离，则此处不用理它
         ),
 

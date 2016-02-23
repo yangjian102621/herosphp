@@ -100,8 +100,11 @@ class Page {
 
         }
         //判断是否还有其他参数
-        if ( strrpos($url, '?') === false ) {
+        $position = strpos($url, '?');
+        if ( strpos($url, '?') === false ) {
             return $url.'?page=';
+        } else if( ($position + 1) == strlen($url) ) {
+            return $url.'page=';
         } else {
             return $url.'&page=';
         }

@@ -24,13 +24,13 @@ class FilterAction extends Controller {
             'title' => array(DFILTER_STRING, array(6, 12), DFILTER_SANITIZE_TRIM, '标题'),
             'email' => array(DFILTER_EMAIL, NULL, NULL, '邮箱'),
             'id_number' => array(DFILTER_IDENTIRY, NULL, NULL, '身份证号码'),
-            'content' => array(DFILTER_STRING, NULL, DFILTER_SANITIZE_HTML|DFILTER_MAGIC_QUOTES, '内容')
+            'content' => array(DFILTER_STRING, NULL, DFILTER_MAGIC_QUOTES|DFILTER_SANITIZE_HTML, '内容')
         );
 
         $data = array(
             'title' => 'xiaoyang333',
             'email' => '906388445@qq.com',
-            'id_number' => '431028198801210839',
+            'id_number' => '431028198801210838',
             'content' => "<span>我有一头'小毛驴'。</span>"
         );
 
