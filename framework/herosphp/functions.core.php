@@ -198,7 +198,7 @@ function getSourceUrl($url) {
         return '/'.$url;
     } else {
         $pos = strrpos($url, '/');
-        $query = substr($url, $pos);
+        $query = substr($url, $pos+1);
         $params = explode('-', $query);
         $url = substr($url, 0, $pos+1).'?';
         $length = count($params);
