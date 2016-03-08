@@ -173,7 +173,7 @@ class HttpRequest {
      */
     public function getParameter( $name, $func_str=null, $setParam=true ) {
 
-        if ( !$func_str ) return $this->parameters[$name];
+        if ( !$func_str ) return urldecode($this->parameters[$name]);
 
         $funcs = explode("|", $func_str);
         $args = $this->parameters[$name];
@@ -183,7 +183,7 @@ class HttpRequest {
         if ( $setParam ) {
             $this->parameters[$name] = $args;
         }
-        return $args;
+        return urldecode($args);
 
     }
 

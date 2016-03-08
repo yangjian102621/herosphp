@@ -120,6 +120,7 @@ class Herosphp {
             'herosphp\db\DBFactory'       => 'db.DBFactory',
             'herosphp\db\SQL'       => 'db.SQL',
             'herosphp\model\C_Model'       => 'model.C_Model',
+            'herosphp\filter\Filter'       => 'filter.Filter',
             'herosphp\cache\CacheFactory'       => 'cache.CacheFactory',
             'herosphp\bean\Beans'  => 'bean.Beans',
             'herosphp\listener\WebApplicationListenerMatcher'  => 'listener.WebApplicationListenerMatcher',
