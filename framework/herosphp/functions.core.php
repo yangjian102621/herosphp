@@ -103,7 +103,7 @@ function formatFileSize( $size ) {
  */
 function E( $message, $code=0 ) {
     $exception = new \herosphp\exception\HeroException($message, $code);
-    __print($exception); die();
+    throw $exception;
 }
 
 /**

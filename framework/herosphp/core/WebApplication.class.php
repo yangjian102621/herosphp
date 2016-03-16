@@ -70,8 +70,10 @@ class WebApplication implements IApplication {
         //invoker 方法调用
         $this->actionInvoke();
 
-        //发送响应
-        $this->sendResponse();
+        if ( !PHP_UNIT ) {  //如果是执行php单元测试，则不用发送响应
+            //发送响应
+            $this->sendResponse();
+        }
 
     }
 
@@ -122,7 +124,7 @@ class WebApplication implements IApplication {
                 E("Action file {$filename} not found. ");
             }
         }
-        include $filename;
+        require_once $filename;
         $className = "\\{$module}\\action\\".ucfirst($action)."Action";
         $this->actionInstance = new $className();
 

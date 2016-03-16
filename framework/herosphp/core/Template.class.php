@@ -142,7 +142,7 @@ class Template {
         $this->configs['module'] = $request->getModule();
         $this->configs['action'] = $request->getAction();
         $this->configs['method'] = $request->getMethod();
-        $this->templateDir = APP_PATH.'/modules/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
+        $this->templateDir = APP_PATH.'modules/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
         $this->compileDir = APP_RUNTIME_PATH.'views/'.APP_NAME.'/'.$this->configs['module'].'/';
 
 	}
@@ -230,6 +230,14 @@ class Template {
         } else {
             $tempFile .= EXT_TPL;
         }
+
+        //判断是否是引用其他模块的模板, {module}:index.html
+        if ( ($idx = strpos($tempFile, ":")) !== false ) {
+            $module = substr($tempFile, 0, $idx);
+            $this->templateDir = str_replace("/modules/{$this->configs['module']}/", "/modules/{$module}/", $this->templateDir);
+            $tempFile = substr($tempFile, $idx+1);
+        }
+
         $compileFile = $tempFile.'.php';
 		if ( file_exists($this->templateDir.$tempFile) ) {
             $this->complieTemplate($this->templateDir.$tempFile, $this->compileDir.$compileFile);
@@ -237,7 +245,7 @@ class Template {
 			include $this->compileDir.$compileFile;		//包含编译生成的文件
 		} else {
 			if ( APP_DEBUG ) {
-                E("要编译的模板[{$tempFile}] 不存在！");
+                E("要编译的模板[".$this->templateDir.$tempFile."] 不存在！");
             }
 		}
 
