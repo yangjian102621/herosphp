@@ -65,12 +65,15 @@ class WebApplication implements IApplication {
     public function execute( $configs ) {
 
         $this->setConfigs($configs);
-        $this->requestInit();
 
-        //invoker 方法调用
-        $this->actionInvoke();
+        if ( !defined("PHP_UNIT") ) {  //如果是执行php单元测试，则不调用action， 也不用发送响应
 
-        if ( !PHP_UNIT ) {  //如果是执行php单元测试，则不用发送响应
+            //请求初始化
+            $this->requestInit();
+
+            //invoker 方法调用
+            $this->actionInvoke();
+
             //发送响应
             $this->sendResponse();
         }

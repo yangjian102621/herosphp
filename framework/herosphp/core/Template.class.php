@@ -237,7 +237,6 @@ class Template {
             $this->templateDir = str_replace("/modules/{$this->configs['module']}/", "/modules/{$module}/", $this->templateDir);
             $tempFile = substr($tempFile, $idx+1);
         }
-
         $compileFile = $tempFile.'.php';
 		if ( file_exists($this->templateDir.$tempFile) ) {
             $this->complieTemplate($this->templateDir.$tempFile, $this->compileDir.$compileFile);
