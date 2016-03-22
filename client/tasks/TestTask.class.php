@@ -18,10 +18,10 @@ class TestTask implements ITask {
 
             tprintOk("Hello, world!");
 
-            $model = Loader::model('article');
-            $conditions = array("id" => ">300");
-            $items = $model->getItems($conditions, "id, url, title", null, 1, 20);
-            tprintOk($items[0]['title']);
+            //$model = Loader::model('article');
+            //$conditions = array("id" => ">300");
+           // $items = $model->getItems($conditions, "id, url, title", null, 1, 20);
+           // tprintOk($items[0]['title']);
         }
 
 } 

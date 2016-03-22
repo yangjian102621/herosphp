@@ -275,8 +275,16 @@ function addUrlArgs($url, $key, $value) {
  */
 function getConfig($key) {
 
-    $webapp = \herosphp\core\WebApplication::getInstance();
-    return $webapp->getConfig($key);
+    if ( defined('RUN_CLI') ) {
+        $configs = Loader::config('system', 'root');    //加载系统全局配置
+        $appConfigs = Loader::config('app'); //加载当前应用的配置信息
+        //将应用的配置信息覆盖系统的全局配置信息
+        $configs = array_merge($configs, $appConfigs);
+        return $configs[$key];
+    } else {
+        $webapp = \herosphp\core\WebApplication::getInstance();
+        return $webapp->getConfig($key);
+    }
 }
 
 /**
@@ -284,8 +292,16 @@ function getConfig($key) {
  * @return array
  */
 function getConfigs() {
-    $webapp = \herosphp\core\WebApplication::getInstance();
-    return $webapp->getConfigs();
+    if ( defined("RUN_CLI") ) {
+        $configs = Loader::config('system', 'root');    //加载系统全局配置
+        $appConfigs = Loader::config('app'); //加载当前应用的配置信息
+        //将应用的配置信息覆盖系统的全局配置信息
+        $configs = array_merge($configs, $appConfigs);
+        return $configs;
+    } else {
+        $webapp = \herosphp\core\WebApplication::getInstance();
+        return $webapp->getConfigs();
+    }
 }
 
 /**
