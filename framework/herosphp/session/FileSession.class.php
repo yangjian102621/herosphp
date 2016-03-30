@@ -79,9 +79,13 @@ class FileSession implements ISession {
 
 			self::$sessionSavePath = $savePath;
 			//创建session目录
-			if ( !file_exists(self::$sessionSavePath) )
-                FileUtils::makeFileDirs(self::$sessionSavePath);
+			if (!file_exists(self::$sessionSavePath)) {
+				FileUtils::makeFileDirs(self::$sessionSavePath);
+                if ( !is_writable(self::$sessionSavePath) ) {
+                    E("session 目录不可写，请更改权限。");
+                }
 			}
+		}
 		//do nothing here
 		return TRUE;
 	}

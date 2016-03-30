@@ -1,6 +1,7 @@
 <?php
 namespace test\service;
 
+use common\service\CommonService;
 use herosphp\core\Loader;
 use test\service\interfaces\IUserService;
 
@@ -11,7 +12,7 @@ Loader::import('test.service.interfaces.IUserService', IMPORT_APP);
  * Class UserService
  * @package test\service
  */
-class UserService implements IUserService {
+class UserService extends CommonService implements IUserService {
     public function register()
     {
         __print("调用了 UserService::register 方法");

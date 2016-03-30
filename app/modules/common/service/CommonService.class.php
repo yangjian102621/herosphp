@@ -5,7 +5,6 @@ namespace common\service;
 use common\service\interfaces\ICommonService;
 use herosphp\core\Loader;
 
-Loader::import('common.service.interfaces.ICommonService', IMPORT_APP);
 /**
  * 通用服务接口实现
  * Class CommonService

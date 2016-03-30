@@ -127,15 +127,13 @@ class Herosphp {
             'herosphp\session\Session'  => 'session.Session');
 
         self::$APP_CLASS = array(
-            'admin\action\CommonAction'        => 'admin.action.CommonAction',
-            'common\action\CommonAction'        => 'common.action.CommonAction',
-            'media\action\MediaAction'        => 'media.action.MediaAction',
-            'site\action\AbstractAction'        => 'site.action.AbstractAction',
-            'common\action\NeedLoginAction'        => 'common.action.NeedLoginAction',
             'client\tools\result\AbstractResult'        => 'common.client.result.AbstractResult',
             'client\tools\result\JsonResult'        => 'common.client.result.JsonResult',
             'client\tools\result\XmlResult'        => 'common.client.result.XmlResult',
         );
+        //获取自动加载类配置
+        $autoLoadConfigs = Loader::config("autoload", "root");
+        self::$APP_CLASS = array_merge(self::$APP_CLASS, $autoLoadConfigs);
     }
 
     /**
