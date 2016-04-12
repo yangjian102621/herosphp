@@ -22,6 +22,11 @@ class MemoCache implements ICache {
     private static $Mem = NULL;
 
     /**
+     * @var array 配置信息
+     */
+    private $configs = array();
+
+    /**
      * 初始化缓存配置信息
      * @param array $configs 缓存配置信息
      */
