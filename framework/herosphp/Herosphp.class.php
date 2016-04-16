@@ -12,10 +12,10 @@
 
 //定义当前应用根目录
 define('APP_PATH', APP_ROOT.APP_NAME."/");
-include APP_FRAME_PATH.'Heros.const.php'; //引入系统常量文件
-include APP_FRAME_PATH.'functions.core.php';//包含框架全局函数
-include APP_ROOT.'functions.php'; //包含公共函数页面
-include APP_FRAME_PATH.'core/Loader.class.php';//包含资源加载器
+require_once APP_FRAME_PATH.'Heros.const.php'; //引入系统常量文件
+require_once APP_FRAME_PATH.'functions.core.php';//包含框架全局函数
+require_once APP_ROOT.'functions.php'; //包含公共函数页面
+require_once APP_FRAME_PATH.'core/Loader.class.php';//包含资源加载器
 
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
@@ -127,15 +127,13 @@ class Herosphp {
             'herosphp\session\Session'  => 'session.Session');
 
         self::$APP_CLASS = array(
-            'admin\action\CommonAction'        => 'admin.action.CommonAction',
-            'common\action\CommonAction'        => 'common.action.CommonAction',
-            'media\action\MediaAction'        => 'media.action.MediaAction',
-            'site\action\AbstractAction'        => 'site.action.AbstractAction',
-            'common\action\NeedLoginAction'        => 'common.action.NeedLoginAction',
             'client\tools\result\AbstractResult'        => 'common.client.result.AbstractResult',
             'client\tools\result\JsonResult'        => 'common.client.result.JsonResult',
             'client\tools\result\XmlResult'        => 'common.client.result.XmlResult',
         );
+        //获取自动加载类配置
+        $autoLoadConfigs = Loader::config("autoload", "root");
+        self::$APP_CLASS = array_merge(self::$APP_CLASS, $autoLoadConfigs);
     }
 
     /**

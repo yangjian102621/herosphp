@@ -20,16 +20,12 @@ class PageAction extends Controller {
      */
     public function index( HttpRequest $request ) {
 
+        __print($request->getParameters());
+
         $page = $request->getParameter('page', 'intval');
         $pagesize = 10;
 
         if ( $page <= 0 ) $page = 1;
-
-//        $model = Loader::model('article');
-//
-//        $conditions = array("id" => ">300");
-//        $total = $model->count($conditions);
-//        $items = $model->getItems($conditions, "id, url, title", null, $page, $pagesize);
 
         $total = 1000;
 
@@ -51,12 +47,9 @@ class PageAction extends Controller {
             }
             $pagemenu .= '<li><a href="'.$pageData['next'].'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';
             $pagemenu .= '</ul>';
-            $pagemenu .= '<div class="page-input"><input type="text" class="form-control input-sm" value="'.$this->page.'"> ';
-            $pagemenu .= '<a href="javascript:void(0);" class="btn btn-primary btn-sm" url="'.$pageData['url'].'" id="page-goto">确定</a></div> ';
         }
 
         $this->assign('pagemenu', $pagemenu);
-        //$this->assign('items', $items);
 
         //设置视图
         $this->setView('article_page');

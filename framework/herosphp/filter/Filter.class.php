@@ -30,6 +30,7 @@ define('DFILTER_SANITIZE_SCRIPT', 	1 << 1);    //去除javascript脚本
 define('DFILTER_SANITIZE_HTML', 	1 << 2);    //去除html标签
 define('DFILTER_MAGIC_QUOTES', 		1 << 3);    //去除sql注入
 define('DFILTER_SANITIZE_INT', 		1 << 4);    //转整数
+define('DFILTER_SANITIZE_FLOAT', 	1 << 5);    //转浮点数
 
 class Filter {
 
@@ -280,6 +281,8 @@ class Filter {
             $value = self::sanitizeHtml($value);
         if ( ( $model[2] & DFILTER_SANITIZE_INT ) != 0 )
             $value = intval( $value );
+        if ( ( $model[2] & DFILTER_SANITIZE_FLOAT ) != 0 )
+            $value = floatval( $value );
         if ( ( $model[2] & DFILTER_MAGIC_QUOTES ) != 0
             && !get_magic_quotes_gpc() )
             $value = addslashes( $value );

@@ -136,12 +136,19 @@ class Loader {
             return self::$CONFIGS[$section][$key];
         }
         //加载系统configs文件夹中的配置文档
-        if ($section == 'root' ) {
-            $configDir = APP_CONFIG_PATH;
+        if ( strpos($section, 'root') === 0 ) {
+            if ( $section == 'root' ) {
+                $configDir = APP_CONFIG_PATH;
+            } else {
+                $configDir = APP_CONFIG_PATH.str_replace('root.', '', $section).'/';
+            }
+
+        } else if( $section == null ) {
+            $configDir = APP_PATH.'configs/';   //加载应用configs根目录中的配置文件
         } else {
-            //加载应用configs文件夹中的配置文档
-            $configDir = APP_PATH.'configs/'.str_replace('.', '/', $section).'/';
+            $configDir = APP_PATH.'configs/'.str_replace('.', '/', $section).'/';   //加载应用configs文件夹中的配置文档
         }
+
         if ( $key != '*' ) {
             $configFile = $configDir.$key.'.config.php';
             if ( file_exists($configFile) ) {

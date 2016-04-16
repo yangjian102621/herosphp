@@ -15,7 +15,9 @@ namespace herosphp\core;
 
 use herosphp\bean\Beans;
 use herosphp\core\interfaces\IApplication;
+use herosphp\exception\HeroException;
 use herosphp\http\HttpRequest;
+use herosphp\utils\FileUtils;
 
 Loader::import('core.interfaces.IApplication', IMPORT_FRAME);
 
@@ -60,18 +62,39 @@ class WebApplication implements IApplication {
 
     /**
      * 执行应用程序
-     * @param array 系统配置信息
+     * @param $configs
+     * @throws HeroException
+     * @internal param 系统配置信息 $array
      */
     public function execute( $configs ) {
 
         $this->setConfigs($configs);
-        $this->requestInit();
 
-        //invoker 方法调用
-        $this->actionInvoke();
+        if ( !defined("PHP_UNIT") ) {  //如果是执行php单元测试，则不调用action， 也不用发送响应
 
-        //发送响应
-        $this->sendResponse();
+            //请求初始化
+            $this->requestInit();
+
+            //invoker 方法调用
+            try {
+                $this->actionInvoke();
+            } catch(HeroException $e) {
+                if ( APP_DEBUG ) { //抛出异常
+                    throw $e;
+                } else {
+                    //记录日志
+                    $logDir = APP_RUNTIME_PATH."logs/".APP_NAME."/";
+
+                    if ( !file_exists($logDir) ) FileUtils::makeFileDirs($logDir);
+                    file_put_contents($logDir.date("Y-m-d").".log", $e->toString(), FILE_APPEND);
+
+                    return;
+                }
+            }
+
+            //发送响应
+            $this->sendResponse();
+        }
 
     }
 
@@ -118,27 +141,27 @@ class WebApplication implements IApplication {
         $actionFile = ucfirst($action).'Action.class.php';
         $filename = $actionDir.$actionFile;
         if ( !file_exists($filename) ) {
-            if ( APP_DEBUG ) {
-                E("Action file {$filename} not found. ");
-            }
-        }
-        include $filename;
-        $className = "\\{$module}\\action\\".ucfirst($action)."Action";
-        $this->actionInstance = new $className();
-
-        //调用初始化方法
-        if ( method_exists($this->actionInstance, 'C_start') ) {
-            $this->actionInstance->C_start();
-        }
-
-        //根据动作去找对应的方法
-        if ( method_exists($this->actionInstance, $method) ) {
-            $this->actionInstance->$method($this->httpRequest);
+            E("Action file {$filename} not found. ");
         } else {
-            if ( APP_DEBUG ) {
+
+            require_once $filename;
+            $className = "\\{$module}\\action\\".ucfirst($action)."Action";
+            $this->actionInstance = new $className();
+
+            //调用初始化方法
+            if ( method_exists($this->actionInstance, 'C_start') ) {
+                $this->actionInstance->C_start();
+            }
+
+            //根据动作去找对应的方法
+            if ( method_exists($this->actionInstance, $method) ) {
+                $this->actionInstance->$method($this->httpRequest);
+            } else {
                 E("Method {$className}::{$method} not found!");
             }
+
         }
+
     }
 
     /**

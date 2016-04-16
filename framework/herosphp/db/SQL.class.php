@@ -299,7 +299,7 @@ class SQL {
     public function buildQueryString() {
         if ( !$this->table ) {
             if ( APP_DEBUG ) {
-                E("找不到数据表!");
+                E("没有在模型中传入相应的数据表。!");
             }
         }
         $query = "SELECT {$this->fields} FROM ".$this->table;

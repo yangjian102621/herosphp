@@ -23,9 +23,6 @@ class SessionAction extends Controller {
         $_SESSION['username'] = 'xiaoyang';
         $_SESSION['password'] = '123456';
 
-        //销毁session
-        session_destroy();
-
         die('设置session成功！');
 
     }

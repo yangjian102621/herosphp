@@ -41,18 +41,11 @@ class FileSession implements ISession {
 	public static function start( $config = null ) {
 
         //初始化配置信息
-        if ( !$config ) {
-            self::$config = array(
-                'session_file_prefix'	=> 'heros_sess_',
-                'session_update_interval' => 30,
-                'gc_maxlifetime' => 1440
-            );
-        } else {
-            self::$config = $config;
-        }
-        if ( !self::$config['gc_maxlifetime'] ) {
-            self::$config['gc_maxlifetime'] = ini_get('session.gc_maxlifetime');
-        }
+		self::$config = $config;
+		self::$sessionSavePath = $config["session_save_path"];
+		if ( !file_exists(self::$sessionSavePath) ) {
+			FileUtils::makeFileDirs(self::$sessionSavePath);
+		}
         //初始化用户ip
         self::$userIp = $_SERVER['REMOTE_ADDR'];
 
@@ -75,13 +68,13 @@ class FileSession implements ISession {
      */
 	public static function open( $savePath, $sessionName ) {
 
-		if ( !self::$sessionSavePath ) {
-
-			self::$sessionSavePath = $savePath;
-			//创建session目录
-			if ( !file_exists(self::$sessionSavePath) )
-                FileUtils::makeFileDirs(self::$sessionSavePath);
+		//创建session目录
+		if (!file_exists(self::$sessionSavePath)) {
+			FileUtils::makeFileDirs(self::$sessionSavePath);
+			if ( !is_writable(self::$sessionSavePath) ) {
+				E("session 目录".self::$sessionSavePath."不可写，请更改权限。");
 			}
+		}
 		//do nothing here
 		return TRUE;
 	}

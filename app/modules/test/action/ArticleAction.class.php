@@ -3,11 +3,9 @@ namespace test\action;
 
 use herosphp\bean\Beans;
 use herosphp\core\Controller;
-use herosphp\core\Debug;
 use herosphp\core\Loader;
-use herosphp\core\WebApplication;
+use herosphp\exception\HeroException;
 use herosphp\http\HttpRequest;
-use herosphp\utils\AjaxResult;
 
 /**
  * 模板解析测试
@@ -25,7 +23,12 @@ class ArticleAction extends Controller {
         $args = $request->getParameter('page', 'intval');
         $model = Loader::model('article');
         $conditions = array("id" => ">100");
-        $items = $model->getItems($conditions, null, null, 1, 30);
+
+        try {
+            $items = $model->getItems($conditions, null, null, 1, 30);
+        } catch(HeroException $e) {
+            //__print($e);
+        }
 
         $this->assign('include', "{include:test.top}");
         $this->assign('args', $args);

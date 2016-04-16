@@ -18,17 +18,8 @@
 <body role="document">
 
 <!-- Fixed navbar -->
-{include test.navigation}
 
 <div class="container main" role="main">
-
-	<ol>
-		{loop $items $value}
-		<li>
-			<h4><a href="{url /test_article_detail/?id=$value[id]}" target="_blank">{$value[title]}</a></h4>
-		</li>
-		{/loop}
-	</ol>
 
 	<div class="container">
 		{$pagemenu}
@@ -40,7 +31,5 @@
 	</footer>
 </div> <!-- /container -->
 
-{res:js jquery-1.11.2.min.js}
-{res:js bootstrap.min.js}
 </body>
 </html>
