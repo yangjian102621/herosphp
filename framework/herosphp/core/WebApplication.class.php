@@ -79,10 +79,10 @@ class WebApplication implements IApplication {
             try {
                 $this->actionInvoke();
             } catch(HeroException $e) {
-                if ( APP_DEBUG ) { //抛出异常
+                if ( APP_DEBUG ) { //如果是调试模式就抛出异常
                     throw $e;
                 } else {
-                    //记录日志
+                    //否则记录日志
                     $logDir = APP_RUNTIME_PATH."logs/".APP_NAME."/";
 
                     if ( !file_exists($logDir) ) FileUtils::makeFileDirs($logDir);

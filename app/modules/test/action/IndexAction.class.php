@@ -6,6 +6,7 @@ use herosphp\core\Controller;
 use herosphp\core\Debug;
 use herosphp\http\HttpRequest;
 use herosphp\utils\AjaxResult;
+use Workerman\Worker;
 
 /**
  * 首页测试
