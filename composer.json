@@ -12,7 +12,9 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.0",
+        "phpoffice/phpexcel": "^1.8",
+		"workerman/workerman" : "3.3.*"
     },
     "minimum-stability": "dev"
 }

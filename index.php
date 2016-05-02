@@ -30,5 +30,7 @@ define('APP_FRAME_PATH', APP_ROOT.'framework/herosphp/');
 //包含系统框架的统一入口文件
 require APP_FRAME_PATH.'Herosphp.class.php';
 
+require APP_ROOT."vendor/autoload.php";
+
 //启动应用程序
 Herosphp::run();
