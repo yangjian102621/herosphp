@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="herosphpTest" charset="">
+  <table name="user" comment="用户表">
+    <id name="id" type="int" length="11" />
+
+    <fields>
+      <field name="username" type="varchar(32)" default="null" comment="用户名" />
+      <field name="password" type="varchar(32)" default="null" comment="密码" />
+    </fields>
+  </table>
+</database>
