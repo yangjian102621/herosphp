@@ -14,46 +14,79 @@ HerosPHP是一个轻量级PHP web 程序开发框架。作者开发这个框架�
 
 #项目地址
 * git1 https://git.oschina.net/blackfox/herosphp.git
-* git2 http://git.fiidee.com/git/fiidee-php/herosphp.git
+
 
 
 #版本更新记录
 
-version 2.1.0
+version 2.1.1
 --
 
 >
 
-1. 根据网友的建议，又重新调整了URL结构，把/user_home_index/userid-100.shtml 重新还原成 /user/home/index/userid-100.shtml结构，更符合大家的使用习惯
-2. 精简了首页代码
-3. 修改了url全局函数，修复了部分url解析参数错误的bug 
-4. 更改了框架的autoload函数实现， 采用了spl_autoload_register方式实现 
-5. 新增composer依赖管理支持
-6. 调整了组织目录结构，使app更加扁平化，模块更加独立，利于拆装。app根目录下只有configs(配置), models(数据模型)，modules（模块），支持多app，app之间相互独立，但是共享framework。
+* composer.json中加入了workerman 和phpoffice 插件
+
+*  添加phpunit支持
+
+*  修复分页类url传参bug，支持常规传参和伪静态传参
+
+*  修复getConfig()函数在使用命令行调用时获取不到配置的bug
+
+*  新增异常捕获，当关闭debug模式时，如果系统在运行的过程中抛出异常会自动记录到错误日志/runtime/app下
+
+*  更改过滤器，新增浮点型的数据过滤
+
+*  更新控制器中的 setView() 方法，添加支持设置其他模块的试图模块,更新异常处理函数 E()， 直接抛出异常，不用die掉
+
+
+version 2.1.0
+--
+
+
+* 根据网友的建议，又重新调整了URL结构，把/user_home_index/userid-100.shtml 重新还原成 /user/home/index/userid-100.shtml结构，更符合大家的使用习惯
+
+*  精简了首页代码
+
+*  修改了url全局函数，修复了部分url解析参数错误的bug 
+
+*  更改了框架的autoload函数实现， 采用了spl_autoload_register方式实现 
+
+*  新增composer依赖管理支持
+
+*  调整了组织目录结构，使app更加扁平化，模块更加独立，利于拆装。app根目录下只有configs(配置), models(数据模型)，modules（模块），支持多app，app之间相互独立，但是共享framework。
 
 
 version 2.0.0
 --
-对框架进行了局部重构
---
->
-1. 调整了URL结构，采用 /user_home_index/userid-100.shtml 代替了以前的 /user/home/index/userid-100.shtml结构，减少了目录级数，对SEO更为友好
-2. 新增了WebApplication 层来控制整个web请求的生命周期，控制器中的每个功能方法都需要传入HttpRequest对象
-3. 在根目录下新增了client.php 和 client 目录， 方便执行php的客户端程序。 使用方法详情见操作手册
-4. 新增Beans对象管理工具，可以很方便的配置和管理服务。
-5. 修改了ImageThumb 类，新增了图片裁剪方法。
-6. 修改了数据操作模块，新增了对数据库集群的支持，只需要在herosp.const.php中配置 将DB_ACCESS的值改成B_ACCESS_CLUSTERS
-7. 在utils中新增了邮件发送服务类 Smtp.class.php
-8. 重写了session， 新增了memcache介质存储
-9. 修复了文章列表页分页数据重复bug
+
+<strong>对框架进行了局部重构</strong>
+
+* 调整了URL结构，采用 /user_home_index/userid-100.shtml 代替了以前的 /user/home/index/userid-100.shtml结构，减少了目录级数，对SEO更为友好
+
+*  新增了WebApplication 层来控制整个web请求的生命周期，控制器中的每个功能方法都需要传入HttpRequest对象
+
+*  在根目录下新增了client.php 和 client 目录， 方便执行php的客户端程序。 使用方法详情见操作手册
+
+*  新增Beans对象管理工具，可以很方便的配置和管理服务。
+
+*  修改了ImageThumb 类，新增了图片裁剪方法。
+
+*  修改了数据操作模块，新增了对数据库集群的支持，只需要在herosp.const.php中配置 将DB_ACCESS的值改成B_ACCESS_CLUSTERS
+
+*  在utils中新增了邮件发送服务类 Smtp.class.php
+
+*  重写了session， 新增了memcache介质存储
+
+*  修复了文章列表页分页数据重复bug
 
 version 1.0.0
 --
-实现了框架的基本功能
---
->
-1. 实现了项目组织结构
-2. 实现了URL解析
-3. 实现数据DB层的操作
-4. 实现MVC设计模式
-5. 完成基本工具类，如果文件上传，图片裁剪，生成缩略图，文件处理等
+<strong>实现了框架的基本功能</strong>
+
+* 实现URL解析
+
+*  实现数据DB层的操作
+
+*  实现MVC设计模式
+
+*  完成基本工具类，如果文件上传，图片裁剪，生成缩略图，文件处理等
