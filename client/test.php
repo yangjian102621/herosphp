@@ -1,5 +1,9 @@
 <?php
+namespace client;
 
-\herosphp\core\Loader::import('tasks.TestTask', IMPORT_CLIENT);
-$task = new \tasks\TestTask();
+use herosphp\core\Loader;
+use tasks\TestTask;
+
+Loader::import('tasks.TestTask', IMPORT_CLIENT);
+$task = new TestTask();
 $task->run();

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<database name="herosphpTest" charset="">
+<database dbhost="localhost" dbuser="root" dbpass="123456" dbname="herosphpTest" charset="utf-8">
   <table name="user" comment="用户表">
     <id name="id" type="int" length="11" />
 
