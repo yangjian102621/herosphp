@@ -63,7 +63,7 @@ function tprintError( $message ) {
  */
 function tprintWarning( $message ) {
 
-    printf("\033[31m\033[1m{$message}\033[0m\n");
+    printf("\033[33m\033[1m{$message}\033[0m\n");
 
 }
 
