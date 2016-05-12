@@ -2,13 +2,18 @@
 
 namespace gmodel;
 
+use gmodel\utils\DaoFactory;
 use gmodel\utils\DBFactory;
 use gmodel\utils\ModelFactory;
+use gmodel\utils\ServiceFactory;
 use gmodel\utils\simple_html_dom;
 
 require_once "utils/simple_html_dom.php";
-require_once "utils/DB.class.php";
-require_once "utils/Model.class.php";
+require_once "utils/DBFactory.class.php";
+require_once "utils/ModelFactory.class.php";
+require_once "utils/DaoFactory.class.php";
+require_once "utils/ServiceFactory.class.php";
+
 /**
  * 根据database.xml文档创建数据库。同时生成Model, Dao, Service层
  * @author yangjian<yangjian102621@gmail.com>
@@ -48,6 +53,21 @@ class GModel {
 
             case "model":
                 ModelFactory::create(self::$XML);
+                break;
+
+            case "dao":
+                DaoFactory::create(self::$XML);
+                break;
+
+            case "service":
+                ServiceFactory::create(self::$XML);
+                break;
+
+            case "all":
+                DBFactory::create(self::$XML);
+                ModelFactory::create(self::$XML);
+                DaoFactory::create(self::$XML);
+                ServiceFactory::create(self::$XML);
                 break;
         }
 
