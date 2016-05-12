@@ -1,0 +1,36 @@
+<root dbhost="localhost" dbuser="root" dbpass="123456" dbname="herosphpTest" charset="utf8"
+      table-prefix="fiidee_" author="yangjian" module="user" email="yangjian102621@gmail.com">
+  <table name="user" comment="用户表" engine="InnoDB" assoc="news,admin,admin_role">
+    <pk name="id" type="int(11)" ai="true" />
+
+    <fields>
+      <field name="username" type="varchar(32)" default="" comment="用户名" add-index="true" index-type="unique" />
+      <field name="password" type="varchar(32)" default="" comment="密码" />
+      <field name="sex" type="char(1)" default="" comment="性别" />
+      <field name="addtime" type="timestamp" default="CURRENT_TIMESTAMP" comment="添加时间" />
+    </fields>
+
+  </table>
+
+  <table name="news" comment="新闻表" engine="InnoDB">
+    <pk name="id" type="int(11)" ai="true" />
+
+    <fields>
+      <field name="title" type="varchar(100)" default="" comment="标题" add-index="true" index-type="normal" />
+      <field name="description" type="varchar(100)" default="" comment="描述" />
+      <field name="status" type="tinyint(2)" default="0" comment="状态" />
+      <field name="content" type="text" default="" comment="内容" />
+    </fields>
+  </table>
+
+  <table name="admin" comment="管理员表" engine="InnoDB">
+    <pk name="id" type="int(11)" ai="true" />
+
+    <fields>
+      <field name="user" type="varchar(32)" default="" comment="用户名" add-index="true" index-type="unique" />
+      <field name="pass" type="varchar(32)" default="" comment="密码" />
+      <field name="role_id" type="tinyint(4)" default="0" comment="角色ID" />
+      <field name="addtime" type="timestamp" default="CURRENT_TIMESTAMP" comment="添加时间" />
+    </fields>
+  </table>
+</root>
