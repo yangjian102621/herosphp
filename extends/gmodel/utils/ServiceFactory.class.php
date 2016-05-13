@@ -22,7 +22,7 @@ class ServiceFactory {
 
         $moduleDir = APP_PATH."modules/";
         if ( !is_writable(dirname($moduleDir)) ) {
-            tprintError("目录 '{$moduleDir}' 不可写， 请添加相应的权限!");
+            tprintError("directory '{$moduleDir}' is not writeable， please add permissions.");
             return;
         }
 
@@ -45,12 +45,11 @@ class ServiceFactory {
         foreach ( $tables as $value ) {
 
             $tableName = $value->name;  //表名称
-            $assoc = $value->assoc;  //获取关联表信息
             $interfaceName = "I".ucfirst(GModel::underline2hump($tableName))."Service";
             //生成接口文件
             $serviceInterface = $module."service/interfaces/{$interfaceName}.class.php";
             if ( file_exists($serviceInterface) ) { //若文件已经存在则跳过
-                tprintWarning(" Service接口文件 '{$serviceInterface}' 已经存在，略过.");
+                tprintWarning("Warnning : The service interface file '{$serviceInterface}' is existed, skiped.");
                 continue;
             }
             $sb = new StringBuffer();
@@ -65,16 +64,16 @@ class ServiceFactory {
             $sb->appendLine("interface {$interfaceName} extends ICommonService{}");
 
             if ( file_put_contents($serviceInterface, $sb->toString()) !== false ) {
-                tprintOk("生成Service接口 '{$serviceInterface}' 成功！");
+                tprintOk("create service interface file '{$serviceInterface}' successfully.");
             } else {
-                tprintError("生成Service接口 '{$serviceInterface}' 失败！");
+                tprintError("Error : create service interface file '{$serviceInterface}' faild.");
             }
 
             //生成实现dao
             $className = ucfirst(GModel::underline2hump($tableName))."Service";
             $serviceImpl = $module."service/{$className}.class.php";
             if ( file_exists($serviceImpl) ) { //若文件已经存在则跳过
-                tprintWarning(" Service文件 '{$serviceImpl}' 已经存在，略过.");
+                tprintWarning("Warnning : The service file '{$serviceImpl}' is existed, skiped.");
                 continue;
             }
             $sb = new StringBuffer();
@@ -95,9 +94,9 @@ class ServiceFactory {
             $sb->appendLine("class {$className} extends CommonService implements {$interfaceName} {}");
 
             if ( file_put_contents($serviceImpl, $sb->toString()) !== false ) {
-                tprintOk("生成DAO '{$serviceImpl}' 成功！");
+                tprintOk("create Service file '{$serviceImpl}' succcessfully.");
             } else {
-                tprintError("生成DAO '{$serviceImpl}' 失败！");
+                tprintError("Error : create Service file '{$serviceImpl}' faild.");
             }
 
         }

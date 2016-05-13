@@ -44,7 +44,7 @@ class DBFactory {
 
         self::$DB_CONN = mysqli_connect($configs["dbhost"], $configs["dbuser"], $configs["dbpass"]);
         if ( !self::$DB_CONN ) {
-            tprintError("数据库连接失败！");
+            tprintError("Error : can not to connect to the database.");
             return;
         }
         self::$DB_CONN->query("SET names {$configs["charset"]}");
@@ -54,9 +54,27 @@ class DBFactory {
         $sql = "CREATE DATABASE IF NOT EXISTS `{$configs["dbname"]}` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
         if ( self::query($sql) !== false ) {
             self::query("USE `{$configs["dbname"]}`;");
-            tprintOk("创建数据库成功！");
+            tprintOk("create database successfully.");
         } else {
-            tprintError("创建数据库失败！");
+            tprintError("Error : creeat database faild.");
+        }
+
+        //生成数据库配置文档
+        $dbConfigFile = APP_PATH."configs/db.config.php";
+        $tempContent = file_get_contents(dirname(__DIR__)."/template/db.config.tpl");
+        if ( $tempContent != "" ) {
+            $content = str_replace("{db_host}", $configs["dbhost"], $tempContent);
+            $content = str_replace("{db_user}", $configs["dbuser"], $content);
+            $content = str_replace("{db_name}", $configs["dbname"], $content);
+            $content = str_replace("{db_pass}", $configs["dbpass"], $content);
+            $content = str_replace("{db_charset}", $configs["charset"], $content);
+            $content = str_replace("{table_prefix}", $configs["table-prefix"], $content);
+
+            if ( file_put_contents($dbConfigFile, $content) !== false ) {
+                tprintOk("create db config file '{$dbConfigFile}' successfully！");
+            } else {
+                tprintError("create db config file '{$dbConfigFile}' faild!");
+            }
         }
 
         self::createTables($configs);
@@ -113,10 +131,10 @@ class DBFactory {
             $sql .= ") ENGINE={$value->engine}  DEFAULT CHARSET={$configs['charset']} ROW_FORMAT=FIXED COMMENT='{$value->comment}' AUTO_INCREMENT=1 ;";
 
             if ( self::query($sql) !== false ) {
-                tprintOk("创建数据表 '{$tableName}' 成功！");
+                tprintOk("create table '{$tableName}' successfully.");
 
             } else {
-                tprintError("创建数据表 '{$tableName}' 失败！");
+                tprintError("create table '{$tableName}' faild.");
                 tprintError(self::$DB_CONN->error);
             }
 

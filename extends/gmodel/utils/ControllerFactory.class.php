@@ -3,7 +3,7 @@
 namespace gmodel\utils;
 
 /**
- * 创建dao文件。
+ * 生成控制器文件
  * @author yangjian<yangjian102621@gmail.com>
  *
  */
@@ -12,10 +12,9 @@ use herosphp\utils\FileUtils;
 
 require_once "StringBuffer.class.php";
 
-class DaoFactory {
+class ControllerFactory {
 
     /**
-     * 生成Dao文件
      * @param simple_html_dom $xml
      */
     public static function create($xml) {

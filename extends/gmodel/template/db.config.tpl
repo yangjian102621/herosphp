@@ -14,13 +14,13 @@ return array(
     DB_TYPE_MYSQL     =>  array(
         array(
             'db_type'      => 'mysql',
-            'db_host'      => 'localhost',
+            'db_host'      => '{db_host}',
             'db_port'      => 3306,
-            'db_user'      => 'root',
-            'db_pass'      => '123456',
-            'db_name'      => 'herosphpTest',
-            'db_charset'   => 'utf8',
-            'table_prefix'   => 'fiidee_',
+            'db_user'      => '{db_user}',
+            'db_pass'      => '{db_pass}',
+            'db_name'      => '{db_name}',
+            'db_charset'   => '{db_charset}',
+            'table_prefix'   => '{table_prefix}',
             'serial'       => 'db-write',      //写服务器,如果没有配置读写分离，则此处不用理它
         ),
 

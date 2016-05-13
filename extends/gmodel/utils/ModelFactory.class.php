@@ -8,6 +8,7 @@ namespace gmodel\utils;
  *
  */
 use gmodel\GModel;
+use herosphp\utils\FileUtils;
 
 require_once "StringBuffer.class.php";
 
@@ -22,9 +23,13 @@ class ModelFactory {
         $modelDir = APP_PATH."configs/models/";
         $beansDir = APP_PATH."configs/beans/";
         if ( !is_writable(dirname($modelDir)) ) {
-            tprintError("目录 '{$modelDir}' 和 '{$beansDir}' 不可写， 请添加相应的权限!");
+            tprintError("Error: directory '{$modelDir}' and '{$beansDir}' is not writeadble， please add permissions.");
             return;
         }
+
+        //create directory
+        FileUtils::makeFileDirs($modelDir);
+        FileUtils::makeFileDirs($beansDir);
 
         $root = $xml->find("root", 1);
         $configs = array(
@@ -40,7 +45,7 @@ class ModelFactory {
 
             $modelFile = $modelDir.ucfirst(GModel::underline2hump($value->name)).".model.php";
             if ( file_exists($modelFile) ) { //若文件已经存在则跳过
-                tprintWarning("model 文件 '{$modelFile}' 已经存在，略过.");
+                tprintWarning("Warnning : model file '{$modelFile}' has existed，skiped.");
                 continue;
             }
 
@@ -50,19 +55,19 @@ class ModelFactory {
             $content = str_replace("{email}", $configs["email"], $content);
 
             if ( file_put_contents($modelFile, $content) !== false ) {
-                tprintOk("生成 model '{$modelFile}' 成功！");
+                tprintOk("create model file '{$modelFile}' successfully.");
             } else {
-                tprintError("生成 model '{$modelFile}' 失败！");
+                tprintError("Error: create model file '{$modelFile}' faild.");
             }
 
         }
 
         //生成beans配置文件
         $beansFile = $beansDir."beans.{$root->module}.config.php";
-        if ( file_exists($beansFile) ) { //若文件已经存在则跳过
-            tprintWarning("beans 文件 '{$beansFile}' 已经存在，略过.");
-            return;
-        }
+//        if ( file_exists($beansFile) ) { //若文件已经存在则跳过
+//            tprintWarning("beans 文件 '{$beansFile}' 已经存在，略过.");
+//            return;
+//        }
         $sb = new StringBuffer();
         $sb->appendLine('<?php');
         $sb->appendLine('use herosphp\bean\Beans;');
@@ -103,9 +108,9 @@ class ModelFactory {
         $sb->appendLine('return $beans;');
 
         if ( file_put_contents($beansFile, $sb->toString()) !== false ) {
-            tprintOk("生成 model '{$modelFile}' 成功！");
+            tprintOk("create Beans config file '{$beansFile}' successfully.");
         } else {
-            tprintError("生成 model '{$modelFile}' 失败！");
+            tprintError("create Beans config file '{$beansFile}' faild.");
         }
 
     }

@@ -2,6 +2,7 @@
 
 namespace gmodel;
 
+use gmodel\utils\ControllerFactory;
 use gmodel\utils\DaoFactory;
 use gmodel\utils\DBFactory;
 use gmodel\utils\ModelFactory;
@@ -61,6 +62,10 @@ class GModel {
 
             case "service":
                 ServiceFactory::create(self::$XML);
+                break;
+
+            case "controller":
+                ControllerFactory::create(self::$XML);
                 break;
 
             case "all":
