@@ -38,6 +38,7 @@ class ControllerFactory {
         FileUtils::makeFileDirs($module."template/default");
 
         $tables = $root->find("table");
+        $tempContent = file_get_contents(dirname(__DIR__)."/template/controller.tpl");
 
         foreach ( $tables as $value ) {
 
@@ -51,19 +52,13 @@ class ControllerFactory {
                 tprintWarning("Warnning : DAO interface file '{$actionFile}' is existed， skiped.");
                 continue;
             }
-            $sb = new StringBuffer();
-            $sb->appendLine('<?php');
-            $sb->appendLine("namespace {$configs["module"]}\\action;");
-            $sb->appendLine("");
-            $sb->appendLine('use common\action\CommonAction;');
-            $sb->appendLine('/**');
-            $sb->appendLine(" * {$tableName} action");
-            $sb->appendLine(" * @package {$configs["module"]}\\action");
-            $sb->appendLine(" * @author {$configs["author"]}<{$configs["email"]}>");
-            $sb->appendLine(' */');
-            $sb->appendLine("class {$className} extends CommonAction {}");
+            $content = str_replace("{module}", $configs["module"], $tempContent);
+            $content = str_replace("{author}", $configs["author"], $content);
+            $content = str_replace("{email}", $configs["email"], $content);
+            $content = str_replace("{table_name}", $tableName, $content);
+            $content = str_replace("{class_name}", $className, $content);
 
-            if ( file_put_contents($actionFile, $sb->toString()) !== false ) {
+            if ( file_put_contents($actionFile, $content) !== false ) {
                 tprintOk("create Controller file '{$actionFile}' successfully！");
             } else {
                 tprintError("Error : create Controller file '{$actionFile}' faild.");

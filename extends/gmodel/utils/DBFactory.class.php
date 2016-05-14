@@ -111,10 +111,14 @@ class DBFactory {
             //添加字段
             $fields = $value->find("fields", 0);
             foreach( $fields->children() as $fd ) {
-                if ( in_array($fd->default, self::$DEFAULT_VALUE_KEYWORD) ) {
-                    $sql .= "`{$fd->name}` {$fd->type} NOT NULL DEFAULT {$fd->default} COMMENT '{$fd->comment}',";
-                } else {
-                    $sql .= "`{$fd->name}` {$fd->type} NOT NULL DEFAULT '{$fd->default}' COMMENT '{$fd->comment}',";
+                if ( $fd->default ) {   //has default value
+                    if ( in_array($fd->default, self::$DEFAULT_VALUE_KEYWORD) ) {
+                        $sql .= "`{$fd->name}` {$fd->type} NOT NULL DEFAULT {$fd->default} COMMENT '{$fd->comment}',";
+                    } else {
+                        $sql .= "`{$fd->name}` {$fd->type} NOT NULL DEFAULT '{$fd->default}' COMMENT '{$fd->comment}',";
+                    }
+                } else { //has not default value
+                    $sql .= "`{$fd->name}` {$fd->type} NOT NULL COMMENT '{$fd->comment}',";
                 }
 
                 //创建索引
