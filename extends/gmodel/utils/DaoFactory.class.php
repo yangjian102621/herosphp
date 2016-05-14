@@ -35,18 +35,14 @@ class DaoFactory {
 
         //创建目录
         $module = $moduleDir.$configs["module"]."/";
-        FileUtils::makeFileDirs($module."action");
         FileUtils::makeFileDirs($module."dao/interfaces");
-        FileUtils::makeFileDirs($module."service/interfaces");
-        FileUtils::makeFileDirs($module."template/default");
 
-        $tables = $root->find("table");
+        $serviceConfigs = $root->find("service-config service");  //get service configs
+        foreach ( $serviceConfigs as $value ) {
 
-        foreach ( $tables as $value ) {
-
-            $tableName = $value->name;  //表名称
-            $assoc = $value->assoc;  //获取关联表信息
-            $interfaceName = "I".ucfirst(GModel::underline2hump($tableName))."Dao";
+            $className = $value->dao;  //class name of dao
+            $models = $value->model;  //get the association models
+            $interfaceName = "I".$className;
             //生成接口文件
             $daoInterface = $module."dao/interfaces/{$interfaceName}.class.php";
             if ( file_exists($daoInterface) ) { //若文件已经存在则跳过
@@ -71,7 +67,6 @@ class DaoFactory {
             }
 
             //生成实现dao
-            $className = ucfirst(GModel::underline2hump($tableName))."Dao";
             $daoImpl = $module."dao/{$className}.class.php";
             if ( file_exists($daoImpl) ) { //若文件已经存在则跳过
                 tprintWarning("Warnning : DAO file '{$daoImpl}' is existed， skiped.");
@@ -94,13 +89,12 @@ class DaoFactory {
             $sb->appendLine(' */');
             $sb->appendLine("class {$className} extends CommonDao implements {$interfaceName} {");
 
-            if ( $assoc ) {
+            if ( strpos($models, ",") !== false ) {
 
-                $assoc = explode(",", $assoc);
-                $assoc[] = $tableName;
-                for ( $i = 0; $i < count($assoc)-1; $i++ ) {
+                $models = explode(",", $models);
+                foreach ( $models as $m ) {
                     $sb->appendLine("");
-                    $dao = GModel::underline2hump($assoc[$i])."Dao";
+                    $dao = GModel::underline2hump($m)."Dao";
                     $sb->appendTab("/**", 1);
                     $sb->appendTab(" * @var \\herosphp\\model\\C_Model", 1);
                     $sb->appendTab(" */", 1);
@@ -110,18 +104,20 @@ class DaoFactory {
                 $sb->appendLine("");
                 $sb->appendTab("/**", 1);
                 $parameters = array();
-                foreach ( $assoc as $m ) {
+                foreach ( $models as $m ) {
                     $m = "\$".GModel::underline2hump($m)."Model";
                     $sb->appendTab(" * @param {$m}", 1);
                     $parameters[] = $m;
                 }
                 $sb->appendTab(" */", 1);
                 $sb->appendTab("public function __construct(".implode(", ", $parameters).") {", 1);
-                for ( $i = 0; $i < count($assoc)-1; $i++ ) {
-                    $m = GModel::underline2hump($assoc[$i])."Dao";
+
+                //init the modelDao
+                $sb->appendTab("\$this->setModelDao(Loader::model(".array_shift($parameters)."));", 2);
+                for ( $i = 0; $i < count($models); $i++ ) {
+                    $m = GModel::underline2hump($models[$i])."Dao";
                     $sb->appendTab("\$this->{$m} = Loader::model({$parameters[$i]});", 2);
                 }
-                $sb->appendTab("\$this->setModelDao(Loader::model(".end($parameters)."));", 2);
                 $sb->appendTab("}", 1);
 
             }

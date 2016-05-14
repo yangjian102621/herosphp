@@ -5,7 +5,7 @@ use herosphp\bean\Beans;
  * @author yangjian<yangjian102621@gmail.com>
  */
 $beans = array(
-	//user服务
+	//AdminService configs
 	'user.user.service' => array(
 		'@type' => Beans::BEAN_OBJECT,
 		'@class' => 'user\service\UserService',
@@ -13,11 +13,11 @@ $beans = array(
 			'@bean/modelDao'=>array(
 				'@type'=>Beans::BEAN_OBJECT,
 				'@class'=>'user\dao\UserDao',
-				'@params' => array('News','Admin','AdminRole','User')
+				'@params' => array('User','News','Admin')
 			)
 		),
 	),
-	//news服务
+	//AdminService configs
 	'user.news.service' => array(
 		'@type' => Beans::BEAN_OBJECT,
 		'@class' => 'user\service\NewsService',
@@ -29,7 +29,7 @@ $beans = array(
 			)
 		),
 	),
-	//admin服务
+	//AdminService configs
 	'user.admin.service' => array(
 		'@type' => Beans::BEAN_OBJECT,
 		'@class' => 'user\service\AdminService',

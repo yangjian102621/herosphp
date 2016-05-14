@@ -8,7 +8,7 @@ namespace app\models;
 
 use herosphp\model\C_Model;
 
-class ArticleModel extends C_Model {
+class UserModel extends C_Model {
 
     public function __construct() {
 

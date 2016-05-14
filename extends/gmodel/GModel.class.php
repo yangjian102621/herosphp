@@ -14,6 +14,7 @@ require_once "utils/DBFactory.class.php";
 require_once "utils/ModelFactory.class.php";
 require_once "utils/DaoFactory.class.php";
 require_once "utils/ServiceFactory.class.php";
+require_once "utils/ControllerFactory.class.php";
 
 /**
  * 根据database.xml文档创建数据库。同时生成Model, Dao, Service层
@@ -73,6 +74,7 @@ class GModel {
                 ModelFactory::create(self::$XML);
                 DaoFactory::create(self::$XML);
                 ServiceFactory::create(self::$XML);
+                ControllerFactory::create(self::$XML);
                 break;
         }
 
@@ -85,6 +87,7 @@ class GModel {
      */
     public static function underline2hump($str) {
 
+        $str = trim($str);
         if ( strpos($str, "_") === false ) return $str;
 
         $arr = explode("_", $str);

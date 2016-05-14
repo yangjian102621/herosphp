@@ -35,17 +35,14 @@ class ServiceFactory {
 
         //创建目录
         $module = $moduleDir.$configs["module"]."/";
-        FileUtils::makeFileDirs($module."action");
-        FileUtils::makeFileDirs($module."dao/interfaces");
         FileUtils::makeFileDirs($module."service/interfaces");
-        FileUtils::makeFileDirs($module."template/default");
 
-        $tables = $root->find("table");
+        $serviceConfigs = $root->find("service-config service");
 
-        foreach ( $tables as $value ) {
+        foreach ( $serviceConfigs as $value ) {
 
-            $tableName = $value->name;  //表名称
-            $interfaceName = "I".ucfirst(GModel::underline2hump($tableName))."Service";
+            $className = $value->name;  //class name of service
+            $interfaceName = "I".$className;
             //生成接口文件
             $serviceInterface = $module."service/interfaces/{$interfaceName}.class.php";
             if ( file_exists($serviceInterface) ) { //若文件已经存在则跳过
@@ -70,7 +67,6 @@ class ServiceFactory {
             }
 
             //生成实现dao
-            $className = ucfirst(GModel::underline2hump($tableName))."Service";
             $serviceImpl = $module."service/{$className}.class.php";
             if ( file_exists($serviceImpl) ) { //若文件已经存在则跳过
                 tprintWarning("Warnning : The service file '{$serviceImpl}' is existed, skiped.");
@@ -99,6 +95,65 @@ class ServiceFactory {
                 tprintError("Error : create Service file '{$serviceImpl}' faild.");
             }
 
+        }
+
+
+        //生成beans配置文件
+        $beansDir = APP_PATH."configs/beans/";
+        $beansFile = $beansDir."beans.{$root->module}.config.php";
+        FileUtils::makeFileDirs($beansDir); //create beans directory
+
+        $sb = new StringBuffer();
+        $sb->appendLine('<?php');
+        $sb->appendLine('use herosphp\bean\Beans;');
+        $sb->appendLine('/**');
+        $sb->appendLine(" * {$configs["module"]}模块Beans装配配置");
+        $sb->appendLine(" * @author {$configs["author"]}<{$configs["email"]}>");
+        $sb->appendLine(' */');
+        $sb->appendLine('$beans = array(');
+
+        foreach ( $serviceConfigs as $value ) {
+
+            $serviceClassName = $value->name;
+            $daoClassName = $value->dao;
+            $models = $value->model;  //get the association models
+            if ( strpos($models, ",") !== false ) {
+                $models = explode(",", $models);
+                foreach ($models as $key => $value) { //转驼峰
+                    $assoc[$key] = ucfirst(GModel::underline2hump($value));
+                }
+            }
+            $sb->appendTab("//{$className} configs", 1);
+            if ( is_array($models) ) {
+                $sb->appendTab("'{$configs["module"]}.".GModel::underline2hump($models[0]).".service' => array(", 1);
+            } else {
+                $sb->appendTab("'{$configs["module"]}.".GModel::underline2hump($models).".service' => array(", 1);
+            }
+
+            $sb->appendTab("'@type' => Beans::BEAN_OBJECT,", 2);
+            $sb->appendTab("'@class' => '{$configs["module"]}\\service\\{$serviceClassName}',", 2);
+            $sb->appendTab("'@attributes' => array(", 2);
+            $sb->appendTab("'@bean/modelDao'=>array(", 3);
+            $sb->appendTab("'@type'=>Beans::BEAN_OBJECT,", 4);
+            $sb->appendTab("'@class'=>'{$configs["module"]}\\dao\\{$daoClassName}',", 4);
+            if ( is_array($models) ) {
+                $sb->appendTab("'@params' => array('".implode("','", $assoc)."')", 4);
+            } else {
+                $sb->appendTab("'@params' => array('".ucfirst(GModel::underline2hump($models))."')", 4);
+            }
+            $sb->appendTab(")", 3);
+            $sb->appendTab("),", 2);
+            $sb->appendTab("),", 1);
+
+        }
+
+        $sb->appendLine(');');
+        $sb->appendLine('return $beans;');
+
+        if ( file_put_contents($beansFile, $sb->toString()) !== false ) {
+            tprintOk("create Beans config file '{$beansFile}' successfully.");
+        } else {
+            tprintError("create Beans config file '{$beansFile}' faild.");
         }
 
     }

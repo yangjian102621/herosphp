@@ -17,6 +17,11 @@ class UserDao extends CommonDao implements IUserDao {
 	/**
 	 * @var \herosphp\model\C_Model
 	 */
+	private $userDao = null;
+
+	/**
+	 * @var \herosphp\model\C_Model
+	 */
 	private $newsDao = null;
 
 	/**
@@ -25,20 +30,14 @@ class UserDao extends CommonDao implements IUserDao {
 	private $adminDao = null;
 
 	/**
-	 * @var \herosphp\model\C_Model
-	 */
-	private $adminRoleDao = null;
-
-	/**
+	 * @param $userModel
 	 * @param $newsModel
 	 * @param $adminModel
-	 * @param $adminRoleModel
-	 * @param $userModel
 	 */
-	public function __construct($newsModel, $adminModel, $adminRoleModel, $userModel) {
-		$this->newsDao = Loader::model($newsModel);
-		$this->adminDao = Loader::model($adminModel);
-		$this->adminRoleDao = Loader::model($adminRoleModel);
+	public function __construct($userModel, $newsModel, $adminModel) {
 		$this->setModelDao(Loader::model($userModel));
+		$this->userDao = Loader::model($newsModel);
+		$this->newsDao = Loader::model($adminModel);
+		$this->adminDao = Loader::model();
 	}
 }
