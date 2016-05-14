@@ -132,7 +132,7 @@ class DBFactory {
                 }
             }
             if ( $pk ) $sql .= "PRIMARY KEY (`{$pk->name}`)";
-            $sql .= ") ENGINE={$value->engine}  DEFAULT CHARSET={$configs['charset']} ROW_FORMAT=FIXED COMMENT='{$value->comment}' AUTO_INCREMENT=1 ;";
+            $sql .= ") ENGINE={$value->engine}  DEFAULT CHARSET={$configs['charset']} COMMENT='{$value->comment}' AUTO_INCREMENT=1 ;";
 
             if ( self::query($sql) !== false ) {
                 tprintOk("create table '{$tableName}' successfully.");
