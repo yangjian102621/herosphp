@@ -1,0 +1,18 @@
+//页面标题样式
+.page-title {
+  float: left;
+  h3 {margin:12px 10px;}
+}
+
+//面包屑导航
+.main-content {
+  .breadcrumb {
+    width: 100%;
+    position: fixed;
+  }
+
+  .wrapper {
+    margin-top: 40px;
+    background: #ffffff;
+  }
+}

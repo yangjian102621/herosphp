@@ -19,9 +19,8 @@
 
     <fields>
       <field name="title" type="varchar(100)" default="" comment="标题" add-index="true" index-type="normal" />
-      <field name="description" type="varchar(100)" default="" comment="描述" />
-      <field name="status" type="tinyint(2)" default="0" comment="状态" />
-      <field name="content" type="text" default="" comment="内容" />
+      <field name="bcontent" type="varchar(255)" default="" comment="描述" />
+      <field name="addtime" type="tinyint(2)" comment="添加时间" />
     </fields>
   </table>
 

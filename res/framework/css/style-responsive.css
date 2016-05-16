@@ -1,5 +1,4 @@
 /* MEDIA QUERIES */
-@import url('table-responsive.css');
 @media screen and (max-width: 768px) {
 
     body {
@@ -7,7 +6,7 @@
     }
 
     .left-side {
-        display: none;
+        display: none !important;
     }
 
     .main-content {

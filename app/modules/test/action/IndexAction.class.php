@@ -22,7 +22,8 @@ class IndexAction extends Controller {
     public function index( HttpRequest $request ) {
         __print($request->getParameters());
         __print("<h1>Hello， Herosphp!</h1>");
-        $this->setView("common:index");
+        die();
+        //$this->setView("common:index");
 
     }
   

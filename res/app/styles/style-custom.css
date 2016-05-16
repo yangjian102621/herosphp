@@ -1,0 +1,13 @@
+.page-title {
+  float: left; }
+  .page-title h3 {
+    margin: 12px 10px; }
+
+.main-content .breadcrumb {
+  width: 100%;
+  position: fixed; }
+.main-content .wrapper {
+  margin-top: 40px;
+  background: #ffffff; }
+
+/*# sourceMappingURL=style-custom.css.map */
