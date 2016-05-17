@@ -3,6 +3,7 @@ namespace common\action;
 
 use herosphp\bean\Beans;
 use herosphp\core\Controller;
+use herosphp\http\HttpRequest;
 use herosphp\utils\Page;
 
 define('COM_ERR_MSG', '(⊙o⊙) 系统出了小差！');
@@ -23,7 +24,7 @@ abstract class CommonAction extends Controller {
      * 没页显示多少条记录
      * @var int
      */
-    protected $pagesize = 20;
+    protected $pagesize = 15;
 
     /**
      * 查询条件
@@ -88,8 +89,8 @@ abstract class CommonAction extends Controller {
         $pageData = $pageHandler->getPageData(DEFAULT_PAGE_STYLE);
         //组合分页HTML代码
         if ( $pageData ) {
-            $pagemenu = '<ul>';
-            $pagemenu .= '<li class="previous"><a class="fui-arrow-left" href="'.$pageData['prev'].'"></a></li> ';
+            $pagemenu = '<ul class="pagination blog-pagination">';
+            $pagemenu .= '<li><a href="'.$pageData['prev'].'">PREV</a></li> ';
             foreach ( $pageData['list'] as $key => $value ) {
                 if ( $key == $this->page ) {
                     $pagemenu .= '<li class="active"><a href="#fakelink">'.$key.'</a></li> ';
@@ -97,10 +98,8 @@ abstract class CommonAction extends Controller {
                     $pagemenu .= '<li><a href="'.$value.'">'.$key.'</a></li> ';
                 }
             }
-            $pagemenu .= '<li class="next"><a class="fui-arrow-right" href="'.$pageData['next'].'"></a></li> ';
+            $pagemenu .= '<li><a href="'.$pageData['next'].'">NEXT</a></li> ';
             $pagemenu .= '</ul>';
-            $pagemenu .= '<div class="page-input"><input type="text" class="form-control input-sm" value="'.$this->page.'"> ';
-            $pagemenu .= '<a href="javascript:void(0);" class="btn btn-primary btn-sm" url="'.$pageData['url'].'" id="page-goto">确定</a></div> ';
         }
 
         $this->assign('pagemenu', $pagemenu);
@@ -243,7 +242,7 @@ abstract class CommonAction extends Controller {
      */
     public function showMessage( $type, $message, $url ) {
 
-        $url = url("/admin_common_message/type-{$type}-message-".urlencode($message)."-url-".urlencode($url));
+        $url = url("/common_message_index/type-{$type}-message-".urlencode($message)."-url-".urlencode($url));
         $this->location($url);
 
     }

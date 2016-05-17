@@ -1,9 +1,7 @@
 <?php
 namespace common\action;
 
-use herosphp\bean\Beans;
 use herosphp\http\HttpRequest;
-use Workerman\Protocols\Http;
 
 /**
  * demo action
@@ -27,11 +25,35 @@ class DemoAction extends CommonAction {
 
     }
 
-    //列表页
+    //内容列表页
     public function clist(HttpRequest $request) {
         parent::index($request);
         $this->assign("title", "文章列表");
         $this->assign("bread", array("用户管理", "文章管理", "文章列表"));
         $this->setView("clist");
+    }
+
+    //内容添加页
+    public function cadd() {
+
+        $this->assign("title", "文章添加");
+        $this->assign("bread", array("用户管理", "文章管理", "文章添加"));
+        $this->setView("cadd");
+
+    }
+
+    //插入操作
+    public function insert(HttpRequest $request) {
+
+        $data = $request->getParameter("data");
+        parent::insert($data);
+
+    }
+
+    //更新操作
+    public function update(HttpRequest $request) {
+
+        $data = $request->getParameter("data");
+        parent::update($data, $request);
     }
 }

@@ -1,0 +1,192 @@
+{include common.inc_header}
+
+<section>
+    <!-- left side start-->
+	{include common.inc_left}
+    <!-- left side end-->
+
+    <!-- main content start-->
+    <div class="main-content" >
+
+        <!-- header section start-->
+        {include common.inc_top}
+        <!-- header section end-->
+
+        <!-- page breadcrumb start-->
+        {include common.inc_bread}
+        <!-- page "breadcrumb end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+
+			<form class="cmxform form-horizontal adminex-form" id="content-add-form">
+				<div class="form-group ">
+					<label class="control-label col-lg-2">姓名</label>
+					<div class="col-lg-10">
+						<input class="form-control" type="text" name="data[name]" cname="姓名" required>
+						<label class="help-block"></label>
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="control-label col-lg-2">邮箱</label>
+					<div class="col-lg-10">
+						<input class="form-control" type="text" dtype="email" name="data[email]" cname="邮箱" message="请输入正确的电子邮箱地址" required>
+						<label class="help-block">asdasdasd</label>
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="control-label col-lg-2">URL (optional)</label>
+					<div class="col-lg-10">
+						<input class="form-control" type="url" name="url">
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="control-label col-lg-2">Your Comment (required)</label>
+					<div class="col-lg-10">
+						<textarea class="form-control" name="data[comment]" cname="评论" max-length="30" min-length="10" required></textarea>
+						<label class="help-block">请输入10-30字的评论。</label>
+					</div>
+				</div>
+
+				<div class="form-group ">
+					<label class="control-label col-lg-2">开关选择</label>
+					<div class="col-lg-10">
+						<div>
+							<input type="checkbox" class="js-switch-blue" checked/>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group ">
+					<label class="control-label col-lg-2">标签选择</label>
+					<div class="col-lg-10">
+						<input id="tags_1" type="text" class="tags" value="php,ios,javascript,ruby,android,kindle" />
+					</div>
+				</div>
+
+				<div class="form-group ">
+					<label class="control-label col-lg-2">日期时间</label>
+					<div class="col-lg-10">
+						<div class="input-group date form_datetime-adv">
+							<input type="text" class="form-control" value="{expr date('Y-m-d H:i')}">
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-success date-set"><i class="fa fa-calendar"></i></button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group ">
+					<label class="control-label col-lg-2">颜色选择</label>
+					<div class="col-lg-10">
+						<div data-color="#15573b" class="input-append colorpicker-default color">
+							<input type="text" readonly="" value="" class="form-control">
+							<span class=" input-group-btn add-on">
+								<button class="btn btn-default" type="button" style="padding: 8px">
+									<i></i>
+								 </button>
+							 </span>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group ">
+					<label class="control-label col-lg-2">Select2</label>
+					<div class="col-lg-10">
+						<select class="select2">
+							<option>xiaoming</option>
+							<option>SANM</option>
+							<option>KIM Strong</option>
+							<option>BUCK Strong</option>
+							<option>CLIENC Strong</option>
+							<option>CLIENC Strong</option>
+							<option>Ubuntu Strong</option>
+							<option>RestFUL Strong</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group ">
+					<label class="control-label col-lg-2">单选|复选框</label>
+					<div class="col-lg-10 icheck">
+						<div class="square-blue">
+							<label><input type="checkbox"> Blue Checkbox </label>
+						</div>
+
+						<div class="square-blue">
+							<label><input type="checkbox"> Blue Checkbox </label>
+						</div>
+
+						<div class="square-blue">
+							<label><input type="radio" name="demo-radio"> Blue Radio </label>
+						</div>
+
+						<div class="square-blue">
+							<label><input type="radio" name="demo-radio"> Blue Radio </label>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="form-group ">
+					<label class="control-label col-lg-2">编辑器</label>
+					<div class="col-lg-10 icheck">
+						<textarea class="wysihtml5 form-control" rows="9" id="wysihtml5"></textarea>
+
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-lg-offset-2 col-lg-10">
+						<a href="#" class="btn btn-success ajaxproxy" proxy='{"formId":"content-add-form", "method":"post"}'>提交保存</a>
+					</div>
+				</div>
+			</form>
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+        {include common.inc_footer}
+        <!--footer section end-->
+
+
+    </div>
+    <!-- main content end-->
+</section>
+
+{include common.inc_script}
+
+<script>
+
+	$(document).ready(function(){
+
+		//标签初始化
+		$('#tags_1').tagsInput({width:"auto", defaultText:"添加标签"});
+
+		//初始化日历选择
+		$(".form_datetime-adv").datetimepicker({
+			format: "yyyy-mm-dd hh:ii",
+			autoclose: true,
+			todayBtn: true,
+			startDate: "2013-02-14 10:00",
+			minuteStep: 5
+		});
+
+		//颜色选择器
+		$('.colorpicker-default').colorpicker({
+			format: 'hex'
+		});
+
+		//select2
+		$(".select2").select2({
+			width: '100%'
+		});
+
+		//编辑器
+		$('#wysihtml5').wysihtml5();
+	});
+
+</script>
+
+</body>
+</html>

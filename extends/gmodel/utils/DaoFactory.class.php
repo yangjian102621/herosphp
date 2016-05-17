@@ -114,9 +114,9 @@ class DaoFactory {
 
                 //init the modelDao
                 $sb->appendTab("\$this->setModelDao(Loader::model(".array_shift($parameters)."));", 2);
-                for ( $i = 0; $i < count($models); $i++ ) {
+                for ( $i = 1; $i < count($models); $i++ ) {
                     $m = GModel::underline2hump($models[$i])."Dao";
-                    $sb->appendTab("\$this->{$m} = Loader::model({$parameters[$i]});", 2);
+                    $sb->appendTab("\$this->{$m} = Loader::model({$parameters[$i-1]});", 2);
                 }
                 $sb->appendTab("}", 1);
 

@@ -5,9 +5,24 @@
 
 .main-content .breadcrumb {
   width: 100%;
+  background-color: #ffffff;
+  z-index: 2;
   position: fixed; }
 .main-content .wrapper {
-  margin-top: 40px;
+  margin-top: 38px;
   background: #ffffff; }
+  .main-content .wrapper .table-hover tbody tr:hover {
+    color: #65cea7; }
+  .main-content .wrapper .search-form {
+    margin-bottom: 10px; }
+    .main-content .wrapper .search-form .form-group {
+      margin-bottom: 5px; }
+  .main-content .wrapper .form-horizontal {
+    max-width: 90%;
+    margin-bottom: 80px; }
+    .main-content .wrapper .form-horizontal .form-group .icheck {
+      padding-top: 6px; }
+    .main-content .wrapper .form-horizontal .form-group .tagsinput .tag span, .main-content .wrapper .form-horizontal .form-group .tagsinput .tag a {
+      color: #ffffff; }
 
 /*# sourceMappingURL=style-custom.css.map */

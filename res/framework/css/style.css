@@ -2566,7 +2566,7 @@ input.spinner[type="text"], input.spinner[type="password"], input.spinner[type="
     font-weight: 400;
 }
 
-input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:focus, .cmxform .form-group input.error, .cmxform .form-group textarea.error {
+.cmxform .form-group input.error, .cmxform .form-group textarea.error {
     border-color: #FF6C60 !important;
 }
 

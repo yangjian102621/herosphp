@@ -8,11 +8,45 @@
 .main-content {
   .breadcrumb {
     width: 100%;
+    background-color: #ffffff;
+    z-index: 2;
     position: fixed;
   }
 
   .wrapper {
-    margin-top: 40px;
+    margin-top: 38px;
     background: #ffffff;
+
+    .table-hover {
+      tbody {
+        tr:hover {
+          color: #65cea7;
+        }
+      }
+    }
+
+    .search-form {
+      margin-bottom: 10px;
+      .form-group {
+        margin-bottom: 5px;
+      }
+    }
+
+    .form-horizontal {
+      max-width: 90%;
+      margin-bottom: 80px;
+
+      .form-group {
+        .icheck {
+          padding-top: 6px;
+        }
+        .tagsinput {
+          .tag {
+            span,a {color: #ffffff;}
+          }
+        }
+      }
+    }
   }
+
 }
