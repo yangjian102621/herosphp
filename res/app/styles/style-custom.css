@@ -24,5 +24,9 @@
       padding-top: 6px; }
     .main-content .wrapper .form-horizontal .form-group .tagsinput .tag span, .main-content .wrapper .form-horizontal .form-group .tagsinput .tag a {
       color: #ffffff; }
+    .main-content .wrapper .form-horizontal .form-group input.error {
+      border-color: #FF6C60 !important; }
+    .main-content .wrapper .form-horizontal .form-group label.error {
+      color: #FF6C60 !important; }
 
 /*# sourceMappingURL=style-custom.css.map */

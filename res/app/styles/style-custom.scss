@@ -1,52 +1,60 @@
 //页面标题样式
 .page-title {
-  float: left;
-  h3 {margin:12px 10px;}
+	float: left;
+	h3 {margin:12px 10px;}
 }
 
 //面包屑导航
 .main-content {
-  .breadcrumb {
-    width: 100%;
-    background-color: #ffffff;
-    z-index: 2;
-    position: fixed;
-  }
+	.breadcrumb {
+		width: 100%;
+		background-color: #ffffff;
+		z-index: 2;
+		position: fixed;
+	}
 
-  .wrapper {
-    margin-top: 38px;
-    background: #ffffff;
+	.wrapper {
 
-    .table-hover {
-      tbody {
-        tr:hover {
-          color: #65cea7;
-        }
-      }
-    }
+		margin-top: 38px;
+		background: #ffffff;
 
-    .search-form {
-      margin-bottom: 10px;
-      .form-group {
-        margin-bottom: 5px;
-      }
-    }
+		.table-hover {
+			tbody {
+				tr:hover {
+					color: #65cea7;
+				}
+			}
+		}
 
-    .form-horizontal {
-      max-width: 90%;
-      margin-bottom: 80px;
+		.search-form {
+			margin-bottom: 10px;
+			.form-group {
+				margin-bottom: 5px;
+			}
+		}
 
-      .form-group {
-        .icheck {
-          padding-top: 6px;
-        }
-        .tagsinput {
-          .tag {
-            span,a {color: #ffffff;}
-          }
-        }
-      }
-    }
-  }
+		.form-horizontal {
+			max-width: 90%;
+			margin-bottom: 80px;
+
+			.form-group {
+				.icheck {
+					padding-top: 6px;
+				}
+				.tagsinput {
+					.tag {
+						span,a {color: #ffffff;}
+					}
+				}
+
+				input.error {
+					border-color: #FF6C60 !important;
+				}
+				label.error {
+					color: #FF6C60 !important;;
+				}
+			}
+		}
+	}
 
 }

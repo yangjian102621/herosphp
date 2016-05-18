@@ -2,6 +2,7 @@
 namespace common\action;
 
 use herosphp\http\HttpRequest;
+use herosphp\utils\AjaxResult;
 
 /**
  * demo action
@@ -45,6 +46,7 @@ class DemoAction extends CommonAction {
     //插入操作
     public function insert(HttpRequest $request) {
 
+        AjaxResult::ajaxSuccessResult();
         $data = $request->getParameter("data");
         parent::insert($data);
 
