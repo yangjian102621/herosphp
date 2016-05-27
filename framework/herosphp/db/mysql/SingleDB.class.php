@@ -96,6 +96,9 @@ class SingleDB implements Idb {
             $_exception = new DBException("SQL错误:" . $e->getMessage());
             $_exception->setCode($e->getCode());
             $_exception->setQuery($_query);
+            if ( APP_DEBUG ) {
+                __print($_query);
+            }
             throw $_exception;
         }
         if ( APP_DEBUG ) {

@@ -28,6 +28,7 @@ abstract class Controller extends Template {
         $webApp = WebApplication::getInstance();
         //注册当前app的配置信息
         $this->assign('appConfigs', $webApp->getConfigs());
+        $this->assign('params', $webApp->getHttpRequest()->getParameters());
 
     }
 

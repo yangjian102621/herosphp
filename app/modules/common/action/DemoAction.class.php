@@ -28,6 +28,13 @@ class DemoAction extends CommonAction {
 
     //内容列表页
     public function clist(HttpRequest $request) {
+
+        $title = $request->getParameter("title", "trim");
+        $conditions = array();
+        if ( $title != "" ) {
+            $conditions["title"] = "%{$title}%";
+        }
+        $this->setConditions($conditions);
         parent::index($request);
         $this->assign("title", "文章列表");
         $this->assign("bread", array("用户管理", "文章管理", "文章列表"));

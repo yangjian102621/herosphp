@@ -3,6 +3,7 @@ namespace common\action;
 
 use herosphp\bean\Beans;
 use herosphp\core\Controller;
+use herosphp\core\WebApplication;
 use herosphp\http\HttpRequest;
 use herosphp\utils\Page;
 
@@ -67,6 +68,18 @@ abstract class CommonAction extends Controller {
      * @var string
      */
     protected $serviceBean;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->assign("noRecords", "(⊙o⊙)抱歉，没有找到您要内容.");
+        $request = WebApplication::getInstance()->getHttpRequest();
+        $module = $request->getModule();
+        $action = $request->getAction();
+        $this->assign("index_url", "/{$module}/{$action}/index");
+        $this->assign("insert_url", "/{$module}/{$action}/insert");
+        $this->assign("update_url", "/{$module}/{$action}/update");
+    }
 
     /**
      * 首页列表

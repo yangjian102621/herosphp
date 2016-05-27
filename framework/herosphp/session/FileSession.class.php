@@ -46,6 +46,9 @@ class FileSession implements ISession {
 		if ( !file_exists(self::$sessionSavePath) ) {
 			FileUtils::makeFileDirs(self::$sessionSavePath);
 		}
+		if ( !is_writable(self::$sessionSavePath) ) {
+			E("session 目录".self::$sessionSavePath."不可写，请更改权限。");
+		}
         //初始化用户ip
         self::$userIp = $_SERVER['REMOTE_ADDR'];
 
@@ -67,14 +70,6 @@ class FileSession implements ISession {
      * @return bool
      */
 	public static function open( $savePath, $sessionName ) {
-
-		//创建session目录
-		if (!file_exists(self::$sessionSavePath)) {
-			FileUtils::makeFileDirs(self::$sessionSavePath);
-			if ( !is_writable(self::$sessionSavePath) ) {
-				E("session 目录".self::$sessionSavePath."不可写，请更改权限。");
-			}
-		}
 		//do nothing here
 		return TRUE;
 	}
