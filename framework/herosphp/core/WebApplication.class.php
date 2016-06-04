@@ -70,31 +70,28 @@ class WebApplication implements IApplication {
 
         $this->setConfigs($configs);
 
-        if ( !defined("PHP_UNIT") ) {  //如果是执行php单元测试，则不调用action， 也不用发送响应
+        //请求初始化
+        $this->requestInit();
 
-            //请求初始化
-            $this->requestInit();
+        //invoker 方法调用
+        try {
+            $this->actionInvoke();
+        } catch(HeroException $e) {
+            if ( APP_DEBUG ) { //如果是调试模式就抛出异常
+                throw $e;
+            } else {
+                //否则记录日志
+                $logDir = APP_RUNTIME_PATH."logs/".APP_NAME."/";
 
-            //invoker 方法调用
-            try {
-                $this->actionInvoke();
-            } catch(HeroException $e) {
-                if ( APP_DEBUG ) { //如果是调试模式就抛出异常
-                    throw $e;
-                } else {
-                    //否则记录日志
-                    $logDir = APP_RUNTIME_PATH."logs/".APP_NAME."/";
+                if ( !file_exists($logDir) ) FileUtils::makeFileDirs($logDir);
+                file_put_contents($logDir.date("Y-m-d").".log", $e->toString(), FILE_APPEND);
 
-                    if ( !file_exists($logDir) ) FileUtils::makeFileDirs($logDir);
-                    file_put_contents($logDir.date("Y-m-d").".log", $e->toString(), FILE_APPEND);
-
-                    return;
-                }
+                return;
             }
-
-            //发送响应
-            $this->sendResponse();
         }
+
+        //发送响应
+        $this->sendResponse();
 
     }
 
