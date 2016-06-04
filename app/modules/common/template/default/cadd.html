@@ -163,7 +163,6 @@
 								<label class="control-label col-lg-2">编辑器</label>
 								<div class="col-lg-10 icheck">
 									<textarea class="wysihtml5 form-control" rows="9" id="wysihtml5"></textarea>
-
 								</div>
 							</div>
 
@@ -212,6 +211,16 @@
 		$('.colorpicker-default').colorpicker({
 			format: 'hex'
 		});
+
+		//绑定icheck事件
+		//更多教程http://www.bootcss.com/p/icheck/
+		$(".icheck input[type='checkbox']").on("ifChecked", function() {
+			alert("您选中了checkbox。");
+		});
+
+		$(".js-switch-blue").on("change", function() {
+			alert("您切换了开关。")
+		})
 
 		//select2
 		$(".select2").select2({

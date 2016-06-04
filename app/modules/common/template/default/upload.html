@@ -1,0 +1,65 @@
+{include common.inc_header}
+
+<section>
+    <!-- left side start-->
+	{include common.inc_left}
+    <!-- left side end-->
+
+    <!-- main content start-->
+    <div class="main-content" >
+
+        <!-- header section start-->
+        {include common.inc_top}
+        <!-- header section end-->
+
+        <!-- page breadcrumb start-->
+        {include common.inc_bread}
+        <!-- page "breadcrumb end-->
+
+        <!--body wrapper start-->
+        <div class="wrapper">
+
+			<h3>HTML5仿百度UI上传</h3>
+			<div class="container row">
+				<button class="btn btn-lg btn-primary" id="bupload-btn">上传图片</button>
+			</div>
+        </div>
+        <!--body wrapper end-->
+
+        <!--footer section start-->
+        {include common.inc_footer}
+        <!--footer section end-->
+
+
+    </div>
+    <!-- main content end-->
+</section>
+
+{include common.inc_script}
+
+<script>
+
+	$(document).ready(function(){
+
+		//百度上传
+		$("#bupload-btn").on("click", function() {
+			new BUpload({
+				upload_url : "{url common/demo/doUpload}",
+				list_url : "image_list.php",	//图片列表数据获取url
+				search_url : "image_search.php",	//图片搜索页面url
+				max_filesize : 1024,
+				max_filenum : 10,
+				callback : function(data) {
+					$.each(data, function(idx, item) {
+						$("#image-box").append('<img src="'+item+'" width="200" />');
+					});
+					console.log(data);
+				}
+			});
+		});
+	});
+
+</script>
+
+</body>
+</html>

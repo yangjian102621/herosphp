@@ -8,12 +8,9 @@ var __global = {
 	//JDialog 的配置参数
 	jdialog: {
 		timer: 2000,   //提示框的显示时间
-		winHeight: ($(window).height() - 120),    //弹出窗口的高度
-		winBorderWidth: 8,    //弹出窗口的边框宽度
-		winWidth: 90,         //弹出窗宽度
-		widthType: 'percent',   //设置弹出窗口为父窗口百分比
-		winMaxWidth: 1024,
-		winSkin: 'default'    //弹出窗口的皮肤
+		dialog_width: 80, //对话窗口的高度
+		dialog_height : 90, //对话框高度
+		max_width: 1280 //退化框的最大宽度
 	},
 
 	//列表内容的配置文档
@@ -27,9 +24,10 @@ $(document).ready(function() {
 
 	"use strict";
 
-	//绑定代码的shi
-	$(".table-hover tr").on("click", function() {
+	//绑定tr和checkbox的选中事件
+	$(".table-hover tr").on("click", function(e) {
 		$(this).find(".minimal-blue input").iCheck('toggle');
+		e.stopPropagation(); //阻止冒泡
 	});
 
 	//初始化list table collspan
@@ -43,6 +41,7 @@ $(document).ready(function() {
 	//初始化AjaxProxy插件
 	$('.ajaxproxy').AjaxProxy({
 		dataType : "json",
+		method : "get",
 		formCheckHandler : function(form_id) {
 
 			var __form = new JForm({
@@ -72,16 +71,51 @@ $(document).ready(function() {
 			return __form.checkFormData();
 
 		},
-
+		callbackDelay : __global.jdialog.timer,
+		timeInterval : __global.jdialog.timer,
 		callBack : function (data) {   /* 执行ajax之后的回调函数 */
 			console.log(data);
 			if ( data.code == "0" ) {
-				console.log(data.message);
-				JDialog.tip.work({type:"ok", content:data.message, lock:true, timer:3000});
+				JDialog.tip.work({type:"ok", content:data.message, lock:true, timer:__global.jdialog.timer});
 			} else {
-				JDialog.tip.work({type:"error", content:data.message, timer:3000});
+				JDialog.tip.work({type:"error", content:data.message, timer:__global.jdialog.timer});
 			}
 
 		}
+	});
+
+	//删除确认
+	$(".item-remove").on("click", function(e) {
+		e.stopPropagation();
+		var url = $(this).attr("href");
+		var __self = this;
+		var __confirm = JDialog.win.work({
+			title : "对话框标题",
+			width : 340,
+			height : 180,
+			borderWidth : 8,
+			lock : true,
+			effect : 0,
+			content : '<div style="padding-top: 15px;">该操作会删除选中记录，继续操作吗？</div>',
+			icon : 'warn',
+			button : {
+				'确认' : function() {
+					$.get(url, function(data) {
+						__confirm.close();
+						if ( data.code == "0" ) {
+							$(__self).parents("tr").remove();
+							JDialog.tip.work({type:"ok", content:data.message, timer:1000});
+							setTimeout(function() {location.reload();}, 1000)
+						} else {
+							JDialog.tip.work({type:"error", content:data.message, timer:__global.jdialog.timer});
+						}
+					},"json");
+				},
+				'取消' : function() {
+					__confirm.close();
+				}
+			}
+		});
+		return false;
 	});
 });

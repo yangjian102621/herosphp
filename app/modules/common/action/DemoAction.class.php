@@ -50,6 +50,15 @@ class DemoAction extends CommonAction {
 
     }
 
+    //文件上传
+    public function upload() {
+
+        $this->assign("title", "文件上传");
+        $this->assign("bread", array("用户管理", "文章管理", "文件上传"));
+        $this->setView("upload");
+
+    }
+
     //插入操作
     public function insert(HttpRequest $request) {
 
@@ -64,5 +73,9 @@ class DemoAction extends CommonAction {
 
         $data = $request->getParameter("data");
         parent::update($data, $request);
+    }
+
+    public function delete(HttpRequest $request) {
+        AjaxResult::ajaxSuccessResult();
     }
 }
