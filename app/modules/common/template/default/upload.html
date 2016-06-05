@@ -23,6 +23,26 @@
 			<div class="container row">
 				<button class="btn btn-lg btn-primary" id="bupload-btn">上传图片</button>
 			</div>
+			<ul class="container row clearfix" id="image-list-1"></ul>
+
+			<h3>HTML5仿腾讯QQ空间UI上传</h3>
+			<div class="container row">
+				<button class="btn btn-lg btn-primary" id="tupload-btn">上传图片</button>
+			</div>
+			<ul class="container row clearfix" id="image-list-2"></ul>
+
+			<h3>iframe上传多张图片</h3>
+			<div class="container row">
+				<button class="btn btn-lg btn-primary" id="upload-btn">上传图片</button>
+			</div>
+			<ul class="container row clearfix" id="image-list-3"></ul>
+
+			<h3>iframe上传1张图片</h3>
+			<div class="container row">
+				<div class="col-md-5"><input type="text" class="form-control" id="img-src"></div>
+				<div class="col-md-2"><button class="btn btn-primary" id="upload-btn2">上传图片</button></div>
+			</div>
+
         </div>
         <!--body wrapper end-->
 
@@ -43,19 +63,54 @@
 
 		//百度上传
 		$("#bupload-btn").on("click", function() {
+			JDialog.lock.work();
 			new BUpload({
 				upload_url : "{url common/demo/doUpload}",
-				list_url : "image_list.php",	//图片列表数据获取url
-				search_url : "image_search.php",	//图片搜索页面url
+				list_url : "{url common/demo/imageList}",	//图片列表数据获取url
+				search_url : "{url common/demo/imageSearch}",	//图片搜索页面url
 				max_filesize : 1024,
-				max_filenum : 10,
+				max_filenum : 20,
 				callback : function(data) {
 					$.each(data, function(idx, item) {
-						$("#image-box").append('<img src="'+item+'" width="200" />');
+						$("#image-list-1").append('<img src="'+item+'" class="img-thumbnail" width="150"/>');
 					});
 					console.log(data);
 				}
 			});
+		});
+
+		//腾讯上传
+		$("#tupload-btn").on("click", function() {
+			JDialog.lock.work();
+			new TUpload({
+				uploadUrl : "{url common/demo/doUpload}",
+				maxFileSize : 1024,
+				maxFileNum : 20,
+				zIndex : 99999,
+				callback : function(data) {
+					console.log(data);
+					$.each(data, function(idx, item) {
+						$("#image-list-2").append('<img src="'+item+'" class="img-thumbnail" width="150"/>');
+					});
+					console.log(data);
+				}
+			});
+		});
+
+		//iframe上传1
+		$("#upload-btn").JUpload({
+			url : "{url common/demo/doUpload}",
+			src : "src",
+			image_container : "image-list-3"
+		});
+
+		//iframe上传2
+		$("#upload-btn2").JUpload({
+			url : "{url common/demo/doUpload}",
+			src : "src",
+			callback : function(data) {
+				$("#img-src").val(data.message);
+			}
 		});
 	});
 
