@@ -124,7 +124,7 @@ class DemoAction extends CommonAction {
                 $filename = basename($value["objURL"]);
                 $files[] = array(
                     "thumbURL" => "/common/demo/imageShow/?img_url={$value["objURL"]}&img_path=temp/".$filename,
-                    "oriURL" => "/res/upload/temp/".$filename,
+                    "oriURL" => $value["objURL"],
                     "width" => $value["width"],
                     "height" => $value["height"]);
             }
