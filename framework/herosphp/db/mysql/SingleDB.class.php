@@ -87,9 +87,10 @@ class SingleDB implements Idb {
      * @see \herosphp\db\interfaces\Idb::query()
      * @throws DBException
      */
-    public function query($_query)
-    {
+    public function query($_query) {
+
         if ( $this->link == null ) $this->connect();
+        if ( DB_ESCAPE ) $_query = addslashes($_query);
         try {
             $_result = $this->link->query($_query);
         } catch ( PDOException $e ) {
