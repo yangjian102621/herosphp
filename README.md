@@ -24,6 +24,86 @@ version 2.1.1
 
 >
 
+* 修复一些已知的bug；
+
+*  去掉phpunit支持；
+
+*  新增gmodel自动构建的基础功能，根据用户编写的xml文档自动创建数据库，数据表，索引，Model, Dao, Service，以及Controller；
+
+*  集成了前端框架bootstrap的一个优秀的后台模板，并抽离了一些不常用的插件，使其轻量化。
+
+gmodel使用
+-----
+#####1. 新建app/xml/{module}.xml, 其中{module}表示模块
+```xml
+<root dbhost="localhost" dbuser="root" dbpass="123456" dbname="herosphpTest" charset="utf8"
+      table-prefix="fiidee_" author="yangjian" module="user" email="yangjian102621@gmail.com">
+
+  <!-- table config -->
+  <table name="user" comment="用户表" engine="InnoDB" action-name="user">
+    <pk name="id" type="int(11)" ai="true" />
+
+    <fields>
+      <field name="username" type="varchar(32)" default="" comment="用户名" add-index="true" index-type="unique" />
+      <field name="password" type="varchar(32)" default="" comment="密码" />
+      <field name="sex" type="char(1)" default="" comment="性别" />
+      <field name="addtime" type="timestamp" default="CURRENT_TIMESTAMP" comment="添加时间" />
+    </fields>
+
+  </table>
+
+  <table name="news" comment="新闻表" engine="InnoDB" action-name="news">
+    <pk name="id" type="int(11)" ai="true" />
+
+    <fields>
+      <field name="title" type="varchar(100)" default="" comment="标题" add-index="true" index-type="normal" />
+      <field name="bcontent" type="varchar(255)" default="" comment="描述" />
+      <field name="addtime" type="tinyint(2)" comment="添加时间" />
+    </fields>
+  </table>
+
+  <table name="admin" comment="管理员表" engine="InnoDB" action-name="admin">
+    <pk name="id" type="int(11)" ai="true" />
+
+    <fields>
+      <field name="user" type="varchar(32)" default="" comment="用户名" add-index="true" index-type="unique" />
+      <field name="pass" type="varchar(32)" default="" comment="密码" />
+      <field name="role_id" type="tinyint(4)" default="0" comment="角色ID" />
+      <field name="addtime" type="timestamp" comment="添加时间" />
+      <field name="edittime" type="timestamp" comment="更新时间" />
+    </fields>
+  </table>
+
+  <!-- service config -->
+  <!-- Attention: when a service depends more than one models, the main model should be the first model,
+  for example model="user,news,admin", 'user' is the main model. -->
+  <service-config>
+    <service name="UserService" dao="UserDao" model="user,news,admin" />
+    <service name="NewsService" dao="NewsDao" model="news" />
+    <service name="AdminService" dao="AdminDao" model="admin" />
+  </service-config>
+</root>
+```
+#####2. 在框架根目录执行
+```shell
+php client.php gmodel user table
+```
+其中 user 表示{module}, 模块名称，也就是xml文件名， table 表示生成数据表，具体对应如下
+* table => 生成数据表
+* model => 生成model层
+* dao   => 生成dao层
+* service => 生成服务层
+* controller => 生成控制器
+* --all => 生成全部
+
+###对，就是这么简单！
+******
+<br />
+version 2.1.1
+--
+
+>
+
 * composer.json中加入了workerman 和phpoffice 插件
 
 *  添加phpunit支持

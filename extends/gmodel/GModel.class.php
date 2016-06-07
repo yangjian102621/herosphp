@@ -69,7 +69,7 @@ class GModel {
                 ControllerFactory::create(self::$XML);
                 break;
 
-            case "all":
+            case "--all":
                 DBFactory::create(self::$XML);
                 ModelFactory::create(self::$XML);
                 DaoFactory::create(self::$XML);
