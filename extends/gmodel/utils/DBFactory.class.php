@@ -9,7 +9,7 @@ namespace gmodel\utils;
  */
 class DBFactory {
 
-    private static $debug = false;   //是否开启调试模式
+    private static $debug = true;   //是否开启调试模式
 
     /**
      * @var MySQLi
@@ -111,7 +111,7 @@ class DBFactory {
             //添加字段
             $fields = $value->find("fields", 0);
             foreach( $fields->children() as $fd ) {
-                if ( $fd->default ) {   //has default value
+                if ( $fd->default || $fd->default === "0" ) {   //has default value
                     if ( in_array($fd->default, self::$DEFAULT_VALUE_KEYWORD) ) {
                         $sql .= "`{$fd->name}` {$fd->type} NOT NULL DEFAULT {$fd->default} COMMENT '{$fd->comment}',";
                     } else {
