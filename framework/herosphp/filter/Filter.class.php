@@ -222,6 +222,15 @@ class Filter {
     }
 
     /**
+     * 转义sql特殊字符，防止sql注入
+     * @param $value
+     * @return mixed
+     */
+    private static function &sanitizeSQL(&$value) {
+        return str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"',     '\\Z'), $value);
+    }
+
+    /**
      * 检验数据
      * @param $value 要检验的值
      * @param $model 检验规则数据模型
@@ -283,9 +292,8 @@ class Filter {
             $value = intval( $value );
         if ( ( $model[2] & DFILTER_SANITIZE_FLOAT ) != 0 )
             $value = floatval( $value );
-        if ( ( $model[2] & DFILTER_MAGIC_QUOTES ) != 0
-            && !get_magic_quotes_gpc() )
-            $value = addslashes( $value );
+        if ( ( $model[2] & DFILTER_MAGIC_QUOTES ) != 0 )
+            $value = &self::sanitizeSQL( $value );
 
         return $value;
     }
