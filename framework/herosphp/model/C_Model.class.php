@@ -362,6 +362,7 @@ class C_Model implements IModel {
         }
         $error = null;
         $_data = Filter::loadFromModel($data, $filterMap, $error);
+
         if ( $_data == false ) {
 
             //如果开启了事物操作，则先回滚

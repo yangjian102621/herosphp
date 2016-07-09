@@ -13,26 +13,26 @@ namespace herosphp\filter;
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
-//数据类型
-define('DFILTER_LATIN', 		1 << 0);    //简单字符
-define('DFILTER_URL', 		    1 << 1);    //url
-define('DFILTER_EMAIL', 		1 << 2);    //email
-define('DFILTER_NUMERIC', 	    1 << 3);    //数字
-define('DFILTER_STRING',		1 << 4);    //字符串
-define('DFILTER_MOBILE', 	    1 << 5);    //手机号码
-define('DFILTER_TEL', 		    1 << 6);    //电话号码
-define('DFILTER_IDENTIRY', 	    1 << 7);    //身份证
-define('DFILTER_REGEXP', 	    1 << 8);    //正则表达式
-
-//数据的净化
-define('DFILTER_SANITIZE_TRIM', 	1 << 0);    //去空格
-define('DFILTER_SANITIZE_SCRIPT', 	1 << 1);    //去除javascript脚本
-define('DFILTER_SANITIZE_HTML', 	1 << 2);    //去除html标签
-define('DFILTER_MAGIC_QUOTES', 		1 << 3);    //去除sql注入
-define('DFILTER_SANITIZE_INT', 		1 << 4);    //转整数
-define('DFILTER_SANITIZE_FLOAT', 	1 << 5);    //转浮点数
-
 class Filter {
+    //数据类型
+    const DFILTER_LATIN = 1;  //简单字符
+    const DFILTER_URL = 2;    //url
+    const DFILTER_EMAIL = 4;    //email
+    const DFILTER_NUMERIC = 8;    //数字
+    const DFILTER_STRING = 16;    //字符串
+    const DFILTER_MOBILE = 32;    //手机号码
+    const DFILTER_TEL = 64;    //电话号码
+    const DFILTER_IDENTIRY = 128;    //身份证
+    const DFILTER_REGEXP = 256;    //正则表达式
+	const DFILTER_ZIP = 1024;    //邮编
+
+    //数据的净化
+    const DFILTER_SANITIZE_TRIM = 1;    //去空格
+    const DFILTER_SANITIZE_SCRIPT = 2;    //去除javascript脚本
+    const DFILTER_SANITIZE_HTML = 4;    //去除html标签
+    const DFILTER_MAGIC_QUOTES = 8;    //去除sql注入
+    const DFILTER_SANITIZE_INT = 16;    //转整数
+    const DFILTER_SANITIZE_FLOAT = 32;    //转浮点数
 
     public static function init() {
 
@@ -241,25 +241,25 @@ class Filter {
     {
         //1. 数据类型验证
         $error = $model[3];
-        if ( ($model[0] & DFILTER_LATIN) != 0 )
+        if ( ($model[0] & self::DFILTER_LATIN) != 0 )
             if ( ! self::isLatin( $value ) )     return FALSE;
-        if ( ($model[0] & DFILTER_URL) != 0 )
+        if ( ($model[0] & self::DFILTER_URL) != 0 )
             if ( ! self::isUrl( $value ) )       return FALSE;
-        if ( ($model[0] & DFILTER_EMAIL) != 0 )
+        if ( ($model[0] & self::DFILTER_EMAIL) != 0 )
             if ( ! self::isEmail( $value ) )     return FALSE;
-        if ( ($model[0] & DFILTER_NUMERIC) != 0 )
+        if ( ($model[0] & self::DFILTER_NUMERIC) != 0 )
             if ( ! is_numeric( $value ) )        return FALSE;
-        if ( ($model[0] & DFILTER_STRING) != 0 )
+        if ( ($model[0] & self::DFILTER_STRING) != 0 )
             if ( ! self::isString( $value ) )    return FALSE;
-        if ( ($model[0] & DFILTER_ZIP) != 0 )
+        if ( ($model[0] & self::DFILTER_ZIP) != 0 )
             if ( ! self::isZip( $value ) )       return FALSE;
-        if ( ($model[0] & DFILTER_MOBILE) != 0 )
+        if ( ($model[0] & self::DFILTER_MOBILE) != 0 )
             if ( ! self::isMobile( $value ) ) return FALSE;
-        if ( ($model[0] & DFILTER_TEL) != 0 )
+        if ( ($model[0] & self::DFILTER_TEL) != 0 )
             if ( ! self::isTelephone( $value ) )       return FALSE;
-        if ( ($model[0] & DFILTER_IDENTIRY) != 0 )
+        if ( ($model[0] & self::DFILTER_IDENTIRY) != 0 )
             if ( ! self::isIdentity( $value ) )  return FALSE;
-        if ( ($model[0] & DFILTER_REGEXP) != 0 )
+        if ( ($model[0] & self::DFILTER_REGEXP) != 0 )
             if ( ! self::pregCheck( $value, $model[1] ) )  return FALSE;
 
         //2. 数据长度验证
@@ -279,20 +279,19 @@ class Filter {
         }
 
         $error = null;
-
         //3. 数据净化
         if ( $model[2] == null ) return $value;
-        if ( ( $model[2] & DFILTER_SANITIZE_TRIM ) != 0 )
+        if ( ( $model[2] & self::DFILTER_SANITIZE_TRIM ) != 0 )
             $value = trim($value);
-        if ( ( $model[2] & DFILTER_SANITIZE_SCRIPT ) != 0 )
+        if ( ( $model[2] & self::DFILTER_SANITIZE_SCRIPT ) != 0 )
             $value = self::sanitizeScript($value);
-        if ( ( $model[2] & DFILTER_SANITIZE_HTML ) != 0 )
+        if ( ( $model[2] & self::DFILTER_SANITIZE_HTML ) != 0 )
             $value = self::sanitizeHtml($value);
-        if ( ( $model[2] & DFILTER_SANITIZE_INT ) != 0 )
+        if ( ( $model[2] & self::DFILTER_SANITIZE_INT ) != 0 )
             $value = intval( $value );
-        if ( ( $model[2] & DFILTER_SANITIZE_FLOAT ) != 0 )
+        if ( ( $model[2] & self::DFILTER_SANITIZE_FLOAT ) != 0 )
             $value = floatval( $value );
-        if ( ( $model[2] & DFILTER_MAGIC_QUOTES ) != 0 )
+        if ( ( $model[2] & self::DFILTER_MAGIC_QUOTES ) != 0 )
             $value = &self::sanitizeSQL( $value );
 
         return $value;

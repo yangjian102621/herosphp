@@ -1,6 +1,7 @@
 <?php
 namespace common\action;
 
+use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
 use herosphp\utils\AjaxResult;
 use herosphp\utils\FileUpload;
