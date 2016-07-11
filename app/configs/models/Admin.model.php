@@ -18,14 +18,5 @@ class AdminModel extends C_Model {
 
         //设置表数据表主键，默认为id
         $this->setPrimaryKey('id');
-
-        $filterMap = array(
-            'title' => array(Filter::DFILTER_STRING, array(6, 12), Filter::DFILTER_SANITIZE_TRIM, '标题'),
-            'email' => array(Filter::DFILTER_EMAIL, NULL, NULL, '邮箱'),
-            'id_number' => array(Filter::DFILTER_IDENTIRY, NULL, NULL, '身份证号码'),
-            'content' => array(Filter::DFILTER_STRING, NULL, Filter::DFILTER_MAGIC_QUOTES, '内容')
-        );
-
-        $this->setFilterMap($filterMap);
     }
 } 

@@ -18,12 +18,60 @@ HerosPHP是一个轻量级PHP web 程序开发框架。作者开发这个框架�
 
 
 #版本更新记录
+@latest
+------
+
+* 修复数据模型过滤器Filter的sql单引号转义bug
+* 优化流程，在WebApplication中添加AppError对象属性，用来处理整个生命周期中的错误信息，在整个生命周期都可以使用
+WebApplication::getInstance()->getAppError()->setMessage(),getMessage(), getCode(), setCode()来操作错误信息和错误代码
+* 优化filter的报错信息处理，可以分别配置非空，数据长度，数据类型的报错信息。
+
+过滤器Filter的使用
+-------
+#### 1. 在Model中添加以下代码，配置过滤器和报错信息
+```php
+$filterMap = array(
+        'name' => array(Filter::DFILTER_STRING, array(6, 12), Filter::DFILTER_SANITIZE_TRIM,
+            array("require" => "名字不能为空.", "length" => "名字长度必需在6-12之间.")),
+        'email' => array(Filter::DFILTER_EMAIL, NULL, NULL,
+            array("type" => "请输入正确的邮箱地址.")),
+        'mobile' => array(Filter::DFILTER_MOBILE, NULL, NULL,
+            array("type" => "请输入正确的手机号码.")),
+        'id_number' => array(Filter::DFILTER_IDENTIRY, NULL, NULL,
+            array('type' => '请输入正确的身份证号码.')),
+        'content' => array(Filter::DFILTER_STRING, NULL, Filter::DFILTER_MAGIC_QUOTES|Filter::DFILTER_SANITIZE_HTML,
+            array("require" => "个人简介不能为空."))
+    );
+
+    $this->setFilterMap($filterMap);
+```
+##### 具体配置参数的含义请参照herosphp\filter\Filter类, 主要分三部分，数据类型，数据长度，数据净化。
+```php
+	//数据类型
+    const DFILTER_LATIN = 1;  //简单字符
+    const DFILTER_URL = 2;    //url
+    const DFILTER_EMAIL = 4;    //email
+    const DFILTER_NUMERIC = 8;    //数字
+    const DFILTER_STRING = 16;    //字符串
+    const DFILTER_MOBILE = 32;    //手机号码
+    const DFILTER_TEL = 64;    //电话号码
+    const DFILTER_IDENTIRY = 128;    //身份证
+    const DFILTER_REGEXP = 256;    //正则表达式
+	const DFILTER_ZIP = 1024;    //邮编
+
+    //数据的净化
+    const DFILTER_SANITIZE_TRIM = 1;    //去空格
+    const DFILTER_SANITIZE_SCRIPT = 2;    //去除javascript脚本
+    const DFILTER_SANITIZE_HTML = 4;    //去除html标签
+    const DFILTER_MAGIC_QUOTES = 8;    //去除sql注入
+    const DFILTER_SANITIZE_INT = 16;    //转整数
+    const DFILTER_SANITIZE_FLOAT = 32;    //转浮点数
+```
+
+
 
 version 2.1.1
---
-
->
-
+------
 * 修复一些已知的bug；
 
 *  去掉phpunit支持；
@@ -102,8 +150,6 @@ php client.php gmodel user table
 version 2.1.1
 --
 
->
-
 * composer.json中加入了workerman 和phpoffice 插件
 
 *  添加phpunit支持
@@ -121,7 +167,6 @@ version 2.1.1
 
 version 2.1.0
 --
-
 
 * 根据网友的建议，又重新调整了URL结构，把/user_home_index/userid-100.shtml 重新还原成 /user/home/index/userid-100.shtml结构，更符合大家的使用习惯
 

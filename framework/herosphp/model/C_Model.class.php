@@ -13,6 +13,7 @@
 namespace herosphp\model;
 
 use herosphp\core\Loader;
+use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
 use herosphp\db\SQL;
 use herosphp\filter\Filter;
@@ -103,6 +104,9 @@ class C_Model implements IModel {
     public function insert($data)
     {
         $data = $this->loadFilterData($data);
+        if ( $data == false ) {
+            return false;
+        }
         return $this->db->insert($this->table, $data);
     }
 
@@ -114,6 +118,9 @@ class C_Model implements IModel {
     public function replace($data)
     {
         $data = $this->loadFilterData($data);
+        if ( $data == false ) {
+            return false;
+        }
         return $this->db->replace($this->table, $data);
     }
 
@@ -207,6 +214,9 @@ class C_Model implements IModel {
     public function update($data, $id)
     {
         $data = $this->loadFilterData($data);
+        if ( $data == false ) {
+            return false;
+        }
         return $this->db->update($this->table, $data, "{$this->primaryKey}={$id}");
     }
 
@@ -219,6 +229,9 @@ class C_Model implements IModel {
     public function updates($data, $conditions)
     {
         $data = $this->loadFilterData($data);
+        if ( $data == false ) {
+            return false;
+        }
         $conditions = SQL::create()->buildConditions($conditions);
         return $this->db->update($this->table, $data, $conditions);
     }
@@ -369,7 +382,8 @@ class C_Model implements IModel {
             if ( $this->inTransaction() ) {
                 $this->rollback();
             }
-            AjaxResult::ajaxResult('error', $error);
+            WebApplication::getInstance()->getAppError()->setCode(1);
+            WebApplication::getInstance()->getAppError()->setMessage($error);
         }
         return $_data;
     }

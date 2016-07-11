@@ -17,5 +17,6 @@ class NewsModel extends C_Model {
 
         //设置表数据表主键，默认为id
         $this->setPrimaryKey('id');
+
     }
 } 

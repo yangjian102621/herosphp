@@ -38,6 +38,5 @@ class UserDao extends CommonDao implements IUserDao {
 		$this->setModelDao(Loader::model($userModel));
 		$this->userDao = Loader::model($newsModel);
 		$this->newsDao = Loader::model($adminModel);
-		$this->adminDao = Loader::model();
 	}
 }

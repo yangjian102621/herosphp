@@ -92,7 +92,7 @@ class Filter {
      */
     private static function isMobile( &$value ) {
         if ( $value == '' ) return true;
-        return (preg_match('/^1[3|5|4|8][0-9]{9}$/', $value) == 1);
+        return (preg_match('/^1[3|5|4|7|8][0-9]{9}$/', $value) == 1);
     }
 
     /**
@@ -197,10 +197,7 @@ class Filter {
      */
     private static function sanitizeHtml( &$value ) {
         //sanitize regex rules
-        $_rules = array(
-            '/<[^>]*?\/?>/is' => ''
-        );
-
+        $_rules = array( '/<[^>]*?\/?>/is' => '');
         return preg_replace(array_keys($_rules), $_rules, $value);
     }
 
@@ -239,43 +236,59 @@ class Filter {
      */
     private static function check( &$value, &$model, &$error )
     {
+        //非空验证
+        if ( trim($value) == '' ) {
+            $error = $model[3]['require'];
+            return false;
+        }
         //1. 数据类型验证
         $error = $model[3];
+        $success = true;
         if ( ($model[0] & self::DFILTER_LATIN) != 0 )
-            if ( ! self::isLatin( $value ) )     return FALSE;
+            if ( ! self::isLatin( $value ) ) $success = false;
         if ( ($model[0] & self::DFILTER_URL) != 0 )
-            if ( ! self::isUrl( $value ) )       return FALSE;
+            if ( ! self::isUrl( $value ) ) $success = false;
         if ( ($model[0] & self::DFILTER_EMAIL) != 0 )
-            if ( ! self::isEmail( $value ) )     return FALSE;
+            if ( ! self::isEmail( $value ) ) $success = false;
         if ( ($model[0] & self::DFILTER_NUMERIC) != 0 )
-            if ( ! is_numeric( $value ) )        return FALSE;
+            if ( ! is_numeric( $value ) ) $success = false;
         if ( ($model[0] & self::DFILTER_STRING) != 0 )
-            if ( ! self::isString( $value ) )    return FALSE;
+            if ( ! self::isString( $value ) ) $success = false;
         if ( ($model[0] & self::DFILTER_ZIP) != 0 )
-            if ( ! self::isZip( $value ) )       return FALSE;
+            if ( ! self::isZip( $value ) ) $success = false;
         if ( ($model[0] & self::DFILTER_MOBILE) != 0 )
-            if ( ! self::isMobile( $value ) ) return FALSE;
+            if ( ! self::isMobile( $value ) ) $success = false;
         if ( ($model[0] & self::DFILTER_TEL) != 0 )
-            if ( ! self::isTelephone( $value ) )       return FALSE;
+            if ( ! self::isTelephone( $value ) ) $success = false;
         if ( ($model[0] & self::DFILTER_IDENTIRY) != 0 )
-            if ( ! self::isIdentity( $value ) )  return FALSE;
+            if ( ! self::isIdentity( $value ) ) $success = false;
         if ( ($model[0] & self::DFILTER_REGEXP) != 0 )
-            if ( ! self::pregCheck( $value, $model[1] ) )  return FALSE;
+            if ( ! self::pregCheck( $value, $model[1] ) ) $success = false;
+
+        if ( $success == false ) {
+            $error = $model[3]['type'];
+            return false;
+        }
 
         //2. 数据长度验证
         if ( $model[1] != null ) {
             if ( $model[1][0] > 0 ) {
                 if ( mb_strlen($value, "UTF-8") < $model[1][0] ) {
-                    $error = $model[3]."数据不能小于{$model[1][0]}！";
-                    return FALSE;
+                    $success = false;
                 }
             }
             if ( $model[1][1] > 0 ) {
                 if ( mb_strlen($value, "UTF-8") > $model[1][1] ) {
                     //截去多余的长度
-                    $value = mb_substr($value, 0, $model[1][1], 'UTF-8');
+                    //$value = mb_substr($value, 0, $model[1][1], 'UTF-8');
+                    $success = false;
                 }
             }
+        }
+
+        if ( $success == false ) {
+            $error = $model[3]["length"];
+            return false;
         }
 
         $error = null;
@@ -298,17 +311,6 @@ class Filter {
     }
 
     /**
-     * 过滤指定的数据
-     * @param $value
-     * @param $model
-     * @param $error
-     * @return bool|int|mixed|string
-     */
-    public static function filterVar( $value, $model, &$error ) {
-        return self::check($value, $model, $error);
-    }
-
-    /**
      * 从数据模型中获取过滤后的数据
      * @param $src  表单的原始数据
      * @param $model 检验规则数据模型
@@ -325,7 +327,7 @@ class Filter {
         foreach ( $src as $key => $value ) {
             if ( is_array($model[$key]) ) {
                 //过滤数据
-                $result = self::filterVar($value, $model[$key], $error);
+                $result = self::check($value, $model[$key], $error);
 
                 if ( $result === false ) {
                     return false;

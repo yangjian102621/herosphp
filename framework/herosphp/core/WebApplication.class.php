@@ -48,6 +48,12 @@ class WebApplication implements IApplication {
     private $listeners = array();
 
     /**
+     * 应用程序错误对象
+     * @var \herosphp\core\AppError
+     */
+    private $appError = null;
+
+    /**
      * 应用程序唯一实例
      * @var WebApplication
      */
@@ -57,6 +63,7 @@ class WebApplication implements IApplication {
 
         //初始化应用程序监听器
         $this->listeners = Beans::get(Beans::BEAN_WEBAPP_LISTENER);
+        $this->appError = new AppError();
 
     }
 
@@ -223,6 +230,13 @@ class WebApplication implements IApplication {
     public function getHttpRequest()
     {
         return $this->httpRequest;
+    }
+
+    /**
+     * @return AppError
+     */
+    public function getAppError() {
+        return $this->appError;
     }
 
 }
