@@ -10,7 +10,5 @@ return array(
         array('localhost', 11211)
         //Memcache服务器2
         /*, array('www.webssky.com',11211)*/
-    ),
-    //缓存生命周期
-    'expire' => 60*60*2
+    )
 );

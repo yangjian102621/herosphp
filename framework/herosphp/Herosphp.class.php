@@ -109,6 +109,7 @@ class Herosphp {
             'herosphp\utils\FileUtils'       => 'utils.FileUtils',
             'herosphp\utils\FileUpload'       => 'utils.FileUpload',
             'herosphp\utils\ArrayUtils'       => 'utils.ArrayUtils',
+            'herosphp\utils\RedisUtils'       => 'utils.RedisUtils',
             'herosphp\utils\AjaxResult'       => 'utils.AjaxResult',
             'herosphp\utils\WebUtils'       => 'utils.WebUtils',
             'herosphp\utils\HashUtils'       => 'utils.HashUtils',

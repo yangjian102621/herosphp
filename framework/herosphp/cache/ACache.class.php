@@ -52,11 +52,7 @@ Abstract class ACache {
      * @param array $configs 缓存配置信息
      */
     public function __construct( $configs ) {
-        if ( !$configs ) {
-            if ( APP_DEBUG ) {
-                E("必须传入缓存配置信息！");
-            }
-        }
+        if ( !$configs ) E("cache configure is needed！");
         $this->configs = $configs;
     }
 

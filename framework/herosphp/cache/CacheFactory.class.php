@@ -24,9 +24,9 @@ class CacheFactory {
             'class' => 'herosphp\cache\FileCache',
             'path' => 'cache.FileCache'
         ),
-        'html' => array(
-            'class' => 'herosphp\cache\HtmlCache',
-            'path' => 'cache.HtmlCache'
+        'redis' => array(
+            'class' => 'herosphp\cache\RedisCache',
+            'path' => 'cache.RedisCache'
         ),
         'memo' => array(
             'class' => 'herosphp\cache\MemoCache',
@@ -46,7 +46,7 @@ class CacheFactory {
             return self::$CACHE_SET[$key];
         }
 
-        $configs = Loader::config($key, 'cache');
+        $configs = Loader::config($key, 'cache');   //加载缓存配置
         $className = self::$CACHE_BEAN[$key]['class'];
         Loader::import(self::$CACHE_BEAN[$key]['path'], IMPORT_FRAME);
         if ( $single ) {

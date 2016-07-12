@@ -5,6 +5,7 @@ use herosphp\cache\CacheFactory;
 use herosphp\core\Controller;
 use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
+use herosphp\utils\RedisUtils;
 
 /**
  * 缓存测试
@@ -48,7 +49,7 @@ class CacheAction extends Controller {
 
         $CACHE = CacheFactory::create('file');
         $key  = 'test.cache.key';
-        $CACHE->set($key, 'this is the test cache data. fuck it what ever!');
+        $CACHE->set($key, 'this is the test cache data. fuck it what ever!', 10);
         $data = $CACHE->get($key);
         __print($data);
         die();
@@ -100,6 +101,16 @@ class CacheAction extends Controller {
             $CACHER->set($key, "测试 Memcache 缓存数据!");
         }
         __print($data);
+        die();
+    }
+
+    //redis 测试
+    public function redis( HttpRequest $request ) {
+
+        $CACHER = CacheFactory::create('redis');
+        $CACHER->set("test_key", "this is the test data", 10);
+
+        var_dump($CACHER->get("test_key"));
         die();
     }
 }

@@ -24,35 +24,20 @@ class FileCache extends ACache implements ICache {
      * @param null $expire
      * @return bool|mixed|string
      */
-	public function get( $key, $expire=null ) {
+	public function get( $key ) {
 
-        if ( $expire !== null ) {
-            $this->configs['expire'] = $expire;
-        }
 	    $cacheFile = $this->getCacheFile($key);
 
         //缓存文件不存在
-		if ( !file_exists($cacheFile) ) {
-            if ( APP_DEBUG ) {
-                Debug::appendMessage("缓存文件 {$cacheFile} 不存在.");
-            }
-			return false;
-		}
-		//缓存过期, 若$expire = 0 则表示缓存永不过期
-		if ( $this->configs['expire'] > 0 &&
-            time() > (filemtime($cacheFile) + $this->configs['expire']) ) {
+		if ( !file_exists($cacheFile) ) return false;
 
-            if ( APP_DEBUG ) {
-                Debug::appendMessage("缓存文件 {$cacheFile} 已经过期.");
-            }
+        $text = file_get_contents($cacheFile);
+        $content = cn_json_decode($text);
+		//判断缓存是否过期
+		if ( $content['expire'] > 0 && time() > (filemtime($cacheFile) + $content['expire']) ) {
 			return false;
 		} else {
-			$content = file_get_contents($cacheFile);
-            if ( ArrayUtils::isSerializedArray($content) ) {
-                return unserialize($content);
-            } else {
-                return $content;
-            }
+            return $content['data'];
 		}
 	}
 
@@ -64,15 +49,16 @@ class FileCache extends ACache implements ICache {
      * @param null $expire
      * @return int
      */
-	public function set( $key, $content, $expire=null ) {
+	public function set( $key, $content, $expire=0 ) {
 
         $cacheFile = $this->getCacheFile($key);
         $dirname = dirname($cacheFile);
         if ( !file_exists($dirname) ) {
             FileUtils::makeFileDirs($dirname);
         }
-        if ( is_array($content) ) $content = serialize($content);
-		return file_put_contents($cacheFile, $content, LOCK_EX);
+        $data['expire'] = $expire;
+        $data['data'] = $content;
+		return file_put_contents($cacheFile, cn_json_encode($data), LOCK_EX);
 	}
 
     /**

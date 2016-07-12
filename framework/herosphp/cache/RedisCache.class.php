@@ -1,6 +1,6 @@
 <?php
 /*---------------------------------------------------------------------
- * memcache 缓存
+ * Redis 缓存
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -12,18 +12,12 @@
 namespace herosphp\cache;
 
 use herosphp\cache\interfaces\ICache;
+use herosphp\utils\RedisUtils;
 
-class MemoCache implements ICache {
-
-    /**
-     * Memcache 缓存实例
-     * @var Memcache|null
-     */
-    private static $Mem = NULL;
+class RedisCache implements ICache {
 
     //所有缓存key的前缀
     const KEY_PREFIX = "CACHE_KET_PRIFIX_";
-
 
     /**
      * @var array 配置信息
@@ -35,21 +29,7 @@ class MemoCache implements ICache {
      * @param array $configs 缓存配置信息
      */
     public function __construct( $configs ) {
-        if ( !$configs )
-            if ( APP_DEBUG ) E("cache configure args is needed！");
-
-        if ( !extension_loaded("memcache") ) E("please install memcache extension.");
         $this->configs = $configs;
-        $Mem = new \Memcache();
-        foreach ( $this->configs['server'] as $value ) {
-            call_user_func_array(array($Mem, 'addServer'), $value);
-        }
-        if ( !$Mem->getstats() ) {
-            if ( APP_DEBUG ) {
-                E("Unable to connect the Memcache server!");
-            }
-        }
-        self::$Mem = $Mem;
     }
 
     /**
@@ -57,8 +37,8 @@ class MemoCache implements ICache {
      * @param string $key
      * @return array|mixed|string
      */
-	public function get( $key ) {
-		return self::$Mem->get(self::KEY_PREFIX.$key);
+	public function get($key, $expire=null) {
+		return RedisUtils::getInstance()->get(self::KEY_PREFIX.$key);
 	}
 
     /**
@@ -68,8 +48,9 @@ class MemoCache implements ICache {
      * @param null $expire
      * @return bool
      */
-	public function set( $key, $content, $expire=0) {
-		return self::$Mem->set(self::KEY_PREFIX.$key, $content, MEMCACHE_COMPRESSED, $expire);
+	public function set($key, $content, $expire=0) {
+
+		return RedisUtils::getInstance()->set(self::KEY_PREFIX.$key, $content, $expire);
 	}
 
     /**
@@ -78,7 +59,7 @@ class MemoCache implements ICache {
      * @return bool
      */
 	public function delete( $key ) {
-		return self::$Mem->delete(self::KEY_PREFIX.$key, 0);
+		return RedisUtils::getInstance()->delete(self::KEY_PREFIX.$key);
 	}
 }
 ?>
