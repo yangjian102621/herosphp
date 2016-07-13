@@ -20,10 +20,19 @@ class IndexAction extends Controller {
      * @param HttpRequest $request
      */
     public function index( HttpRequest $request ) {
-        __print($request->getParameters());
-        __print("<h1>Hello， Herosphp!</h1>");
-        die();
+        __print("<h1>O(∩_∩)O~~ 欢迎使用Herosphp!</h1>");
         //$this->setView("common:index");
+        die();
+    }
+
+    //获取用户列表
+    public function user() {
+
+        $service = Beans::get('test.user.service');
+
+        $result = $service->fields('*')->where("id > 20")->select();
+        __print($result);
+        die();
 
     }
   

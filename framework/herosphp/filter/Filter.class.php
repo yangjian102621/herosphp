@@ -73,7 +73,7 @@ class Filter {
      * @return bool
      */
     private static function isString( &$value ) {
-        return is_string($value) && (trim($value) != '');
+		return is_string($value);
     }
 
     /**

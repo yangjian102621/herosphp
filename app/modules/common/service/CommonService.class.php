@@ -12,6 +12,21 @@ use herosphp\core\Loader;
  */
 abstract class CommonService implements ICommonService {
 
+    //查询条件
+    private $conditions = null;
+    //查询字段
+    private $fields = null;
+    //排序方式
+    private $order = null;
+    //当前页码
+    private $page = 1;
+    //每页记录数
+    private $pagesize = 20;
+    //分组字段
+    private $group = null;
+    //分组条件
+    private $having = null;
+
     /**
      * 数据模型操作DAO
      * @var \common\dao\interfaces\ICommonDao
@@ -194,7 +209,54 @@ abstract class CommonService implements ICommonService {
         return $this->modelDao->getDB();
     }
 
+    //获取数据列表
+    public function select() {
+        return $this->getItems($this->conditions, $this->fields, $this->order, $this->page, $this->pagesize, $this->group, $this->having);
+    }
 
+    //获取一条数据
+    public function selectOne() {
+        return $this->getItem($this->conditions, $this->fields, $this->order, $this->group, $this->having);
+    }
+
+    //设置查询条件
+    public function where($conditions) {
+        if ( $conditions ) $this->conditions = $conditions;
+        return $this;
+    }
+
+    //设置查询字段
+    public function fields($fields) {
+        if ( $fields ) $this->fields = $fields;
+        return $this;
+    }
+
+    //设置排序方式
+    public function order($order) {
+        if ( $order ) $this->order = $order;
+        return $this;
+    }
+
+    //设置分页
+    public function page($page, $pagesize) {
+        if ( $page > 0 && $pagesize > 0 ) {
+            $this->pagesize = $pagesize;
+            $this->page = $page;
+        }
+        return $this;
+    }
+
+    //设置分组方式
+    public function group($group) {
+        if ( $group ) $this->group = $group;
+        return $this;
+    }
+
+    //设置分组条件
+    public function having($having) {
+        if ( $having ) $this->having = $having;
+        return $this;
+    }
 }
 
 ?>

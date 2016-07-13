@@ -18,8 +18,7 @@ class BeanAction extends Controller {
      */
     public function index( HttpRequest $request ) {
 
-        __print($request->getParameters());
-        __print("Bean 模块测试，使用bean来管理服务。");
+        echo("<h1>Bean 模块测试，使用bean来管理服务。Beans::get('test.user.service')</h1>");
         $userService = Beans::get('test.user.service');
         $userService->register();
         $userService->login();

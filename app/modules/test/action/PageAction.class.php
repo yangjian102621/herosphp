@@ -20,8 +20,6 @@ class PageAction extends Controller {
      */
     public function index( HttpRequest $request ) {
 
-        __print($request->getParameters());
-
         $page = $request->getParameter('page', 'intval');
         $pagesize = 10;
 
