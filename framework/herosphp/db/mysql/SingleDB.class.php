@@ -102,9 +102,7 @@ class SingleDB implements Idb {
             }
             throw $_exception;
         }
-        if ( APP_DEBUG ) {
-            Debug::appendMessage($_query, 'sql');   //添加调试信息
-        }
+        Debug::appendMessage($_query, 'sql');   //添加调试信息
         return $_result;
     }
 
@@ -130,7 +128,12 @@ class SingleDB implements Idb {
 			$_query = "INSERT INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";
 
 			if ( $this->query( $_query ) != false ){
-				return $this->link->lastInsertId();
+				$last_insert_id = $this->link->lastInsertId();
+                if ( $last_insert_id ) {
+                    return $last_insert_id;
+                } else {    //ID不是自增的而是手动生成的
+                    return true;
+                }
 			}
 		}
         return false;

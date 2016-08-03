@@ -113,6 +113,7 @@ class Herosphp {
             'herosphp\utils\AjaxResult'       => 'utils.AjaxResult',
             'herosphp\utils\WebUtils'       => 'utils.WebUtils',
             'herosphp\utils\HashUtils'       => 'utils.HashUtils',
+            'herosphp\utils\IdGenerateUtils'       => 'utils.IdGenerateUtils',
             'herosphp\utils\ImageThumb'       => 'utils.ImageThumb',
             'herosphp\utils\ImageWater'       => 'utils.ImageWater',
             'herosphp\utils\Page'       => 'utils.Page',

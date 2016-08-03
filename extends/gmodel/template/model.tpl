@@ -16,6 +16,6 @@ class {model_name} extends C_Model {
         parent::__construct('{table_name}');
 
         //设置表数据表主键，默认为id
-        $this->setPrimaryKey('id');
+        $this->setPrimaryKey('{pk}');
     }
 } 

@@ -102,7 +102,7 @@ class DBFactory {
             $sql = "CREATE TABLE `{$tableName}`(";
             $pk = $value->find("pk", 0);
             if ( $pk ) {
-                $sql .= "`{$pk->name}` {$pk->type} unsigned NOT NULL ";
+                $sql .= "`{$pk->name}` {$pk->type} NOT NULL ";
                 if ( $pk->ai ) {
                     $sql .= "AUTO_INCREMENT ";
                 }

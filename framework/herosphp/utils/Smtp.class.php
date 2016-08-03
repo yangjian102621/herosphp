@@ -197,4 +197,3 @@ class Smtp
         return $_address;
     }
 }
-?>

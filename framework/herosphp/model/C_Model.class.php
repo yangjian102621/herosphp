@@ -131,7 +131,7 @@ class C_Model implements IModel {
      */
     public function delete($id)
     {
-        return $this->db->delete($this->table, "{$this->primaryKey}={$id}");
+        return $this->db->delete($this->table, "{$this->primaryKey}='{$id}'");
     }
 
     /**
@@ -217,7 +217,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        return $this->db->update($this->table, $data, "{$this->primaryKey}={$id}");
+        return $this->db->update($this->table, $data, "{$this->primaryKey}='{$id}'");
     }
 
     /**

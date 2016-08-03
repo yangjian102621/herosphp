@@ -46,8 +46,12 @@ class ModelFactory {
                 tprintWarning("Warnning : model file '{$modelFile}' has existed，skiped.");
                 continue;
             }
+            $pk = $value->find("pk", 0);
 
             $content = str_replace("{table_name}", $value->name, $tempContent);
+            if ( $pk ) {
+                $content = str_replace("{pk}", $pk->name, $content);
+            }
             $content = str_replace("{model_name}", ucfirst(GModel::underline2hump($value->name))."Model", $content);
             $content = str_replace("{app_name}", APP_NAME, $content);
             $content = str_replace("{author}", $configs["author"], $content);
