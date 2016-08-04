@@ -5,7 +5,7 @@ use herosphp\core\Controller;
 use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
 use herosphp\session\FileSession;
-use herosphp\utils\FileUtils;
+use herosphp\files\FileUtils;
 use herosphp\utils\Page;
 
 /**

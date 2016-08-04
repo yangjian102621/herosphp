@@ -272,17 +272,12 @@ class Filter {
 
         //2. 数据长度验证
         if ( $model[1] != null ) {
-            if ( $model[1][0] > 0 ) {
-                if ( mb_strlen($value, "UTF-8") < $model[1][0] ) {
-                    $success = false;
-                }
-            }
-            if ( $model[1][1] > 0 ) {
-                if ( mb_strlen($value, "UTF-8") > $model[1][1] ) {
-                    //截去多余的长度
-                    //$value = mb_substr($value, 0, $model[1][1], 'UTF-8');
-                    $success = false;
-                }
+            if ( ($model[0] & self::DFILTER_NUMERIC) //如果是数字就对其进行大小验证
+                && (($model[1][0] > 0 && $value < $model[1][0]) || $model[1][1] > 0 && $value > $model[1][1]) ) {
+                $success = false;
+            } else if( ($model[1][0] > 0 && mb_strlen($value, "UTF-8") < $model[1][0])  //非数字就进行长度验证
+            || ($model[1][1] > 0 && mb_strlen($value, "UTF-8") > $model[1][1]) ) {
+                $success = false;
             }
         }
 

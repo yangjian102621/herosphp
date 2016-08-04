@@ -49,7 +49,7 @@ class Loader {
         //组合文件路径
         switch ( $type ) {
             case IMPORT_CLIENT :
-                $path = APP_ROOT.'client'.'/';
+                $path = APP_PATH.'client'.'/';
                 break;
 
             case IMPORT_APP :
@@ -127,23 +127,15 @@ class Loader {
     /**
      * 加载配置信息
      * @param string $key 配置文件名称key， 如果没有指定则加载所有配置文档
-     * @param string $section 配置文档所属片区|模块，如果没有指定，则默认加载当前应用配置文档根目录的配置文件
+     * @param string $section (格式：beans.user) 配置文档所属片区|模块，如果没有指定，则默认加载当前应用配置文档根目录的配置文件
      * @return array
      */
-    public static function config( $key='*', $section=null ) {
+    public static function config($key='*', $section=null) {
 
         if ( isset(self::$CONFIGS[$section][$key]) ) {
             return self::$CONFIGS[$section][$key];
         }
-        //加载系统configs文件夹中的配置文档
-        if ( strpos($section, 'root') === 0 ) {
-            if ( $section == 'root' ) {
-                $configDir = APP_CONFIG_PATH;
-            } else {
-                $configDir = APP_CONFIG_PATH.str_replace('root.', '', $section).'/';
-            }
-
-        } else if( $section == null ) {
+        if( $section == null ) {
             $configDir = APP_PATH.'configs/';   //加载应用configs根目录中的配置文件
         } else {
             $configDir = APP_PATH.'configs/'.str_replace('.', '/', $section).'/';   //加载应用configs文件夹中的配置文档

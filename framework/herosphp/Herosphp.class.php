@@ -10,11 +10,15 @@
  * @version 1.2.1
  *-----------------------------------------------------------------------*/
 
-//定义当前应用根目录
-define('APP_PATH', APP_ROOT.APP_NAME."/");
+// 检测PHP环境
+if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
+
+define('FRAME_VERSION', '3.0.0'); //框架版本
+define('SERVER_NODE_NAME', 'server_node_1'); //当前服务器节点，分布式部署时需要使用
+define('APP_PATH', APP_ROOT.APP_NAME."/"); //当前应用根目录
 require_once APP_FRAME_PATH.'Heros.const.php'; //引入系统常量文件
 require_once APP_FRAME_PATH.'functions.core.php';//包含框架全局函数
-require_once APP_ROOT.'functions.php'; //包含公共函数页面
+require_once APP_PATH . 'functions.php'; //包含公共函数页面
 require_once APP_FRAME_PATH.'core/Loader.class.php';//包含资源加载器
 
 use herosphp\core\Loader;
@@ -55,12 +59,9 @@ class Herosphp {
             ini_set("display_errors", "Off");
         }
 
-        $configs = Loader::config('system', 'root');    //加载系统全局配置
         $appConfigs = Loader::config('app'); //加载当前应用的配置信息
-        //将应用的配置信息覆盖系统的全局配置信息
-        $configs = array_merge($configs, $appConfigs);
         $application = WebApplication::getInstance();
-        $application->execute($configs);
+        $application->execute($appConfigs);
 
         //Debug::printMessage();
     }
@@ -106,25 +107,42 @@ class Herosphp {
             'herosphp\core\Controller'       => 'core.Controller',
             'herosphp\exception\HeroException'       => 'exception.HeroException',
             'herosphp\exception\DBException'       => 'exception.DBException',
-            'herosphp\utils\FileUtils'       => 'utils.FileUtils',
-            'herosphp\utils\FileUpload'       => 'utils.FileUpload',
+
+            'herosphp\files\FileUtils'       => 'files.FileUtils',
+            'herosphp\files\FileUpload'       => 'files.FileUpload',
+            'herosphp\files\PHPZip'       => 'files.PHPZip',
+
             'herosphp\utils\ArrayUtils'       => 'utils.ArrayUtils',
-            'herosphp\utils\RedisUtils'       => 'utils.RedisUtils',
             'herosphp\utils\AjaxResult'       => 'utils.AjaxResult',
-            'herosphp\utils\WebUtils'       => 'utils.WebUtils',
             'herosphp\utils\HashUtils'       => 'utils.HashUtils',
-            'herosphp\utils\IdGenerateUtils'       => 'utils.IdGenerateUtils',
-            'herosphp\utils\ImageThumb'       => 'utils.ImageThumb',
-            'herosphp\utils\ImageWater'       => 'utils.ImageWater',
             'herosphp\utils\Page'       => 'utils.Page',
-            'herosphp\utils\PHPZip'       => 'utils.PHPZip',
-            'herosphp\utils\Smtp'       => 'utils.Smtp',
-            'herosphp\utils\VerifyCode'       => 'utils.VerifyCode',
+
+            'herosphp\string\StringBuffer'       => 'string.StringBuffer',
+            'herosphp\string\StringUtils'       => 'string.StringUtils',
+
+            'herosphp\image\ImageThumb'       => 'image.ImageThumb',
+            'herosphp\image\ImageWater'       => 'image.ImageWater',
+            'herosphp\image\VerifyCode'       => 'image.VerifyCode',
+
+            'herosphp\web\Smtp'       => 'web.Smtp',
+            'herosphp\web\WebUtils'       => 'web.WebUtils',
+
             'herosphp\db\DBFactory'       => 'db.DBFactory',
             'herosphp\db\SQL'       => 'db.SQL',
+            'herosphp\db\query\IQuery'       => 'db.query.IQuery',
+            'herosphp\db\query\MQuery'       => 'db.query.MQuery',
+
             'herosphp\model\C_Model'       => 'model.C_Model',
+
+            'herosphp\lock\SemSynLock'       => 'lock.SemSynLock',
+            'herosphp\lock\FileSynLock'       => 'lock.FileSynLock',
+            'herosphp\lock\SynLockFactory'       => 'lock.SynLockFactory',
+
             'herosphp\filter\Filter'       => 'filter.Filter',
+
             'herosphp\cache\CacheFactory'       => 'cache.CacheFactory',
+            'herosphp\cache\utils\RedisUtils'       => 'cache.utils.RedisUtils',
+
             'herosphp\bean\Beans'  => 'bean.Beans',
             'herosphp\listener\WebApplicationListenerMatcher'  => 'listener.WebApplicationListenerMatcher',
             'herosphp\session\Session'  => 'session.Session');
@@ -135,7 +153,7 @@ class Herosphp {
             'client\tools\result\XmlResult'        => 'common.client.result.XmlResult',
         );
         //获取自动加载类配置
-        $autoLoadConfigs = Loader::config("autoload", "root");
+        $autoLoadConfigs = Loader::config("autoload");
         self::$APP_CLASS = array_merge(self::$APP_CLASS, $autoLoadConfigs);
     }
 

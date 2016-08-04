@@ -79,23 +79,6 @@ function getHashCode( $str ) {
 }
 
 /**
- * get format filesize string(获取格式化文件大小字符串)
- * @param 	int			$size
- * @return  string 		$size_str
- */
-function formatFileSize( $size ) {
-    if ( $size/1024 < 1 ) {
-        return $size ." B";
-    } else if ( $size/1024 > 1 && $size/(1024*1024) < 1 ) {
-        return number_format($size/1024, 2, '.', '') .'KB';
-    } else if ( $size/(1024*1024) > 1 && $size/(1024*1024*1024)< 1 ) {
-        return number_format($size/(1024*1024), 2, '.', '') ." MB";
-    } else {
-        return number_format($size/(1024*1024*1024), 2, '.', '')." GB";
-    }
-}
-
-/**
  * 抛出异常
  * @param $message
  * @param int $code
@@ -276,11 +259,8 @@ function addUrlArgs($url, $key, $value) {
 function getConfig($key) {
 
     if ( defined('RUN_CLI') ) {
-        $configs = Loader::config('system', 'root');    //加载系统全局配置
         $appConfigs = Loader::config('app'); //加载当前应用的配置信息
-        //将应用的配置信息覆盖系统的全局配置信息
-        $configs = array_merge($configs, $appConfigs);
-        return $configs[$key];
+        return $appConfigs[$key];
     } else {
         $webapp = \herosphp\core\WebApplication::getInstance();
         return $webapp->getConfig($key);
@@ -293,35 +273,12 @@ function getConfig($key) {
  */
 function getConfigs() {
     if ( defined("RUN_CLI") ) {
-        $configs = Loader::config('system', 'root');    //加载系统全局配置
         $appConfigs = Loader::config('app'); //加载当前应用的配置信息
-        //将应用的配置信息覆盖系统的全局配置信息
-        $configs = array_merge($configs, $appConfigs);
-        return $configs;
+        return $appConfigs;
     } else {
         $webapp = \herosphp\core\WebApplication::getInstance();
         return $webapp->getConfigs();
     }
-}
-
-/**
- * 将中文数组json编码
- * @param $array
- * @return string
- */
-function cn_json_encode($array) {
-    return urlencode(json_encode($array));
-}
-
-/**
- * 中文 json 数据解码
- * @param $string
- * @return mixed
- */
-function cn_json_decode($string) {
-
-    $string = urldecode($string);
-    return json_decode($string, true);
 }
 
 //跳转到404页面
@@ -338,10 +295,15 @@ function page301( $url ) {
 }
 
 //页面跳转
-function location( $url ){
+function location( $url ) {
 
     header("Location:{$url}");
     die();
 
+}
+
+//获取框架版本号
+function getFrameVersion() {
+    return FRAME_VERSION;
 }
 

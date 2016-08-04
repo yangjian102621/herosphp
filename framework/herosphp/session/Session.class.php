@@ -25,7 +25,7 @@ class Session {
         if ( isset($_SESSION) ) return true;
 
         //loading session configures
-        $configs = Loader::config('session','root.session');
+        $configs = Loader::config('session');
         switch ( SESSION_HANDLER ) {
 
             case 'file':

@@ -7,10 +7,7 @@ namespace gmodel\utils;
  * @author yangjian<yangjian102621@gmail.com>
  *
  */
-use gmodel\GModel;
-use herosphp\utils\FileUtils;
-
-require_once "StringBuffer.class.php";
+use herosphp\files\FileUtils;
 
 class ControllerFactory {
 

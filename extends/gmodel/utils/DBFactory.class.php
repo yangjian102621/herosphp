@@ -110,27 +110,30 @@ class DBFactory {
             }
             //添加字段
             $fields = $value->find("fields", 0);
-            foreach( $fields->children() as $fd ) {
-                if ( $fd->default || $fd->default === "0" ) {   //has default value
-                    if ( in_array($fd->default, self::$DEFAULT_VALUE_KEYWORD) ) {
-                        $sql .= "`{$fd->name}` {$fd->type} NOT NULL DEFAULT {$fd->default} COMMENT '{$fd->comment}',";
-                    } else {
-                        $sql .= "`{$fd->name}` {$fd->type} NOT NULL DEFAULT '{$fd->default}' COMMENT '{$fd->comment}',";
+            if ( $fields ) {
+                foreach( $fields->children() as $fd ) {
+                    if ( $fd->default || $fd->default === "0" ) {   //has default value
+                        if ( in_array($fd->default, self::$DEFAULT_VALUE_KEYWORD) ) {
+                            $sql .= "`{$fd->name}` {$fd->type} NOT NULL DEFAULT {$fd->default} COMMENT '{$fd->comment}',";
+                        } else {
+                            $sql .= "`{$fd->name}` {$fd->type} NOT NULL DEFAULT '{$fd->default}' COMMENT '{$fd->comment}',";
+                        }
+                    } else { //has not default value
+                        $sql .= "`{$fd->name}` {$fd->type} NOT NULL COMMENT '{$fd->comment}',";
                     }
-                } else { //has not default value
-                    $sql .= "`{$fd->name}` {$fd->type} NOT NULL COMMENT '{$fd->comment}',";
-                }
 
-                //创建索引
-                if ( $fd->getAttribute("add-index") == "true" ) {
-                    $indexType = $fd->getAttribute("index-type");
-                    if ( $indexType == "normal" ) {
-                        $sql .= "KEY `{$fd->name}` (`{$fd->name}`), ";
-                    } elseif ( $indexType == "unique" ) {
-                        $sql .= "UNIQUE KEY `{$fd->name}` (`{$fd->name}`),";
+                    //创建索引
+                    if ( $fd->getAttribute("add-index") == "true" ) {
+                        $indexType = $fd->getAttribute("index-type");
+                        if ( $indexType == "normal" ) {
+                            $sql .= "KEY `{$fd->name}` (`{$fd->name}`), ";
+                        } elseif ( $indexType == "unique" ) {
+                            $sql .= "UNIQUE KEY `{$fd->name}` (`{$fd->name}`),";
+                        }
                     }
                 }
             }
+
             if ( $pk ) $sql .= "PRIMARY KEY (`{$pk->name}`)";
             $sql .= ") ENGINE={$value->engine}  DEFAULT CHARSET={$configs['charset']} COMMENT='{$value->comment}' AUTO_INCREMENT=1 ;";
 

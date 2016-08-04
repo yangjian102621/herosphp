@@ -13,7 +13,7 @@ namespace herosphp\session;
 
 use herosphp\core\Loader;
 use herosphp\session\interfaces\ISession;
-use herosphp\utils\FileUtils;
+use herosphp\files\FileUtils;
 
 Loader::import('session.interfaces.ISession', IMPORT_FRAME);
 class FileSession implements ISession {

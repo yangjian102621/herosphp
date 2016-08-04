@@ -4,8 +4,10 @@ namespace test\action;
 use herosphp\bean\Beans;
 use herosphp\core\Controller;
 use herosphp\core\Debug;
+use herosphp\core\WebApplication;
 use herosphp\http\HttpRequest;
 use herosphp\utils\AjaxResult;
+use herosphp\web\WebUtils;
 use Workerman\Worker;
 
 /**

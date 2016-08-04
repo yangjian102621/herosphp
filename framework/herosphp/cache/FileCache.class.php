@@ -12,9 +12,8 @@
 namespace herosphp\cache;
 
 use herosphp\cache\interfaces\ICache;
-use herosphp\core\Debug;
-use herosphp\utils\ArrayUtils;
-use herosphp\utils\FileUtils;
+use herosphp\files\FileUtils;
+use herosphp\string\StringUtils;
 
 class FileCache extends ACache implements ICache {
 
@@ -58,7 +57,7 @@ class FileCache extends ACache implements ICache {
         }
         $data['expire'] = $expire;
         $data['data'] = $content;
-		return file_put_contents($cacheFile, cn_json_encode($data), LOCK_EX);
+		return file_put_contents($cacheFile, StringUtils::jsonEncode($data), LOCK_EX);
 	}
 
     /**

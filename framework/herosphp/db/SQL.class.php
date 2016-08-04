@@ -134,7 +134,7 @@ class SQL {
         if ( is_array($where) ) {
             //1. array(1, 2, 3)
             if ( is_numeric($where[0]) ) {
-                return " {$this->priKey} in(".implode(',', $where).")";
+                return " {$this->priKey} in('".implode("',", $where)."')";
             }
             //2. array('name' => 'zhangsan', '|age' => '>24')
             $condi = array(" 1 ");

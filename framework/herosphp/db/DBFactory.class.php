@@ -13,7 +13,6 @@
 namespace herosphp\db;
 
 use herosphp\core\Loader;
-use herosphp\exception\DBException;
 
 class DBFactory {
 

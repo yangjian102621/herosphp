@@ -15,7 +15,7 @@ class AjaxResult {
     /**
      * 错误代码
      * @var int
-     * 0 => 成功, 1 => 失败
+     * 000 => 成功, 001 => 失败
      */
     private $code;
 
@@ -32,13 +32,13 @@ class AjaxResult {
     private $data;
 
     //code for operation successfully
-    const OP_SUCCESS = 0;
+    const OP_SUCCESS = '000';
 
     //default code for operation failed
-    const OP_FAILURE = 1;
+    const OP_FAILURE = '001';
 
     //error code 101: Invalid parameter operation
-    const INVALID_PARAM = 101;
+    const INVALID_PARAM = '101';
 
     /**
      * 显示ajax操作失败默认结果

@@ -8,9 +8,7 @@ namespace gmodel\utils;
  *
  */
 use gmodel\GModel;
-use herosphp\utils\FileUtils;
-
-require_once "StringBuffer.class.php";
+use herosphp\files\FileUtils;
 
 class ModelFactory {
 

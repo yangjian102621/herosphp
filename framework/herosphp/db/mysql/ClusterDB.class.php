@@ -254,7 +254,7 @@ class ClusterDB implements ICusterDB {
     public function count($_table, $_conditons=null)
     {
         $_query = "SELECT count(*) as total FROM {$_table}";
-        if ( $_conditons ) $_query .= " WHERE ".SQL::buildConditions($_conditons);
+        if ( $_conditons ) $_query .= " WHERE ".$_conditons;
         $_result = $this->query($_query);
         $_res = $_result->fetch(PDO::FETCH_ASSOC);
         return $_res['total'];

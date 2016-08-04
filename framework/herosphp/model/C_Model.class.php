@@ -15,6 +15,8 @@ namespace herosphp\model;
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
+use herosphp\db\query\DBQuery;
+use herosphp\db\query\IQuery;
 use herosphp\db\SQL;
 use herosphp\filter\Filter;
 use herosphp\utils\AjaxResult;
@@ -141,8 +143,7 @@ class C_Model implements IModel {
      */
     public function deletes($conditions)
     {
-        $conditions = SQL::create()->buildConditions($conditions);
-        return $this->db->delete($this->table, $conditions);
+        return $this->db->delete($this->table, $this->getConditons($conditions));
     }
 
     /**
@@ -156,13 +157,9 @@ class C_Model implements IModel {
      * @param array|string $having
      * @return array
      */
-    public function getItems($conditions, $fields, $order, $page, $pagesize, $group, $having)
+    public function getItems(IQuery $query)
     {
-        $limit = null;
-        if ( $pagesize > 0 && $page > 0 ) $limit = array(($page-1) * $pagesize, $pagesize);
-        $sql = SQL::create($this->primaryKey)->table($this->table)->where($conditions)->fields($fields)
-            ->order($order)->group($group)->having($having)->limit($limit)->buildQueryString();
-        $items =  $this->db->getItems($sql);
+        $items =  $this->db->getItems($query->setTable($this->table)->buildQueryString());
 
         //做字段别名映射
         if ( !empty($items) ) {
@@ -181,18 +178,13 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::getItem()
-     * @param array|string $conditions
-     * @param array|string $fields
-     * @param array|string $order
-     * @param string $group
-     * @param array|string $having
-     * @return array|mixed
      */
-    public function getItem($conditions, $fields, $order, $group, $having)
+    public function getItem($conditions)
     {
-        $sql = SQL::create($this->primaryKey)->table($this->table)->where($conditions)->fields($fields)
-            ->order($order)->group($group)->having($having)->buildQueryString();
-        $item = $this->db->getItem($sql);
+        if ( !($conditions instanceof IQuery) ) {
+            $query = DBQuery::getInstance()->setTable($this->table)->addWhere($this->getPrimaryKey(), $conditions);
+        }
+        $item = $this->db->getItem($query->buildQueryString());
 
         //做字段别名映射
         $mappings = $this->getMapping();
@@ -232,8 +224,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $conditions = SQL::create()->buildConditions($conditions);
-        return $this->db->update($this->table, $data, $conditions);
+        return $this->db->update($this->table, $data, $this->getConditons($conditions));
     }
 
     /**
@@ -243,8 +234,7 @@ class C_Model implements IModel {
      */
     public function count($conditions)
     {
-        $conditions = SQL::create()->buildConditions($conditions);
-        return $this->db->count($this->table, $conditions);
+        return $this->db->count($this->table, $this->getConditons($conditions));
     }
 
     /**
@@ -271,7 +261,7 @@ class C_Model implements IModel {
     public function batchIncrease($field, $offset, $conditions)
     {
         $conditions = SQL::create($this->primaryKey)->buildConditions($conditions);
-        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
+        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$this->getConditons($conditions)}";
         return $this->db->query($query);
     }
 
@@ -298,8 +288,7 @@ class C_Model implements IModel {
      */
     public function batchReduce($field, $offset, $conditions)
     {
-        $conditions = SQL::create($this->primaryKey)->buildConditions($conditions);
-        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
+        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE ".$this->getConditons($conditions);
         return $this->db->query($query);
     }
 
@@ -326,8 +315,7 @@ class C_Model implements IModel {
     public function sets($field, $value, $conditions)
     {
         $data = array($field => $value);
-        $conditions = SQL::create()->buildConditions($conditions);
-        return $this->db->update($this->table, $data, $conditions);
+        return $this->db->update($this->table, $data, $this->getConditons($conditions));
     }
 
     /**
@@ -363,6 +351,19 @@ class C_Model implements IModel {
     }
 
     /**
+     * 获取查询条件
+     * @param $conditons
+     * @return
+     */
+    private function getConditons($conditions) {
+        if ( $conditions instanceof IQuery ) {
+            return $conditions->buildWhere();
+        } else {
+            return SQL::create()->buildConditions($conditions);
+        }
+    }
+
+    /**
      * 获取过滤后的数据
      * @param $data
      * @return mixed
@@ -377,11 +378,6 @@ class C_Model implements IModel {
         $_data = Filter::loadFromModel($data, $filterMap, $error);
 
         if ( $_data == false ) {
-
-            //如果开启了事物操作，则先回滚
-            if ( $this->inTransaction() ) {
-                $this->rollback();
-            }
             WebApplication::getInstance()->getAppError()->setCode(1);
             WebApplication::getInstance()->getAppError()->setMessage($error);
         }

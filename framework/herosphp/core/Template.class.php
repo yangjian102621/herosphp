@@ -11,7 +11,7 @@
 
 namespace herosphp\core;
 
-use herosphp\utils\FileUtils;
+use herosphp\files\FileUtils;
 
 class Template {
     /**
@@ -143,7 +143,7 @@ class Template {
         $this->configs['action'] = $request->getAction();
         $this->configs['method'] = $request->getMethod();
         $this->templateDir = APP_PATH.'modules/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
-        $this->compileDir = APP_RUNTIME_PATH.'views/'.APP_NAME.'/'.$this->configs['module'].'/';
+        $this->compileDir = APP_RUNTIME_PATH.APP_NAME.'/'.'views/'.$this->configs['module'].'/';
 
 	}
 
@@ -318,19 +318,6 @@ class Template {
         //获取资源的目录
         $resUrl = $this->configs['res_url'].RES_URL;
 
-        switch ( $section ) {
-            case 'gres':
-                $resUrl .= 'global/';
-                break;
-
-            case 'res' :
-                $resUrl .= APP_NAME.'/';
-                break;
-
-            case 'cres' :
-                break;
-        }
-
         //组合静态资源的src
         if ( $section == 'cres' ) {
             $src = $resUrl.$path;
@@ -365,4 +352,3 @@ class Template {
 	}
 
 }
-?>

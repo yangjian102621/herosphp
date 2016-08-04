@@ -3,14 +3,13 @@
 
   <!-- table config -->
   <table name="user" comment="用户表" engine="InnoDB" action-name="user">
-    <pk name="id" type="int(11)" ai="true" />
+    <pk name="id" type="char(36)" add-index="true" index-type="unique" />
 
-    <fields>
-      <field name="username" type="varchar(32)" default="" comment="用户名" add-index="true" index-type="unique" />
-      <field name="password" type="varchar(32)" default="" comment="密码" />
-      <field name="sex" type="char(1)" default="" comment="性别" />
-      <field name="addtime" type="timestamp" default="CURRENT_TIMESTAMP" comment="添加时间" />
-    </fields>
+    <!--<fields>-->
+      <!--<field name="username" type="varchar(32)" default="" comment="用户名" add-index="true" index-type="unique" />-->
+      <!--<field name="password" type="varchar(32)" default="" comment="密码" />-->
+      <!--<field name="addtime" type="timestamp" default="CURRENT_TIMESTAMP" comment="添加时间" />-->
+    <!--</fields>-->
 
   </table>
 
