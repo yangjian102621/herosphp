@@ -10,27 +10,15 @@ use herosphp\listener\WebApplicationListenerMatcher;
 use herosphp\core\WebApplication;
 
 /**
- * URL解析监听器
- * Class URLParseListener
+ * 应用程序默认生命周期监听器
  * @package common\listener
  * @author yangjian102621@gmail.com
  */
- class URLParseListener extends WebApplicationListenerMatcher implements IWebAplicationListener {
+ class DefaultWebappListener extends WebApplicationListenerMatcher implements IWebAplicationListener {
 
-     private $httpRequest;
+    public function beforeRequestInit() {}
 
-     /**
-      * 请求拦截
-      */
-    public function beforeRequestInit() {
-
-
-    }
-
-    public function beforeActionInvoke(){
-
-        
-    }
+    public function beforeActionInvoke(){}
 
 }
 

@@ -8,13 +8,13 @@ use herosphp\bean\Beans;
  */
 $beans = array(
 
-    /* 应用程序监听器配置 */
+    /* 应用程序默认生命周期监听器配置 */
     Beans::BEAN_WEBAPP_LISTENER => array (
         '@type' => Beans::BEAN_OBJECT_ARRAY,
         '@attributes' => array (
             array (
                 '@type' => Beans::BEAN_OBJECT,
-                '@class' => 'common\listener\URLParseListener'
+                '@class' => 'common\listener\DefaultWebappListener'
             )
         )
     ),
