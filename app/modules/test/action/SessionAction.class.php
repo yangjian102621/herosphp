@@ -35,7 +35,6 @@ class SessionAction extends Controller {
 
         Session::start();
         __print($_SESSION);
-
         die();
     }
   

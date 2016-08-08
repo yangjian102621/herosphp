@@ -1,6 +1,6 @@
 <?php
 /*---------------------------------------------------------------------
- * session handler for memcache. save session data to memcache by user
+ * session的redis实现，将session数据存储到redis中
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -15,7 +15,7 @@ use herosphp\core\Loader;
 use herosphp\session\interfaces\ISession;
 
 Loader::import('session.interfaces.ISession', IMPORT_FRAME);
-class MemSession implements  ISession {
+class RedisSession implements  ISession {
 
     /**
      * handler for memcache server
@@ -33,8 +33,8 @@ class MemSession implements  ISession {
 	 */
 	public static function start( $config = NULL ) {
 
-        self::$handler = new \Memcache();
-        self::$handler->connect($config['host'], $config['port']) or E("could not to connect the memcache server!");
+		self::$handler = new \Redis();
+		self::$handler->connect($config['host'], $config['port']);
         self::$config = $config;
         if ( !$config['gc_maxlifetime'] ) {
             self::$config['gc_maxlifetime'] = ini_get('session.gc_maxlifetime');
@@ -82,15 +82,14 @@ class MemSession implements  ISession {
 	 * @see	\herosphp\session\interfaces\ISession::write().
 	 */
 	public static function write( $sessionId, $data ) {
-
-		return self::$handler->set( $sessionId, $data,MEMCACHE_COMPRESSED, self::$config['gc_maxlifetime'] );
+		self::$handler->set( $sessionId, $data, self::$config['gc_maxlifetime']);
 	}
 
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::destroy().
 	 */
 	public static function destroy( $sessionId ) {
-		$_SESSION = null;
+        $_SESSION = null;
 		return self::$handler->delete( $sessionId );
 	}
 
@@ -103,4 +102,3 @@ class MemSession implements  ISession {
 	}
 
 }
-?>

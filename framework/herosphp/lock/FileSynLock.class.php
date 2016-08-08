@@ -31,20 +31,24 @@ class FileSynLock implements ISynLock {
 
     /**
      * 尝试去获取锁，成功返回false并且一直阻塞
-     * @return mixed
+     * @throws \herosphp\exception\HeroException
      */
     public function tryLock()
     {
-        return flock($this->file_handler, LOCK_EX);
+        if ( flock($this->file_handler, LOCK_EX) === false ) {
+            E('获取文件锁失败，锁定失败.');
+        }
     }
 
     /**
      * 释放锁
-     * @return mixed
+     * @throws \herosphp\exception\HeroException
      */
     public function unlock()
     {
-        return flock($this->file_handler, LOCK_UN);
+        if ( flock($this->file_handler, LOCK_UN) === false ) {
+            E('释放文件锁失败.');
+        }
     }
 
     public function __destruct()

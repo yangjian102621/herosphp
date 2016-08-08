@@ -12,11 +12,15 @@ namespace herosphp\db\query;
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
-use herosphp\utils\StringBuffer;
+
+use herosphp\string\StringBuffer;
 
 class MQuery implements IQuery {
 
-    private $table = null;
+    private $_table = null;  //数据表名称
+
+    //关联表名称，如果关联表不为空，则会自动使用联表查询
+    private $unionTable = '';
 
     /**
      * quyery condition map
@@ -31,7 +35,7 @@ class MQuery implements IQuery {
     private $page = 0;
 
     //每页记录条数
-    private $pagesize = 0;
+    private $pagesize = 20;
 
     //排序方式
     private $order = null;
@@ -61,9 +65,14 @@ class MQuery implements IQuery {
      */
     public function buildQueryString()
     {
-        $query = new StringBuffer("SELECT {$this->fields} FROM {$this->table}");
+        $query = new StringBuffer("SELECT {$this->fields} FROM ");
+        if ( $this->unionTable != '' ) {
+            $query->append($this->unionTable);
+        } else {
+            $query->append($this->_table);
+        }
 
-        $query->append(" WHERE ".$this->buildWhere());
+        if ( !$this->where->isEmpty() || $this->whereString != null ) $query->append(" WHERE ".$this->buildWhere());
         if ( $this->group ) $query->append(" GROUP BY ".$this->group);
         if ( $this->having ) $query->append(" HAVING ".$this->having);
         if ( $this->order ) $query->append(" ORDER BY ".$this->order);
@@ -72,7 +81,6 @@ class MQuery implements IQuery {
             $offset = ($this->page-1) * $this->pagesize;
 			$query->append(" LIMIT ".$offset.",".$this->pagesize);
 		}
-
         return $query->toString();
     }
 
@@ -87,11 +95,6 @@ class MQuery implements IQuery {
         } else {
             return $this->where->toString();
         }
-    }
-
-    public function setField($field)
-    {
-        $this->fields = $field;
     }
 
     /**
@@ -223,10 +226,16 @@ class MQuery implements IQuery {
     }
 
     //添加链接符号
-    public function addJoinStr($join='AND') {
+    public function concat($str='AND') {
         if ( !$this->where->isEmpty() ) {
-            $this->where->append($join);
+            $this->where->append($str);
         }
+    }
+
+    //关联表查询
+    public function table($table_str) {
+        $this->unionTable = $table_str;
+        return $this;
     }
 
     /**
@@ -235,37 +244,43 @@ class MQuery implements IQuery {
      * @param $where
      * @return
      */
-    public function setWhereString($where)
+    public function where($where)
     {
         $this->whereString = $where;
         return $this;
     }
 
-    public function setPagesize($pagesize)
+    public function pagesize($pagesize)
     {
         if ( $pagesize > 0 ) $this->pagesize = $pagesize;
         return $this;
     }
 
-    public function setPage($page)
+    public function field($field)
+    {
+        $this->fields = $field;
+        return $this;
+    }
+
+    public function page($page)
     {
         if ( $page > 0 ) $this->page = $page;
         return $this;
     }
 
-    public function setOrder($order)
+    public function order($order)
     {
         $this->order = $order;
         return $this;
     }
 
-    public function setGroup($group)
+    public function group($group)
     {
         $this->group = $group;
         return $this;
     }
 
-    public function setHaving($having)
+    public function having($having)
     {
         $this->having = $having;
         return $this;
@@ -273,7 +288,7 @@ class MQuery implements IQuery {
 
     public function setTable($table)
     {
-        $this->table = $table;
+        $this->_table = $table;
         return $this;
     }
 

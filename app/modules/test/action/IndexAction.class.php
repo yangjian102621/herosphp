@@ -5,6 +5,7 @@ use herosphp\bean\Beans;
 use herosphp\core\Controller;
 use herosphp\core\Debug;
 use herosphp\core\WebApplication;
+use herosphp\db\query\MQuery;
 use herosphp\http\HttpRequest;
 use herosphp\utils\AjaxResult;
 use herosphp\web\WebUtils;
@@ -22,9 +23,7 @@ class IndexAction extends Controller {
      * @param HttpRequest $request
      */
     public function index( HttpRequest $request ) {
-        __print("<h1>O(∩_∩)O~~ 欢迎使用Herosphp!</h1>");
-        //$this->setView("common:index");
-        die();
+
     }
 
     //获取用户列表
@@ -32,7 +31,9 @@ class IndexAction extends Controller {
 
         $service = Beans::get('test.user.service');
 
-        $result = $service->fields('*')->where("id > 20")->select();
+        $query = MQuery::getInstance()->field('*')->addOptWhere('id', '>=', 20)->addLikeWhere('username', '123');
+
+        $result = $service->getItems($query);
         __print($result);
         die();
 

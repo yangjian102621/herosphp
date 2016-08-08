@@ -105,17 +105,19 @@ interface IQuery {
      * @param $where
      * @return
      */
-    public function setWhereString($where);
+    public function where($where);
 
-    public function setPagesize($pagesize);
+    public function field($field);
 
-    public function setPage($page);
+    public function pagesize($pagesize);
 
-    public function setOrder($order);
+    public function page($page);
 
-    public function setGroup($group);
+    public function order($order);
 
-    public function setHaving($having);
+    public function group($group);
+
+    public function having($having);
 
     public function setTable($table);
 

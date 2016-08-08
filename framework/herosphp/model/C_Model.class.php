@@ -17,6 +17,7 @@ use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
 use herosphp\db\query\DBQuery;
 use herosphp\db\query\IQuery;
+use herosphp\db\query\MQuery;
 use herosphp\db\SQL;
 use herosphp\filter\Filter;
 use herosphp\utils\AjaxResult;
@@ -159,7 +160,10 @@ class C_Model implements IModel {
      */
     public function getItems(IQuery $query)
     {
-        $items =  $this->db->getItems($query->setTable($this->table)->buildQueryString());
+        if ( $query == null ) {
+            $query = new MQuery();
+        }
+        $items =  $this->db->getList($query->setTable($this->table)->buildQueryString());
 
         //做字段别名映射
         if ( !empty($items) ) {
@@ -184,7 +188,7 @@ class C_Model implements IModel {
         if ( !($conditions instanceof IQuery) ) {
             $query = DBQuery::getInstance()->setTable($this->table)->addWhere($this->getPrimaryKey(), $conditions);
         }
-        $item = $this->db->getItem($query->buildQueryString());
+        $item = $this->db->getOneRow($query->buildQueryString());
 
         //做字段别名映射
         $mappings = $this->getMapping();

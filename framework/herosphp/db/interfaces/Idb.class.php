@@ -52,18 +52,16 @@ interface Idb {
     /**
      * 获取数据列表
      * @param string $query
-     * @param int $resultType 返回结果类（默认为关联数组）
      * @return array
      */
-    public function &getItems( $query, $resultType = MYSQL_ASSOC );
+    public function &getList($query);
 
     /**
      * 获取一条数据
      * @param sting $query
-     * @param int $resultType 返回结果类（默认为关联数组）
      * @return array
      */
-    public function &getItem( $query, $resultType = MYSQL_ASSOC );
+    public function &getOneRow($query);
 
     /**
      * 更新数据

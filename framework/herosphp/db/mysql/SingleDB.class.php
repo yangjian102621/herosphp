@@ -180,29 +180,29 @@ class SingleDB implements Idb {
     }
 
     /**
-     * @see \herosphp\db\interfaces\Idb::getItems()
+     * @see \herosphp\db\interfaces\Idb::getList()
      */
-    public function &getItems($_query, $_type = PDO::FETCH_ASSOC)
+    public function &getList($_query)
     {
         $_result = array();
         $_ret = $this->query( $_query );
         if ( $_ret != false ) {
 
-            while ( ($_rows = $_ret->fetch($_type)) != false )
+            while ( ($_rows = $_ret->fetch(PDO::FETCH_ASSOC)) != false )
                 $_result[]  = $_rows;
         }
         return $_result;
     }
 
     /**
-     * @see \herosphp\db\interfaces\Idb::getItem()
+     * @see \herosphp\db\interfaces\Idb::getOneRow()
      */
-    public function &getItem($_query, $_type = PDO::FETCH_ASSOC)
+    public function &getOneRow($_query)
     {
         $_result = array();
         $_ret = $this->query( $_query );
         if ( $_ret != false ) {
-            $_result = $_ret->fetch($_type);
+            $_result = $_ret->fetch(PDO::FETCH_ASSOC);
         }
         return $_result;
     }

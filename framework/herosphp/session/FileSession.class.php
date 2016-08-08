@@ -142,6 +142,7 @@ class FileSession implements ISession {
 		if ( file_exists($sessionFile) ) {
 			return @unlink($sessionFile);
 		}
+		$_SESSION = null;
         return false;
 	}
 

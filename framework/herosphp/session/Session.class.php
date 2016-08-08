@@ -11,9 +11,11 @@
  *-----------------------------------------------------------------------*/
 namespace herosphp\session;
 
+use herosphp\cache\RedisCache;
 use herosphp\core\Loader;
 Loader::import('session.FileSession', IMPORT_FRAME);
 Loader::import('session.MemSession', IMPORT_FRAME);
+Loader::import('session.RedisSession', IMPORT_FRAME);
 class Session {
 
     /**
@@ -26,14 +28,19 @@ class Session {
 
         //loading session configures
         $configs = Loader::config('session');
-        switch ( SESSION_HANDLER ) {
+        $session_configs = $configs[$configs['session_handler']];
+        switch ( $configs['session_handler'] ) {
 
             case 'file':
-                FileSession::start($configs[SESSION_HANDLER]);
+                FileSession::start($session_configs);
                 break;
 
             case 'memo':
-                MemSession::start($configs[SESSION_HANDLER]);
+                MemSession::start($session_configs);
+                break;
+
+            case 'redis':
+                RedisSession::start($session_configs);
                 break;
         }
 

@@ -21,5 +21,3 @@ use herosphp\core\WebApplication;
     public function beforeActionInvoke(){}
 
 }
-
-?>

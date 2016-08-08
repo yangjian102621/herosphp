@@ -16,13 +16,13 @@ interface ISynLock {
 
     /**
      * 尝试去获取锁，成功返回false并且一直阻塞
-     * @return mixed
+     * @throws \herosphp\exception\HeroException
      */
     public function tryLock();
 
     /**
      * 释放锁
-     * @return mixed
+     * @throws \herosphp\exception\HeroException
      */
     public function unlock();
 

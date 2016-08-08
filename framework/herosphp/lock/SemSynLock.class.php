@@ -29,19 +29,23 @@ class SemSynLock implements ISynLock {
 
     /**
      * 尝试去获取锁，成功返回false并且一直阻塞
-     * @return mixed
+     * @throws \herosphp\exception\HeroException
      */
     public function tryLock()
     {
-        return sem_acquire($this->ipc_signal);
+        if ( sem_acquire($this->ipc_signal) === false ) {
+            E('获取信号量锁失败，锁定失败.');
+        }
     }
 
     /**
      * 释放锁
-     * @return mixed
+     * @throws \herosphp\exception\HeroException
      */
     public function unlock()
     {
-        return sem_release($this->ipc_signal);
+        if ( sem_release($this->ipc_signal) === false ) {
+            E('释放信号量锁失败.');
+        }
     }
 }

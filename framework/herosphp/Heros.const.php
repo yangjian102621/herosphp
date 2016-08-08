@@ -49,10 +49,3 @@ define('DB_ESCAPE', false); //是否开启sql语句自动转义
 define('DB_ACCESS_SINGLE', 1);  //单台服务器访问模式
 define('DB_ACCESS_CLUSTERS', 2);  //数据库服务器集群调度访问模式
 define('DB_ACCESS', DB_ACCESS_SINGLE);  //默认使用单台数据库服务器
-
-/**
- * 定义session介质
- * 1. file => 文件介质存储 (default)
- * 2. memo => memcache介质存储
- */
-define('SESSION_HANDLER', 'file');
