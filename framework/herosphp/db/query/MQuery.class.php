@@ -22,6 +22,9 @@ class MQuery implements IQuery {
     //关联表名称，如果关联表不为空，则会自动使用联表查询
     private $unionTable = '';
 
+    //数据表连接方式
+    private $tableJoinWay = null;
+
     /**
      * quyery condition map
      * @var StringBuffer|null
@@ -65,13 +68,16 @@ class MQuery implements IQuery {
      */
     public function buildQueryString()
     {
-        $query = new StringBuffer("SELECT {$this->fields} FROM ");
+        $query = new StringBuffer("SELECT ".str_replace('{t}', $this->_table, $this->fields)." FROM ");
         if ( $this->unionTable != '' ) {
             $query->append($this->unionTable);
         } else {
             $query->append($this->_table);
         }
 
+        if ( $this->tableJoinWay ) {
+            $query->append(str_replace('{t}', $this->_table, $this->tableJoinWay));
+        }
         if ( !$this->where->isEmpty() || $this->whereString != null ) $query->append(" WHERE ".$this->buildWhere());
         if ( $this->group ) $query->append(" GROUP BY ".$this->group);
         if ( $this->having ) $query->append(" HAVING ".$this->having);
@@ -238,6 +244,12 @@ class MQuery implements IQuery {
         return $this;
     }
 
+    //设置连接方式
+    public function join($join_way) {
+        $this->tableJoinWay = $join_way;
+        return $this;
+    }
+
     /**
      * <p>直接设置查询条件字符串, 如果设置了这个条件，其他条件都将失效</p>
      * <p>set where condition direct, if set the condition, other condition will does not work</p>
@@ -258,7 +270,7 @@ class MQuery implements IQuery {
 
     public function field($field)
     {
-        $this->fields = $field;
+        if ( $field ) $this->fields = $field;
         return $this;
     }
 

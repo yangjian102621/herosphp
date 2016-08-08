@@ -1,6 +1,7 @@
 <?php
 
 namespace common\dao\interfaces;
+use herosphp\db\query\IQuery;
 
 /**
  * 通用记录访问对象(DAO)接口
@@ -40,27 +41,17 @@ interface ICommonDao {
 
     /**
      * 获取数据列表
-     * @param string|array $conditions 查询条件
-     * @param string|array $fields 查询字段
-     * @param string|array $order 排序
-     * @param int $page 当前页
-     * @param int $pagesize 每页数量
-     * @param string $group 分组字段
-     * @param string|array $having 分组条件
+     * @param IQuery $query 查询Vo对象
      * @return array
      */
-    public function getItems( $conditions, $fields, $order, $page, $pagesize, $group, $having );
+    public function getItems(IQuery $query);
 
     /**
      * 获取单条数据
-     * @param string|array $conditions 查询条件
-     * @param string|array $fields 查询字段
-     * @param string|array $order 排序
-     * @param string $group 分组字段
-     * @param string|array $having 分组条件
+     * @param IQuery $query 查询Vo对象
      * @return mixed
      */
-    public function getItem( $conditions, $fields, $order, $group, $having );
+    public function getItem($query);
 
     /**
      * 更新一条数据
