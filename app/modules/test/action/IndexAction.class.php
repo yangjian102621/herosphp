@@ -5,7 +5,7 @@ use herosphp\bean\Beans;
 use herosphp\core\Controller;
 use herosphp\core\Debug;
 use herosphp\core\WebApplication;
-use herosphp\db\query\MQuery;
+use herosphp\db\query\MysqlQuery;
 use herosphp\http\HttpRequest;
 use herosphp\utils\AjaxResult;
 use herosphp\web\WebUtils;
@@ -31,7 +31,7 @@ class IndexAction extends Controller {
 
         $service = Beans::get('test.user.service');
 
-        $query = MQuery::getInstance()->field('*')->addOptWhere('id', '>=', 20)->addLikeWhere('username', '123');
+        $query = MysqlQuery::getInstance()->field('*')->addOptWhere('id', '>=', 20)->addLikeWhere('username', '123');
 
         $result = $service->getItems($query);
         __print($result);

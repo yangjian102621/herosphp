@@ -3,7 +3,7 @@
 namespace herosphp\db\query;
 
 /*---------------------------------------------------------------------
- * 数据库查询对象实现
+ * 数据库查询对象的MySQL实现
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -15,15 +15,18 @@ namespace herosphp\db\query;
 
 use herosphp\string\StringBuffer;
 
-class MQuery implements IQuery {
+class MysqlQuery implements IQuery {
 
     private $_table = null;  //数据表名称
+
+    private $tablePrefix = ''; //数据表前缀
 
     //关联表名称，如果关联表不为空，则会自动使用联表查询
     private $unionTable = '';
 
-    //数据表连接方式
-    private $tableJoinWay = null;
+    private $tableJoinWay = null; //数据表连接方式(左连接还是右连接)
+
+    private $joinCondition = null; //连接查询的条件
 
     /**
      * quyery condition map
@@ -68,15 +71,16 @@ class MQuery implements IQuery {
      */
     public function buildQueryString()
     {
-        $query = new StringBuffer("SELECT ".str_replace('{t}', $this->_table, $this->fields)." FROM ");
+        $query = new StringBuffer("SELECT {$this->fields} FROM ");
         if ( $this->unionTable != '' ) {
             $query->append($this->unionTable);
         } else {
             $query->append($this->_table);
         }
 
-        if ( $this->tableJoinWay ) {
-            $query->append(str_replace('{t}', $this->_table, $this->tableJoinWay));
+        if ( $this->tableJoinWay ) {    //左右连接查询
+            $query->append($this->tableJoinWay);
+            $query->append($this->joinCondition);
         }
         if ( !$this->where->isEmpty() || $this->whereString != null ) $query->append(" WHERE ".$this->buildWhere());
         if ( $this->group ) $query->append(" GROUP BY ".$this->group);
@@ -87,7 +91,9 @@ class MQuery implements IQuery {
             $offset = ($this->page-1) * $this->pagesize;
 			$query->append(" LIMIT ".$offset.",".$this->pagesize);
 		}
-        return $query->toString();
+        //替换主表和前缀
+        $replacement = array('{t}' => "`{$this->_table}`", '{prefix}' => $this->tablePrefix);
+        return str_replace(array_keys($replacement), $replacement, $query->toString());
     }
 
     /**
@@ -238,15 +244,53 @@ class MQuery implements IQuery {
         }
     }
 
-    //关联表查询
-    public function table($table_str) {
-        $this->unionTable = $table_str;
+    /**
+     * 关联表查询
+     * @param $table_str
+     * @return $this
+     */
+    public function table($table) {
+        $this->unionTable = $table;
         return $this;
     }
 
-    //设置连接方式
-    public function join($join_way) {
-        $this->tableJoinWay = $join_way;
+    /**
+     * 左连接查询
+     * @param $table 数据库表名称
+     * @return $this
+     */
+    public function leftJoin($table) {
+        $this->tableJoinWay = " LEFT JOIN {$table} ";
+        return $this;
+    }
+
+    /**
+     * 右连接查询
+     * @param $table 数据库表名称
+     * @return $this
+     */
+    public function rightJoin($table) {
+        $this->tableJoinWay = " RIGHT JOIN {$table} ";
+        return $this;
+    }
+
+    /**
+     * 内连接查询
+     * @param $table 数据库表名称
+     * @return $this
+     */
+    public function innerJoin($table) {
+        $this->tableJoinWay = " INNER JOIN {$table} ";
+        return $this;
+    }
+
+    /**
+     * 连接查询条件
+     * @param $condition
+     * @return $this
+     */
+    public function on($condition) {
+        $this->joinCondition = ' ON '.$condition;
         return $this;
     }
 
@@ -301,6 +345,11 @@ class MQuery implements IQuery {
     public function setTable($table)
     {
         $this->_table = $table;
+        return $this;
+    }
+
+    public function setTablePrefix($prefix) {
+        $this->tablePrefix = $prefix;
         return $this;
     }
 

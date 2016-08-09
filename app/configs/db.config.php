@@ -11,7 +11,7 @@
 
 return array(
     //mysql数据库配置
-    DB_TYPE_MYSQL     =>  array(
+    'mysql'     =>  array(
         array(
             'db_type'      => 'mysql',
             'db_host'      => 'localhost',

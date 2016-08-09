@@ -130,7 +130,7 @@ class Herosphp {
             'herosphp\db\DBFactory'       => 'db.DBFactory',
             'herosphp\db\SQL'       => 'db.SQL',
             'herosphp\db\query\IQuery'       => 'db.query.IQuery',
-            'herosphp\db\query\MQuery'       => 'db.query.MQuery',
+            'herosphp\db\query\MysqlQuery'       => 'db.query.MysqlQuery',
 
             'herosphp\model\C_Model'       => 'model.C_Model',
 

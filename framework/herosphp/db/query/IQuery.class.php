@@ -78,30 +78,7 @@ interface IQuery {
     public function addOrOptWhere($field, $opt, $value);
 
     /**
-     * add left brackets(添加左边括号)
-     * @param $prefix  bracket's prefix default is 'AND'(括号的前缀，默认式 AND)
-     * @return
-     */
-    public function addLeftBrackets($prefix='AND');
-
-    /**
-     * add right brackets(添加右边括号)
-     * @return
-     */
-    public function addRightBrackets();
-
-    /**
-     * 添加 IN 查询条件
-     * @param $where
-     * @return
-     */
-    public function addInWhere($field, $value);
-
-    public function addOrInWhere($field, $value);
-
-    /**
      * <p>直接设置查询条件字符串, 如果设置了这个条件，其他条件都将失效</p>
-     * <p>set where condition direct, if set the condition, other condition will does not work</p>
      * @param $where
      * @return
      */

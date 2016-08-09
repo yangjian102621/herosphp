@@ -46,11 +46,8 @@ class ClusterDB implements ICusterDB {
      */
     public  function __construct( $configs ) {
 
-        if ( !is_array($configs) || empty($configs) ) {
-            if ( APP_DEBUG ) {
-                E("必须传入数据库的配置信息！");
-            }
-        }
+        if ( !is_array($configs) || empty($configs) )  E("必须传入数据库的配置信息！");
+
         foreach ( $configs as $value ) {
             if ( $value['serial'] == 'db-write' ) {
                 $this->addWriteServer($value);

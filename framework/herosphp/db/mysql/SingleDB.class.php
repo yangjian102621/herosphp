@@ -45,11 +45,7 @@ class SingleDB implements Idb {
      */
     public  function __construct( $config ) {
 
-        if ( !is_array($config) || empty($config) ) {
-            if ( APP_DEBUG ) {
-                E("必须传入数据库的配置信息！");
-            }
-        }
+        if ( !is_array($config) || empty($config) ) E("必须传入数据库的配置信息！");
         $this->config = $config;
     }
 

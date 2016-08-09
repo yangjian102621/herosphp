@@ -17,10 +17,9 @@ use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
 use herosphp\db\query\DBQuery;
 use herosphp\db\query\IQuery;
-use herosphp\db\query\MQuery;
+use herosphp\db\query\MysqlQuery;
 use herosphp\db\SQL;
 use herosphp\filter\Filter;
-use herosphp\utils\AjaxResult;
 
 Loader::import('model.IModel', IMPORT_FRAME);
 
@@ -43,7 +42,9 @@ class C_Model implements IModel {
      * 数据表名称
      * @var string
      */
-    private $table;
+    private $table = '';
+
+    private $tablePrefix = '';
 
     /**
      * 数据表映射，适合多表水平分割
@@ -76,7 +77,9 @@ class C_Model implements IModel {
         if ( !$config ) {
             //默认使用第一个数据库服务器配置
             $dbConfigs = Loader::config('db');
-            $db_config = $dbConfigs[DB_TYPE];
+            $db_config = $dbConfigs['mysql'];
+            $this->tablePrefix = $db_config['table_prefix'];
+            $this->table = $this->tablePrefix.$this->table;
             if ( DB_ACCESS == DB_ACCESS_SINGLE ) {  //单台服务器
                 $config = $db_config[0];
             } else if ( DB_ACCESS == DB_ACCESS_CLUSTERS ) { //多台服务器
@@ -84,7 +87,6 @@ class C_Model implements IModel {
             }
 
         }
-        $this->table = $config['table_prefix'].$table;
         //创建数据库
         $this->db = DBFactory::createDB(DB_ACCESS, $config);
     }
@@ -161,9 +163,10 @@ class C_Model implements IModel {
     public function getItems(IQuery $query)
     {
         if ( $query == null ) {
-            $query = new MQuery();
+            $query = MysqlQuery::getInstance();
         }
-        $items =  $this->db->getList($query->setTable($this->table)->buildQueryString());
+        $query->setTablePrefix($this->tablePrefix)->setTable($this->table);
+        $items =  $this->db->getList($query->buildQueryString());
 
         //做字段别名映射
         if ( !empty($items) ) {
@@ -186,7 +189,10 @@ class C_Model implements IModel {
     public function getItem($conditions)
     {
         if ( !($conditions instanceof IQuery) ) {
-            $query = DBQuery::getInstance()->setTable($this->table)->addWhere($this->getPrimaryKey(), $conditions);
+            $query = MysqlQuery::getInstance()
+                ->setTablePrefix($this->tablePrefix)
+                ->setTable($this->table)
+                ->addWhere($this->getPrimaryKey(), $conditions);
         }
         $item = $this->db->getOneRow($query->buildQueryString());
 

@@ -27,18 +27,21 @@ class DBFactory {
      * @var array
      */
     private static $DB_DRIVER = array(
-        DB_TYPE_MYSQL => array(
-            //单台服务器
-            DB_ACCESS_SINGLE => array(
-                'path' => 'db.mysql.SingleDB',
-                'class' => 'herosphp\db\mysql\SingleDB'
-            ),
-            //服务器集群
-            DB_ACCESS_CLUSTERS => array(
-                'path' => 'db.mysql.ClusterDB',
-                'class' => 'herosphp\db\mysql\ClusterDB'
-            )
-        )
+        //单台服务器
+        DB_ACCESS_SINGLE => array(
+            'path' => 'db.mysql.SingleDB',
+            'class' => 'herosphp\db\mysql\SingleDB'
+        ),
+        //服务器集群
+        DB_ACCESS_CLUSTERS => array(
+            'path' => 'db.mysql.ClusterDB',
+            'class' => 'herosphp\db\mysql\ClusterDB'
+        ),
+        //mongodb
+        'mongo' => array(
+            'path' => 'db.mongo.MongoDB',
+            'class' => 'herosphp\db\mongo\MongoDB'
+        ),
     );
 
     /**
@@ -50,9 +53,9 @@ class DBFactory {
     public static function createDB( $accessType=DB_ACCESS_SINGLE, &$config = null ) {
 
         //获取包含路径
-        $classPath = self::$DB_DRIVER[DB_TYPE][$accessType]['path'];
+        $classPath = self::$DB_DRIVER[$accessType]['path'];
         Loader::import($classPath, IMPORT_FRAME);
-        $className = self::$DB_DRIVER[DB_TYPE][$accessType]['class'];
+        $className = self::$DB_DRIVER[$accessType]['class'];
         $key = md5($className.$config['flag']);
         if ( !isset(self::$DB_POOL[$key]) ) {
             self::$DB_POOL[$key] = new $className($config);

@@ -22,7 +22,6 @@ interface Idb {
     /**
      * 执行一条SQL语句
      * @param string $query 查询语句
-     * @return \PDOStatement
      */
     public function query( $query );
 

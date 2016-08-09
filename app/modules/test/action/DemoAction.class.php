@@ -3,7 +3,9 @@ namespace test\action;
 
 use common\action\CommonAction;
 use herosphp\bean\Beans;
-use herosphp\db\query\MQuery;
+use herosphp\core\Loader;
+use herosphp\db\DBFactory;
+use herosphp\db\query\MysqlQuery;
 use herosphp\files\FileUtils;
 use herosphp\http\HttpRequest;
 use herosphp\utils\AjaxResult;
@@ -25,15 +27,25 @@ class DemoAction extends CommonAction {
     public function join() {
 
         $service = Beans::get('test.user.service');
-        //$list = $service->getDB()->getList("select a.id, a.username, a.password, b.title, b.bcontent from fiidee_user a, fiidee_news b where a.id=b.id");
+        //$list = $service->getDB()->getList("select a.id, a.username, a.password, b.title, b.bcontent from fiidee_user a, fiidee_news b where a.id=b.userid");
 
-//        $query = MQuery::getInstance()->table("fiidee_user a, fiidee_news b")->field('a.id, a.username, a.password, b.title, b.bcontent')->where('a.id=b.id');
+//        $query = MysqlQuery::getInstance()->table("{prefix}user a, {prefix}article b")->field('a.id, a.username, a.password, b.title, b.bcontent')->where('a.id=b.userid');
 //        $list = $service->getItems($query);
 
-        $query = MQuery::getInstance()->join(" LEFT JOIN fiidee_news a ON {t}.id = a.id")->field("a.title, a.bcontent, {t}.username,{t}.password");
+        $query = MysqlQuery::getInstance()
+            ->leftJoin("{prefix}article a")
+            ->on("{t}.id = a.userid")
+            ->field("{t}.id, a.title, a.bcontent, {t}.username,{t}.password")
+            ->where("{t}.id > 80");
         $list = $service->getItems($query);
         __print($list);
 
         die();
+    }
+
+    public function mongo() {
+        $congfig = Loader::config('db');
+        $db = DBFactory::createDB('mongo', $congfig['mongo']);
+        __print($db);
     }
 }

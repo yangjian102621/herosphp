@@ -37,9 +37,6 @@ define('EXT_URI', '.shtml');     //uri 伪静态路径后缀
 /**
  * 以下定义数据库类别
  */
-define('DB_TYPE_MYSQL', 1);     //mysql数据库
-define('DB_TYPE_POSTGRE', 2);   //PostgreSQL数据库
-define('DB_TYPE', DB_TYPE_MYSQL);   //默认使用mysql数据库
 define('DB_ESCAPE', false); //是否开启sql语句自动转义
 
 /**
