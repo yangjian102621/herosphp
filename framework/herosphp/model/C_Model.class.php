@@ -15,9 +15,9 @@ namespace herosphp\model;
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
-use herosphp\db\query\DBQuery;
-use herosphp\db\query\IQuery;
-use herosphp\db\query\MysqlQuery;
+use herosphp\db\entity\DBQuery;
+use herosphp\db\entity\DBEntity;
+use herosphp\db\entity\MysqlEntity;
 use herosphp\db\SQL;
 use herosphp\filter\Filter;
 
@@ -28,7 +28,7 @@ class C_Model implements IModel {
 
     /**
      * 数据库连接资源
-     * @var \herosphp\db\interfaces\Idb
+     * @var \herosphp\db\mysql\SingleDB
      */
     private $db;
 
@@ -78,8 +78,8 @@ class C_Model implements IModel {
             //默认使用第一个数据库服务器配置
             $dbConfigs = Loader::config('db');
             $db_config = $dbConfigs['mysql'];
-            $this->tablePrefix = $db_config['table_prefix'];
-            $this->table = $this->tablePrefix.$this->table;
+            $this->tablePrefix = $db_config[0]['table_prefix'];
+            $this->table = $this->tablePrefix.$table;
             if ( DB_ACCESS == DB_ACCESS_SINGLE ) {  //单台服务器
                 $config = $db_config[0];
             } else if ( DB_ACCESS == DB_ACCESS_CLUSTERS ) { //多台服务器
@@ -92,7 +92,6 @@ class C_Model implements IModel {
     }
 
     /**
-     * @see IModel::query()
      * @param $sql
      * @return mixed|\PDOStatement
      */
@@ -103,8 +102,6 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::insert()
-     * @param $data
-     * @return int
      */
     public function insert($data)
     {
@@ -112,13 +109,14 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        return $this->db->insert($this->table, $data);
+        $entity = MysqlEntity::getInstance()
+            ->setTable($this->table)
+            ->setData($data);
+        return $this->db->insert($entity);
     }
 
     /**
      * @see IModel::replace()
-     * @param $data
-     * @return bool
      */
     public function replace($data)
     {
@@ -126,47 +124,44 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        return $this->db->replace($this->table, $data);
+        $entity = MysqlEntity::getInstance()
+            ->setTable($this->table)
+            ->setData($data);
+        return $this->db->replace($entity);
     }
 
     /**
      * @see IModel::delete()
-     * @param $id
-     * @return bool
      */
     public function delete($id)
     {
-        return $this->db->delete($this->table, "{$this->primaryKey}='{$id}'");
+        $entity = MysqlEntity::getInstance()
+            ->setTable($this->table)
+            ->where("{$this->primaryKey}='{$id}'");
+        return $this->db->delete($entity);
     }
 
     /**
      * @see IModel::deletes()
-     * @param $conditions
-     * @return bool
      */
     public function deletes($conditions)
     {
-        return $this->db->delete($this->table, $this->getConditons($conditions));
+        $entity = MysqlEntity::getInstance()
+            ->setTable($this->table)
+            ->where($conditions);
+        return $this->db->delete($entity);
     }
 
     /**
      * @see IModel::getItems()
-     * @param array|string $conditions
-     * @param array|string $fields
-     * @param array|string $order
-     * @param int $page
-     * @param int $pagesize
-     * @param string $group
-     * @param array|string $having
-     * @return array
      */
-    public function getItems(IQuery $query)
+    public function getItems(DBEntity $entity)
     {
-        if ( $query == null ) {
-            $query = MysqlQuery::getInstance();
+        if ( $entity == null ) {
+            $entity = MysqlEntity::getInstance();
         }
-        $query->setTablePrefix($this->tablePrefix)->setTable($this->table);
-        $items =  $this->db->getList($query->buildQueryString());
+        $entity->setTablePrefix($this->tablePrefix)->setTable($this->table);
+        $items =  $this->db->getList($entity);
 
         //做字段别名映射
         if ( !empty($items) ) {
@@ -188,13 +183,13 @@ class C_Model implements IModel {
      */
     public function getItem($conditions)
     {
-        if ( !($conditions instanceof IQuery) ) {
-            $query = MysqlQuery::getInstance()
+        if ( !($conditions instanceof DBEntity) ) {
+            $conditions = MysqlEntity::getInstance()
                 ->setTablePrefix($this->tablePrefix)
                 ->setTable($this->table)
                 ->addWhere($this->getPrimaryKey(), $conditions);
         }
-        $item = $this->db->getOneRow($query->buildQueryString());
+        $item = $this->db->getOneRow($conditions);
 
         //做字段别名映射
         $mappings = $this->getMapping();
@@ -219,7 +214,11 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        return $this->db->update($this->table, $data, "{$this->primaryKey}='{$id}'");
+        $entity = MysqlEntity::getInstance()
+            ->setTable($this->table)
+            ->setData($data)
+            ->where("{$this->primaryKey}='{$id}'");
+        return $this->db->update($entity);
     }
 
     /**
@@ -234,7 +233,11 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        return $this->db->update($this->table, $data, $this->getConditons($conditions));
+        $entity = MysqlEntity::getInstance()
+            ->setTable($this->table)
+            ->setData($data)
+            ->where($conditions);
+        return $this->db->update($entity);
     }
 
     /**
@@ -244,7 +247,10 @@ class C_Model implements IModel {
      */
     public function count($conditions)
     {
-        return $this->db->count($this->table, $this->getConditons($conditions));
+        $entity = MysqlEntity::getInstance()
+            ->setTable($this->table)
+            ->where($conditions);
+        return $this->db->count($entity);
     }
 
     /**
@@ -312,7 +318,11 @@ class C_Model implements IModel {
     public function set($field, $value, $id)
     {
         $data = array($field => $value);
-        return $this->db->update($this->table, $data, "{$this->primaryKey}={$id}");
+        $entity = MysqlEntity::getInstance()
+            ->setTable($this->table)
+            ->setData($data)
+            ->where("{$this->primaryKey}={$id}");
+        return $this->db->update($entity);
     }
 
     /**
@@ -325,7 +335,11 @@ class C_Model implements IModel {
     public function sets($field, $value, $conditions)
     {
         $data = array($field => $value);
-        return $this->db->update($this->table, $data, $this->getConditons($conditions));
+        $entity = MysqlEntity::getInstance()
+            ->setTable($this->table)
+            ->setData($data)
+            ->where($conditions);
+        return $this->db->update($entity);
     }
 
     /**
@@ -366,7 +380,7 @@ class C_Model implements IModel {
      * @return
      */
     private function getConditons($conditions) {
-        if ( $conditions instanceof IQuery ) {
+        if ( $conditions instanceof DBEntity ) {
             return $conditions->buildWhere();
         } else {
             return SQL::create()->buildConditions($conditions);
@@ -474,4 +488,3 @@ class C_Model implements IModel {
         return $this->db;
     }
 }
-?>

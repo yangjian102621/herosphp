@@ -13,6 +13,7 @@
 namespace herosphp\db;
 
 use herosphp\core\Loader;
+use herosphp\db\interfaces\Idb;
 
 class DBFactory {
 
@@ -48,7 +49,7 @@ class DBFactory {
      * 创建数据库连接实例
      * @param int $accessType   连接方式（连接单个服务器还是连接集群）
      * @param array $config 数据库的配置信息
-     * @return mixed
+     * @return Idb
      */
     public static function createDB( $accessType=DB_ACCESS_SINGLE, &$config = null ) {
 

@@ -51,10 +51,10 @@ return array(
 
     //mongo DB 数据库配置
     'mongo'     => array(
-        'host'      => '192.168.1.119',
+        'host'      => 'localhost',
         'port'      => 27017,
-        'user'      => 'root',
-        'pass'      => '123456',
+        //'user'      => 'root',
+        //'pass'      => '123456',
         'db'        => 'herosphp'
     )
 );

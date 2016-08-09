@@ -14,12 +14,13 @@ namespace herosphp\db\mongo;
 use herosphp\core\Loader;
 use herosphp\db\interfaces\Idb;
 use herosphp\db\interfaces\sting;
+use herosphp\db\entity\DBEntity;
 use herosphp\exception\UnSupportedOperationException;
 
 Loader::import('db.interfaces.Idb', IMPORT_FRAME);
 class MongoDB implements Idb {
 
-    private $conn = null; //数据库连接对象
+    private $db = null; //数据库连接对象
 
     private $configs = array();
 
@@ -32,8 +33,8 @@ class MongoDB implements Idb {
     }
 
     /**
-     * 连接数据库
-     * @return mixed
+     * @see Idb::connect
+     * @throws \herosphp\exception\HeroException
      */
     public function connect()
     {
@@ -47,12 +48,10 @@ class MongoDB implements Idb {
             E("Failed to connect to database ".$e->getMessage());
         }
 
-        $conn->selectDB($this->configs['db']);
-        $this->conn = $conn;
+        $this->db = $conn->selectDB($this->configs['db']);
     }
 
     /**
-     * @param string $query
      * @throws UnSupportedOperationException
      */
     public function query($query)
@@ -61,35 +60,29 @@ class MongoDB implements Idb {
     }
 
     /**
-     * 插入数据
-     * @param string $table 数据表
-     * @param array $data 数据载体
-     * @return int 最后插入数据id
+     * @see Idb::insert
      */
-    public function insert($table, &$data)
+    public function insert(DBEntity $entity)
     {
-        $collection = $this->conn->selectCollection($table);
-        $data['save_at'] = new \MongoDate();
-        return $collection->insert($data);
+        $collection = $this->db->selectCollection($entity->getTable());
+        $options = array('fsync' => true); //同步插入
+        $result = $collection->insert($entity->getData(), $options);
+        return $result['ok'] == 1;
     }
 
     /**
-     * 插入一条数据，如果数据存在就更新它
-     * @param string $table 数据表
-     * @param array $data 数据载体
-     * @return boolean
+     * @see Idb::replace
+     * @throws UnSupportedOperationException
      */
-    public function replace($table, &$data)
+    public function replace(DBEntity $entity)
     {
-        // TODO: Implement replace() method.
+        throw new UnSupportedOperationException();
     }
 
     /**
-     * @param string $table 删除数据
-     * @param string $condition 查询条件
-     * @return boolean
+     * @see Idb::delete
      */
-    public function delete($table, $condition = null)
+    public function delete(DBEntity $entity)
     {
         // TODO: Implement delete() method.
     }
@@ -99,40 +92,37 @@ class MongoDB implements Idb {
      * @param string $query
      * @return array
      */
-    public function &getList($query)
+    public function &getList(DBEntity $entity)
     {
         // TODO: Implement getList() method.
     }
 
     /**
      * 获取一条数据
-     * @param sting $query
+     * @param DBEntity $query
      * @return array
      */
-    public function &getOneRow($query)
+    public function &getOneRow(DBEntity $entity)
     {
-        // TODO: Implement getOneRow() method.
+        $collection = $this->db->selectCollection($entity->getTable());
+        return $collection->findOne($entity->buildWhere());
     }
 
     /**
-     * 更新数据
-     * @param string $table 数据表名
-     * @param array $data 数据载体
-     * @param string $condition 查询条件
-     * @return boolean
+     * @see Idb::update
      */
-    public function update($table, &$data, $condition = null)
+    public function update(DBEntity $entity)
     {
-        // TODO: Implement update() method.
+        $collection = $this->db->selectCollection($entity->getTable());
+        $options = array('fsync' => true); //同步插入
+        $result = $collection->update($entity->buildWhere(), $entity->getData(), $options);
+        return $result['ok'] == 1;
     }
 
     /**
-     * 获取总记录数
-     * @param string $table
-     * @param string $conditions
-     * @return int
+     * @see Idb::count
      */
-    public function count($table, $conditions = null)
+    public function count(DBEntity $entity)
     {
         // TODO: Implement count() method.
     }
@@ -142,7 +132,7 @@ class MongoDB implements Idb {
      */
     public function beginTransaction()
     {
-        // TODO: Implement beginTransaction() method.
+        throw new UnSupportedOperationException();
     }
 
     /**
@@ -150,7 +140,7 @@ class MongoDB implements Idb {
      */
     public function commit()
     {
-        // TODO: Implement commit() method.
+        throw new UnSupportedOperationException();
     }
 
     /**
@@ -158,15 +148,16 @@ class MongoDB implements Idb {
      */
     public function rollBack()
     {
-        // TODO: Implement rollBack() method.
+        throw new UnSupportedOperationException();
     }
 
     /**
      * 检查是否开启了事物
-     * @return boolean
+     * @return bool
+     * @throws UnSupportedOperationException
      */
     public function inTransaction()
     {
-        // TODO: Implement inTransaction() method.
+        throw new UnSupportedOperationException();
     }
 }

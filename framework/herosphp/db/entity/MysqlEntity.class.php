@@ -1,6 +1,6 @@
 <?php
 
-namespace herosphp\db\query;
+namespace herosphp\db\entity;
 
 /*---------------------------------------------------------------------
  * 数据库查询对象的MySQL实现
@@ -15,7 +15,7 @@ namespace herosphp\db\query;
 
 use herosphp\string\StringBuffer;
 
-class MysqlQuery implements IQuery {
+class MysqlEntity implements DBEntity {
 
     private $_table = null;  //数据表名称
 
@@ -27,6 +27,8 @@ class MysqlQuery implements IQuery {
     private $tableJoinWay = null; //数据表连接方式(左连接还是右连接)
 
     private $joinCondition = null; //连接查询的条件
+
+    private $data = null;
 
     /**
      * quyery condition map
@@ -104,9 +106,11 @@ class MysqlQuery implements IQuery {
     {
         if ( $this->whereString != null ) {
             return $this->whereString;
-        } else {
+        }
+        if ( !$this->where->isEmpty() ) {
             return $this->where->toString();
         }
+        return false;
     }
 
     /**
@@ -348,6 +352,10 @@ class MysqlQuery implements IQuery {
         return $this;
     }
 
+    public function getTable() {
+        return $this->_table;
+    }
+
     public function setTablePrefix($prefix) {
         $this->tablePrefix = $prefix;
         return $this;
@@ -359,5 +367,23 @@ class MysqlQuery implements IQuery {
         } else {
             return "'{$value}'";
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param $data
+     * @return $this
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+        return $this;
     }
 }

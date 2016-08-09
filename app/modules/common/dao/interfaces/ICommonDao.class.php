@@ -1,7 +1,7 @@
 <?php
 
 namespace common\dao\interfaces;
-use herosphp\db\query\IQuery;
+use herosphp\db\entity\DBEntity;
 
 /**
  * 通用记录访问对象(DAO)接口
@@ -41,14 +41,14 @@ interface ICommonDao {
 
     /**
      * 获取数据列表
-     * @param IQuery $query 查询Vo对象
+     * @param DBEntity $query 查询Vo对象
      * @return array
      */
-    public function getItems(IQuery $query);
+    public function getItems(DBEntity $query);
 
     /**
      * 获取单条数据
-     * @param IQuery $query 查询Vo对象
+     * @param DBEntity $query 查询Vo对象
      * @return mixed
      */
     public function getItem($query);

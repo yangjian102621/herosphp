@@ -4,7 +4,7 @@ namespace common\service;
 
 use common\service\interfaces\ICommonService;
 use herosphp\core\Loader;
-use herosphp\db\query\IQuery;
+use herosphp\db\entity\DBEntity;
 
 /**
  * 通用服务接口实现
@@ -70,7 +70,7 @@ abstract class CommonService implements ICommonService {
     /**
      * @see \common\service\interfaces\ICommonService::add()
      */
-    public function getItems(IQuery $query)
+    public function getItems(DBEntity $query)
     {
         return $this->modelDao->getItems($query);
     }

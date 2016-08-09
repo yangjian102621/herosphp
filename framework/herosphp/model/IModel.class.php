@@ -12,16 +12,9 @@
 
 namespace herosphp\model;
 
- use herosphp\db\query\IQuery;
+ use herosphp\db\entity\DBEntity;
 
  interface IModel {
-
-     /**
-      * 执行一条sql语句
-      * @param $sql
-      * @return mixed
-      */
-     public function query( $sql );
 
      /**
       * 添加数据
@@ -53,17 +46,17 @@ namespace herosphp\model;
 
      /**
       * 获取数据列表
-      * @param $query 查询条件
+      * @param $entity 查询条件
       * @return array
       */
-     public function getItems( IQuery $query );
+     public function getItems(DBEntity $entity);
 
      /**
       * 获取单条数据
-      * @param $conditions 查询条件
+      * @param $entity 查询条件
       * @return mixed
       */
-     public function getItem($query);
+     public function getItem($entity);
 
      /**
       * 更新一条数据

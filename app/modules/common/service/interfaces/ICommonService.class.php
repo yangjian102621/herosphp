@@ -1,7 +1,7 @@
 <?php
 
 namespace common\service\interfaces;
-use herosphp\db\query\IQuery;
+use herosphp\db\entity\DBEntity;
 
 /**
  * 通用服务接口
@@ -41,14 +41,14 @@ interface ICommonService {
 
     /**
      * 获取数据列表
-     * @param IQuery $query 查询条件
+     * @param DBEntity $query 查询条件
      * @return array
      */
-    public function getItems( IQuery $query );
+    public function getItems( DBEntity $query );
 
     /**
      * 获取单条数据
-     * @param string|IQuery $conditions 查询条件
+     * @param string|DBEntity $conditions 查询条件
      * @return mixed
      */
     public function getItem( $conditions );

@@ -105,8 +105,10 @@ class Herosphp {
             'herosphp\core\AppError'       => 'core.AppError',
             'herosphp\core\Template'       => 'core.Template',
             'herosphp\core\Controller'       => 'core.Controller',
+
             'herosphp\exception\HeroException'       => 'exception.HeroException',
             'herosphp\exception\DBException'       => 'exception.DBException',
+            'herosphp\exception\UnSupportedOperationException'       => 'exception.UnSupportedOperationException',
 
             'herosphp\files\FileUtils'       => 'files.FileUtils',
             'herosphp\files\FileUpload'       => 'files.FileUpload',
@@ -129,8 +131,9 @@ class Herosphp {
 
             'herosphp\db\DBFactory'       => 'db.DBFactory',
             'herosphp\db\SQL'       => 'db.SQL',
-            'herosphp\db\query\IQuery'       => 'db.query.IQuery',
-            'herosphp\db\query\MysqlQuery'       => 'db.query.MysqlQuery',
+            'herosphp\db\entity\DBEntity'       => 'db.entity.DBEntity',
+            'herosphp\db\entity\MysqlEntity'       => 'db.entity.MysqlEntity',
+            'herosphp\db\entity\MongoEntity'       => 'db.entity.MongoEntity',
 
             'herosphp\model\C_Model'       => 'model.C_Model',
 
@@ -147,14 +150,8 @@ class Herosphp {
             'herosphp\listener\WebApplicationListenerMatcher'  => 'listener.WebApplicationListenerMatcher',
             'herosphp\session\Session'  => 'session.Session');
 
-        self::$APP_CLASS = array(
-            'client\tools\result\AbstractResult'        => 'common.client.result.AbstractResult',
-            'client\tools\result\JsonResult'        => 'common.client.result.JsonResult',
-            'client\tools\result\XmlResult'        => 'common.client.result.XmlResult',
-        );
         //获取自动加载类配置
-        $autoLoadConfigs = Loader::config("autoload");
-        self::$APP_CLASS = array_merge(self::$APP_CLASS, $autoLoadConfigs);
+        self::$APP_CLASS = Loader::config("autoload");
     }
 
     /**

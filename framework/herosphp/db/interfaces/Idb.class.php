@@ -11,6 +11,8 @@
 
 namespace herosphp\db\interfaces;
 
+use herosphp\db\entity\DBEntity;
+
 interface Idb {
 
     /**
@@ -20,64 +22,53 @@ interface Idb {
     public function connect();
 
     /**
-     * 执行一条SQL语句
-     * @param string $query 查询语句
-     */
-    public function query( $query );
-
-    /**
      * 插入数据
-     * @param string $table 数据表
-     * @param array $data 数据载体
-     * @return int 最后插入数据id
+     * @param DBEntity $entity 数据库实体对象
+     * @return mixed
      */
-    public function insert( $table, &$data );
+    public function insert(DBEntity $entity);
 
     /**
      * 插入一条数据，如果数据存在就更新它
-     * @param string $table 数据表
-     * @param array $data 数据载体
-     * @return boolean
+     * @param DBEntity $entity
+     * @return bool
      */
-    public function replace($table, &$data );
+    public function replace(DBEntity $entity);
 
     /**
-     * @param string $table 删除数据
-     * @param string $condition 查询条件
-     * @return boolean
+     * 删除数据
+     * @param DBEntity $entity
+     * @return mixed
      */
-    public function delete( $table, $condition = null );
+    public function delete(DBEntity $entity);
 
     /**
      * 获取数据列表
-     * @param string $query
-     * @return array
+     * @param DBEntity $entity
+     * @return mixed
      */
-    public function &getList($query);
+    public function &getList(DBEntity $entity);
 
     /**
      * 获取一条数据
-     * @param sting $query
-     * @return array
+     * @param DBEntity $entity
+     * @return mixed
      */
-    public function &getOneRow($query);
+    public function &getOneRow(DBEntity $entity);
 
     /**
      * 更新数据
-     * @param string $table 数据表名
-     * @param array $data 数据载体
-     * @param string $condition 查询条件
-     * @return boolean
+     * @param DBEntity $entity
+     * @return mixed
      */
-    public function update( $table, &$data, $condition = null );
+    public function update(DBEntity $entity);
 
     /**
      * 获取总记录数
-     * @param string $table
-     * @param string $conditions
-     * @return int
+     * @param DBEntity $entity
+     * @return mixed
      */
-    public function count( $table, $conditions = null );
+    public function count(DBEntity $entity);
 
     /**
      * begin transaction (事物开启)
@@ -101,4 +92,3 @@ interface Idb {
     public function inTransaction();
 
 }
-?>

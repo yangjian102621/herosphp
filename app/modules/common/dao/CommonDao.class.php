@@ -4,7 +4,7 @@ namespace common\dao;
 
 use common\dao\interfaces\ICommonDao;
 use herosphp\core\Loader;
-use herosphp\db\query\IQuery;
+use herosphp\db\entity\DBEntity;
 
 /**
  * 通用记录访问对象(DAO)接口的通用实现
@@ -80,7 +80,7 @@ abstract class CommonDao implements ICommonDao {
     /**
      * @see \common\dao\interfaces\ICommonDao::getItems
      */
-    public function getItems(IQuery $query)
+    public function getItems(DBEntity $query)
     {
         return $this->modelDao->getItems($query);
     }

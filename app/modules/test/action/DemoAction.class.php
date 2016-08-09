@@ -5,8 +5,8 @@ use common\action\CommonAction;
 use herosphp\bean\Beans;
 use herosphp\core\Loader;
 use herosphp\db\DBFactory;
-use herosphp\db\query\MysqlQuery;
-use herosphp\files\FileUtils;
+use herosphp\db\entity\MongoEntity;
+use herosphp\db\entity\MysqlEntity;
 use herosphp\http\HttpRequest;
 use herosphp\utils\AjaxResult;
 use herosphp\utils\FileUpload;
@@ -29,14 +29,14 @@ class DemoAction extends CommonAction {
         $service = Beans::get('test.user.service');
         //$list = $service->getDB()->getList("select a.id, a.username, a.password, b.title, b.bcontent from fiidee_user a, fiidee_news b where a.id=b.userid");
 
-//        $query = MysqlQuery::getInstance()->table("{prefix}user a, {prefix}article b")->field('a.id, a.username, a.password, b.title, b.bcontent')->where('a.id=b.userid');
+//        $query = MysqlEntity::getInstance()->table("{prefix}user a, {prefix}article b")->field('a.id, a.username, a.password, b.title, b.bcontent')->where('a.id=b.userid');
 //        $list = $service->getItems($query);
 
-        $query = MysqlQuery::getInstance()
-            ->leftJoin("{prefix}article a")
-            ->on("{t}.id = a.userid")
+        $query = MysqlEntity::getInstance()
+            ->leftJoin("{prefix}news a")
+            ->on("{t}.id = a.id")
             ->field("{t}.id, a.title, a.bcontent, {t}.username,{t}.password")
-            ->where("{t}.id > 80");
+            ->where("1=1");
         $list = $service->getItems($query);
         __print($list);
 
@@ -46,6 +46,18 @@ class DemoAction extends CommonAction {
     public function mongo() {
         $congfig = Loader::config('db');
         $db = DBFactory::createDB('mongo', $congfig['mongo']);
-        __print($db);
+        $data = array(
+            'username' => 'xiaoming',
+            'password' => md5(time()),
+            'add_time' => date('Y-m-d H:i:s')
+        );
+//        $date = new \MongoDate();
+//        echo $date;
+        //var_dump($db->insert('user', $data));
+        $entity = MongoEntity::getInstance()
+            ->setTable("user")
+            ->addWhere('username', 'xiaoming');
+        __print($db->getOneRow($entity));
+        AjaxResult::ajaxSuccessResult();
     }
 }

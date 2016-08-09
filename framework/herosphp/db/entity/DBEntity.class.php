@@ -1,9 +1,9 @@
 <?php
 
-namespace herosphp\db\query;
+namespace herosphp\db\entity;
 
 /*---------------------------------------------------------------------
- * 数据库查询对象接口
+ * 数据库增删改查实体类，封装所有跟数据库操作有关的参数
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -12,7 +12,7 @@ namespace herosphp\db\query;
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
-interface IQuery {
+interface DBEntity {
 
     /**
      * create a query sql
@@ -25,7 +25,6 @@ interface IQuery {
      * @return
      */
     public function buildWhere();
-
 
     /**
      * add AND query conditions
@@ -82,20 +81,20 @@ interface IQuery {
      * @param $where
      * @return
      */
-    public function where($where);
+    public function where($where);  //设置条件
 
-    public function field($field);
+    public function field($field); //设置字段
 
-    public function pagesize($pagesize);
+    public function pagesize($pagesize); //设置分页大小
 
-    public function page($page);
+    public function page($page); //设置页码
 
-    public function order($order);
+    public function order($order); //设置排序
 
-    public function group($group);
+    public function getTable(); //设置数据表
+    public function setTable($table); //获取数据表
 
-    public function having($having);
-
-    public function setTable($table);
+    public function setData($data); //注入数据
+    public function getData(); //获取数据
 
 }

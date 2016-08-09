@@ -13,6 +13,7 @@ namespace herosphp\db\mysql;
 
 use herosphp\core\Debug;
 use herosphp\core\Loader;
+use herosphp\db\entity\DBEntity;
 use herosphp\db\interfaces\Idb;
 use herosphp\exception\DBException;
 use \PDO;
@@ -104,12 +105,12 @@ class SingleDB implements Idb {
     /**
      * @see \herosphp\db\interfaces\Idb::insert()
      */
-    public function insert($_table, &$_array)
+    public function insert(DBEntity $entity)
     {
 		$_fileds = '';
 		$_values = '';
-		$_T_fields = $this->getTableFields( $_table );
-		foreach ( $_array as $_key => $_val ) {
+		$_T_fields = $this->getTableFields($entity->getTable());
+		foreach ( $entity->getData() as $_key => $_val ) {
 
 			//自动过滤掉不存在的字段
 			if ( !in_array( $_key, $_T_fields ) ) continue;
@@ -120,7 +121,7 @@ class SingleDB implements Idb {
 		}
 
 		if ( $_fileds !== null ) {
-			$_query = "INSERT INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";
+			$_query = "INSERT INTO ".$entity->getTable()."(" . $_fileds . ") VALUES(" . $_values . ")";
 
 			if ( $this->query( $_query ) != false ){
 				$last_insert_id = $this->link->lastInsertId();
@@ -137,12 +138,12 @@ class SingleDB implements Idb {
     /**
      * @see \herosphp\db\interfaces\Idb::replace()
      */
-    public function replace($_table, &$_array ) {
+    public function replace(DBEntity $entity) {
 
         $_fileds = '';
         $_values = '';
-        $_T_fields = $this->getTableFields( $_table );
-        foreach ( $_array as $_key => $_val ) {
+        $_T_fields = $this->getTableFields($entity->getTable());
+        foreach ( $entity->getData() as $_key => $_val ) {
 
             //自动过滤掉不存在的字段
             if ( !in_array( $_key, $_T_fields ) ) continue;
@@ -152,7 +153,7 @@ class SingleDB implements Idb {
         }
 
         if ( $_fileds !== null ) {
-            $_query = "REPLACE INTO ".$_table."(" . $_fileds . ") VALUES(" . $_values . ")";
+            $_query = "REPLACE INTO ".$entity->getTable()."(" . $_fileds . ") VALUES(" . $_values . ")";
             if ( $this->query( $_query ) != false )
                 return true;
         }
@@ -162,11 +163,11 @@ class SingleDB implements Idb {
     /**
      *  @see \herosphp\db\interfaces\Idb::delete()
      */
-    public function delete($_table, $_conditons = null)
+    public function delete(DBEntity $entity)
     {
-        $_sql = "DELETE FROM ".$_table;
-        if ( $_conditons ) {
-            $_sql .= " WHERE ".$_conditons;
+        $_sql = "DELETE FROM ".$entity->getTable();
+        if ( $entity->buildWhere() ) {
+            $_sql .= " WHERE ".$entity->buildWhere();
         } else {
             return false;
         }
@@ -178,10 +179,10 @@ class SingleDB implements Idb {
     /**
      * @see \herosphp\db\interfaces\Idb::getList()
      */
-    public function &getList($_query)
+    public function &getList(DBEntity $entity)
     {
         $_result = array();
-        $_ret = $this->query( $_query );
+        $_ret = $this->query($entity->buildQueryString());
         if ( $_ret != false ) {
 
             while ( ($_rows = $_ret->fetch(PDO::FETCH_ASSOC)) != false )
@@ -193,10 +194,10 @@ class SingleDB implements Idb {
     /**
      * @see \herosphp\db\interfaces\Idb::getOneRow()
      */
-    public function &getOneRow($_query)
+    public function &getOneRow(DBEntity $entity)
     {
         $_result = array();
-        $_ret = $this->query( $_query );
+        $_ret = $this->query($entity->buildQueryString());
         if ( $_ret != false ) {
             $_result = $_ret->fetch(PDO::FETCH_ASSOC);
         }
@@ -206,20 +207,20 @@ class SingleDB implements Idb {
     /**
      * @see \herosphp\db\interfaces\Idb::update()
      */
-    public function update($_table, &$_array, $_conditons = null)
+    public function update(DBEntity $entity)
     {
-        if ( !$_conditons ) return false;
+        if ( !$entity->buildWhere() ) return false;
 
-        $_T_fields = $this->getTableFields($_table);
+        $_T_fields = $this->getTableFields($entity->getTable());
         $_keys = '';
-        foreach ( $_array as $_key => $_val ) {
+        foreach ( $entity->getData() as $_key => $_val ) {
 
             //过滤不存在的字段
             if ( !in_array($_key, $_T_fields) ) continue;
             $_keys .= $_keys == ''? "`{$_key}`='{$_val}'" : ", `{$_key}`='{$_val}'";
         }
         if ( $_keys !== '' ) {
-            $_query = "UPDATE " . $_table . " SET " . $_keys . " WHERE ".$_conditons;
+            $_query = "UPDATE " . $entity->getTable() . " SET " . $_keys . " WHERE ".$entity->buildWhere();
             return $this->query($_query);
 
             //如果没有传入任何字段则默认也是更新成功的
@@ -232,10 +233,10 @@ class SingleDB implements Idb {
     /**
      * @see \herosphp\db\interfaces\Idb::count()
      */
-    public function count($_table, $_conditons = null)
+    public function count(DBEntity $entity)
     {
-        $_query = "SELECT count(*) as total FROM {$_table}";
-        if ( $_conditons ) $_query .= " WHERE ".$_conditons;
+        $_query = "SELECT count(*) as total FROM {$entity->getTable()}";
+        if ( $entity->buildWhere() ) $_query .= " WHERE ".$entity->buildWhere();
         $_result = $this->query($_query);
         $_res = $_result->fetch(PDO::FETCH_ASSOC);
         return $_res['total'];
