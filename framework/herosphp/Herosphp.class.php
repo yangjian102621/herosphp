@@ -136,6 +136,7 @@ class Herosphp {
             'herosphp\db\entity\MongoEntity'       => 'db.entity.MongoEntity',
 
             'herosphp\model\C_Model'       => 'model.C_Model',
+            'herosphp\model\MongoModel'       => 'model.MongoModel',
 
             'herosphp\lock\SemSynLock'       => 'lock.SemSynLock',
             'herosphp\lock\FileSynLock'       => 'lock.FileSynLock',

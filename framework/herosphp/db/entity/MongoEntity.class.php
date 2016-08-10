@@ -3,7 +3,7 @@
 namespace herosphp\db\entity;
 
 /*---------------------------------------------------------------------
- * 数据库查询对象的MongoDB实现
+ *  数据库操作实体类(Entity)的MongoDB实现
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -85,11 +85,12 @@ class MongoEntity implements DBEntity {
      * add OR query condition
      * @param $field
      * @param $value
-     * @throws UnSupportedOperationException
+     * @return $this
      */
     public function addOrWhere($field, $value)
     {
-        throw new UnSupportedOperationException();
+        $this->where['$or'][] = array($field => $value);
+        return $this;
     }
 
     /**
@@ -179,10 +180,11 @@ class MongoEntity implements DBEntity {
             $oarr = explode(',', $order);
             foreach ($oarr as $value) {
                 $value = preg_replace('/\s+/', ' ', $value);    //去除多余的空格
+                $value = explode(' ', $value);
                 if ( strtoupper($value[1]) == "DESC" ) {
-                    $this->order[$value[1]] = -1;
+                    $this->order[$value[0]] = -1;
                 } else {
-                    $this->order[$value[1]] = 1;
+                    $this->order[$value[0]] = 1;
                 }
             }
         }

@@ -139,6 +139,18 @@ class MongoDB implements Idb {
         return ($result['ok'] == 1 && $result['n'] > 0);
     }
 
+    //增加或者减少某个字段的值(必须是整数)
+    public function inc(DBEntity $entity)
+    {
+        $collection = $this->db->selectCollection($entity->getTable());
+        $result = $collection->update(
+            $entity->buildWhere(),
+            array('$inc' => $entity->getData()),
+            $entity->getOptions());
+
+        return ($result['ok'] == 1 && $result['n'] > 0);
+    }
+
     /**
      * @see Idb::count
      */

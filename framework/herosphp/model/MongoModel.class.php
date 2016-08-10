@@ -47,7 +47,7 @@ class MongoModel implements IModel {
      * @param string $table 数据表
      * @param array $config 数据库配置信息
      */
-    public function __construct( $table, $config = null ) {
+    public function __construct($table, $config = null) {
 
         //初始化数据库配置
         if ( !$config ) {
@@ -55,6 +55,7 @@ class MongoModel implements IModel {
         }
         //创建数据库
         $this->db = DBFactory::createDB('mongo', $congfig['mongo']);
+        $this->table = $table;
     }
 
     /**
@@ -117,7 +118,7 @@ class MongoModel implements IModel {
      */
     public function getItems(DBEntity $entity)
     {
-        if ( $entity == null ) {
+        if ( !$entity instanceof DBEntity ) {
             $entity = MongoEntity::getInstance();
         }
         $entity->setTable($this->table);
@@ -164,10 +165,9 @@ class MongoModel implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data)
-            ->where($conditions);
+        $entity = $this->getConditons($conditions);
+        $entity->setData($data);
+
         return $this->db->update($entity);
     }
 
@@ -178,10 +178,7 @@ class MongoModel implements IModel {
      */
     public function count($conditions)
     {
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->where($conditions);
-        return $this->db->count($entity);
+        return $this->db->count($this->getConditons($conditions));
     }
 
     /**
@@ -193,8 +190,7 @@ class MongoModel implements IModel {
      */
     public function increase($field, $offset, $id)
     {
-        $data = array('$inc' => array($field => $offset));
-        return $this->update($data, $id);
+        return $this->batchIncrease($field, $offset, $id);
     }
 
     /**
@@ -206,8 +202,7 @@ class MongoModel implements IModel {
      */
     public function batchIncrease($field, $offset, $conditions)
     {
-        $data = array('$inc' => array($field => $offset));
-        return $this->updates($data, $conditions);
+        return $this->db->inc($this->getConditons($conditions)->setData(array($field => $offset)));
     }
 
     /**
@@ -219,27 +214,19 @@ class MongoModel implements IModel {
      */
     public function reduce($field, $offset, $id)
     {
-        return $this->increase($field, - $offset, $id);
+        return $this->increase($field, -$offset, $id);
     }
 
     /**
      * @see IModel::batchReduce()
-     * @param string $field
-     * @param int $offset
-     * @param array|string $conditions
-     * @return mixed|\PDOStatement
      */
     public function batchReduce($field, $offset, $conditions)
     {
-        return $this->batchIncrease($field, - $offset, $conditions);
+        return $this->batchIncrease($field, -$offset, $conditions);
     }
 
     /**
      * @see IModel::set()
-     * @param $field
-     * @param $value
-     * @param $id
-     * @return bool|mixed
      */
     public function set($field, $value, $id)
     {
@@ -249,10 +236,6 @@ class MongoModel implements IModel {
 
     /**
      * @see IModel::sets()
-     * @param $field
-     * @param $value
-     * @param $conditions
-     * @return bool|mixed
      */
     public function sets($field, $value, $conditions)
     {
@@ -295,19 +278,24 @@ class MongoModel implements IModel {
     /**
      * 获取查询条件
      * @param $conditons
-     * @return
+     * @return MongoEntity
      */
     private function getConditons($conditions) {
-        if ( !$conditions instanceof DBEntity ) {
+        if ( $conditions instanceof DBEntity ) {
+            $conditions->setTable($this->table);
+            return $conditions;
+        } else {
+
             $__conditions = MongoEntity::getInstance()->setTable($this->table);
             if ( is_array($conditions) ) {
                 $__conditions->where($conditions);
-            } else {
+            } else if ( is_string($conditions) ) {
                 $__conditions->addWhere('_id', new \MongoId($conditions));
             }
             return $__conditions;
+
         }
-        return $conditions;
+
     }
 
     /**

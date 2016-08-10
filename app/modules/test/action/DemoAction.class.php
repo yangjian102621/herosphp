@@ -80,7 +80,26 @@ class DemoAction extends CommonAction {
 //        __print($db->update($entity));
 //        __print($db->getList(MongoEntity::getInstance()->setTable('user')->addWhere('username', '张三')));
 
-        __print($db->delete(MongoEntity::getInstance()->setTable('user')->addWhere('_id', new \MongoId('57aadd587df95d37068b45d1'))));
+        //__print($db->delete(MongoEntity::getInstance()->setTable('user')->addWhere('_id', new \MongoId('57aadd587df95d37068b45d1'))));
+
+        $model = Loader::model("news");
+//        for ( $i = 0; $i < 100; $i++ ) {
+//            $data = array('title' => 'title_'.$i, 'bcontent' => 'bcontent_'.$i);
+//            $model->insert($data);
+//        }
+        //__print($model->getItems(MongoEntity::getInstance()->page(1)->pagesize(10)->order('_id DESC')));
+        $query = MongoEntity::getInstance()
+            ->addOrWhere('_id', new \MongoId('57ab392b7df95d5e048b49b7'))
+            ->addOrWhere('title', 'title_92')
+            ->addOrWhere('_id', new \MongoId('57ab392b7df95d5e048b49b8'));
+        $items = $model->getItems($query);
+        //$model->updates(array('hits' => 1), $query);
+//        $model->increase('hits', 10, $query);
+//        __print($model->getItems($query));
+
+        foreach ($items as $value) {
+            __print($value['_id']->__toString());
+        }
 
         AjaxResult::ajaxSuccessResult();
     }
