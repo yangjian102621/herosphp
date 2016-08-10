@@ -22,18 +22,27 @@ class MongoEntity implements DBEntity {
     private $where = array(); //查询条件
 
     //当前页
-    private $page = 0;
+    private $page = 1;
 
     //每页记录条数
     private $pagesize = 20;
 
     //排序方式
-    private $order;
+    private $order = array();
 
     //查询字段
-    private $fields = "*";
+    private $fields = array();
 
+    //要插入或者更新的数据
     private $data = array();
+
+    ////插入或更新操作选项
+    private $options = array(
+        'fsync' => 0, //是否强制同步写入,mongodb为了保证性能，写入是异步的，先时保存在内存的
+        'upsert' => 0, //更新的时候没有符合条件的文档是否创建一条新文档
+        'multiple' => 1, //是否更新所有匹配的文档，默认只更新匹配的第一条
+        'justOne' => 0, //是否只删除一个
+    );
 
     private function __construct(){}
 
@@ -135,10 +144,23 @@ class MongoEntity implements DBEntity {
         return $this;
     }
 
+    public function getPagesize() {return $this->pagesize;}
+
     public function field($field)
     {
-        if ( $field ) $this->fields = $field;
+        if ( is_array($field) ) {
+            $this->fields = $field;
+        } else {
+            $__fields = explode(',', $field);
+            foreach ( $__fields as $value ) {
+                $this->fields[trim($value)] = 1;
+            }
+        }
         return $this;
+    }
+
+    public function getFields() {
+        return $this->fields;
     }
 
     public function page($page)
@@ -147,10 +169,29 @@ class MongoEntity implements DBEntity {
         return $this;
     }
 
+    public function getPage() {return $this->page;}
+
     public function order($order)
     {
-        $this->order = $order;
+        if ( is_array($order) ) {
+            $this->order = $order;
+        } else {
+            $oarr = explode(',', $order);
+            foreach ($oarr as $value) {
+                $value = preg_replace('/\s+/', ' ', $value);    //去除多余的空格
+                if ( strtoupper($value[1]) == "DESC" ) {
+                    $this->order[$value[1]] = -1;
+                } else {
+                    $this->order[$value[1]] = 1;
+                }
+            }
+        }
         return $this;
+    }
+
+    public function getOrder()
+    {
+        return $this->order;
     }
 
     public function group($group)
@@ -161,11 +202,12 @@ class MongoEntity implements DBEntity {
     /**
      * <p>直接设置查询条件字符串, 如果设置了这个条件，其他条件都将失效</p>
      * @param $where
-     * @throws UnSupportedOperationException
+     * @return $this
      */
     public function where($where)
     {
-        throw new UnSupportedOperationException();
+        $this->where = $where;
+        return $this;
     }
 
     public function having($having)
@@ -182,6 +224,26 @@ class MongoEntity implements DBEntity {
     public function getTable()
     {
         return $this->table;
+    }
+
+    public function addOptions($key, $value) {
+        $this->options[$key] = $value;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     */
+    public function setOptions($options)
+    {
+        $this->options = $options;
     }
 
     public function setData($data)

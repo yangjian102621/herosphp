@@ -1,6 +1,6 @@
 <?php
 /*---------------------------------------------------------------------
- * 数据库访问模型model mysql实现
+ * 数据库访问模型model mongodb实现
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -15,51 +15,26 @@ namespace herosphp\model;
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
-use herosphp\db\entity\DBQuery;
 use herosphp\db\entity\DBEntity;
-use herosphp\db\entity\MysqlEntity;
-use herosphp\db\SQL;
+use herosphp\db\entity\MongoEntity;
 use herosphp\filter\Filter;
 
 Loader::import('model.IModel', IMPORT_FRAME);
 
 
-class C_Model implements IModel {
+class MongoModel implements IModel {
 
     /**
      * 数据库连接资源
-     * @var \herosphp\db\mysql\SingleDB
+     * @var \herosphp\db\mongo\MongoDB
      */
     private $db;
-
-    /**
-     * 数据表主键
-     * @var string
-     */
-    private $primaryKey = 'id';
 
     /**
      * 数据表名称
      * @var string
      */
     private $table = '';
-
-    private $tablePrefix = '';
-
-    /**
-     * 数据表映射，适合多表水平分割,如
-     * array('user_1', 'user_2', 'user_3')
-     * @var array
-     */
-    private $tableMapping = array();
-
-    /**
-     * 字段映射
-     * @var array
-     * 别名 => 字段名
-     * addTime => add_time
-     */
-    private $mapping = array();
 
     /**
      * 数据过滤规则
@@ -76,20 +51,10 @@ class C_Model implements IModel {
 
         //初始化数据库配置
         if ( !$config ) {
-            //默认使用第一个数据库服务器配置
-            $dbConfigs = Loader::config('db');
-            $db_config = $dbConfigs['mysql'];
-            $this->tablePrefix = $db_config[0]['table_prefix'];
-            $this->table = $this->tablePrefix.$table;
-            if ( DB_ACCESS == DB_ACCESS_SINGLE ) {  //单台服务器
-                $config = $db_config[0];
-            } else if ( DB_ACCESS == DB_ACCESS_CLUSTERS ) { //多台服务器
-                $config = $db_config;
-            }
-
+            $congfig = Loader::config('db');
         }
         //创建数据库
-        $this->db = DBFactory::createDB(DB_ACCESS, $config);
+        $this->db = DBFactory::createDB('mongo', $congfig['mongo']);
     }
 
     /**
@@ -110,7 +75,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = MysqlEntity::getInstance()
+        $entity = MongoEntity::getInstance()
             ->setTable($this->table)
             ->setData($data);
         return $this->db->insert($entity);
@@ -125,7 +90,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = MysqlEntity::getInstance()
+        $entity = MongoEntity::getInstance()
             ->setTable($this->table)
             ->setData($data);
         return $this->db->replace($entity);
@@ -136,10 +101,7 @@ class C_Model implements IModel {
      */
     public function delete($id)
     {
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->where("{$this->primaryKey}='{$id}'");
-        return $this->db->delete($entity);
+        return $this->deletes($id);
     }
 
     /**
@@ -147,10 +109,7 @@ class C_Model implements IModel {
      */
     public function deletes($conditions)
     {
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->where($conditions);
-        return $this->db->delete($entity);
+        return $this->db->delete($this->getConditons($conditions));
     }
 
     /**
@@ -159,24 +118,11 @@ class C_Model implements IModel {
     public function getItems(DBEntity $entity)
     {
         if ( $entity == null ) {
-            $entity = MysqlEntity::getInstance();
+            $entity = MongoEntity::getInstance();
         }
-        $entity->setTablePrefix($this->tablePrefix)->setTable($this->table);
-        $items =  $this->db->getList($entity);
+        $entity->setTable($this->table);
+        return  $this->db->getList($entity);
 
-        //做字段别名映射
-        if ( !empty($items) ) {
-            $mappings = $this->getMapping();
-            if ( !empty($mappings) ) {
-                foreach ($items as $key => $value) {
-                    foreach ( $mappings as $name => $val ) {
-                        $items[$key][$name] = $value[$val];
-                        unset($items[$key][$val]);
-                    }
-                }
-            }
-        }
-        return $items;
     }
 
     /**
@@ -184,23 +130,7 @@ class C_Model implements IModel {
      */
     public function getItem($conditions)
     {
-        if ( !($conditions instanceof DBEntity) ) {
-            $conditions = MysqlEntity::getInstance()
-                ->setTablePrefix($this->tablePrefix)
-                ->setTable($this->table)
-                ->addWhere($this->getPrimaryKey(), $conditions);
-        }
-        $item = $this->db->getOneRow($conditions);
-
-        //做字段别名映射
-        $mappings = $this->getMapping();
-        if ( !empty($mappings) ) {
-            foreach ( $mappings as $name => $val ) {
-                $item[$name] = $item[$val];
-                unset($item[$val]);
-            }
-        }
-        return $item;
+        return $this->db->getOneRow($this->getConditons($conditions));
     }
 
     /**
@@ -215,10 +145,10 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = MysqlEntity::getInstance()
+        $entity = MongoEntity::getInstance()
             ->setTable($this->table)
             ->setData($data)
-            ->where("{$this->primaryKey}='{$id}'");
+            ->addWhere('_id', new \MongoId($id));
         return $this->db->update($entity);
     }
 
@@ -263,9 +193,8 @@ class C_Model implements IModel {
      */
     public function increase($field, $offset, $id)
     {
-        $conditions = SQL::create($this->primaryKey)->buildConditions($id);
-        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
-        return $this->db->query($query);
+        $data = array('$inc' => array($field => $offset));
+        return $this->update($data, $id);
     }
 
     /**
@@ -277,9 +206,8 @@ class C_Model implements IModel {
      */
     public function batchIncrease($field, $offset, $conditions)
     {
-        $conditions = SQL::create($this->primaryKey)->buildConditions($conditions);
-        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$this->getConditons($conditions)}";
-        return $this->db->query($query);
+        $data = array('$inc' => array($field => $offset));
+        return $this->updates($data, $conditions);
     }
 
     /**
@@ -291,9 +219,7 @@ class C_Model implements IModel {
      */
     public function reduce($field, $offset, $id)
     {
-        $conditions = SQL::create($this->primaryKey)->buildConditions($id);
-        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
-        return $this->db->query($query);
+        return $this->increase($field, - $offset, $id);
     }
 
     /**
@@ -305,8 +231,7 @@ class C_Model implements IModel {
      */
     public function batchReduce($field, $offset, $conditions)
     {
-        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE ".$this->getConditons($conditions);
-        return $this->db->query($query);
+        return $this->batchIncrease($field, - $offset, $conditions);
     }
 
     /**
@@ -319,11 +244,7 @@ class C_Model implements IModel {
     public function set($field, $value, $id)
     {
         $data = array($field => $value);
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data)
-            ->where("{$this->primaryKey}={$id}");
-        return $this->db->update($entity);
+        return $this->update($data, $id);
     }
 
     /**
@@ -336,11 +257,7 @@ class C_Model implements IModel {
     public function sets($field, $value, $conditions)
     {
         $data = array($field => $value);
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data)
-            ->where($conditions);
-        return $this->db->update($entity);
+        return $this->updates($data, $conditions);
     }
 
     /**
@@ -381,11 +298,16 @@ class C_Model implements IModel {
      * @return
      */
     private function getConditons($conditions) {
-        if ( $conditions instanceof DBEntity ) {
-            return $conditions->buildWhere();
-        } else {
-            return SQL::create()->buildConditions($conditions);
+        if ( !$conditions instanceof DBEntity ) {
+            $__conditions = MongoEntity::getInstance()->setTable($this->table);
+            if ( is_array($conditions) ) {
+                $__conditions->where($conditions);
+            } else {
+                $__conditions->addWhere('_id', new \MongoId($conditions));
+            }
+            return $__conditions;
         }
+        return $conditions;
     }
 
     /**
@@ -410,38 +332,6 @@ class C_Model implements IModel {
     }
 
     /**
-     * @param array $mapping
-     */
-    public function setMapping($mapping)
-    {
-        $this->mapping = $mapping;
-    }
-
-    /**
-     * @return array
-     */
-    public function getMapping()
-    {
-        return $this->mapping;
-    }
-
-    /**
-     * @param string $primaryKey
-     */
-    public function setPrimaryKey($primaryKey)
-    {
-        $this->primaryKey = $primaryKey;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPrimaryKey()
-    {
-        return $this->primaryKey;
-    }
-
-    /**
      * @param array $filter
      */
     public function setFilterMap($filter)
@@ -463,22 +353,6 @@ class C_Model implements IModel {
      */
     public function setTable($table) {
         $this->table = $table;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTableMapping()
-    {
-        return $this->tableMapping;
-    }
-
-    /**
-     * @param array $tableMapping
-     */
-    public function setTableMapping($tableMapping)
-    {
-        $this->tableMapping = $tableMapping;
     }
 
     /**

@@ -53,8 +53,8 @@ return array(
     'mongo'     => array(
         'host'      => 'localhost',
         'port'      => 27017,
-        //'user'      => 'root',
-        //'pass'      => '123456',
+        'user'      => 'root',
+        'pass'      => '123456',
         'db'        => 'herosphp'
     )
 );

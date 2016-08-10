@@ -20,7 +20,10 @@ use herosphp\exception\UnSupportedOperationException;
 Loader::import('db.interfaces.Idb', IMPORT_FRAME);
 class MongoDB implements Idb {
 
-    private $db = null; //数据库连接对象
+    /**
+     * @var \MongoDB
+     */
+    private $db = null; //数据库对象
 
     private $configs = array();
 
@@ -65,18 +68,20 @@ class MongoDB implements Idb {
     public function insert(DBEntity $entity)
     {
         $collection = $this->db->selectCollection($entity->getTable());
-        $options = array('fsync' => true); //同步插入
-        $result = $collection->insert($entity->getData(), $options);
+        $result = $collection->insert($entity->getData(), $entity->getOptions());
         return $result['ok'] == 1;
+
     }
 
     /**
      * @see Idb::replace
-     * @throws UnSupportedOperationException
+     * 如果对象来自数据库，则更新现有的数据库对象，否则插入对象。
      */
     public function replace(DBEntity $entity)
     {
-        throw new UnSupportedOperationException();
+        $collection = $this->db->selectCollection($entity->getTable());
+        $result = $collection->save($entity->getData(), $entity->getOptions());
+        return $result['ok'] == 1;
     }
 
     /**
@@ -84,7 +89,9 @@ class MongoDB implements Idb {
      */
     public function delete(DBEntity $entity)
     {
-        // TODO: Implement delete() method.
+        $collection = $this->db->selectCollection($entity->getTable());
+        $result = $collection->remove($entity->buildWhere(), $entity->getOptions());
+        return ($result['ok'] == 1 && $result['n'] > 0);
     }
 
     /**
@@ -94,7 +101,17 @@ class MongoDB implements Idb {
      */
     public function &getList(DBEntity $entity)
     {
-        // TODO: Implement getList() method.
+        $collection = $this->db->selectCollection($entity->getTable());
+        $skip = ($entity->getPage() - 1) * $entity->getPagesize();
+        $result = $collection->find($entity->buildWhere(), $entity->getFields())
+            ->skip($skip)
+            ->limit($entity->getPagesize())
+            ->sort($entity->getOrder());
+        $items = array();
+        while ( $result->hasNext() ) {
+            $items[] = $result->next();
+        }
+        return $items;
     }
 
     /**
@@ -105,7 +122,7 @@ class MongoDB implements Idb {
     public function &getOneRow(DBEntity $entity)
     {
         $collection = $this->db->selectCollection($entity->getTable());
-        return $collection->findOne($entity->buildWhere());
+        return $collection->findOne($entity->buildWhere(), $entity->getFields());
     }
 
     /**
@@ -114,9 +131,12 @@ class MongoDB implements Idb {
     public function update(DBEntity $entity)
     {
         $collection = $this->db->selectCollection($entity->getTable());
-        $options = array('fsync' => true); //同步插入
-        $result = $collection->update($entity->buildWhere(), $entity->getData(), $options);
-        return $result['ok'] == 1;
+        $result = $collection->update(
+            $entity->buildWhere(),
+            array('$set' => $entity->getData()),
+            $entity->getOptions());
+
+        return ($result['ok'] == 1 && $result['n'] > 0);
     }
 
     /**
@@ -124,7 +144,8 @@ class MongoDB implements Idb {
      */
     public function count(DBEntity $entity)
     {
-        // TODO: Implement count() method.
+        $collection = $this->db->selectCollection($entity->getTable());
+        return $collection->count($entity->buildWhere());
     }
 
     /**
