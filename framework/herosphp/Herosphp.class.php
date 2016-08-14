@@ -130,7 +130,7 @@ class Herosphp {
             'herosphp\web\WebUtils'       => 'web.WebUtils',
 
             'herosphp\db\DBFactory'       => 'db.DBFactory',
-            'herosphp\db\SQL'       => 'db.SQL',
+            'herosphp\db\mysql\MysqlQueryBuilder'       => 'db.mysql.MysqlQueryBuilder',
             'herosphp\db\entity\DBEntity'       => 'db.entity.DBEntity',
             'herosphp\db\entity\MysqlEntity'       => 'db.entity.MysqlEntity',
             'herosphp\db\entity\MongoEntity'       => 'db.entity.MongoEntity',
