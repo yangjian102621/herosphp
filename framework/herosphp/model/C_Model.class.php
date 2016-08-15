@@ -15,10 +15,6 @@ namespace herosphp\model;
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
-use herosphp\db\entity\DBQuery;
-use herosphp\db\entity\DBEntity;
-use herosphp\db\entity\MysqlEntity;
-use herosphp\db\SQL;
 use herosphp\filter\Filter;
 
 Loader::import('model.IModel', IMPORT_FRAME);
@@ -110,10 +106,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data);
-        return $this->db->insert($entity);
+        return $this->db->insert($this->table, $data);
     }
 
     /**
@@ -125,10 +118,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data);
-        return $this->db->replace($entity);
+        return $this->db->replace($this->table, $data);
     }
 
     /**
@@ -136,10 +126,8 @@ class C_Model implements IModel {
      */
     public function delete($id)
     {
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->where("{$this->primaryKey}='{$id}'");
-        return $this->db->delete($entity);
+        $where = array($this->primaryKey => $id);
+        return $this->db->delete($this->table, $where);
     }
 
     /**
@@ -147,22 +135,46 @@ class C_Model implements IModel {
      */
     public function deletes($conditions)
     {
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->where($conditions);
-        return $this->db->delete($entity);
+        return $this->db->delete($this->table, $conditions);
+    }
+
+    /**
+     * @see IModel::update()
+     * @param $data
+     * @param $id
+     * @return bool
+     */
+    public function update($data, $id)
+    {
+        $data = $this->loadFilterData($data);
+        if ( $data == false ) {
+            return false;
+        }
+        $where = array($this->primaryKey, $id);
+        return $this->db->update($data, $where);
+    }
+
+    /**
+     * @see IModel::updates()
+     * @param $data
+     * @param $conditions
+     * @return bool|mixed
+     */
+    public function updates($data, $conditions)
+    {
+        $data = $this->loadFilterData($data);
+        if ( $data == false ) {
+            return false;
+        }
+        return $this->db->update($this->table, $conditions);
     }
 
     /**
      * @see IModel::getItems()
      */
-    public function getItems(DBEntity $entity)
+    public function getItems($conditions, $fields, $order, $limit, $group, $having)
     {
-        if ( $entity == null ) {
-            $entity = MysqlEntity::getInstance();
-        }
-        $entity->setTablePrefix($this->tablePrefix)->setTable($this->table);
-        $items =  $this->db->getList($entity);
+        $items =  $this->db->find($this->table,$conditions, $fields, $order, $limit, $group, $having);
 
         //做字段别名映射
         if ( !empty($items) ) {
@@ -179,18 +191,17 @@ class C_Model implements IModel {
         return $items;
     }
 
+    public function find()
+    {
+        // TODO: Implement find() method.
+    }
+
     /**
      * @see IModel::getItem()
      */
-    public function getItem($conditions)
+    public function getItem($condition, $fields, $order)
     {
-        if ( !($conditions instanceof DBEntity) ) {
-            $conditions = MysqlEntity::getInstance()
-                ->setTablePrefix($this->tablePrefix)
-                ->setTable($this->table)
-                ->addWhere($this->getPrimaryKey(), $conditions);
-        }
-        $item = $this->db->getOneRow($conditions);
+        $item = $this->db->findOne($this->table, $condition, $fields, $order);
 
         //做字段别名映射
         $mappings = $this->getMapping();
@@ -203,42 +214,9 @@ class C_Model implements IModel {
         return $item;
     }
 
-    /**
-     * @see IModel::update()
-     * @param $data
-     * @param $id
-     * @return bool
-     */
-    public function update($data, $id)
+    public function findOne()
     {
-        $data = $this->loadFilterData($data);
-        if ( $data == false ) {
-            return false;
-        }
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data)
-            ->where("{$this->primaryKey}='{$id}'");
-        return $this->db->update($entity);
-    }
-
-    /**
-     * @see IModel::updates()
-     * @param $data
-     * @param $conditions
-     * @return bool|mixed
-     */
-    public function updates($data, $conditions)
-    {
-        $data = $this->loadFilterData($data);
-        if ( $data == false ) {
-            return false;
-        }
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data)
-            ->where($conditions);
-        return $this->db->update($entity);
+        // TODO: Implement findOne() method.
     }
 
     /**

@@ -106,17 +106,17 @@ class MongoDB implements Idb {
      */
     public function delete($table, $condition)
     {
+        $where = MongoQueryBuilder::where($condition);
+        if ( empty($where) || $where == null ) return false;
         $collection = $this->db->selectCollection($table);
-        $result = $collection->remove($entity->buildWhere(), $entity->getOptions());
+        $result = $collection->remove($where, $this->getOptions());
         return ($result['ok'] == 1 && $result['n'] > 0);
     }
 
     /**
-     * 获取数据列表
-     * @param string $query
-     * @return array
+     * @see Idb::find()
      */
-    public function &findfind($table,
+    public function &find($table,
                               $condition=null,
                               $field=null,
                               $sort=null,
@@ -125,51 +125,59 @@ class MongoDB implements Idb {
                               $having=null)
     {
         $collection = $this->db->selectCollection($table);
-        $skip = ($entity->getPage() - 1) * $entity->getPagesize();
-        $result = $collection->find($entity->buildWhere(), $entity->getFields())
-            ->skip($skip)
-            ->limit($entity->getPagesize())
-            ->sort($entity->getOrder());
+        $where = MongoQueryBuilder::where($condition);
+        $limit = MongoQueryBuilder::limit($limit);
+        $sort = MongoQueryBuilder::sort($sort);
+        $result = $collection->find($where, MongoQueryBuilder::fields($field));
+        if ( $limit ) {
+            $result->skip($limit[0])->limit($limit[1]);
+        }
+        if ( !empty($sort) ) {
+            $result->sort($sort);
+        }
         $items = array();
-        while ( $result->hasNext() ) {
-            $items[] = $result->next();
+        if ( $result ) {
+            while ( $result->hasNext() ) {
+                $items[] = $result->next();
+            }
         }
         return $items;
     }
 
     /**
-     * 获取一条数据
-     * @param DBEntity $query
-     * @return array
+     * @see Idb::findOne()
      */
-    public function &getOneRow(DBEntity $entity)
+    public function &findOne($table, $condition=null, $field=null, $sort=null)
     {
-        $collection = $this->db->selectCollection($entity->getTable());
-        return $collection->findOne($entity->buildWhere(), $entity->getFields());
+        $collection = $this->db->selectCollection($table);
+        return $collection->findOne(MongoQueryBuilder::where($condition), MongoQueryBuilder::fields($field));
     }
 
     /**
      * @see Idb::update
      */
-    public function update(DBEntity $entity)
+    public function update($table, $data, $condition)
     {
-        $collection = $this->db->selectCollection($entity->getTable());
+        $where = MongoQueryBuilder::where($condition);
+        if ( empty($where) || $where == null ) return false;
+
+        $collection = $this->db->selectCollection($table);
         $result = $collection->update(
-            $entity->buildWhere(),
-            array('$set' => $entity->getData()),
-            $entity->getOptions());
+            $where,
+            array('$set' => $data),
+            $this->getOptions());
 
         return ($result['ok'] == 1 && $result['n'] > 0);
     }
 
     //增加或者减少某个字段的值(必须是整数)
-    public function inc(DBEntity $entity)
+    public function inc($table, $data, $condition)
     {
-        $collection = $this->db->selectCollection($entity->getTable());
+        $collection = $this->db->selectCollection($table);
         $result = $collection->update(
-            $entity->buildWhere(),
-            array('$inc' => $entity->getData()),
-            $entity->getOptions());
+            MongoQueryBuilder::where($condition),
+            array('$inc' => $data),
+            $this->getOptions());
 
         return ($result['ok'] == 1 && $result['n'] > 0);
     }
@@ -177,10 +185,10 @@ class MongoDB implements Idb {
     /**
      * @see Idb::count
      */
-    public function count(DBEntity $entity)
+    public function count($table, $conditions)
     {
-        $collection = $this->db->selectCollection($entity->getTable());
-        return $collection->count($entity->buildWhere());
+        $collection = $this->db->selectCollection($table);
+        return $collection->count(MongoQueryBuilder::where($conditions));
     }
 
     /**

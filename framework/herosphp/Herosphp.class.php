@@ -131,9 +131,7 @@ class Herosphp {
 
             'herosphp\db\DBFactory'       => 'db.DBFactory',
             'herosphp\db\mysql\MysqlQueryBuilder'       => 'db.mysql.MysqlQueryBuilder',
-            'herosphp\db\entity\DBEntity'       => 'db.entity.DBEntity',
-            'herosphp\db\entity\MysqlEntity'       => 'db.entity.MysqlEntity',
-            'herosphp\db\entity\MongoEntity'       => 'db.entity.MongoEntity',
+            'herosphp\db\mongo\MongoQueryBuilder'       => 'db.mongo.MongoQueryBuilder',
 
             'herosphp\model\C_Model'       => 'model.C_Model',
             'herosphp\model\MongoModel'       => 'model.MongoModel',

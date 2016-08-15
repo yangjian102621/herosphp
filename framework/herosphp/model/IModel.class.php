@@ -12,8 +12,6 @@
 
 namespace herosphp\model;
 
- use herosphp\db\entity\DBEntity;
-
  interface IModel {
 
      /**
@@ -21,42 +19,53 @@ namespace herosphp\model;
       * @param $data
       * @return int
       */
-     public function insert( $data );
+     public function insert($data);
 
      /**
       * 替换数据
       * @param $data
       * @return boolean
       */
-     public function replace( $data );
+     public function replace($data);
 
      /**
       * 删除指定id的数据
       * @param $id
       * @return boolean
       */
-     public function delete( $id );
+     public function delete($id);
 
      /**
       * 删除指定条件的数据
       * @param $conditions
       * @return boolean
       */
-     public function deletes( $conditions );
+     public function deletes($conditions);
 
      /**
       * 获取数据列表
-      * @param $entity 查询条件
-      * @return array
+      * @param array $conditions
+      * @param $fields
+      * @param $order
+      * @param $limit
+      * @param $group
+      * @param $having
+      * @return mixed
       */
-     public function getItems(DBEntity $entity);
+     public function getItems($conditions, $fields, $order, $limit, $group, $having);
+
+     public function find();
 
      /**
       * 获取单条数据
-      * @param $entity 查询条件
+      * @param $condition
+      * @param $fields
+      * @param $order
       * @return mixed
       */
-     public function getItem($entity);
+     public function getItem($condition, $fields, $order);
+
+     public function findOne();
 
      /**
       * 更新一条数据
@@ -64,7 +73,7 @@ namespace herosphp\model;
       * @param $id
       * @return boolean
       */
-     public function update( $data, $id );
+     public function update($data, $id);
 
      /**
       * 批量更新数据
@@ -72,14 +81,14 @@ namespace herosphp\model;
       * @param $conditions
       * @return mixed
       */
-     public function updates( $data, $conditions );
+     public function updates($data, $conditions);
 
      /**
       * 获取指定条件的记录总数
       * @param $conditions
       * @return int
       */
-     public function count( $conditions );
+     public function count($conditions);
 
      /**
       * 增加某一字段的值
@@ -88,7 +97,7 @@ namespace herosphp\model;
       * @param int $id
       * @return boolean
       */
-     public function increase( $field, $offset, $id );
+     public function increase($field, $offset, $id);
 
      /**
       * 批量增加指定字段的值
@@ -97,7 +106,7 @@ namespace herosphp\model;
       * @param array|string $conditions
       * @return mixed
       */
-     public function batchIncrease( $field, $offset, $conditions );
+     public function batchIncrease($field, $offset, $conditions);
 
      /**
       * 减少某一字段的值
@@ -106,7 +115,7 @@ namespace herosphp\model;
       * @param int $id
       * @return mixed
       */
-     public function reduce( $field, $offset, $id );
+     public function reduce($field, $offset, $id);
 
      /**
       * 批量减少某一字段的值
@@ -115,7 +124,7 @@ namespace herosphp\model;
       * @param array|string $conditions
       * @return mixed
       */
-     public function batchReduce( $field, $offset, $conditions );
+     public function batchReduce($field, $offset, $conditions);
 
      /**
       * 更新某一字段的值(快捷方法，一次只能更新一个字段)
@@ -134,7 +143,7 @@ namespace herosphp\model;
       * @param $conditions
       * @return mixed
       */
-     public function sets( $field, $value, $conditions );
+     public function sets($field, $value, $conditions);
      
     //开启事务
      public function beginTransaction();
@@ -147,5 +156,29 @@ namespace herosphp\model;
 
      //判断是否开启了事物
      public function inTransaction();
+
+     /**
+      * @return IModel
+      */
+     public function where($where); //设置查询条件
+
+     /**
+      * @return IModel
+      */
+     public function field($fields); //设置查询字段
+
+     /**
+      * @return IModel
+      */
+     public function limit($from, $size);
+
+     /**
+      * @return IModel
+      */
+     public function sort($sort);
+
+     /**
+      * @return IModel
+      */
+     public function group($group);
  }
-?>

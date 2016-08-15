@@ -146,7 +146,10 @@ class MysqlQueryBuilder {
          */
         $condi = array(" 1 ");
         foreach ( $where as $key => $value ) {
-            //组合条件
+            /**
+             * 组合条件
+             * array('name' => 'zhangsan', '$or' => array('name' => 'lisi', 'age'=>12))
+             */
             if ( $key == '$or' ) {
                 $condi[] = ' OR (';
                 $condi[] = $this->buildConditions($value, false);
@@ -159,13 +162,13 @@ class MysqlQueryBuilder {
                     $condi[] = ' OR ';
                     $key = substr($key, 1);
                     break;
-                case '!&':
+                case '!':
                     $condi[] = ' AND !';
-                    $key = substr($key, 2);
+                    $key = substr($key, 1);
                     break;
-                case '!|':
+                case '#':
                     $condi[] = ' OR !';
-                    $key = substr($key, 2);
+                    $key = substr($key, 1);
                     break;
                 case '&':
                 default :
@@ -189,22 +192,21 @@ class MysqlQueryBuilder {
                     continue;
                 }
                 /**
-                 * 3. IN 查询,支持2种形式
-                 * array('id' => array('in' => array(1,2,3)))
-                 * array('id' => array('in' => '1,2,3'))
+                 * 3. IN not in查询,支持2种形式
+                 * array('id' => array('$in' => array(1,2,3)))
+                 * array('id' => array('$in' => '1,2,3'))
                  */
-                $key1 = strtoupper($key1);
-                if ( $key1 == 'IN' ) {
+                if ( $key1 == '$in' || $key1 == '$nin' ) {
                     if ( is_array($value1) ) {
                         $value1 = implode("','", $value1);
                         $value1 = "'{$value1}'";
                     }
-                    $subCondi[] = "`$key` IN ({$value1})";
+                    $subCondi[] = $key1 == '$in' ? "`$key` IN ({$value1})" : "`$key` NOT IN ({$value1})";
                     continue;
                 }
 
-                //4. like查询 array('title' => array('like' => '%abc%'))
-                if ( $key1 == 'LIKE' ) {
+                //4. like查询 array('title' => array('$like' => '%abc%'))
+                if ( $key1 == '$like' ) {
                     $subCondi[] = "`{$key}` LIKE '{$value1}'";
                     continue;
                 }
@@ -213,7 +215,7 @@ class MysqlQueryBuilder {
                  * 5. null查询,数据库中没有初始化的数据默认值为null, 此时不能用 name='' 或者name='null'查询
                  * array('name' => array('null' => 1|-1)) 1 => null, -1 => not null
                  */
-                if ( $key1 == 'NULL' ) {
+                if ( $key1 == 'null' ) {
                     if ( $value1 == 1 ) {
                         $subCondi[] = "`{$key}` is null";
                     } elseif( $value1 == -1 ) {

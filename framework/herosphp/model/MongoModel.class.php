@@ -17,6 +17,7 @@ use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
 use herosphp\db\entity\DBEntity;
 use herosphp\db\entity\MongoEntity;
+use herosphp\exception\UnSupportedOperationException;
 use herosphp\filter\Filter;
 
 Loader::import('model.IModel', IMPORT_FRAME);
@@ -41,6 +42,16 @@ class MongoModel implements IModel {
      * @var array
      */
     private $filterMap = array();
+
+    private $where = array();
+
+    private $fields = array();
+
+    private $sort = array();
+
+    private $limit = array();
+
+    private $group = '';
 
     /**
      * 初始化数据库连接
@@ -76,10 +87,7 @@ class MongoModel implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = MongoEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data);
-        return $this->db->insert($entity);
+        return $this->db->insert($this->table, $data);
     }
 
     /**
@@ -114,31 +122,7 @@ class MongoModel implements IModel {
     }
 
     /**
-     * @see IModel::getItems()
-     */
-    public function getItems(DBEntity $entity)
-    {
-        if ( !$entity instanceof DBEntity ) {
-            $entity = MongoEntity::getInstance();
-        }
-        $entity->setTable($this->table);
-        return  $this->db->getList($entity);
-
-    }
-
-    /**
-     * @see IModel::getItem()
-     */
-    public function getItem($conditions)
-    {
-        return $this->db->getOneRow($this->getConditons($conditions));
-    }
-
-    /**
      * @see IModel::update()
-     * @param $data
-     * @param $id
-     * @return bool
      */
     public function update($data, $id)
     {
@@ -146,11 +130,9 @@ class MongoModel implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = MongoEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data)
-            ->addWhere('_id', new \MongoId($id));
-        return $this->db->update($entity);
+
+        $where = array('_id', new \MongoId($id));
+        return $this->db->update($this->table, $data, $where);
     }
 
     /**
@@ -165,10 +147,35 @@ class MongoModel implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = $this->getConditons($conditions);
-        $entity->setData($data);
 
-        return $this->db->update($entity);
+        return $this->db->update($this->table, $data, $this->getConditons($conditions));
+    }
+
+    /**
+     * @see IModel::getItems()
+     */
+    public function getItems($conditions, $fields, $order, $limit, $group, $having)
+    {
+        return  $this->db->find($this->table, $conditions, $fields, $order, $limit, $group, $having);
+
+    }
+
+    public function find()
+    {
+        return $this->getItems($this->where, $this->fields, $this->sort, $this->limit);
+    }
+
+    /**
+     * @see IModel::getItem()
+     */
+    public function getItem($condition, $fields, $order)
+    {
+        return $this->db->findOne($this->table, $this->getConditons($condition), $fields);
+    }
+
+    public function findOne()
+    {
+        return $this->getItem($this->where, $this->fields);
     }
 
     /**
@@ -202,7 +209,8 @@ class MongoModel implements IModel {
      */
     public function batchIncrease($field, $offset, $conditions)
     {
-        return $this->db->inc($this->getConditons($conditions)->setData(array($field => $offset)));
+        $data = array($field => $offset);
+        return $this->db->inc($this->table, $data, $this->getConditons($conditions));
     }
 
     /**
@@ -248,7 +256,7 @@ class MongoModel implements IModel {
      */
     public function beginTransaction()
     {
-        $this->db->beginTransaction();
+        throw new UnSupportedOperationException();
     }
 
     /**
@@ -256,7 +264,7 @@ class MongoModel implements IModel {
      */
     public function commit()
     {
-        $this->db->commit();
+        throw new UnSupportedOperationException();
     }
 
     /**
@@ -264,7 +272,7 @@ class MongoModel implements IModel {
      */
     public function rollback()
     {
-        $this->db->rollBack();
+        throw new UnSupportedOperationException();
     }
 
     /**
@@ -272,7 +280,7 @@ class MongoModel implements IModel {
      */
     public function inTransaction()
     {
-        return $this->db->inTransaction();
+        throw new UnSupportedOperationException();
     }
 
     /**
@@ -281,20 +289,12 @@ class MongoModel implements IModel {
      * @return MongoEntity
      */
     private function getConditons($conditions) {
-        if ( $conditions instanceof DBEntity ) {
-            $conditions->setTable($this->table);
-            return $conditions;
-        } else {
 
-            $__conditions = MongoEntity::getInstance()->setTable($this->table);
-            if ( is_array($conditions) ) {
-                $__conditions->where($conditions);
-            } else if ( is_string($conditions) ) {
-                $__conditions->addWhere('_id', new \MongoId($conditions));
-            }
-            return $__conditions;
-
+        if ( !is_array($conditions) ) {
+            return array('_id' => new \MongoId($conditions));
         }
+
+        return $conditions;
 
     }
 
@@ -343,11 +343,28 @@ class MongoModel implements IModel {
         $this->table = $table;
     }
 
-    /**
-     * 获取数据连接对象
-     * @return \herosphp\db\interfaces\Idb
-     */
-    public function getDB() {
-        return $this->db;
+    public function where($where) {
+        $this->where = $where;
+        return $this;
+    }
+
+    public function field($fields) {
+        $this->fields = $fields;
+        return $this;
+    }
+
+    public function limit($from, $size) {
+        $this->limit = array($from, $size);
+        return $this;
+    }
+
+    public function sort($sort) {
+        $this->sort = $sort;
+        return $this;
+    }
+
+    public function group($group) {
+        $this->group = $group;
+        return $this;
     }
 }
