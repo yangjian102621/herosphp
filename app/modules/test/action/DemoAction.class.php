@@ -29,6 +29,7 @@ class DemoAction extends CommonAction {
         $condition = array(
             'name' => 'xiaoming',
             'age' => array('>' => 18, '<=' => 30),
+            '$or' => array('age' => array('>' => 19), 'name' => '小王'),
             'addtime' => array('>' => date('Y-m-d H:i:s')),
             'title' => array('like' => '%测试文章%'),
             '|username' => array('in' => array('xiaoyang', 'xiaoming', 'xiaoliu'))

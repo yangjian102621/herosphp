@@ -1,9 +1,9 @@
 <?php
 
-namespace herosphp\db\mysql;
+namespace herosphp\db\mongo;
 
 /*---------------------------------------------------------------------
- * mysql查询语句处理工具，用来将通用api传入的查询条件转换成mysql的查询条件
+ * mongodb查询语句处理工具，用来将通用api传入的查询条件转换成mongodb的查询条件
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -12,38 +12,21 @@ namespace herosphp\db\mysql;
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
-class MysqlQueryBuilder {
-
-    private $table; //数据表
-
-    private $fields = '*';  //查询字段
-
-    private $where = array(); //查询条件
-
-    private $order = ''; //排序方式
-
-    private $group = ''; //分组方式
-
-    private $having = array(); //分组条件
-
-    private $limit = ''; //查询limit
-
-    private $conditions = array();
+class MongoQueryBuilder {
 
     /**
-     * 字段比较操作符
+     * mongodb条件操作符
      * @var array
      */
     private static  $operator = array(
-        '>', '<', '>=', '<=', '!='
+        '>' => '$gt',
+        '<' => '$lt',
+        '>=' => '$gte',
+        '<=' => '$lte',
+        '!=' => '$ne'
     );
 
     private function __construct() {}
-
-    //创建实例
-    public static function getInstance() {
-        return new self();;
-    }
 
     public function table($table) {
         $this->table = $table;
@@ -51,21 +34,20 @@ class MysqlQueryBuilder {
     }
 
     /**
+     * 组合查询字段
      * @param array $fields 推荐格式：array('id','name','pass')
      * @return $this
      */
-    public function fields($fields) {
-        if ( is_array($fields) ) {
-            $this->fields = '`'.implode("`, `", $fields).'`';
-        } else if ( is_string($fields) ) {
-            $this->fields = $fields;
-        }
-        return $this;
-    }
+    public static function fields($fields) {
 
-    public function where(array $conditions) {
-        if ( is_array($conditions) ) $this->where = $conditions;
-        return $this;
+        $arr = array();
+        if ( is_string($fields) ) {
+            $fields = explode(',', $fields);
+        }
+        foreach ( $fields as $key => $value ) {
+            $arr[$value] = 1;
+        }
+        return $arr;
     }
 
     /**
@@ -131,49 +113,37 @@ class MysqlQueryBuilder {
 
     /**
      * 组合查询条件
-     * @param $where 条件数组
-     * @param $add_brackets 是否在逻辑运算之间添加括号
+     * @param
      * @return string
      */
-    public function buildConditions($where=null,$add_brackets=true) {
+    public function where($where=null) {
 
-        if ( $where == null ) $where = $this->where;
-        if ( !$where || empty($where) ) return '1';
+        if ( !$where || empty($where) ) return array();
 
         /**
          * 基于 key => value 数组语法的查询条件解析,这里借鉴的是mongodb的查询语法，以便兼容mongodb
          * array('name' => 'zhangsan', '|age' => array('>' => 24, '<' => 30))
+         * 转换后：array('name' => 'zhangsan', '$or' => array('age' => array('$lt' => 24, '$gt' => 30)))
          */
-        $condi = array(" 1 ");
+        $condi = array();
         foreach ( $where as $key => $value ) {
-            //组合条件
-            if ( $key == '$or' ) {
-                $condi[] = ' OR (';
-                $condi[] = $this->buildConditions($value, false);
-                $condi[] = ')';
-                continue;
-            }
             //这里判断是AND,OR还是取反逻辑、
             switch ( $key[0] ) {
                 case '|':
-                    $condi[] = ' OR ';
-                    $key = substr($key, 1);
+                    $condi['$or'] = array();
                     break;
                 case '!&':
-                    $condi[] = ' AND !';
-                    $key = substr($key, 2);
+                    $condi[$key] = $value;
                     break;
                 case '!|':
-                    $condi[] = ' OR !';
+                    $condi['$not'] = ' OR !';
                     $key = substr($key, 2);
                     break;
                 case '&':
                 default :
                     $condi[] = ' AND ';
             }
-            if ( $add_brackets ) {
-                $condi[] = '('; //两个逻辑条件之间用括号括起来，以便于逻辑清晰
-            }
+            $condi[] = '('; //两个逻辑条件之间用括号括起来，以便于逻辑清晰
             //1. 普通的等于查询 array('name' => 'xiaoming');
             if ( !is_array($value) ) {
                 $condi[] = "`{$key}` = ".self::getFieldValue($value);
@@ -225,20 +195,17 @@ class MysqlQueryBuilder {
                 $condi[] = implode(' AND ', $subCondi);
             }
 
-            if ( $add_brackets ) {
-                $condi[] = ')';
-            }
+            $condi[] = ')';
         }
         return implode(' ', $condi);
     }
-
 
     /**
      * 获取正确格式的字段值
      * @param $value
      * @return string
      */
-    public static function getFieldValue($value) {
+    public static function getFieldValue( $value ) {
         return is_numeric($value) ? $value : "'{$value}'";
     }
 

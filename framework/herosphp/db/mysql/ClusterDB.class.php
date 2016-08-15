@@ -13,7 +13,6 @@ namespace herosphp\db\mysql;
 
 use herosphp\core\Debug;
 use herosphp\core\Loader;
-use herosphp\db\entity\DBEntity;
 use herosphp\db\interfaces\ICusterDB;
 use herosphp\exception\DBException;
 use \PDO;
@@ -83,9 +82,9 @@ class ClusterDB implements ICusterDB {
             //设置数据库编码，默认使用UTF8编码
             $_charset = $config['db_charset'];
             if ( !$_charset ) $_charset = 'UTF8';
-            $_pdo->query("SET names {$_charset}");
-            $_pdo->query("SET character_set_client = {$_charset}");
-            $_pdo->query("SET character_set_results = {$_charset}");
+            $_pdo->excute("SET names {$_charset}");
+            $_pdo->excute("SET character_set_client = {$_charset}");
+            $_pdo->excute("SET character_set_results = {$_charset}");
         } catch ( PDOException $e ) {
             if ( APP_DEBUG ) {
                 E("数据库连接失败".$e->getMessage());
@@ -99,10 +98,10 @@ class ClusterDB implements ICusterDB {
      * 1. 读的SQL语句发送到读服务器
      * 2. 写入SQL语句发送到写服务器
      * 3. 此方法将抛出异常
-     * @see \herosphp\db\interfaces\ICusterDB::query()
+     * @see Idb::excute()
      * @throws DBException
      */
-    public function query($_query)
+    public function excute($_query)
     {
         if ( $this->isReadSQL($_query) ) {      /* 读取数据操作 */
             $_db = $this->selectReadServer();
@@ -112,7 +111,7 @@ class ClusterDB implements ICusterDB {
 
         try {
 
-            $_result = $_db->query($_query);
+            $_result = $_db->excute($_query);
 
         } catch ( PDOException $e ) {
             $_exception = new DBException("SQL错误!".$e->getMessage());
@@ -127,78 +126,12 @@ class ClusterDB implements ICusterDB {
     }
 
     /**
-     * @see \herosphp\db\interfaces\ICusterDB::insert()
+     * @see Idb::query()
      */
-    public function insert(DBEntity $entity)
-    {
-        $_fileds = '';
-        $_values = '';
-        $_T_fields = $this->getTableFields( $entity->getTable() );
-        foreach ( $entity->getData() as $_key => $_val ) {
-
-            //自动过滤掉不存在的字段
-            if ( !in_array( $_key, $_T_fields ) ) continue;
-
-            $_fileds .= ( $_fileds=='' ) ? $_key : ',' . $_key;
-            $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
-        }
-
-        if ( $_fileds !== null ) {
-            $_query = "INSERT INTO ".$entity->getTable()."(" . $_fileds . ") VALUES(" . $_values . ")";
-            if ( $this->query( $_query ) != false )
-                return $this->currentWriteServer->lastInsertId();
-        }
-        return false;
-    }
-
-    /**
-     * @see \herosphp\db\interfaces\ICusterDB::replace()
-     */
-    public function replace(DBEntity $entity) {
-
-        $_fileds = '';
-        $_values = '';
-        $_T_fields = $this->getTableFields( $entity->getTable() );
-        foreach ( $entity->getData() as $_key => $_val ) {
-
-            //自动过滤掉不存在的字段
-            if ( !in_array( $_key, $_T_fields ) ) continue;
-
-            $_fileds .= ( $_fileds=='' ) ? $_key : ',' . $_key;
-            $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
-        }
-
-        if ( $_fileds !== null ) {
-            $_query = "REPLACE INTO ".$entity->getTable()."(" . $_fileds . ") VALUES(" . $_values . ")";
-            if ( $this->query( $_query ) != false )
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * @see \herosphp\db\interfaces\ICusterDB::delete()
-     */
-    public function delete(DBEntity $entity)
-    {
-        $_sql = "DELETE FROM ".$entity->getTable();
-        if ( $entity->buildWhere() ) {
-            $_sql .= " WHERE ".$entity->buildWhere();
-        } else {
-            return false;
-        }
-        $_result = $this->query($_sql);
-        if ( $_result ) return $_result->rowCount();
-        return false;
-    }
-
-    /**
-     * @see \herosphp\db\interfaces\ICusterDB::getList()
-     */
-    public function &getList(DBEntity $entity)
+    public function query($query)
     {
         $_result = array();
-        $_ret = $this->query( $entity->buildQueryString() );
+        $_ret = $this->excute($query);
         if ( $_ret != false ) {
 
             while ( ($_rows = $_ret->fetch(PDO::FETCH_ASSOC)) != false )
@@ -208,54 +141,172 @@ class ClusterDB implements ICusterDB {
     }
 
     /**
-     * @see \herosphp\db\interfaces\ICusterDB::getOneRow()
+     * @see ICusterDB::insert()
      */
-    public function &getOneRow(DBEntity $entity)
+    public function insert($table, $data)
     {
-        $_result = array();
-        $_ret = $this->query( $entity->buildQueryString() );
-        if ( $_ret != false ) {
-            $_result = $_ret->fetch(PDO::FETCH_ASSOC);
+        $_fileds = '';
+        $_values = '';
+        $_T_fields = $this->getTableFields($table);
+        foreach ( $data as $_key => $_val ) {
+
+            //自动过滤掉不存在的字段
+            if ( !in_array( $_key, $_T_fields ) ) continue;
+
+            $_fileds .= ( $_fileds=='' ) ? "`{$_key}`" : ", `{$_key}`" ;
+            $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
+
         }
-        return $_result;
-    }
 
-    /**
-     * @see \herosphp\db\interfaces\ICusterDB::update()
-     */
-    public function update(DBEntity $entity)
-    {
-        if ( !$entity->buildWhere() ) return false;
+        if ( $_fileds != '' ) {
+            $_query = "INSERT INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
 
-        $_T_fields = $this->getTableFields($entity->getTable());
-        $_keys = '';
-        foreach ( $entity->getData() as $_key => $_val ) {
-
-            //过滤不存在的字段
-            if ( !in_array($_key, $_T_fields) ) continue;
-            $_keys .= $_keys == ''? "{$_key}='{$_val}'" : ", {$_key}='{$_val}'";
-        }
-        if ( $_keys !== '' ) {
-            $_query = "UPDATE " . $entity->getTable() . " SET " . $_keys . " WHERE ".$entity->buildWhere();
-            return $this->query( $_query );
-
-            //如果没有传入任何字段则默认也是更新成功的
-        } else {
-            return true;
+            if ( $this->query( $_query ) != false ) {
+                $last_insert_id = $this->currentWriteServer->lastInsertId();
+                if ( $last_insert_id > 0 ) { //返回自增id
+                    return $last_insert_id;
+                } else {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     /**
-     * @see \herosphp\db\interfaces\ICusterDB::count()
+     * @see \herosphp\db\interfaces\ICusterDB::replace()
      */
-    public function count(DBEntity $entity)
+    public function replace($table, $data) {
+
+        $_fileds = '';
+        $_values = '';
+        $_T_fields = $this->getTableFields($table);
+        foreach ( $data as $_key => $_val ) {
+
+            //自动过滤掉不存在的字段
+            if ( !in_array( $_key, $_T_fields ) ) continue;
+
+            $_fileds .= ( $_fileds=='' ) ? "`{$_key}`" : ", `{$_key}`";
+            $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
+        }
+
+        if ( $_fileds != '' ) {
+            $_query = "REPLACE INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
+            if ( $this->excute($_query) != false ) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * @see Idb::update()
+     */
+    public function update($table, $data, $condition)
     {
-        $_query = "SELECT count(*) as total FROM {$entity->getTable()}";
-        if ( $entity->buildWhere() ) $_query .= " WHERE ".$entity->buildWhere();
-        $_result = $this->query($_query);
-        $_res = $_result->fetch(PDO::FETCH_ASSOC);
-        return $_res['total'];
+        if ( empty($condition) ) return false;
+        $where = MysqlQueryBuilder::getInstance()->where($condition)->buildConditions();
+
+        $_T_fields = $this->getTableFields($table);
+        $_keys = '';
+        foreach ( $data as $_key => $_val ) {
+
+            //过滤不存在的字段
+            if ( !in_array($_key, $_T_fields) ) continue;
+            $_keys .= $_keys == ''? "`{$_key}`='{$_val}'" : ", `{$_key}`='{$_val}'";
+        }
+        if ( $_keys !== '' ) {
+            $_query = "UPDATE {$table} SET " . $_keys . " WHERE ".$where;
+            $result = $this->excute($_query);
+            if ( $result != false ) {
+                return $result->rowCount();
+            }
+        }
+        return false;
+    }
+
+    /**
+     *  @see Idb::delete()
+     */
+    public function delete($table, $condition)
+    {
+        if ( !$condition ) return false; //防止误删除所有的数据，所以必须传入删除条件
+
+        $where = MysqlQueryBuilder::getInstance()->where($condition)->buildConditions();
+
+        $sql = "DELETE FROM {$table} WHERE {$where}";
+        $result = $this->excute($sql);
+        if ( $result ) {
+            return $result->rowCount();
+        }
+        return false;
+    }
+
+    /**
+     * @see Idb::find()
+     */
+    public function &find($table,
+                          $condition=null,
+                          $field=null,
+                          $sort=null,
+                          $limit=null,
+                          $group=null,
+                          $having=null)
+    {
+        $items = array();
+        $query = MysqlQueryBuilder::getInstance()
+            ->table($table)
+            ->where($condition)
+            ->fields($field)
+            ->order($sort)
+            ->limit($limit)
+            ->group($group)
+            ->having($having);
+
+        $result = $this->excute($query->buildQueryString());
+        if ( $result != false ) {
+            while ( ($row = $result->fetch(PDO::FETCH_ASSOC)) != false ) {
+                $items[]  = $row;
+            }
+
+        }
+        return $items;
+    }
+
+    /**
+     * @see Idb::findOne()
+     */
+    public function &findOne($table, $condition=null, $field=null, $sort=null)
+    {
+        $item = array();
+        $query = MysqlQueryBuilder::getInstance()
+            ->table($table)
+            ->where($condition)
+            ->fields($field)
+            ->order($sort);
+
+        $result = $this->excute($query->buildQueryString());
+        if ( $result != false ) {
+            $item = $result->fetch(PDO::FETCH_ASSOC);
+        }
+        return $item;
+    }
+
+    /**
+     * @see Idb::count()
+     */
+    public function count($table, $condition=null)
+    {
+        $sql = "SELECT count(*) as total FROM {$table}";
+
+        if ( $condition != null ) {
+            $sql .= " WHERE ".MysqlQueryBuilder::getInstance()->buildConditions($condition);
+        }
+
+        $result = $this->excute($sql);
+        $res = $result->fetch(PDO::FETCH_ASSOC);
+        return $res['total'];
     }
 
     /**
@@ -316,7 +367,7 @@ class ClusterDB implements ICusterDB {
     protected function getTableFields( $_table ) {
 
         $_sql = "SHOW COLUMNS FROM {$_table}";
-        $_ret = $this->query( $_sql );
+        $_ret = $this->excute( $_sql );
 
         $_fields = array();
         if ( $_ret != false ) {
@@ -419,4 +470,3 @@ class ClusterDB implements ICusterDB {
     }
 
 }
-?>

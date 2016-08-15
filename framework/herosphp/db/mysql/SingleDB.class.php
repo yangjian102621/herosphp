@@ -13,7 +13,6 @@ namespace herosphp\db\mysql;
 
 use herosphp\core\Debug;
 use herosphp\core\Loader;
-use herosphp\db\entity\DBEntity;
 use herosphp\db\interfaces\Idb;
 use herosphp\exception\DBException;
 use \PDO;
@@ -48,10 +47,11 @@ class SingleDB implements Idb {
 
         if ( !is_array($config) || empty($config) ) E("必须传入数据库的配置信息！");
         $this->config = $config;
+
+        $this->connect(); //连接数据库
     }
 
     /**
-     * @see \herosphp\db\interfaces\Idb::connect()
      * @throws DBException
      * @return Resource
      */
@@ -80,109 +80,36 @@ class SingleDB implements Idb {
     }
 
     /**
-     * @see \herosphp\db\interfaces\Idb::query()
+     * @see Idb::excute()
+     * @param string $sql
+     * @return \PDOStatement
      * @throws DBException
      */
-    public function query($_query) {
-
+    public function excute($sql) {
         if ( $this->link == null ) $this->connect();
-        if ( DB_ESCAPE ) $_query = addslashes($_query);
+        if ( DB_ESCAPE ) $sql = addslashes($sql);
         try {
-            $_result = $this->link->query($_query);
+            $result = $this->link->query($sql);
         } catch ( PDOException $e ) {
-            $_exception = new DBException("SQL错误:" . $e->getMessage());
-            $_exception->setCode($e->getCode());
-            $_exception->setQuery($_query);
+            $exception = new DBException("SQL错误:" . $e->getMessage());
+            $exception->setCode($e->getCode());
+            $exception->setQuery($sql);
             if ( APP_DEBUG ) {
-                __print($_query);
+                __print($sql);
             }
-            throw $_exception;
+            throw $exception;
         }
-        Debug::appendMessage($_query, 'sql');   //添加调试信息
-        return $_result;
+        Debug::appendMessage($sql, 'sql');   //添加调试信息
+        return $result;
     }
 
     /**
-     * @see \herosphp\db\interfaces\Idb::insert()
+     * @see Idb::query()
      */
-    public function insert(DBEntity $entity)
-    {
-		$_fileds = '';
-		$_values = '';
-		$_T_fields = $this->getTableFields($entity->getTable());
-		foreach ( $entity->getData() as $_key => $_val ) {
-
-			//自动过滤掉不存在的字段
-			if ( !in_array( $_key, $_T_fields ) ) continue;
-
-			$_fileds .= ( $_fileds=='' ) ? "`{$_key}`" : ", `{$_key}`" ;
-			$_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
-
-		}
-
-		if ( $_fileds !== null ) {
-			$_query = "INSERT INTO ".$entity->getTable()."(" . $_fileds . ") VALUES(" . $_values . ")";
-
-			if ( $this->query( $_query ) != false ){
-				$last_insert_id = $this->link->lastInsertId();
-                if ( $last_insert_id ) {
-                    return $last_insert_id;
-                } else {    //ID不是自增的而是手动生成的
-                    return true;
-                }
-			}
-		}
-        return false;
-    }
-
-    /**
-     * @see \herosphp\db\interfaces\Idb::replace()
-     */
-    public function replace(DBEntity $entity) {
-
-        $_fileds = '';
-        $_values = '';
-        $_T_fields = $this->getTableFields($entity->getTable());
-        foreach ( $entity->getData() as $_key => $_val ) {
-
-            //自动过滤掉不存在的字段
-            if ( !in_array( $_key, $_T_fields ) ) continue;
-
-            $_fileds .= ( $_fileds=='' ) ? "`{$_key}`" : ", `{$_key}`";
-            $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
-        }
-
-        if ( $_fileds !== null ) {
-            $_query = "REPLACE INTO ".$entity->getTable()."(" . $_fileds . ") VALUES(" . $_values . ")";
-            if ( $this->query( $_query ) != false )
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     *  @see \herosphp\db\interfaces\Idb::delete()
-     */
-    public function delete(DBEntity $entity)
-    {
-        $_sql = "DELETE FROM ".$entity->getTable();
-        if ( $entity->buildWhere() ) {
-            $_sql .= " WHERE ".$entity->buildWhere();
-        } else {
-            return false;
-        }
-        $_result = $this->query($_sql);
-        if ( $_result ) return true;
-        return false;
-    }
-
-    /**
-     * @see \herosphp\db\interfaces\Idb::getList()
-     */
-    public function &getList(DBEntity $entity)
+    public function query($query)
     {
         $_result = array();
-        $_ret = $this->query($entity->buildQueryString());
+        $_ret = $this->excute($query);
         if ( $_ret != false ) {
 
             while ( ($_rows = $_ret->fetch(PDO::FETCH_ASSOC)) != false )
@@ -192,54 +119,172 @@ class SingleDB implements Idb {
     }
 
     /**
-     * @see \herosphp\db\interfaces\Idb::getOneRow()
+     * @see Idb::insert()
      */
-    public function &getOneRow(DBEntity $entity)
+    public function insert($table, $data)
     {
-        $_result = array();
-        $_ret = $this->query($entity->buildQueryString());
-        if ( $_ret != false ) {
-            $_result = $_ret->fetch(PDO::FETCH_ASSOC);
-        }
-        return $_result;
+		$_fileds = '';
+		$_values = '';
+		$_T_fields = $this->getTableFields($table);
+		foreach ( $data as $_key => $_val ) {
+
+			//自动过滤掉不存在的字段
+			if ( !in_array( $_key, $_T_fields ) ) continue;
+
+			$_fileds .= ( $_fileds=='' ) ? "`{$_key}`" : ", `{$_key}`" ;
+			$_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
+
+		}
+
+		if ( $_fileds != '' ) {
+			$_query = "INSERT INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
+
+			if ( $this->query( $_query ) != false ) {
+                $last_insert_id = $this->link->lastInsertId();
+                if ( $last_insert_id > 0 ) { //返回自增id
+                    return $last_insert_id;
+                } else {
+                    return true;
+                }
+			}
+		}
+        return false;
     }
 
     /**
-     * @see \herosphp\db\interfaces\Idb::update()
+     * @see Idb::replace()
      */
-    public function update(DBEntity $entity)
-    {
-        if ( !$entity->buildWhere() ) return false;
+    public function replace($table, $data) {
 
-        $_T_fields = $this->getTableFields($entity->getTable());
+        $_fileds = '';
+        $_values = '';
+        $_T_fields = $this->getTableFields($table);
+        foreach ( $data as $_key => $_val ) {
+
+            //自动过滤掉不存在的字段
+            if ( !in_array( $_key, $_T_fields ) ) continue;
+
+            $_fileds .= ( $_fileds=='' ) ? "`{$_key}`" : ", `{$_key}`";
+            $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
+        }
+
+        if ( $_fileds != '' ) {
+            $_query = "REPLACE INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
+            if ( $this->excute($_query) != false ) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * @see Idb::update()
+     */
+    public function update($table, $data, $condition)
+    {
+        if ( empty($condition) ) return false;
+        $where = MysqlQueryBuilder::getInstance()->where($condition)->buildConditions();
+
+        $_T_fields = $this->getTableFields($table);
         $_keys = '';
-        foreach ( $entity->getData() as $_key => $_val ) {
+        foreach ( $data as $_key => $_val ) {
 
             //过滤不存在的字段
             if ( !in_array($_key, $_T_fields) ) continue;
             $_keys .= $_keys == ''? "`{$_key}`='{$_val}'" : ", `{$_key}`='{$_val}'";
         }
         if ( $_keys !== '' ) {
-            $_query = "UPDATE " . $entity->getTable() . " SET " . $_keys . " WHERE ".$entity->buildWhere();
-            return $this->query($_query);
-
-            //如果没有传入任何字段则默认也是更新成功的
-        } else {
-            return true;
+            $_query = "UPDATE {$table} SET " . $_keys . " WHERE ".$where;
+            $result = $this->excute($_query);
+            if ( $result != false ) {
+                return $result->rowCount();
+            }
         }
         return false;
     }
 
     /**
-     * @see \herosphp\db\interfaces\Idb::count()
+     *  @see Idb::delete()
      */
-    public function count(DBEntity $entity)
+    public function delete($table, $condition)
     {
-        $_query = "SELECT count(*) as total FROM {$entity->getTable()}";
-        if ( $entity->buildWhere() ) $_query .= " WHERE ".$entity->buildWhere();
-        $_result = $this->query($_query);
-        $_res = $_result->fetch(PDO::FETCH_ASSOC);
-        return $_res['total'];
+        if ( !$condition ) return false; //防止误删除所有的数据，所以必须传入删除条件
+
+        $where = MysqlQueryBuilder::getInstance()->where($condition)->buildConditions();
+
+        $sql = "DELETE FROM {$table} WHERE {$where}";
+        $result = $this->excute($sql);
+        if ( $result ) {
+            return $result->rowCount();
+        }
+        return false;
+    }
+
+    /**
+     * @see Idb::find()
+     */
+    public function &find($table,
+                          $condition=null,
+                          $field=null,
+                          $sort=null,
+                          $limit=null,
+                          $group=null,
+                          $having=null)
+    {
+        $items = array();
+        $query = MysqlQueryBuilder::getInstance()
+            ->table($table)
+            ->where($condition)
+            ->fields($field)
+            ->order($sort)
+            ->limit($limit)
+            ->group($group)
+            ->having($having);
+
+        $result = $this->excute($query->buildQueryString());
+        if ( $result != false ) {
+            while ( ($row = $result->fetch(PDO::FETCH_ASSOC)) != false ) {
+                $items[]  = $row;
+            }
+
+        }
+        return $items;
+    }
+
+    /**
+     * @see Idb::findOne()
+     */
+    public function &findOne($table, $condition=null, $field=null, $sort=null)
+    {
+        $item = array();
+        $query = MysqlQueryBuilder::getInstance()
+            ->table($table)
+            ->where($condition)
+            ->fields($field)
+            ->order($sort);
+
+        $result = $this->excute($query->buildQueryString());
+        if ( $result != false ) {
+            $item = $result->fetch(PDO::FETCH_ASSOC);
+        }
+        return $item;
+    }
+
+    /**
+     * @see Idb::count()
+     */
+    public function count($table, $condition=null)
+    {
+        $sql = "SELECT count(*) as total FROM {$table}";
+
+        if ( $condition != null ) {
+            $sql .= " WHERE ".MysqlQueryBuilder::getInstance()->buildConditions($condition);
+        }
+
+        $result = $this->excute($sql);
+        $res = $result->fetch(PDO::FETCH_ASSOC);
+        return $res['total'];
     }
 
     /**
@@ -310,7 +355,7 @@ class SingleDB implements Idb {
     protected function getTableFields( $_table ) {
 
         $_sql = "SHOW COLUMNS FROM {$_table}";
-        $_ret = $this->query( $_sql );
+        $_ret = $this->excute( $_sql );
         $_fields = array();
         if ( $_ret != false ) {
             while ( ($_rows = $_ret->fetch()) != false ) {
@@ -328,17 +373,4 @@ class SingleDB implements Idb {
         if ( $this->link ) $this->link = null;
     }
 
-	/**
-	 * @return the $config
-	 */
-	public function getConfig() {
-		return $this->config;
-	}
-
-	/**
-	 * @param field_type $config
-	 */
-	public function setConfig($config) {
-		$this->config = $config;
-	}
 }

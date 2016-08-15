@@ -60,7 +60,6 @@ class DBFactory {
         $key = md5($className.$config['flag']);
         if ( !isset(self::$DB_POOL[$key]) ) {
             self::$DB_POOL[$key] = new $className($config);
-            self::$DB_POOL[$key]->connect();
         }
         return self::$DB_POOL[$key];
 	}

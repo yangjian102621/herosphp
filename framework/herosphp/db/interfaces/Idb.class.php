@@ -29,34 +29,36 @@ interface Idb {
     public function query($query);
 
     /**
-     * 插入数据
+     * 插入数据, 如果主键时自增的，返回主键的值，否则返回true | false
      * @param string $table 数据表或者集合名称
      * @param array $data 数据，必须为数组
      * @param bool $return_prikey 是否返回主键的值
      * @return mixed
      */
-    public function insert($table, $data, $return_prikey);
+    public function insert($table, $data);
 
     /**
-     * 更新数据
+     * 插入数据，如果数据已经存在，则替换数据
+     * @see Idb::insert()
+     */
+    public function replace($table, $data);
+
+    /**
+     * <p>更新数据, 失败返回false， 成功返回本次更新影响的记录条数</p>
      * @param string $table 数据表名称
      * @param array $data 数据
      * @param array $condition 查询条件
-     * @param int $return_type 返回类型
-     * <p>0=>直接返回true或者false, 1 => 返回本次更新影响的记录条数</p>
      * @return bool|int
      */
-    public function update($table, $data, $condition, $return_type=0);
+    public function update($table, $data, $condition);
 
     /**
-     * 删除数据
+     * <p>删除数据, 失败返回false， 成功返回本次删除影响的记录条数</p>
      * @param $table
      * @param array $condition 删除条件
-     * @param int $return_type 返回类型
-     * <p>0=>直接返回true或者false, 1 => 返回本次更新影响的记录条数</p>
      * @return bool|int
      */
-    public function delete($table, $condition, $return_type=0);
+    public function delete($table, $condition);
 
     /**
      * 获取数据列表

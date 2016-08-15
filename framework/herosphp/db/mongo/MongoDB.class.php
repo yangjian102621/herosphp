@@ -13,8 +13,7 @@ namespace herosphp\db\mongo;
 
 use herosphp\core\Loader;
 use herosphp\db\interfaces\Idb;
-use herosphp\db\interfaces\sting;
-use herosphp\db\entity\DBEntity;
+use herosphp\exception\HeroException;
 use herosphp\exception\UnSupportedOperationException;
 
 Loader::import('db.interfaces.Idb', IMPORT_FRAME);
@@ -27,17 +26,27 @@ class MongoDB implements Idb {
 
     private $configs = array();
 
+    //mongodb操作选项
+    private $options = array(
+        'fsync' => 0, //是否强制同步写入,mongodb为了保证性能，写入是异步的，先时保存在内存的
+        'upsert' => 0, //更新的时候没有符合条件的文档是否创建一条新文档
+        'multiple' => 1, //是否更新所有匹配的文档，默认只更新匹配的第一条
+        'justOne' => 0, //是否只删除一个
+    );
+
     public function __construct($configs)
     {
         if ( !is_array($configs) || empty($configs) ) E("必须传入数据库的配置信息！");
 
         $this->configs = $configs;
 
+        $this->connect();
+
     }
 
     /**
      * @see Idb::connect
-     * @throws \herosphp\exception\HeroException
+     * @throws HeroException
      */
     public function connect()
     {
@@ -63,12 +72,20 @@ class MongoDB implements Idb {
     }
 
     /**
+     * @throws UnSupportedOperationException
+     */
+    public function excute($sql)
+    {
+        throw new UnSupportedOperationException();
+    }
+
+    /**
      * @see Idb::insert
      */
-    public function insert(DBEntity $entity)
+    public function insert($table, $data)
     {
-        $collection = $this->db->selectCollection($entity->getTable());
-        $result = $collection->insert($entity->getData(), $entity->getOptions());
+        $collection = $this->db->selectCollection($table);
+        $result = $collection->insert($data, $this->getOptions());
         return $result['ok'] == 1;
 
     }
@@ -77,19 +94,19 @@ class MongoDB implements Idb {
      * @see Idb::replace
      * 如果对象来自数据库，则更新现有的数据库对象，否则插入对象。
      */
-    public function replace(DBEntity $entity)
+    public function replace($table, $data)
     {
-        $collection = $this->db->selectCollection($entity->getTable());
-        $result = $collection->save($entity->getData(), $entity->getOptions());
+        $collection = $this->db->selectCollection($table);
+        $result = $collection->save($data, $this->getOptions());
         return $result['ok'] == 1;
     }
 
     /**
      * @see Idb::delete
      */
-    public function delete(DBEntity $entity)
+    public function delete($table, $condition)
     {
-        $collection = $this->db->selectCollection($entity->getTable());
+        $collection = $this->db->selectCollection($table);
         $result = $collection->remove($entity->buildWhere(), $entity->getOptions());
         return ($result['ok'] == 1 && $result['n'] > 0);
     }
@@ -99,9 +116,15 @@ class MongoDB implements Idb {
      * @param string $query
      * @return array
      */
-    public function &getList(DBEntity $entity)
+    public function &findfind($table,
+                              $condition=null,
+                              $field=null,
+                              $sort=null,
+                              $limit=null,
+                              $group=null,
+                              $having=null)
     {
-        $collection = $this->db->selectCollection($entity->getTable());
+        $collection = $this->db->selectCollection($table);
         $skip = ($entity->getPage() - 1) * $entity->getPagesize();
         $result = $collection->find($entity->buildWhere(), $entity->getFields())
             ->skip($skip)
@@ -193,4 +216,21 @@ class MongoDB implements Idb {
     {
         throw new UnSupportedOperationException();
     }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     */
+    public function setOptions($options)
+    {
+        $this->options = $options;
+    }
+
 }
