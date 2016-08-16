@@ -17,6 +17,7 @@ use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
 use herosphp\exception\UnSupportedOperationException;
 use herosphp\filter\Filter;
+use herosphp\string\StringUtils;
 
 Loader::import('model.IModel', IMPORT_FRAME);
 
@@ -69,11 +70,11 @@ class MongoModel implements IModel {
 
     /**
      * @param $sql
-     * @return mixed|\PDOStatement
+     * @throws UnSupportedOperationException
      */
     public function query($sql)
     {
-        return $this->db->query($sql);
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -85,7 +86,14 @@ class MongoModel implements IModel {
         if ( $data == false ) {
             return false;
         }
-        return $this->db->insert($this->table, $data);
+        if ( !isset($data['id']) ) {
+            $data['id'] = StringUtils::genGlobalUid();
+        }
+        $id = $this->db->insert($this->table, $data);
+        if ( $id === true ) {
+            $id = $data['id'];
+        }
+        return $id;
     }
 
     /**
@@ -97,10 +105,7 @@ class MongoModel implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $entity = MongoEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data);
-        return $this->db->replace($entity);
+        return $this->db->replace($this->table, $data);
     }
 
     /**
@@ -116,7 +121,7 @@ class MongoModel implements IModel {
      */
     public function deletes($conditions)
     {
-        return $this->db->delete($this->getConditons($conditions));
+        return $this->db->delete($this->table, $this->getConditons($conditions));
     }
 
     /**
@@ -129,7 +134,7 @@ class MongoModel implements IModel {
             return false;
         }
 
-        $where = array('_id' => new \MongoId($id));
+        $where = array('id' => $id);
         return $this->db->update($this->table, $data, $where);
     }
 
@@ -183,7 +188,7 @@ class MongoModel implements IModel {
      */
     public function count($conditions)
     {
-        return $this->db->count($this->getConditons($conditions));
+        return $this->db->count($this->table, $this->getConditons($conditions));
     }
 
     /**
@@ -254,7 +259,7 @@ class MongoModel implements IModel {
      */
     public function beginTransaction()
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -262,7 +267,7 @@ class MongoModel implements IModel {
      */
     public function commit()
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -270,7 +275,7 @@ class MongoModel implements IModel {
      */
     public function rollback()
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -278,7 +283,7 @@ class MongoModel implements IModel {
      */
     public function inTransaction()
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -289,7 +294,7 @@ class MongoModel implements IModel {
     private function getConditons($conditions) {
 
         if ( !is_array($conditions) ) {
-            return array('_id' => new \MongoId($conditions));
+            return array('id' => $conditions);
         }
 
         return $conditions;
@@ -367,6 +372,6 @@ class MongoModel implements IModel {
     }
 
     public function having($group) {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 }

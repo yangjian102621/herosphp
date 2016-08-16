@@ -105,6 +105,15 @@ class MongoQueryBuilder {
          */
         $condi = array();
         foreach ( $where as $key => $value ) {
+
+            if ( $key == '$or' ) { //组合or查询
+                $condi['$or'] = array($value);
+                continue;
+            }
+            if ( $key == '$and' ) {
+                $condi['$and'] = array($value);
+                continue;
+            }
             //这里判断是AND,OR
             if ( $key[0] == '|' ) {
                 $key = substr($key, 1);
@@ -131,7 +140,7 @@ class MongoQueryBuilder {
 
                     //4. like查询 array('title' => array('$like' => 'xabc'))
                     if ( $key1 == '$like' ) {
-                        $condi[$key] = "/{$value}/i";
+                        $condi[$key] = array('$regex' => $value[$key1]);
                         continue;
                     }
 

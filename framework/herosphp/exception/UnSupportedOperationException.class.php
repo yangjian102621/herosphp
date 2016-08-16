@@ -13,8 +13,8 @@ namespace herosphp\exception;
 
 class UnSupportedOperationException extends HeroException {
 
-    public function __contruct() {
-        parent::__contruct("抱歉，暂时不支持次操作.");
+    public function __contruct($message, $code) {
+        parent::__contruct($message, $code);
     }
 
 }

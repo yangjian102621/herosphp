@@ -55,6 +55,11 @@ class MysqlQueryBuilder {
      * @return $this
      */
     public function fields($fields) {
+
+        if ( !$fields ) {
+            $this->fields = '*';
+            return $this;
+        }
         if ( is_array($fields) ) {
             $this->fields = '`'.implode("`, `", $fields).'`';
         } else if ( is_string($fields) ) {
@@ -135,9 +140,8 @@ class MysqlQueryBuilder {
      * @param $add_brackets 是否在逻辑运算之间添加括号
      * @return string
      */
-    public function buildConditions($where=null,$add_brackets=true) {
+    public static function buildConditions($where=null,$add_brackets=true) {
 
-        if ( $where == null ) $where = $this->where;
         if ( !$where || empty($where) ) return '1';
 
         /**
@@ -152,7 +156,7 @@ class MysqlQueryBuilder {
              */
             if ( $key == '$or' ) {
                 $condi[] = ' OR (';
-                $condi[] = $this->buildConditions($value, false);
+                $condi[] = self::buildConditions($value, false);
                 $condi[] = ')';
                 continue;
             }
@@ -180,7 +184,9 @@ class MysqlQueryBuilder {
             //1. 普通的等于查询 array('name' => 'xiaoming');
             if ( !is_array($value) ) {
                 $condi[] = "`{$key}` ".self::getFormatValue($value);
-                $condi[] = ')';
+                if ( $add_brackets ) {
+                    $condi[] = ')';
+                }
                 continue;
             }
 
@@ -254,18 +260,18 @@ class MysqlQueryBuilder {
             //获取真正的value
             $_value = substr($value, 1);
             if ( is_numeric($_value) ) {
-                return $value;
+                return "{$value[0]} {$_value}";
             } else {
-                return $value[0]."'{$_value}'";
+                return "{$value[0]} '{$_value}'";
             }
         }
         if ( in_array($opt, self::$operator) ) {
             //获取真正的value
             $_value = substr($value, 2);
             if ( is_numeric($_value) ) {
-                return $value;
+                return "{$opt} {$_value}";;
             } else {
-                return $opt."'{$_value}'";
+                return "{$opt} '{$_value}'";
             }
         }
 
@@ -283,9 +289,9 @@ class MysqlQueryBuilder {
 
         $query = "SELECT {$this->fields} FROM ".$this->table;
 
-        if ( $this->where ) $query .= " WHERE " .$this->buildConditions($this->where);
+        if ( $this->where ) $query .= " WHERE " .self::buildConditions($this->where);
         if ( $this->group ) $query .= " GROUP BY ".$this->group;
-        if ( $this->having ) $query .= " HAVING ".$this->buildConditions($this->having);
+        if ( $this->having ) $query .= " HAVING ".self::buildConditions($this->having);
         if ( $this->order ) $query .= " ORDER BY ".$this->order;
         if ( $this->limit ) $query .= " LIMIT ".$this->limit;
 

@@ -123,7 +123,11 @@ class C_Model implements IModel {
         if ( !isset($data[$this->primaryKey]) ) {
             $data[$this->primaryKey] = StringUtils::genGlobalUid();
         }
-        return $this->db->insert($this->table, $data);
+        $id = $this->db->insert($this->table, $data);
+        if ( $id === true ) {
+            $id = $data[$this->primaryKey];
+        }
+        return $id;
     }
 
     /**
@@ -163,12 +167,8 @@ class C_Model implements IModel {
      */
     public function update($data, $id)
     {
-        $data = $this->loadFilterData($data);
-        if ( $data == false ) {
-            return false;
-        }
         $where = array($this->primaryKey => $id);
-        return $this->db->update($data, $where);
+        return $this->updates($data, $where);
     }
 
     /**
@@ -218,6 +218,9 @@ class C_Model implements IModel {
      */
     public function getItem($condition, $fields, $order)
     {
+        if ( !is_array($condition) ) {
+            $condition = array($this->primaryKey => $condition);
+        }
         $item = $this->db->findOne($this->table, $condition, $fields, $order);
 
         //做字段别名映射
@@ -255,7 +258,7 @@ class C_Model implements IModel {
      */
     public function increase($field, $offset, $id)
     {
-        $conditions = MysqlQueryBuilder::getInstance()->buildConditions(array($this->primaryKey => $id));
+        $conditions = MysqlQueryBuilder::buildConditions(array($this->primaryKey => $id));
         $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
         return $this->db->excute($query);
     }
@@ -269,7 +272,7 @@ class C_Model implements IModel {
      */
     public function batchIncrease($field, $offset, $conditions)
     {
-        $conditions = MysqlQueryBuilder::getInstance()->buildConditions($conditions);
+        $conditions = MysqlQueryBuilder::buildConditions($conditions);
         $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
         return $this->db->excute($query);
     }
@@ -283,7 +286,7 @@ class C_Model implements IModel {
      */
     public function reduce($field, $offset, $id)
     {
-        $conditions = MysqlQueryBuilder::getInstance()->buildConditions(array($this->primaryKey => $id));
+        $conditions = MysqlQueryBuilder::buildConditions(array($this->primaryKey => $id));
         $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
         return $this->db->excute($query);
     }
@@ -297,7 +300,7 @@ class C_Model implements IModel {
      */
     public function batchReduce($field, $offset, $conditions)
     {
-        $conditions = MysqlQueryBuilder::getInstance()->buildConditions($conditions);
+        $conditions = MysqlQueryBuilder::buildConditions($conditions);
         $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
         return $this->db->excute($query);
     }

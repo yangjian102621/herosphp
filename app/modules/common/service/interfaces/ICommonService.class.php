@@ -1,7 +1,6 @@
 <?php
 
 namespace common\service\interfaces;
-use herosphp\db\entity\DBEntity;
 
 /**
  * 通用服务接口
@@ -41,17 +40,24 @@ interface ICommonService {
 
     /**
      * 获取数据列表
-     * @param DBEntity $query 查询条件
-     * @return array
+     * @param array $conditions
+     * @param $fields
+     * @param $order
+     * @param $limit
+     * @param $group
+     * @param $having
+     * @return mixed
      */
-    public function getItems( DBEntity $query );
+    public function getItems($conditions, $fields, $order, $limit, $group, $having);
 
     /**
      * 获取单条数据
-     * @param string|DBEntity $conditions 查询条件
+     * @param $condition
+     * @param $fields
+     * @param $order
      * @return mixed
      */
-    public function getItem( $conditions );
+    public function getItem($condition, $fields, $order);
 
     /**
      * 更新一条数据
@@ -148,4 +154,34 @@ interface ICommonService {
      * @return \herosphp\db\interfaces\Idb
      */
     public function getDB();
+
+    /**
+     * @return IModel
+     */
+    public function where($where); //设置查询条件
+
+    /**
+     * @return IModel
+     */
+    public function field($fields); //设置查询字段
+
+    /**
+     * @return IModel
+     */
+    public function limit($from, $size);
+
+    /**
+     * @return IModel
+     */
+    public function sort($sort);
+
+    /**
+     * @return IModel
+     */
+    public function group($group);
+
+    /**
+     * @return IModel
+     */
+    public function having($having); //设置分组条件
 }

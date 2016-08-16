@@ -14,6 +14,9 @@ namespace herosphp\model;
 
  interface IModel {
 
+     //查询列表
+     public function query($sql);
+
      /**
       * 添加数据
       * @param $data

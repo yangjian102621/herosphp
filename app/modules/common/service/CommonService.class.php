@@ -3,8 +3,6 @@
 namespace common\service;
 
 use common\service\interfaces\ICommonService;
-use herosphp\core\Loader;
-use herosphp\db\entity\DBEntity;
 
 /**
  * 通用服务接口实现
@@ -18,6 +16,18 @@ abstract class CommonService implements ICommonService {
      * @var \common\dao\interfaces\ICommonDao
      */
     protected $modelDao;
+
+    private $where = array();
+
+    private $fields = array();
+
+    private $sort = array();
+
+    private $limit = array();
+
+    private $group = '';
+
+    private $having = array();
 
     /**
      * @param \common\dao\interfaces\ICommonDao $modelDao
@@ -70,17 +80,17 @@ abstract class CommonService implements ICommonService {
     /**
      * @see \common\service\interfaces\ICommonService::add()
      */
-    public function getItems(DBEntity $query)
+    public function getItems($conditions, $fields, $order, $limit, $group, $having)
     {
-        return $this->modelDao->getItems($query);
+        return $this->modelDao->getItems($conditions, $fields, $order, $limit, $group, $having);
     }
 
     /**
      * @see \common\service\interfaces\ICommonService::add()
      */
-    public function getItem($conditions)
+    public function getItem($condition, $fields, $order)
     {
-        return $this->modelDao->getItem($conditions);
+        return $this->modelDao->getItem($condition, $fields, $order);
     }
 
     /**
@@ -193,5 +203,35 @@ abstract class CommonService implements ICommonService {
     public function getDB()
     {
         return $this->modelDao->getDB();
+    }
+
+    public function where($where) {
+        $this->where = $where;
+        return $this;
+    }
+
+    public function field($fields) {
+        $this->fields = $fields;
+        return $this;
+    }
+
+    public function limit($from, $size) {
+        $this->limit = array($from, $size);
+        return $this;
+    }
+
+    public function sort($sort) {
+        $this->sort = $sort;
+        return $this;
+    }
+
+    public function group($group) {
+        $this->group = $group;
+        return $this;
+    }
+
+    public function having($having) {
+        $this->having = $having;
+        return $this;
     }
 }

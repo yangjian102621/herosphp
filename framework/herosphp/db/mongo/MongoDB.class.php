@@ -68,7 +68,7 @@ class MongoDB implements Idb {
      */
     public function query($query)
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -76,7 +76,7 @@ class MongoDB implements Idb {
      */
     public function excute($sql)
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -96,9 +96,7 @@ class MongoDB implements Idb {
      */
     public function replace($table, $data)
     {
-        $collection = $this->db->selectCollection($table);
-        $result = $collection->save(self::filterData($data), $this->getOptions());
-        return $result['ok'] == 1;
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -126,6 +124,7 @@ class MongoDB implements Idb {
     {
         $collection = $this->db->selectCollection($table);
         $where = MongoQueryBuilder::where($condition);
+        __print($where);
         $limit = MongoQueryBuilder::limit($limit);
         $sort = MongoQueryBuilder::sort($sort);
         $result = $collection->find($where, MongoQueryBuilder::fields($field));
@@ -212,7 +211,7 @@ class MongoDB implements Idb {
      */
     public function beginTransaction()
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -220,7 +219,7 @@ class MongoDB implements Idb {
      */
     public function commit()
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -228,7 +227,7 @@ class MongoDB implements Idb {
      */
     public function rollBack()
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**
@@ -238,7 +237,7 @@ class MongoDB implements Idb {
      */
     public function inTransaction()
     {
-        throw new UnSupportedOperationException();
+        throw new UnSupportedOperationException("暂时不支持此操作.");
     }
 
     /**

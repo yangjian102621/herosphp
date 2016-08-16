@@ -86,6 +86,7 @@ class SingleDB implements Idb {
      * @throws DBException
      */
     public function excute($sql) {
+
         if ( $this->link == null ) $this->connect();
         if ( DB_ESCAPE ) $sql = addslashes($sql);
         try {
@@ -184,8 +185,7 @@ class SingleDB implements Idb {
     public function update($table, $data, $condition)
     {
         if ( empty($condition) ) return false;
-        $where = MysqlQueryBuilder::getInstance()->where($condition)->buildConditions();
-        __print($where);
+        $where = MysqlQueryBuilder::buildConditions($condition);
         $_T_fields = $this->getTableFields($table);
         $_keys = '';
         foreach ( $data as $_key => $_val ) {
@@ -211,7 +211,7 @@ class SingleDB implements Idb {
     {
         if ( !$condition ) return false; //防止误删除所有的数据，所以必须传入删除条件
 
-        $where = MysqlQueryBuilder::getInstance()->where($condition)->buildConditions();
+        $where = MysqlQueryBuilder::buildConditions($condition);
 
         $sql = "DELETE FROM {$table} WHERE {$where}";
         $result = $this->excute($sql);
@@ -279,7 +279,7 @@ class SingleDB implements Idb {
         $sql = "SELECT count(*) as total FROM {$table}";
 
         if ( $condition != null ) {
-            $sql .= " WHERE ".MysqlQueryBuilder::getInstance()->buildConditions($condition);
+            $sql .= " WHERE ".MysqlQueryBuilder::buildConditions($condition);
         }
 
         $result = $this->excute($sql);

@@ -4,10 +4,6 @@ namespace test\action;
 use common\action\CommonAction;
 use herosphp\bean\Beans;
 use herosphp\core\Loader;
-use herosphp\db\DBFactory;
-use herosphp\db\entity\MongoEntity;
-use herosphp\db\mongo\MongoQueryBuilder;
-use herosphp\db\mysql\MysqlQueryBuilder;
 use herosphp\http\HttpRequest;
 use herosphp\string\StringUtils;
 use herosphp\utils\AjaxResult;
@@ -28,34 +24,8 @@ class DemoAction extends CommonAction {
     //mysql模型测试
     public function mysql() {
 
-        $condition = array(
-            'name' => 'xiaoming',
-            'age' => array('>' => 18, '<=' => 30),
-            '$or' => array('age' => array('>' => 19), 'name' => '小王'),
-            'addtime' => array('>' => date('Y-m-d H:i:s')),
-            'title' => array('like' => '%测试文章%'),
-            '|username' => array('in' => array('xiaoyang', 'xiaoming', 'xiaoliu'))
-        );
-
-        $fields = array('id', 'username', 'password');
-
-        $query = MysqlQueryBuilder::getInstance()
-            ->table("user")
-            ->fields($fields)
-            ->where($condition)
-            ->order(array('id' => 1, 'username' => -1))
-            ->limit(10)
-            ->buildQueryString();
-        __print($query);
-
-        die('fuck it whatever.');
-    }
-
-    public function mongo() {
-
-        $mongoModel = Loader::model('news');
-        $mysqlModel = Loader::model('user');
-
+        $model = Loader::model("user");
+        //添加数据 C_Model::insert();
 //        $address = array('东莞','深圳','广州','北京','上海','杭州');
 //        for ( $i = 0; $i < 100; $i++ ) {
 //            $data = array(
@@ -63,35 +33,166 @@ class DemoAction extends CommonAction {
 //                "name" => "user_{$i}",
 //                "age" => $i,
 //                "address" => $address[mt_rand(0,5)]);
-//            __print($mongoModel->insert($data));
-//            __print($mysqlModel->insert($data));
+//
+//            var_dump($model->insert($data));
 //        }
 
-        //条件查询兼容mongodb,这样你可以随时更改模型而不需要更改任何业务代码
-//        $conditions = array('age' => ">20", 'address' => '深圳');
-//        $fields = array('name', 'age', 'address');
-//        $limit = array(0,5);
-//        $sort = array('age' => 1, 'name' => 1);
-//        $items1 = $mongoModel->getItems($conditions, $fields, $sort, $limit);
+        //C_Model::query();
+//        $list = $model->query("select * from fiidee_user order by id desc limit 20");
+//        __print($list);
+
+        //C_Model:replace();
+//        $data = array(
+//            'id' => 'B21A-57B30877-0027B08C-748A-84D4EB10',
+//            'name' => 'xiaoyang',
+//            'address' => '南城高盛');
+//        var_dump($model->replace($data));
+
+        //C_Model::getItem()
+//        $condition = array('id' => 'B21A-57B30877-0027B08C-748A-84D4EB10');
+//        $one = $model->getItem($condition);
+//        __print($one);
+
+        //C_Model::delete()
+//        $id = 'B21A-57B30877-0027B08C-748A-84D4EB10';
+//        $model->delete($id);
+
+        //C_Model::deletes(), C_Model::find
+//        $conditions = array(
+//            'name' => 'user_1',
+//            '$or' => array('name' => 'xiaoming', 'age' => '>20'),
+//            'address' => '深圳'
+//        );
 //
-//        $items2 = $mysqlModel->getItems($conditions, $fields, $sort, $limit);
+//        $gets = array('id', 'name', 'address');
+//        $sort = array('id' => -1, 'name' => 1);
+//        $list = $model->where($conditions)
+//            ->field($gets)
+//            ->sort($sort)
+//            ->limit(0, 20)
+//            ->group('address')
+//            ->having(array('address' => array('$in' => array('深圳', '广州', '北京'))))
+//            ->find();
+
+        //C_Model::update
+//        $data = array(
+//            'name' => 'xiaoming',
+//            'age' => 30,
+//            'address' => '我爱北京天安门'
+//        );
+//        $conditions = array('id' => 'B21A-57B30872-01655B98-538F-FBED5277');
+//        $model->updates($data, $conditions);
+//        __print($model->where($conditions)->findOne());
+
+        //C_Model::count
+//        $conditions = array('id' => '>B21A-57B30872-01655B98-538F-FBED5277');
+//        var_dump($model->count($conditions));
+
+        //C_Model::increase
+//        $condition = array('id' => array('$in' => array('B21A-57B30872-01655B98-538F-FBED5277', 'B21A-57B30872-0125BDA8-8184-2B481B89')));
+//        //$model->batchIncrease('age', 10, $condition);
+//        $model->batchReduce('age', 10, $condition);
+//        __print($model->getItems($condition));
+
+        //C_Model::set
+//        $condition = array('id' => array('$in' => array('B21A-57B30872-01655B98-538F-FBED5277', 'B21A-57B30872-0125BDA8-8184-2B481B89')));
+//        $model->sets('age', 200, $condition);
+//        __print($model->getItems($condition));
+
+        $model->beginTransaction();
+        $condition = array('id' => array('$in' => array('B21A-57B30872-01655B98-538F-FBED5277', 'B21A-57B30872-0125BDA8-8184-2B481B89')));
+        $model->sets('age', 500, $condition);
+        __print($model->getItems($condition));
+        $model->rollback();
+        __print($model->getItems($condition));
+
+
+
+        die('fuck it whatever.');
+    }
+
+    public function mongo() {
+
+        $model = Loader::model("news");
+        //添加数据 C_Model::insert();
+//        $address = array('东莞','深圳','广州','北京','上海','杭州');
+//        for ( $i = 0; $i < 100; $i++ ) {
+//            $data = array(
+//                "id" => StringUtils::genGlobalUid(true),
+//                "name" => "user_{$i}",
+//                "age" => $i,
+//                "address" => $address[mt_rand(0,5)]);
 //
-//        __print($items1);
-//        __print($items2);
+//            __print($model->insert($data));
+//        }
 
-        $item = $mongoModel->findOne();
-        __print($item);
+        //C_Model::query();
+//        $list = $model->query("select * from fiidee_user order by id desc limit 20");
+//        __print($list);
 
-        $item['name'] = "超级无敌美少女 fuck";
-        $item['age'] = 18;
-        $item['address'] = "天朝上国";
-        //var_dump($mongoModel->update($item, $item['_id']));
-        //__print($mongoModel->findOne());
+        $id = 'B21A-57B319E4-0269D8C0-D5CB-8295ECE2';
+        //C_Model::getItem()
+//        $one = $model->getItem($id);
+//        __print($one);
 
-        var_dump($mysqlModel->update($item, $item['id']));
-        __print($mysqlModel->getItem($item['id']));
+        //C_Model::delete()
+//        $model->delete($id);
+//        __print($model->getItem($id));
+
+        //C_Model::deletes()
+//        $conditions = array(
+//            'name' => 'user_1',
+//            '$or' => array('id' => array('$in' => array('B21A-57B319E4-026B4D68-F5E5-9DF9281A', 'B21A-57B319E4-026C46A0-248C-1907B7D3')))
+//        );
+//        var_dump($model->deletes($conditions));
+
+        //C_Model::find
+//        $gets = array('id', 'name', 'address');
+//        $sort = array('name' => 1);
+//        $list = $model->where()
+//            ->field($gets)
+//            ->sort($sort)
+//            ->limit(0, 20)
+//            ->find();
+//        __print($list);
+
+        //C_Model::update
+//        $data = array(
+//            'name' => 'xiaoming',
+//            'age' => 30,
+//            'address' => '我爱北京天安门'
+//        );
+//        $conditions = array('id' => 'B21A-57B319E4-026D4230-E18D-817D454C');
+//        $model->updates($data, $conditions);
+//        __print($model->where($conditions)->findOne());
+
+        //C_Model::count
+//        $conditions = array('id' => '>B21A-57B30872-01655B98-538F-FBED5277');
+//        var_dump($model->count($conditions));
+
+        //C_Model::increase
+//        $condition = array('id' => array('$in' => array('B21A-57B319E4-026DA5CC-79FC-091DB526', 'B21A-57B319E4-026BC748-7837-42B51E30')));
+//        $model->batchIncrease('age', 10, $condition);
+//        //$model->batchReduce('age', 10, $condition);
+//        __print($model->getItems($condition));
+
+        //C_Model::set
+//        $condition = array('id' => array('$in' => array('B21A-57B319E4-026DA5CC-79FC-091DB526', 'B21A-57B319E4-026BC748-7837-42B51E30')));
+//        $model->sets('age', 200, $condition);
+//        $model->sets('name', "超级无敌美少女", $condition);
+//        __print($model->getItems($condition));
+
+        $conditions = array('name' => array('$like' => 'user_1'));
+        __print($model->getItems($conditions));
 
 
+        AjaxResult::ajaxSuccessResult();
+    }
+
+    public function service() {
+
+        $service = Beans::get('test.user.service');
+        __print($service->getItems());
         AjaxResult::ajaxSuccessResult();
     }
 }
