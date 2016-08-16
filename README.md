@@ -23,9 +23,7 @@ HerosPHP是一个轻量级PHP web 程序开发框架。作者开发这个框架�
 1. 将应用和框架进一步完全拆分，包括所有的configs(配置文件)全部移动到app文件夹，包括index.php, client.php,用户只需要关注app文件夹里面的内容就好了，而不需要再去关注
 框架里面的内容<br />
 2. 更新了framework的文件结构，将utils里面的一些类进行了细分，新增files，image，web等文件夹，比如FileUtils, FileUpload等类文件放入files包。<br />
-3. 重构了framework的model层，重写C_Model#getItems, getItem方法等，使用传入DBEntity接口类型的查询实体作为查询条件对象，替代了之前需要传入许多参数去查询
-的弊端，参数多往往容易搞错，使用实体传参后期也便于扩展。
-4. 实现了Mysql的联合查询，给MysqlEntity新增了leftJoin,rightJoin,innerJoin,table等方法来实现联合查询
+3. 重构了framework的model层，重写C_Model#getItems, getItem方法等，使用传入将所有的参数通过传入数组类型的作为查询条件，为后期兼容mongodb和elasticsearch查询语法做准备。
 4. 添加了mongodb数据模型的实现MongoModel, 通过继承MongoModel模型来实现对mongodb的操作
 4. 在framework中新增了lock包，实现了同步锁的功能，通过锁工厂SynLockFactory::getFileSynLock和SynLockFactory::getSemSynLock方法获取。
 5. 在StringUtils中实现了分布式UUID的生成。调用StringUtils::genGlobalUid()获取。
