@@ -85,7 +85,7 @@ class MongoDB implements Idb {
     public function insert($table, $data)
     {
         $collection = $this->db->selectCollection($table);
-        $result = $collection->insert($data, $this->getOptions());
+        $result = $collection->insert(self::filterData($data), $this->getOptions());
         return $result['ok'] == 1;
 
     }
@@ -97,7 +97,7 @@ class MongoDB implements Idb {
     public function replace($table, $data)
     {
         $collection = $this->db->selectCollection($table);
-        $result = $collection->save($data, $this->getOptions());
+        $result = $collection->save(self::filterData($data), $this->getOptions());
         return $result['ok'] == 1;
     }
 
@@ -130,10 +130,10 @@ class MongoDB implements Idb {
         $sort = MongoQueryBuilder::sort($sort);
         $result = $collection->find($where, MongoQueryBuilder::fields($field));
         if ( $limit ) {
-            $result->skip($limit[0])->limit($limit[1]);
+            $result = $result->skip($limit[0])->limit($limit[1]);
         }
         if ( !empty($sort) ) {
-            $result->sort($sort);
+            $result = $result->sort($sort);
         }
         $items = array();
         if ( $result ) {
@@ -159,12 +159,13 @@ class MongoDB implements Idb {
     public function update($table, $data, $condition)
     {
         $where = MongoQueryBuilder::where($condition);
+
         if ( empty($where) || $where == null ) return false;
 
         $collection = $this->db->selectCollection($table);
         $result = $collection->update(
             $where,
-            array('$set' => $data),
+            array('$set' => self::filterData($data)),
             $this->getOptions());
 
         return ($result['ok'] == 1 && $result['n'] > 0);
@@ -176,7 +177,7 @@ class MongoDB implements Idb {
         $collection = $this->db->selectCollection($table);
         $result = $collection->update(
             MongoQueryBuilder::where($condition),
-            array('$inc' => $data),
+            array('$inc' => self::filterData($data)),
             $this->getOptions());
 
         return ($result['ok'] == 1 && $result['n'] > 0);
@@ -189,6 +190,21 @@ class MongoDB implements Idb {
     {
         $collection = $this->db->selectCollection($table);
         return $collection->count(MongoQueryBuilder::where($conditions));
+    }
+
+    /**
+     * 过滤数据，mongodb中区分数据类型的，比如如果插入的时候是字符串，查询的时候也要用字符串类型去查，否则查询不出来结果的。
+     * 比如插入时用的是 array("age" => "'20'") 如果查询是用的条件是 array("age" => 20)是查询不出来的
+     * @param $data
+     * @return mixed
+     */
+    private static function filterData($data) {
+        foreach($data as $key => $value) {
+            if ( is_numeric($value) ) {
+                $data[$key] = intval($value);
+            }
+        }
+        return $data;
     }
 
     /**

@@ -139,7 +139,7 @@ class SingleDB implements Idb {
 		if ( $_fileds != '' ) {
 			$_query = "INSERT INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
 
-			if ( $this->query( $_query ) != false ) {
+			if ( $this->excute( $_query ) != false ) {
                 $last_insert_id = $this->link->lastInsertId();
                 if ( $last_insert_id > 0 ) { //返回自增id
                     return $last_insert_id;
@@ -185,7 +185,7 @@ class SingleDB implements Idb {
     {
         if ( empty($condition) ) return false;
         $where = MysqlQueryBuilder::getInstance()->where($condition)->buildConditions();
-
+        __print($where);
         $_T_fields = $this->getTableFields($table);
         $_keys = '';
         foreach ( $data as $_key => $_val ) {

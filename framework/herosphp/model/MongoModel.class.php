@@ -15,8 +15,6 @@ namespace herosphp\model;
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
-use herosphp\db\entity\DBEntity;
-use herosphp\db\entity\MongoEntity;
 use herosphp\exception\UnSupportedOperationException;
 use herosphp\filter\Filter;
 
@@ -131,7 +129,7 @@ class MongoModel implements IModel {
             return false;
         }
 
-        $where = array('_id', new \MongoId($id));
+        $where = array('_id' => new \MongoId($id));
         return $this->db->update($this->table, $data, $where);
     }
 
@@ -366,5 +364,9 @@ class MongoModel implements IModel {
     public function group($group) {
         $this->group = $group;
         return $this;
+    }
+
+    public function having($group) {
+        throw new UnSupportedOperationException();
     }
 }

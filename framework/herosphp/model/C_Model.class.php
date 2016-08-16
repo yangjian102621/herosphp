@@ -15,7 +15,9 @@ namespace herosphp\model;
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
+use herosphp\db\mysql\MysqlQueryBuilder;
 use herosphp\filter\Filter;
+use herosphp\string\StringUtils;
 
 Loader::import('model.IModel', IMPORT_FRAME);
 
@@ -63,6 +65,18 @@ class C_Model implements IModel {
      */
     private $filterMap = array();
 
+    private $where = array();
+
+    private $fields = array();
+
+    private $sort = array();
+
+    private $limit = array();
+
+    private $group = '';
+
+    private $having = array();
+
     /**
      * 初始化数据库连接
      * @param string $table 数据表
@@ -106,6 +120,9 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
+        if ( !isset($data[$this->primaryKey]) ) {
+            $data[$this->primaryKey] = StringUtils::genGlobalUid();
+        }
         return $this->db->insert($this->table, $data);
     }
 
@@ -127,7 +144,7 @@ class C_Model implements IModel {
     public function delete($id)
     {
         $where = array($this->primaryKey => $id);
-        return $this->db->delete($this->table, $where);
+        return $this->deletes($where);
     }
 
     /**
@@ -150,7 +167,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        $where = array($this->primaryKey, $id);
+        $where = array($this->primaryKey => $id);
         return $this->db->update($data, $where);
     }
 
@@ -166,7 +183,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        return $this->db->update($this->table, $conditions);
+        return $this->db->update($this->table, $data, $conditions);
     }
 
     /**
@@ -193,7 +210,7 @@ class C_Model implements IModel {
 
     public function find()
     {
-        // TODO: Implement find() method.
+        return $this->getItems($this->where, $this->fields, $this->sort, $this->limit, $this->group, $this->having);
     }
 
     /**
@@ -216,7 +233,7 @@ class C_Model implements IModel {
 
     public function findOne()
     {
-        // TODO: Implement findOne() method.
+        return $this->getItem($this->where, $this->fields, $this->sort);
     }
 
     /**
@@ -226,10 +243,7 @@ class C_Model implements IModel {
      */
     public function count($conditions)
     {
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->where($conditions);
-        return $this->db->count($entity);
+        return $this->db->count($this->table, $conditions);
     }
 
     /**
@@ -241,9 +255,9 @@ class C_Model implements IModel {
      */
     public function increase($field, $offset, $id)
     {
-        $conditions = SQL::create($this->primaryKey)->buildConditions($id);
+        $conditions = MysqlQueryBuilder::getInstance()->buildConditions(array($this->primaryKey => $id));
         $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
-        return $this->db->query($query);
+        return $this->db->excute($query);
     }
 
     /**
@@ -255,9 +269,9 @@ class C_Model implements IModel {
      */
     public function batchIncrease($field, $offset, $conditions)
     {
-        $conditions = SQL::create($this->primaryKey)->buildConditions($conditions);
-        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$this->getConditons($conditions)}";
-        return $this->db->query($query);
+        $conditions = MysqlQueryBuilder::getInstance()->buildConditions($conditions);
+        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
+        return $this->db->excute($query);
     }
 
     /**
@@ -269,9 +283,9 @@ class C_Model implements IModel {
      */
     public function reduce($field, $offset, $id)
     {
-        $conditions = SQL::create($this->primaryKey)->buildConditions($id);
+        $conditions = MysqlQueryBuilder::getInstance()->buildConditions(array($this->primaryKey => $id));
         $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
-        return $this->db->query($query);
+        return $this->db->excute($query);
     }
 
     /**
@@ -283,8 +297,9 @@ class C_Model implements IModel {
      */
     public function batchReduce($field, $offset, $conditions)
     {
-        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE ".$this->getConditons($conditions);
-        return $this->db->query($query);
+        $conditions = MysqlQueryBuilder::getInstance()->buildConditions($conditions);
+        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
+        return $this->db->excute($query);
     }
 
     /**
@@ -297,11 +312,7 @@ class C_Model implements IModel {
     public function set($field, $value, $id)
     {
         $data = array($field => $value);
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data)
-            ->where("{$this->primaryKey}={$id}");
-        return $this->db->update($entity);
+        return $this->update($data, $id);
     }
 
     /**
@@ -314,11 +325,7 @@ class C_Model implements IModel {
     public function sets($field, $value, $conditions)
     {
         $data = array($field => $value);
-        $entity = MysqlEntity::getInstance()
-            ->setTable($this->table)
-            ->setData($data)
-            ->where($conditions);
-        return $this->db->update($entity);
+        $this->updates($data, $conditions);
     }
 
     /**
@@ -351,19 +358,6 @@ class C_Model implements IModel {
     public function inTransaction()
     {
         return $this->db->inTransaction();
-    }
-
-    /**
-     * 获取查询条件
-     * @param $conditons
-     * @return
-     */
-    private function getConditons($conditions) {
-        if ( $conditions instanceof DBEntity ) {
-            return $conditions->buildWhere();
-        } else {
-            return SQL::create()->buildConditions($conditions);
-        }
     }
 
     /**
@@ -465,5 +459,35 @@ class C_Model implements IModel {
      */
     public function getDB() {
         return $this->db;
+    }
+
+    public function where($where) {
+        $this->where = $where;
+        return $this;
+    }
+
+    public function field($fields) {
+        $this->fields = $fields;
+        return $this;
+    }
+
+    public function limit($from, $size) {
+        $this->limit = array($from, $size);
+        return $this;
+    }
+
+    public function sort($sort) {
+        $this->sort = $sort;
+        return $this;
+    }
+
+    public function group($group) {
+        $this->group = $group;
+        return $this;
+    }
+
+    public function having($having) {
+        $this->having = $having;
+        return $this;
     }
 }

@@ -179,58 +179,64 @@ class MysqlQueryBuilder {
             }
             //1. 普通的等于查询 array('name' => 'xiaoming');
             if ( !is_array($value) ) {
-                $condi[] = "`{$key}` = ".self::getFieldValue($value);
+                $condi[] = "`{$key}` ".self::getFormatValue($value);
                 $condi[] = ')';
                 continue;
             }
 
-            $subCondi = array();
-            foreach ( $value as $key1 => $value1 ) {
-                //2. 操作符查询 array('age' => array('>' => 24, '<=' => 30))
-                if ( in_array($key1, self::$operator) ) {
-                    $subCondi[] = "`{$key}` {$key1} ".self::getFieldValue($value1);
-                    continue;
-                }
-                /**
-                 * 3. IN not in查询,支持2种形式
-                 * array('id' => array('$in' => array(1,2,3)))
-                 * array('id' => array('$in' => '1,2,3'))
-                 */
-                if ( $key1 == '$in' || $key1 == '$nin' ) {
-                    if ( is_array($value1) ) {
-                        $value1 = implode("','", $value1);
-                        $value1 = "'{$value1}'";
+            if ( is_array($value) ) {
+
+                $subCondi = array();
+                foreach ( $value as $key1 => $value1 ) {
+                    //2. 操作符查询 array('age' => array('>' => 24, '<=' => 30))
+                    if ( in_array($key1, self::$operator) ) {
+                        $subCondi[] = "`{$key}` {$key1} '{$value1}'";
+                        continue;
                     }
-                    $subCondi[] = $key1 == '$in' ? "`$key` IN ({$value1})" : "`$key` NOT IN ({$value1})";
-                    continue;
+                    /**
+                     * 3. IN not in查询,支持2种形式
+                     * array('id' => array('$in' => array(1,2,3)))
+                     * array('id' => array('$in' => '1,2,3'))
+                     */
+                    if ( $key1 == '$in' || $key1 == '$nin' ) {
+                        if ( is_array($value1) ) {
+                            $value1 = implode("','", $value1);
+                            $value1 = "'{$value1}'";
+                        }
+                        $subCondi[] = $key1 == '$in' ? "`$key` IN ({$value1})" : "`$key` NOT IN ({$value1})";
+                        continue;
+                    }
+
+                    //4. like查询 array('title' => array('$like' => '%abc%'))
+                    if ( $key1 == '$like' ) {
+                        $subCondi[] = "`{$key}` LIKE '{$value1}'";
+                        continue;
+                    }
+
+                    /**
+                     * 5. null查询,数据库中没有初始化的数据默认值为null, 此时不能用 name='' 或者name='null'查询
+                     * array('name' => array('null' => 1|-1)) 1 => null, -1 => not null
+                     */
+                    if ( $key1 == 'null' ) {
+                        if ( $value1 == 1 ) {
+                            $subCondi[] = "`{$key}` is null";
+                        } elseif( $value1 == -1 ) {
+                            $subCondi[] = "`{$key}` is not null";
+                        }
+                    }
+                }//end foreach
+
+                if ( !empty($subCondi) ) {
+                    $condi[] = implode(' AND ', $subCondi);
                 }
 
-                //4. like查询 array('title' => array('$like' => '%abc%'))
-                if ( $key1 == '$like' ) {
-                    $subCondi[] = "`{$key}` LIKE '{$value1}'";
-                    continue;
-                }
-
-                /**
-                 * 5. null查询,数据库中没有初始化的数据默认值为null, 此时不能用 name='' 或者name='null'查询
-                 * array('name' => array('null' => 1|-1)) 1 => null, -1 => not null
-                 */
-                if ( $key1 == 'null' ) {
-                    if ( $value1 == 1 ) {
-                        $subCondi[] = "`{$key}` is null";
-                    } elseif( $value1 == -1 ) {
-                        $subCondi[] = "`{$key}` is not null";
-                    }
-                }
-            }
-            if ( !empty($subCondi) ) {
-                $condi[] = implode(' AND ', $subCondi);
-            }
+            }//end if
 
             if ( $add_brackets ) {
                 $condi[] = ')';
             }
-        }
+
+        } //end foreach
         return implode(' ', $condi);
     }
 
@@ -240,8 +246,30 @@ class MysqlQueryBuilder {
      * @param $value
      * @return string
      */
-    public static function getFieldValue($value) {
-        return is_numeric($value) ? $value : "'{$value}'";
+    public static function getFormatValue($value) {
+
+        //1. 包含操作符的
+        $opt = substr($value, 0, 2);
+        if ( in_array($value[0], self::$operator) && !in_array($opt, self::$operator) ) {
+            //获取真正的value
+            $_value = substr($value, 1);
+            if ( is_numeric($_value) ) {
+                return $value;
+            } else {
+                return $value[0]."'{$_value}'";
+            }
+        }
+        if ( in_array($opt, self::$operator) ) {
+            //获取真正的value
+            $_value = substr($value, 2);
+            if ( is_numeric($_value) ) {
+                return $value;
+            } else {
+                return $opt."'{$_value}'";
+            }
+        }
+
+        return is_numeric($value) ? "={$value}" : "='{$value}'";
     }
 
     /**

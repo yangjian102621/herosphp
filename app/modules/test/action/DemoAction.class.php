@@ -9,6 +9,7 @@ use herosphp\db\entity\MongoEntity;
 use herosphp\db\mongo\MongoQueryBuilder;
 use herosphp\db\mysql\MysqlQueryBuilder;
 use herosphp\http\HttpRequest;
+use herosphp\string\StringUtils;
 use herosphp\utils\AjaxResult;
 use herosphp\utils\FileUpload;
 
@@ -52,21 +53,44 @@ class DemoAction extends CommonAction {
 
     public function mongo() {
 
-        $model = Loader::model('news');
+        $mongoModel = Loader::model('news');
+        $mysqlModel = Loader::model('user');
 
 //        $address = array('东莞','深圳','广州','北京','上海','杭州');
 //        for ( $i = 0; $i < 100; $i++ ) {
-//            $data = array("name" => "user_{$i}", "age" => $i, "address" => $address[mt_rand(0,5)]);
-//            $model->insert($data);
+//            $data = array(
+//                "id" => StringUtils::genGlobalUid(true),
+//                "name" => "user_{$i}",
+//                "age" => $i,
+//                "address" => $address[mt_rand(0,5)]);
+//            __print($mongoModel->insert($data));
+//            __print($mysqlModel->insert($data));
 //        }
 
-        $items = $model->where(array('age' => array('>' => 10)))
-                       ->field('name, age, address')
-                       ->limit(10, 5)
-                       ->sort("age DESC")
-                       ->find();
+        //条件查询兼容mongodb,这样你可以随时更改模型而不需要更改任何业务代码
+//        $conditions = array('age' => ">20", 'address' => '深圳');
+//        $fields = array('name', 'age', 'address');
+//        $limit = array(0,5);
+//        $sort = array('age' => 1, 'name' => 1);
+//        $items1 = $mongoModel->getItems($conditions, $fields, $sort, $limit);
+//
+//        $items2 = $mysqlModel->getItems($conditions, $fields, $sort, $limit);
+//
+//        __print($items1);
+//        __print($items2);
 
-        __print($items);
+        $item = $mongoModel->findOne();
+        __print($item);
+
+        $item['name'] = "超级无敌美少女 fuck";
+        $item['age'] = 18;
+        $item['address'] = "天朝上国";
+        //var_dump($mongoModel->update($item, $item['_id']));
+        //__print($mongoModel->findOne());
+
+        var_dump($mysqlModel->update($item, $item['id']));
+        __print($mysqlModel->getItem($item['id']));
+
 
         AjaxResult::ajaxSuccessResult();
     }

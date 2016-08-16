@@ -100,7 +100,7 @@ class MongoQueryBuilder {
 
         /**
          * 基于 key => value 数组语法的查询条件解析,这里借鉴的是mongodb的查询语法，以便兼容mongodb
-         * array('name' => 'zhangsan', '|age' => array('>' => 24, '<' => 30))
+         * array('name' => 'zhangsan', '|age' => '>12')
          * 转换后：array('name' => 'zhangsan', '$or' => array('age' => array('$lt' => 24, '$gt' => 30)))
          */
         $condi = array();
@@ -110,30 +110,35 @@ class MongoQueryBuilder {
                 $key = substr($key, 1);
                 $condi['$or'][] = array($key => $value);
             } else {
-                $condi[$key] = $value;
+                $condi[$key] = self::getFormatValue($value);
             }
 
-            foreach ( $value as $key1 => $value1 ) {
-                /**
-                 * 3. IN 查询,支持2种形式
-                 * array('id' => array('$in' => array(1,2,3)))
-                 * array('id' => array('$in' => '1,2,3'))
-                 */
-                if ( $key1 == '$in' || $key1 == '$nin' ) {
-                    if ( is_string($value1) ) {
-                        $value[$key1] = explode(',', $value1);
+            if ( is_array($value) ) {
+
+                foreach ( $value as $key1 => $value1 ) {
+                    /**
+                     * 3. IN 查询,支持2种形式
+                     * array('id' => array('$in' => array(1,2,3)))
+                     * array('id' => array('$in' => '1,2,3'))
+                     */
+                    if ( $key1 == '$in' || $key1 == '$nin' ) {
+                        if ( is_string($value1) ) {
+                            $value[$key1] = explode(',', $value1);
+                        }
+                        $condi[$key] = $value;
+                        continue;
                     }
-                    $condi[$key] = $value;
-                    continue;
-                }
 
-                //4. like查询 array('title' => array('$like' => 'xabc'))
-                if ( $key1 == '$like' ) {
-                    $condi[$key] = "/{$value}/i";
-                    continue;
-                }
-            }
-        }
+                    //4. like查询 array('title' => array('$like' => 'xabc'))
+                    if ( $key1 == '$like' ) {
+                        $condi[$key] = "/{$value}/i";
+                        continue;
+                    }
+
+                } //end foreach
+
+            } //end fi
+        } //end foreach
         self::getFieldValue($condi, $arr);
 
         return $arr;
@@ -144,9 +149,41 @@ class MongoQueryBuilder {
      * @param $value
      * @return string
      */
+    public static function getFormatValue($value) {
+
+        if ( $value instanceof \MongoId ) return $value;
+
+        $opt = substr($value, 0, 2);
+        //1.包含双字符操作符的
+        if ( isset(self::$operator[$opt]) ) {
+            //获取真正的value
+            $_value = substr($value, 2);
+            return array(self::$operator[$opt] => $_value);
+        }
+
+        //2.包含单字符操作符的
+        if ( isset(self::$operator[$value[0]]) ) {
+            //获取真正的value
+            $_value = substr($value, 1);
+            return array(self::$operator[$value[0]] => $_value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * 获取正确格式的字段值
+     * @param $value
+     * @return string
+     */
     public static function getFieldValue($arr, &$result) {
 
         foreach ( $arr as $key => $value ) {
+
+            if ( is_numeric($value) ) {  //这里时mongodb的坑，严格区分整数和字符串
+                $value = intval($value);
+            }
+
             if ( isset(self::$operator[$key]) ) {
                 $result[self::$operator[$key]] = $value;
                 continue;
