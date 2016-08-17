@@ -255,6 +255,20 @@ class MongoModel implements IModel {
     }
 
     /**
+     * 分组获取数据
+     * @param $table 集合名称
+     * @param array $keys 分组字段
+     * @param array $initial 分组初始条件
+     * @param $reduce 分组计算方式，是一个javascript函数表达式 "function (obj, prev) { prev.items.push(obj.name); }"
+     * @param $conditions 分组过滤条件
+     * @param $get_all_info 是否显示所有信息
+     * @return array
+     */
+    public function findByGroup($keys, $initial, $reduce, $conditions, $get_all_info=false) {
+        return $this->db->group($this->table, $keys, $initial, $reduce, $conditions, $get_all_info);
+    }
+
+    /**
      * @see IModel::beginTransaction()
      */
     public function beginTransaction()
@@ -367,11 +381,14 @@ class MongoModel implements IModel {
     }
 
     public function group($group) {
-        $this->group = $group;
-        return $this;
+        throw new UnSupportedOperationException();
     }
 
     public function having($group) {
         throw new UnSupportedOperationException("暂时不支持此操作.");
+    }
+
+    public function getDB() {
+        return $this->db->getDB();
     }
 }

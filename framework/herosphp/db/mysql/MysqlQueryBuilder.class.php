@@ -99,6 +99,11 @@ class MysqlQueryBuilder {
      * @return $this
      */
     public function order($order) {
+
+        if ( is_string($order) ) {
+            $this->order = $order;
+            return $this;
+        }
         if( is_array($order) ) {
             $__order = array();
             foreach ( $order as $key => $value ) {
@@ -154,7 +159,7 @@ class MysqlQueryBuilder {
              * 组合条件
              * array('name' => 'zhangsan', '$or' => array('name' => 'lisi', 'age'=>12))
              */
-            if ( $key == '$or' ) {
+            if ( strpos($key, '$or') !== false ) {
                 $condi[] = ' OR (';
                 $condi[] = self::buildConditions($value, false);
                 $condi[] = ')';

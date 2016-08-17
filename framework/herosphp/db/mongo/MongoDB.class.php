@@ -192,6 +192,26 @@ class MongoDB implements Idb {
     }
 
     /**
+     * 分组获取数据
+     * @param $table 集合名称
+     * @param array $keys 分组字段
+     * @param array $initial 分组初始条件
+     * @param $reduce 分组计算方式，是一个javascript函数表达式 "function (obj, prev) { prev.items.push(obj.name); }"
+     * @param $conditions 分组过滤条件
+     * @param $get_all_info 是否显示所有信息
+     * @return array
+     */
+    public function group($table, $keys, $initial, $reduce, $conditions, $get_all_info=false) {
+        $collection = $this->db->selectCollection($table);
+        $result = $collection->group($keys, $initial, $reduce, MongoQueryBuilder::where($conditions));
+        if ( $get_all_info ) {
+            return $result;
+        } else {
+            return $result['retval'];
+        }
+    }
+
+    /**
      * 过滤数据，mongodb中区分数据类型的，比如如果插入的时候是字符串，查询的时候也要用字符串类型去查，否则查询不出来结果的。
      * 比如插入时用的是 array("age" => "'20'") 如果查询是用的条件是 array("age" => 20)是查询不出来的
      * @param $data
@@ -254,6 +274,10 @@ class MongoDB implements Idb {
     public function setOptions($options)
     {
         $this->options = $options;
+    }
+
+    public function getDB() {
+        return $this->db;
     }
 
 }

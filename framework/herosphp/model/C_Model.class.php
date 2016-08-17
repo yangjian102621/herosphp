@@ -258,9 +258,7 @@ class C_Model implements IModel {
      */
     public function increase($field, $offset, $id)
     {
-        $conditions = MysqlQueryBuilder::buildConditions(array($this->primaryKey => $id));
-        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
-        return $this->db->excute($query);
+       return $this->batchIncrease($field, $offset, array($this->primaryKey => $id));
     }
 
     /**
@@ -273,7 +271,11 @@ class C_Model implements IModel {
     public function batchIncrease($field, $offset, $conditions)
     {
         $conditions = MysqlQueryBuilder::buildConditions($conditions);
-        $query = "UPDATE {$this->table} SET {$field}={$field}+{$offset} WHERE {$conditions}";
+        $update_str = "{$field}=CONCAT({$field}, '{$offset}')";
+        if ( is_numeric($offset) ) {
+            $update_str = "{$field}={$field}+{$offset}";
+        }
+        $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
         return $this->db->excute($query);
     }
 
@@ -286,9 +288,7 @@ class C_Model implements IModel {
      */
     public function reduce($field, $offset, $id)
     {
-        $conditions = MysqlQueryBuilder::buildConditions(array($this->primaryKey => $id));
-        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
-        return $this->db->excute($query);
+        return $this->batchReduce($field, $offset, array($this->primaryKey => $id));
     }
 
     /**
@@ -301,7 +301,11 @@ class C_Model implements IModel {
     public function batchReduce($field, $offset, $conditions)
     {
         $conditions = MysqlQueryBuilder::buildConditions($conditions);
-        $query = "UPDATE {$this->table} SET {$field}={$field}-{$offset} WHERE {$conditions}";
+        $update_str = "{$field}=REPLACE({$field}, '{$offset}', '')";
+        if ( is_numeric($offset) ) {
+            $update_str = "{$field}={$field}-{$offset}";
+        }
+        $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
         return $this->db->excute($query);
     }
 
