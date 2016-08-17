@@ -148,7 +148,8 @@ class MongoQueryBuilder {
 
             } //end fi
         } //end foreach
-        self::getFieldValue($condi, $arr);
+
+        self::replaceConditionOperation($condi, $arr);
 
         return $arr;
     }
@@ -181,11 +182,11 @@ class MongoQueryBuilder {
     }
 
     /**
-     * 获取正确格式的字段值
+     * 遍历条件数组，替换操作符 '>' => '$gt'...
      * @param $value
      * @return string
      */
-    public static function getFieldValue($arr, &$result) {
+    public static function replaceConditionOperation($arr, &$result) {
 
         foreach ( $arr as $key => $value ) {
 
