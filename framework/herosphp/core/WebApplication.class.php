@@ -86,14 +86,15 @@ class WebApplication implements IApplication {
         } catch(HeroException $e) {
             if ( APP_DEBUG ) { //如果是调试模式就抛出异常
                 throw $e;
-            } else {
+            } else if ( ADD_LOGS ) {
                 //否则记录日志
                 $logDir = APP_RUNTIME_PATH."logs/".APP_NAME."/";
 
                 if ( !file_exists($logDir) ) FileUtils::makeFileDirs($logDir);
                 file_put_contents($logDir.date("Y-m-d").".log", $e->toString(), FILE_APPEND);
-
                 return;
+            } else {
+                die("Hacker Attempt!");
             }
         }
 
