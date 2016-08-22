@@ -118,8 +118,8 @@ class WebApplication implements IApplication {
     {
         //调用生命周期监听器
         if ( !empty($this->listeners) ) {
-            foreach ( $this->listeners as $lisener ) {
-                $lisener->beforeRequestInit();
+            foreach ( $this->listeners as $listener ) {
+                $listener->beforeRequestInit();
             }
         }
         $this->httpRequest = new HttpRequest();
@@ -133,8 +133,8 @@ class WebApplication implements IApplication {
     {
         //调用生命周期监听器
         if ( !empty($this->listeners) ) {
-            foreach ( $this->listeners as $lisener ) {
-                $lisener->beforeActionInvoke();
+            foreach ( $this->listeners as $listener ) {
+                $listener->beforeActionInvoke();
             }
         }
 
@@ -176,8 +176,8 @@ class WebApplication implements IApplication {
     {
         //调用响应发送前生命周期监听器
         if ( !empty($this->listeners) ) {
-            foreach ( $this->listeners as $lisener ) {
-                $lisener->beforeSendResponse($this->actionInstance);
+            foreach ( $this->listeners as $listener ) {
+                $listener->beforeSendResponse($this->actionInstance);
             }
         }
 
@@ -186,8 +186,8 @@ class WebApplication implements IApplication {
 
         //调用响应发送后生命周期监听器
         if ( !empty($this->listeners) ) {
-            foreach ( $this->listeners as $lisener ) {
-                $lisener->afterSendResponse($this->actionInstance);
+            foreach ( $this->listeners as $listener ) {
+                $listener->afterSendResponse($this->actionInstance);
             }
         }
     }
