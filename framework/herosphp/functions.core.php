@@ -103,19 +103,9 @@ function timer() {
  * @param $url
  * @return string
  */
-function url( $url ) {
+function url($url) {
 
     $url = ltrim($url, '/');
-    $_url = \herosphp\http\HttpRequest::url2Target($url);
-    if ( $_url != $url ) {
-        $_url = rtrim($_url,'/');
-        return $_url;
-    }
-
-    $webApp = \herosphp\core\WebApplication::getInstance();
-    $sysConfig = $webApp->getConfigs();
-    $defaultUrl = $sysConfig['default_url'];
-    $actionMap = array();
     $args = '';
     $urlInfo = parse_url($url);
     if ( $urlInfo['path'] && $urlInfo['path'] != '/' ) {
@@ -139,28 +129,25 @@ function url( $url ) {
                     }
                 }
             }
+
+            if ( $urlInfo['query'] ) {
+                $query = preg_replace('/[&|=]/', '-', $urlInfo['query']);
+                if ( $query ) $args .= $args == '' ? $query : '-'.$query;
+            }
+
+            $newUrl = "/{$pathInfo[0]}/{$pathInfo[1]}/{$pathInfo[2]}";
+            if ( !empty($paramArr) ) {
+                $newUrl .= '/'.implode('-', $paramArr);
+            }
+            if ( trim($args) != '' ) $newUrl .= '/'.$args;
+            $newUrl .= EXT_URI;
+            $newUrl = rtrim($newUrl,'/');
+            return $newUrl;
+
         }
-
-        if ( $urlInfo['query'] ) {
-            $query = preg_replace('/[&|=]/', '-', $urlInfo['query']);
-            if ( $query ) $args .= $args == '' ? $query : '-'.$query;
-        }
-
     }
+    return $url;    //短链接
 
-    //如果没有任何参数，则访问默认页面。如http://www.herosphp.my这种格式
-    $actionMap[0] = $pathInfo[0] ? $pathInfo[0] :$defaultUrl['module'];
-    $actionMap[1] = $pathInfo[1] ? $pathInfo[1] :$defaultUrl['action'];
-    $actionMap[2] = $pathInfo[2] ? $pathInfo[2] :$defaultUrl['method'];
-
-    $newUrl = '/'.implode('/', $actionMap);
-    if ( !empty($paramArr) ) {
-        $newUrl .= '/'.implode('-', $paramArr);
-    }
-    if ( trim($args) != '' ) $newUrl .= '/'.$args;
-    $newUrl .= EXT_URI;
-    $newUrl = rtrim($newUrl,'/');
-    return $newUrl;
 }
 
 /**

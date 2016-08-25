@@ -71,15 +71,14 @@ class HttpRequest {
      */
     public function parseURL() {
 
-        $webApp = WebApplication::getInstance();    //获取系统配置信息
-        $sysConfig = $webApp->getConfigs();
+        $appConfigs = getConfigs(); //获取app配置
 
-        self::$urlMappingRules = $sysConfig['url_mapping_rules'];
+        self::$urlMappingRules = $appConfigs['url_mapping_rules'];
         //优先处理短链接映射
         $this->requestUri = self::url2source($this->requestUri);
         $_SERVER['REQUEST_URI'] = $this->requestUri;
 
-        $defaultUrl = $sysConfig['default_url'];
+        $defaultUrl = $appConfigs['default_url'];
         $urlInfo = parse_url($this->requestUri);
 
         if ( $urlInfo['path'] && $urlInfo['path'] != '/' ) {
@@ -138,26 +137,9 @@ class HttpRequest {
     public static function url2source($url) {
 
         $mappingRules = array();
-        foreach ( self::$urlMappingRules['target_to_source'] as $target => $source ) {
+        foreach ( self::$urlMappingRules as $target => $source ) {
             $mappingRules['/' . $target . '/iU'] = $source;
         }
-        return preg_replace(array_keys($mappingRules), $mappingRules, $url);
-
-    }
-
-    /**
-     * URL短链接的源链接到目标链接之间的转换
-     * @param $url
-     * @return mixed
-     */
-    public static function url2Target($url) {
-
-        $mappingRules = array();
-        foreach ( self::$urlMappingRules['source_to_target'] as $target => $source ) {
-            $mappingRules['/' . $target . '/iU'] = $source;
-        }
-        return preg_replace(array_keys($mappingRules), $mappingRules, $url);
-
         return preg_replace(array_keys($mappingRules), $mappingRules, $url);
 
     }

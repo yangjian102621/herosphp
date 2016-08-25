@@ -19,6 +19,7 @@ class DemoAction extends CommonAction {
     public function index(HttpRequest $request) {
         $this->setView("index");
         $this->assign("title", "欢迎使用Herosphp");
+        var_dump(DB_ACCESS_SINGLE);die();
     }
 
     //mysql模型测试

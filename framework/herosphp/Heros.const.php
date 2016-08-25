@@ -45,4 +45,3 @@ define('DB_ESCAPE', false); //是否开启sql语句自动转义
  */
 define('DB_ACCESS_SINGLE', 1);  //单台服务器访问模式
 define('DB_ACCESS_CLUSTERS', 2);  //数据库服务器集群调度访问模式
-define('DB_ACCESS', DB_ACCESS_SINGLE);  //默认使用单台数据库服务器
