@@ -5,6 +5,6 @@
  */
 return array(
 
-    'cache_dir'		=> APP_RUNTIME_PATH.'cache/'.APP_NAME.'/dynamic/', //缓存根目录
+    'cache_dir'		=> APP_RUNTIME_PATH.'filecache/'.APP_NAME.'/', //缓存根目录
 
 );
