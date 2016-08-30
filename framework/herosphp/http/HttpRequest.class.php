@@ -12,7 +12,6 @@
  *-----------------------------------------------------------------------*/
 namespace herosphp\http;
 
-use herosphp\core\WebApplication;
 
 class HttpRequest {
 
@@ -276,4 +275,3 @@ class HttpRequest {
     }
 
 }
-?>
