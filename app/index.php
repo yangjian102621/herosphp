@@ -14,6 +14,8 @@ header("Content-Type:text/html; charset=utf-8");
 
 // 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false
 define('APP_DEBUG', true);
+//是否记录错误日志，如果设置为true，则当关闭调试模式时系统会自动记录日志在runtime目录下
+define('ADD_LOGS', false);
 
 // 定义当前访问的应用
 define('APP_NAME', 'app');

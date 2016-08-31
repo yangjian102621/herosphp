@@ -189,4 +189,6 @@ namespace herosphp\model;
       * @return IModel
       */
      public function having($having); //设置分组条件
+
+     public function getDB(); //获取数据库操作对象
  }

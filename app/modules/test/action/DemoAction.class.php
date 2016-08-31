@@ -59,8 +59,8 @@ class DemoAction extends CommonAction {
 
         //C_Model::deletes(), C_Model::find
 //        $conditions = array(
-//            'name' => 'user_1',
-//            '$or' => array('name' => 'xiaoming', 'age' => '>20'),
+//            'age' => array('>' => 20, '<' => 30),
+//            '$or' => array('name' => 'xiaoming', 'age' => '>30'),
 //            'address' => '深圳'
 //        );
 //
@@ -182,8 +182,17 @@ class DemoAction extends CommonAction {
 //        $model->sets('name', "超级无敌美少女", $condition);
 //        __print($model->getItems($condition));
 
-        $conditions = array('name' => array('$like' => 'user_1'));
-        __print($model->getItems($conditions));
+//        $conditions = array('name' => array('$like' => 'user_1'));
+//        __print($model->getItems($conditions));
+
+
+        //分组查询
+        $keys = array("address" => 1);
+        $initial = array("items" => array());
+        $reduce = "function (obj, prev) { prev.items.push({id:obj.id, name:obj.name, age:obj.age}); }";
+        $conditions = array('age' => '>30');
+        $items = $model->findByGroup($keys, $initial, $reduce, $conditions);
+        __print($items);
 
 
         AjaxResult::ajaxSuccessResult();

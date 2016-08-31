@@ -49,7 +49,7 @@ class MongoQueryBuilder {
 
     /**
      * 处理排序
-     * @param $sort
+     * @param $sort 推荐格式 array('id' => -1, 'name' => 1)
      * @return array
      */
     public static function sort($sort) {
@@ -199,7 +199,7 @@ class MongoQueryBuilder {
                 continue;
             }
             if ( is_array($value) ) {
-                self::getFieldValue($value, $result[$key]);
+                self::replaceConditionOperation($value, $result[$key]);
             } else {
                 $result[$key] = $value;
             }

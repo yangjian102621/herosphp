@@ -86,14 +86,15 @@ class WebApplication implements IApplication {
         } catch(HeroException $e) {
             if ( APP_DEBUG ) { //如果是调试模式就抛出异常
                 throw $e;
-            } else {
+            } else if ( ADD_LOGS ) {
                 //否则记录日志
                 $logDir = APP_RUNTIME_PATH."logs/".APP_NAME."/";
 
                 if ( !file_exists($logDir) ) FileUtils::makeFileDirs($logDir);
                 file_put_contents($logDir.date("Y-m-d").".log", $e->toString(), FILE_APPEND);
-
                 return;
+            } else {
+                die("Hacker Attempt!");
             }
         }
 
@@ -117,8 +118,8 @@ class WebApplication implements IApplication {
     {
         //调用生命周期监听器
         if ( !empty($this->listeners) ) {
-            foreach ( $this->listeners as $lisener ) {
-                $lisener->beforeRequestInit();
+            foreach ( $this->listeners as $listener ) {
+                $listener->beforeRequestInit();
             }
         }
         $this->httpRequest = new HttpRequest();
@@ -132,8 +133,8 @@ class WebApplication implements IApplication {
     {
         //调用生命周期监听器
         if ( !empty($this->listeners) ) {
-            foreach ( $this->listeners as $lisener ) {
-                $lisener->beforeActionInvoke();
+            foreach ( $this->listeners as $listener ) {
+                $listener->beforeActionInvoke();
             }
         }
 
@@ -175,8 +176,8 @@ class WebApplication implements IApplication {
     {
         //调用响应发送前生命周期监听器
         if ( !empty($this->listeners) ) {
-            foreach ( $this->listeners as $lisener ) {
-                $lisener->beforeSendResponse($this->actionInstance);
+            foreach ( $this->listeners as $listener ) {
+                $listener->beforeSendResponse($this->actionInstance);
             }
         }
 
@@ -185,8 +186,8 @@ class WebApplication implements IApplication {
 
         //调用响应发送后生命周期监听器
         if ( !empty($this->listeners) ) {
-            foreach ( $this->listeners as $lisener ) {
-                $lisener->afterSendResponse($this->actionInstance);
+            foreach ( $this->listeners as $listener ) {
+                $listener->afterSendResponse($this->actionInstance);
             }
         }
     }

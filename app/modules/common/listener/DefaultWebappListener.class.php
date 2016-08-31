@@ -2,12 +2,8 @@
 
 namespace common\listener;
 
-use herosphp\bean\Beans;
-use herosphp\http\HttpRequest;
-use herosphp\session\Session;
 use herosphp\listener\IWebAplicationListener;
 use herosphp\listener\WebApplicationListenerMatcher;
-use herosphp\core\WebApplication;
 
 /**
  * 应用程序默认生命周期监听器
@@ -16,8 +12,40 @@ use herosphp\core\WebApplication;
  */
  class DefaultWebappListener extends WebApplicationListenerMatcher implements IWebAplicationListener {
 
-    public function beforeRequestInit() {}
+     /**
+      * 请求初始化之前
+      * @return mixed
+      */
+     public function beforeRequestInit()
+     {
+         // TODO: Implement beforeRequestInit() method.
+     }
 
-    public function beforeActionInvoke(){}
+     /**
+      * action 方法调用之前
+      * @return mixed
+      */
+     public function beforeActionInvoke()
+     {
+         // TODO: Implement beforeActionInvoke() method.
+     }
+
+     /**
+      * 响应发送之前
+      * @return mixed
+      */
+     public function beforeSendResponse($actionInstance)
+     {
+         // TODO: Implement beforeSendResponse() method.
+     }
+
+     /**
+      * 响应发送之后
+      * @return mixed
+      */
+     public function afterSendResponse($actionInstance)
+     {
+         // TODO: Implement afterSendResponse() method.
+     }
 
 }
