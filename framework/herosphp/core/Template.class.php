@@ -79,7 +79,7 @@ class Template {
          * {expr}标签：输出php表达式
          * {url}标签：输出格式化的url
          * {date}标签：根据时间戳输出格式化日期
-         * {cut}标签：裁剪字指定长度的字符串,注意截取的格式是UTF-8
+         * {cut}标签：裁剪字指定长度的字符串,注意截取的格式是UTF-8,多余的字符会用...表示
          */
         '/{run\s+(.*?)}/i'   => '<?php ${1} ?>',
         '/{expr\s+(.*?)}/i'   => '<?php echo ${1} ?>',
@@ -106,7 +106,7 @@ class Template {
         /**
          * 引入静态资源 css file,javascript file
          */
-        '/{(res|gres|cres):([a-z]{1,})\s+([^\}]+)\s*}/i'
+        '/{(res|cres):([a-z]{1,})\s+([^\}]+)\s*}/i'
 							=> '<?php echo $this->importResource(\'${1}\', \'${2}\', \'${3}\')?>'
 	);
 
