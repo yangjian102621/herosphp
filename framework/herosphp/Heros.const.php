@@ -29,6 +29,7 @@ define('IMPORT_CUSTOM', 4); //加载自定义路径中的class文件
 //采用import加载文件的后缀名常量
 define('EXT_PHP', '.class.php');   //加载php class文件
 define('EXT_MODEL', '.model.php');   //加载model文件
+define('EXT_CONFIG', '.config.php');   //加载配置文件
 define('EXT_HTML', '.html');    //加载html文件
 
 define('EXT_TPL', '.html');     //模板文件后缀

@@ -142,7 +142,7 @@ class Loader {
         }
 
         if ( $key != '*' ) {
-            $configFile = $configDir.$key.'.config.php';
+            $configFile = $configDir.$key.EXT_CONFIG;
             if ( file_exists($configFile) ) {
                 self::$CONFIGS[$section][$key] = include $configFile;
             }
