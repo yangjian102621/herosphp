@@ -48,9 +48,9 @@ namespace herosphp\model;
      /**
       * 获取数据列表
       * @param array $conditions
-      * @param $fields
-      * @param $order
-      * @param $limit
+      * @param array $fields
+      * @param array $order
+      * @param array $limit
       * @param $group
       * @param $having
       * @return mixed

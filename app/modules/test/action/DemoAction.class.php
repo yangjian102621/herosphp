@@ -4,6 +4,7 @@ namespace test\action;
 use common\action\CommonAction;
 use herosphp\bean\Beans;
 use herosphp\core\Loader;
+use herosphp\db\mysql\MysqlQueryBuilder;
 use herosphp\http\HttpRequest;
 use herosphp\string\StringUtils;
 use herosphp\utils\AjaxResult;
@@ -19,6 +20,10 @@ class DemoAction extends CommonAction {
     public function index(HttpRequest $request) {
         $this->setView("index");
         $this->assign("title", "欢迎使用Herosphp");
+
+        $conditions = array('name' => 'xiaoming', '#address' => 'shenzhen');
+        $builder = MysqlQueryBuilder::buildConditions($conditions);
+        die($builder);
     }
 
     //mysql模型测试
@@ -26,16 +31,16 @@ class DemoAction extends CommonAction {
 
         $model = Loader::model("user");
         //添加数据 C_Model::insert();
-//        $address = array('东莞','深圳','广州','北京','上海','杭州');
-//        for ( $i = 0; $i < 100; $i++ ) {
-//            $data = array(
-//                "id" => StringUtils::genGlobalUid(true),
-//                "name" => "user_{$i}",
-//                "age" => $i,
-//                "address" => $address[mt_rand(0,5)]);
-//
-//            var_dump($model->insert($data));
-//        }
+        $address = array('东莞','深圳','广州','北京','上海','杭州');
+        for ( $i = 0; $i < 100; $i++ ) {
+            $data = array(
+                "id" => StringUtils::genGlobalUid(true),
+                "name" => "user_{$i}",
+                "age" => $i,
+                "address" => $address[mt_rand(0,5)]);
+
+            var_dump($model->insert($data));
+        }
 
         //C_Model::query();
 //        $list = $model->query("select * from fiidee_user order by id desc limit 20");
@@ -75,13 +80,13 @@ class DemoAction extends CommonAction {
 //            ->find();
 
         //C_Model::update
-//        $data = array(
-//            'name' => 'xiaoming',
-//            'age' => 30,
-//            'address' => '我爱北京天安门'
-//        );
-//        $conditions = array('id' => 'B21A-57B30872-01655B98-538F-FBED5277');
-//        $model->updates($data, $conditions);
+        $data = array(
+            'name' => 'xiaoming',
+            'age' => 30,
+            'address' => '我爱北京天安门'
+        );
+        $conditions = array('id' => 'B21A-57B30872-01655B98-538F-FBED5277');
+        $model->updates($data, $conditions);
 //        __print($model->where($conditions)->findOne());
 
         //C_Model::count

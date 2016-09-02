@@ -12,8 +12,6 @@ namespace herosphp\db\mongo;
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
-use herosphp\exception\UnSupportedOperationException;
-
 class MongoQueryBuilder {
 
     /**

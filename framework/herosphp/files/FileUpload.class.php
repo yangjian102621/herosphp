@@ -69,7 +69,8 @@ class FileUpload {
         '6'		=> 	'上传目录创建失败',
         '7'		=> 	'文件保存时出错',
         '8'		=> 	'base64解码IO错误',
-        '9'		=> 	'文件尺寸超出了限制'
+        '9'		=> 	'文件尺寸超出了限制',
+        '10'		=> 	'文件没有上传到服务器',
 	);
 
     /**
@@ -104,6 +105,10 @@ class FileUpload {
 		}
 
 		$_localFile = $_FILES[$_field]['name'];
+        if ( !$_localFile ) {
+            $this->errNum = 10;
+            return false;
+        }
 		$_tempFile = $_FILES[$_field]['tmp_name'];//原来是这样
         //$_tempFile = str_replace('\\\\', '\\', $_FILES[$_field]['tmp_name']);//MAGIC_QUOTES_GPC=OFF时，做了这样处理：$_FILES = daddslashes($_FILES);图片上传后tmp_name值变成 X:\\Temp\\php668E.tmp，结果move_uploaded_file() 函数判断为不合法的文件而返回FALSE。
 		$_error_no = $_FILES[$_field]['error'];
@@ -234,7 +239,7 @@ class FileUpload {
         if ( $this->config['allow_ext'] == '*' ) {
             return true;
         }
-		$_ext = self::getFileExt($filename);
+		$_ext = strtolower(self::getFileExt($filename));
         $_allow_ext = explode("|", $this->config['allow_ext']);
 		if ( !in_array($_ext, $_allow_ext) ) {
 			$this->errNum = 5;

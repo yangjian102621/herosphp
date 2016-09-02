@@ -1,120 +1,37 @@
-{include common.inc_header}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>文件上传</title>
 
-<section>
-    <!-- left side start-->
-	{include common.inc_left}
-    <!-- left side end-->
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
 
-    <!-- main content start-->
-    <div class="main-content" >
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+	<script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body>
 
-        <!-- header section start-->
-        {include common.inc_top}
-        <!-- header section end-->
+<div class="container rows">
 
-        <!-- page breadcrumb start-->
-        {include common.inc_bread}
-        <!-- page "breadcrumb end-->
+	<form role="form" action="/test/upload/upload" enctype="multipart/form-data" method="post">
+		<div class="form-group">
+			<label for="exampleInputFile">文件上传</label>
+			<input type="file" id="exampleInputFile" name="src">
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
 
-        <!--body wrapper start-->
-        <div class="wrapper">
-
-			<h3>HTML5仿百度UI上传</h3>
-			<div class="container row">
-				<button class="btn btn-lg btn-primary" id="bupload-btn">上传图片</button>
-			</div>
-			<ul class="container row clearfix" id="image-list-1"></ul>
-
-			<h3>HTML5仿腾讯QQ空间UI上传</h3>
-			<div class="container row">
-				<button class="btn btn-lg btn-primary" id="tupload-btn">上传图片</button>
-			</div>
-			<ul class="container row clearfix" id="image-list-2"></ul>
-
-			<h3>iframe上传多张图片</h3>
-			<div class="container row">
-				<button class="btn btn-lg btn-primary" id="upload-btn">上传图片</button>
-			</div>
-			<ul class="container row clearfix" id="image-list-3"></ul>
-
-			<h3>iframe上传1张图片</h3>
-			<div class="container row">
-				<div class="col-md-5"><input type="text" class="form-control" id="img-src"></div>
-				<div class="col-md-2"><button class="btn btn-primary" id="upload-btn2">上传图片</button></div>
-			</div>
-
-        </div>
-        <!--body wrapper end-->
-
-        <!--footer section start-->
-        {include common.inc_footer}
-        <!--footer section end-->
-
-
-    </div>
-    <!-- main content end-->
-</section>
-
-{include common.inc_script}
-
-<script>
-
-	$(document).ready(function(){
-
-		//百度上传
-		$("#bupload-btn").on("click", function() {
-			JDialog.lock.work();
-			new BUpload({
-				upload_url : "{url common/demo/doUpload}",
-				list_url : "{url common/demo/imageList}",	//图片列表数据获取url
-				search_url : "{url common/demo/imageSearch}",	//图片搜索页面url
-				max_filesize : 1024,
-				max_filenum : 20,
-				callback : function(data) {
-					$.each(data, function(idx, item) {
-						$("#image-list-1").append('<img src="'+item+'" class="img-thumbnail" width="150"/>');
-					});
-					console.log(data);
-				}
-			});
-		});
-
-		//腾讯上传
-		$("#tupload-btn").on("click", function() {
-			JDialog.lock.work();
-			new TUpload({
-				uploadUrl : "{url common/demo/doUpload}",
-				maxFileSize : 1024,
-				maxFileNum : 20,
-				zIndex : 99999,
-				callback : function(data) {
-					console.log(data);
-					$.each(data, function(idx, item) {
-						$("#image-list-2").append('<img src="'+item+'" class="img-thumbnail" width="150"/>');
-					});
-					console.log(data);
-				}
-			});
-		});
-
-		//iframe上传1
-		$("#upload-btn").JUpload({
-			url : "{url common/demo/doUpload}",
-			src : "src",
-			image_container : "image-list-3"
-		});
-
-		//iframe上传2
-		$("#upload-btn2").JUpload({
-			url : "{url common/demo/doUpload}",
-			src : "src",
-			callback : function(data) {
-				$("#img-src").val(data.message);
-			}
-		});
-	});
-
-</script>
-
+</div>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
 </body>
 </html>

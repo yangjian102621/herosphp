@@ -2,8 +2,8 @@
 namespace test\action;
 
 use herosphp\core\Controller;
+use herosphp\files\FileUpload;
 use herosphp\http\HttpRequest;
-use herosphp\utils\FileUpload;
 
 /**
  * 文件上传测试
@@ -17,7 +17,7 @@ class UploadAction extends Controller {
      */
     public function index( HttpRequest $request ) {
 
-        $this->display('upload_index');
+        $this->setView('upload');
 
     }
 
@@ -36,7 +36,7 @@ class UploadAction extends Controller {
             //图片的最大高度, 0没有限制
             'max_height' => 0,
             //文件的最大尺寸
-            'max_size' =>  1024000,     /* 文件size的最大 1MB */
+            'max_size' =>  10024000,     /* 文件size的最大 1MB */
         );
         $upload = new FileUpload($config);
         $result = $upload->upload('src');
