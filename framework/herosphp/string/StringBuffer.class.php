@@ -44,6 +44,11 @@ class StringBuffer {
     }
 
     public function toString() {
+        foreach ($this->strMap as $key => $value) {
+            if ( is_array($value) ) {
+                $this->strMap[$key] = implode("", $value);
+            }
+        }
         return implode("", $this->strMap);
     }
 

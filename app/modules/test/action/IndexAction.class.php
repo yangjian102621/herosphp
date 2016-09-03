@@ -7,6 +7,7 @@ use herosphp\core\Debug;
 use herosphp\core\WebApplication;
 use herosphp\db\entity\MysqlEntity;
 use herosphp\http\HttpRequest;
+use herosphp\string\StringBuffer;
 use herosphp\utils\AjaxResult;
 use herosphp\web\WebUtils;
 use Workerman\Worker;
@@ -23,7 +24,14 @@ class IndexAction extends Controller {
      * @param HttpRequest $request
      */
     public function index( HttpRequest $request ) {
-
+        $sb = new StringBuffer("<?php\n");
+        $sb->appendLine('namespace app\\action');
+        $sb->appendLine('class StringBuffer {');
+        $sb->appendTab('public function __construct($str);', 1);
+        $sb->appendTab('public function isEmpty();', 1);
+        $sb->appendLine("}");
+        echo $sb->toString();
+        die('xxxxxxx');
     }
 
     //获取用户列表
