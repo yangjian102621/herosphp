@@ -21,10 +21,9 @@ class StringUtils {
     /**
      * 生成一个32位唯一分布式UUID,根据机器不同生成
      * @param bool $forceUnique 是否强制唯一性，这样性能会低一些，但是可以保证绝对唯一
-     * @param string $delimiter 分隔符
      * @return mixed
      */
-    public static function genGlobalUid($forceUnique=false, $delimiter='-') {
+    public static function genGlobalUid($forceUnique=false) {
 
         //生成前4位，通过服务器节点避免不同服务器分布式的同步执行造成同步
         $prefix = null;
@@ -50,15 +49,15 @@ class StringUtils {
 
         if ( $forceUnique ) $lock->unlock();
 
-        return strtoupper(sprintf(
-            "%0s{$delimiter}%08x{$delimiter}%08x{$delimiter}%04x{$delimiter}%04x%04x",
+        return sprintf(
+            "%0s%08x%08x%04x%04x%04x",
             $prefix,
             $tsec,
             $msec,
             mt_rand(0, 0xffff), //增加随机性，减少重复
             mt_rand(0, 0xffff),
             mt_rand(0, 0xffff)
-        ));
+        );
     }
 
     /**

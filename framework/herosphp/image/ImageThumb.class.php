@@ -324,7 +324,7 @@ class ImageThumb {
     /**
      * @return int
      */
-    public function getFlag()
+    protected function getFlag()
     {
         return $this->flag;
     }

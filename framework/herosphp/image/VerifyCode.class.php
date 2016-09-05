@@ -40,7 +40,7 @@ class VerifyCode {
 	/**
 	 * get the instance of the VerifyCode.
 	 *
-	 * @return	\herosphp\utils\VerifyCode
+	 * @return	\herosphp\image\VerifyCode
 	*/
 	public static function getInstance() {
 		if ( ! (self::$_instance instanceof self) ) {
@@ -105,7 +105,7 @@ class VerifyCode {
             case 4: $_color = imagecolorallocate($this->_image, 238, 175, 7);	break;	//orange
 		}
 		//$_color = imagecolorallocate($this->_image, 238, 175, 7);
-		$_font = __DIR__ . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR . 'ariblk.ttf';
+		$_font = __DIR__ . '/fonts/ariblk.ttf';
 		//$_angle = (mt_rand() & 0x01) == 0 ? mt_rand() % 30 : - mt_rand() % 30;
 		
 		//draw the code chars
