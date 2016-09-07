@@ -13,7 +13,10 @@ HerosPHP是一个轻量级PHP web 程序开发框架。作者开发这个框架�
 在作者学习java的Web程序开发之后立即将java的一些开发模式和设计思想引入了herosphp框架，对框架进行了一次内核的重构，将框架升级到了2.0，herosphp2.0版本对开发大中型的系统提供了很多便利。引入Beans的开发模式，具体解释清看版本更新日志
 
 #项目地址
-* git1 https://git.oschina.net/blackfox/herosphp.git
+* git1 https://git.oschina.net/blackfox/herosphp.git 
+
+#开发手册
+http://docs.r9it.com/herosphp/
 
 #版本更新记录
 @3.0.0
