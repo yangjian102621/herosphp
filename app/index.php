@@ -18,7 +18,7 @@ define('APP_DEBUG', true);
 define('ADD_LOGS', false);
 
 // 定义当前访问的应用
-define('APP_NAME', 'app');
+define('APP_NAME', basename(__DIR__));
 
 // 定义系统根目录
 define('APP_ROOT', dirname(__DIR__) . '/');
