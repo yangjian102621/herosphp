@@ -1,227 +1,43 @@
->HerosPHP高性能php开发框架<br />
-@author 阳建 yangjian102621@163.com <br />
-@since 2014-05-13
+为什么要造这个轮子？
+====
+"PHP是世界上最好的变成语言，没有之一。"这句话虽然是一个梗但是他却代表了php这门语言在编程语言中的江湖地位。那既然是最好的语言，那么免不了就会出现各种各样的框架啦，包括php官方的zendframe, Laravel,Yii,包括国产的thinkPHP,ci等框架。那既然有这么多框架，为什么我们还要造这个轮子呢。原因有以下几点：
 
-HerosPHP是一个轻量级PHP web 程序开发框架。作者开发这个框架的初衷是想作为一个学习型的框架给那些想深入了解框架并想自己开发框架的phper借鉴用的，也可以作为中小型网站的开发提高效率。她有如下特点 
+1. 最初是基于教学的目的，想作为一个学习型的框架给那些想开发自己的php框架的码农借鉴使用，抛砖引玉。
+2. 目前开源的php框架总有这样或者那样的缺陷，使着不顺手，要么就过于重量级，像zendframe,thinkPHP那样太过于臃肿，学习成本太高，要么就是扩展性和或性能达不到要求，使用起来也很不方便。
+3. 想把自己学习到的php编程知识做下沉淀，那最好的方法莫过于写php开发框架了。
+4. 目前的开源框架都是为了兼容高中低端各种用户而牺牲了框架本身的性能和特性，这显然没有办法完全满足公司的全部需求，而修改像thinkPHP这种大型框架是一件很痛苦的事情，跟自己开发的成本差不多。这估计也是很多大点的公司都有自己的框架的原因了。
 
-1. 部署简单，高开发效率并且高性能
-2. 框架的原理简单易懂，容易学习
-3. 在保持约定大于配置的原则下又保持着很好的扩展性
-4. 代码风格简洁漂亮，程序精简高效，但是注释详细，适合新手学习
+------------------
 
-<br/>
-在作者学习java的Web程序开发之后立即将java的一些开发模式和设计思想引入了herosphp框架，对框架进行了一次内核的重构，将框架升级到了2.0，herosphp2.0版本对开发大中型的系统提供了很多便利。引入Beans的开发模式，具体解释清看版本更新日志
+HerosPHP的设计思想
+====
+HerosPHP是一套web应用开发框架，我们觉得好开发框架应该是<strong>方便，快捷，优雅，干净</strong>的，这也是我们一直在用心做的事情。我们希望框架既能封装良好，是开发者使用方便，但又不损失框架性能，既能快速搭建系统又能保持良好的扩展性。
 
-#项目地址
-* git1 https://git.oschina.net/blackfox/herosphp.git 
+> 作为一群有逼格的码农，我们目标是开发能够应对<code class="scode">百万级pv</code>的系统框架，并且能够支持多应用。
 
-#开发手册
+我们严格遵循约定优于配置的设计原则，能有约定就不提供配置，比如对一些你几乎不会配置的可配置选项，我们都会屏蔽配置接口，按照约定的方式执行，尤其是是3.0.0之后，这个原则会更加明显。配置太多只会是系统越来越臃肿，执行效率越来越低。
+
+我们始终坚持<strong>一个问题只保留一种你能够实现的最优解决方案即可</strong>，所以我们屏蔽了一些不规范的编码习惯，比如说mysql的查询条件几乎所有的框架都兼容了直接写条件的sql语句去查询，但是在herosphp中，对不起，你只能使用我们提供的数组查询语法，这样的设计是第一是为了使代码可读性更高，调理清晰。二是为了兼容mongodb和elasticsearch的查询语法，使得代码更健壮。当然这个见仁见智，认同点赞，不喜勿喷。这里只是举个栗子而已，具体设计请阅读<code class="scode">查询语法</code>。当然，框架里面短期内还是会兼容部分的老的API，但是我们强烈推荐使用新的API。
+
+像其他框架一样，我们也会提供cache（缓存），filter（数据过滤），files（文件处理），session（会话）等开发过程中常用的工具的功能，跟其他框架不一样的是，我们还提供了类似beans的模块，借鉴java中spring框架的模式实现服务资源的托管...
+
+
+GitHub 源码地址
+====
+http://git.oschina.net/blackfox/herosphp
+
+开发手册
+========
 http://docs.r9it.com/herosphp/
 
-#版本更新记录
-@3.0.0
-------
-> 进行了大版本的重构，主要是项目结构
+联系作者
+=====
+邮箱：<a href="mailto:yangjian102621@gmail.com">yangjian102621@gmail.com</a>
 
-1. 将应用和框架进一步完全拆分，包括所有的configs(配置文件)全部移动到app文件夹，包括index.php, client.php,用户只需要关注app文件夹里面的内容就好了，而不需要再去关注
-框架里面的内容<br />
-2. 更新了framework的文件结构，将utils里面的一些类进行了细分，新增files，image，web等文件夹，比如FileUtils, FileUpload等类文件放入files包。<br />
-3. 重构了framework的model层，重写C_Model#getItems, getItem方法等，使用传入将所有的参数通过传入数组类型的作为查询条件，为后期兼容mongodb和elasticsearch查询语法做准备。
-4. 添加了mongodb数据模型的实现MongoModel, 通过继承MongoModel模型来实现对mongodb的操作
-4. 在framework中新增了lock包，实现了同步锁的功能，通过锁工厂SynLockFactory::getFileSynLock和SynLockFactory::getSemSynLock方法获取。
-5. 在StringUtils中实现了分布式UUID的生成。调用StringUtils::genGlobalUid()获取。
-6. 修复数据模型过滤器Filter的sql单引号转义bug
-6. 分别给cache模块和session模块添加了redis实现（实现了redis缓存和redis session）
-7. 优化流程，在WebApplication中添加AppError对象属性，用来处理整个生命周期中的错误信息，在整个生命周期都可以使用
-WebApplication::getInstance()->getAppError()->setMessage(),getMessage(), getCode(), setCode()来操作错误信息和错误代码
-8. 优化filter的报错信息处理，可以分别配置非空，数据长度，数据类型的报错信息。
+QQ：906388445
 
-过滤器Filter的使用
--------
-#### 1. 在Model中添加以下代码，配置过滤器和报错信息
-```php
-$filterMap = array(
-        'name' => array(Filter::DFILTER_STRING, array(6, 12), Filter::DFILTER_SANITIZE_TRIM,
-            array("require" => "名字不能为空.", "length" => "名字长度必需在6-12之间.")),
-        'email' => array(Filter::DFILTER_EMAIL, NULL, NULL,
-            array("type" => "请输入正确的邮箱地址.")),
-        'mobile' => array(Filter::DFILTER_MOBILE, NULL, NULL,
-            array("type" => "请输入正确的手机号码.")),
-        'id_number' => array(Filter::DFILTER_IDENTIRY, NULL, NULL,
-            array('type' => '请输入正确的身份证号码.')),
-        'content' => array(Filter::DFILTER_STRING, NULL, Filter::DFILTER_MAGIC_QUOTES|Filter::DFILTER_SANITIZE_HTML,
-            array("require" => "个人简介不能为空."))
-    );
+博客 : <a href="http://r9it.com/">小一辈无产阶级码农</a>
 
-    $this->setFilterMap($filterMap);
-```
-##### 具体配置参数的含义请参照herosphp\filter\Filter类, 主要分三部分，数据类型，数据长度，数据净化。
-```php
-	//数据类型
-    const DFILTER_LATIN = 1;  //简单字符
-    const DFILTER_URL = 2;    //url
-    const DFILTER_EMAIL = 4;    //email
-    const DFILTER_NUMERIC = 8;    //数字
-    const DFILTER_STRING = 16;    //字符串
-    const DFILTER_MOBILE = 32;    //手机号码
-    const DFILTER_TEL = 64;    //电话号码
-    const DFILTER_IDENTIRY = 128;    //身份证
-    const DFILTER_REGEXP = 256;    //正则表达式
-	const DFILTER_ZIP = 1024;    //邮编
-
-    //数据的净化
-    const DFILTER_SANITIZE_TRIM = 1;    //去空格
-    const DFILTER_SANITIZE_SCRIPT = 2;    //去除javascript脚本
-    const DFILTER_SANITIZE_HTML = 4;    //去除html标签
-    const DFILTER_MAGIC_QUOTES = 8;    //去除sql注入
-    const DFILTER_SANITIZE_INT = 16;    //转整数
-    const DFILTER_SANITIZE_FLOAT = 32;    //转浮点数
-```
-
-
-
-version 2.1.1
-------
-* 修复一些已知的bug；
-
-*  去掉phpunit支持；
-
-*  新增gmodel自动构建的基础功能，根据用户编写的xml文档自动创建数据库，数据表，索引，Model, Dao, Service，以及Controller；
-
-*  集成了前端框架bootstrap的一个优秀的后台模板，并抽离了一些不常用的插件，使其轻量化。
-
-gmodel使用
------
-#####1. 新建app/xml/{module}.xml, 其中{module}表示模块
-```xml
-<root dbhost="localhost" dbuser="root" dbpass="123456" dbname="herosphpTest" charset="utf8"
-      table-prefix="fiidee_" author="yangjian" module="user" email="yangjian102621@gmail.com">
-
-  <!-- table config -->
-  <table name="user" comment="用户表" engine="InnoDB" action-name="user">
-    <pk name="id" type="int(11)" ai="true" />
-
-    <fields>
-      <field name="username" type="varchar(32)" default="" comment="用户名" add-index="true" index-type="unique" />
-      <field name="password" type="varchar(32)" default="" comment="密码" />
-      <field name="sex" type="char(1)" default="" comment="性别" />
-      <field name="addtime" type="timestamp" default="CURRENT_TIMESTAMP" comment="添加时间" />
-    </fields>
-
-  </table>
-
-  <table name="news" comment="新闻表" engine="InnoDB" action-name="news">
-    <pk name="id" type="int(11)" ai="true" />
-
-    <fields>
-      <field name="title" type="varchar(100)" default="" comment="标题" add-index="true" index-type="normal" />
-      <field name="bcontent" type="varchar(255)" default="" comment="描述" />
-      <field name="addtime" type="tinyint(2)" comment="添加时间" />
-    </fields>
-  </table>
-
-  <table name="admin" comment="管理员表" engine="InnoDB" action-name="admin">
-    <pk name="id" type="int(11)" ai="true" />
-
-    <fields>
-      <field name="user" type="varchar(32)" default="" comment="用户名" add-index="true" index-type="unique" />
-      <field name="pass" type="varchar(32)" default="" comment="密码" />
-      <field name="role_id" type="tinyint(4)" default="0" comment="角色ID" />
-      <field name="addtime" type="timestamp" comment="添加时间" />
-      <field name="edittime" type="timestamp" comment="更新时间" />
-    </fields>
-  </table>
-
-  <!-- service config -->
-  <!-- Attention: when a service depends more than one models, the main model should be the first model,
-  for example model="user,news,admin", 'user' is the main model. -->
-  <service-config>
-    <service name="UserService" dao="UserDao" model="user,news,admin" />
-    <service name="NewsService" dao="NewsDao" model="news" />
-    <service name="AdminService" dao="AdminDao" model="admin" />
-  </service-config>
-</root>
-```
-#####2. 在框架根目录执行
-```shell
-php client.php gmodel user table
-```
-其中 user 表示{module}, 模块名称，也就是xml文件名， table 表示生成数据表，具体对应如下
-* table => 生成数据表
-* model => 生成model层
-* dao   => 生成dao层
-* service => 生成服务层
-* controller => 生成控制器
-* --all => 生成全部
-
-###对，就是这么简单！
-******
 <br />
-version 2.1.1
---
-
-* composer.json中加入了workerman 和phpoffice 插件
-
-*  添加phpunit支持
-
-*  修复分页类url传参bug，支持常规传参和伪静态传参
-
-*  修复getConfig()函数在使用命令行调用时获取不到配置的bug
-
-*  新增异常捕获，当关闭debug模式时，如果系统在运行的过程中抛出异常会自动记录到错误日志/runtime/app下
-
-*  更改过滤器，新增浮点型的数据过滤
-
-*  更新控制器中的 setView() 方法，添加支持设置其他模块的试图模块,更新异常处理函数 E()， 直接抛出异常，不用die掉
-
-
-version 2.1.0
---
-
-* 根据网友的建议，又重新调整了URL结构，把/user_home_index/userid-100.shtml 重新还原成 /user/home/index/userid-100.shtml结构，更符合大家的使用习惯
-
-*  精简了首页代码
-
-*  修改了url全局函数，修复了部分url解析参数错误的bug 
-
-*  更改了框架的autoload函数实现， 采用了spl_autoload_register方式实现 
-
-*  新增composer依赖管理支持
-
-*  调整了组织目录结构，使app更加扁平化，模块更加独立，利于拆装。app根目录下只有configs(配置), models(数据模型)，modules（模块），支持多app，app之间相互独立，但是共享framework。
-
-
-version 2.0.0
---
-
-<strong>对框架进行了局部重构</strong>
-
-* 调整了URL结构，采用 /user_home_index/userid-100.shtml 代替了以前的 /user/home/index/userid-100.shtml结构，减少了目录级数，对SEO更为友好
-
-*  新增了WebApplication 层来控制整个web请求的生命周期，控制器中的每个功能方法都需要传入HttpRequest对象
-
-*  在根目录下新增了client.php 和 client 目录， 方便执行php的客户端程序。 使用方法详情见操作手册
-
-*  新增Beans对象管理工具，可以很方便的配置和管理服务。
-
-*  修改了ImageThumb 类，新增了图片裁剪方法。
-
-*  修改了数据操作模块，新增了对数据库集群的支持，只需要在herosp.const.php中配置 将DB_ACCESS的值改成B_ACCESS_CLUSTERS
-
-*  在utils中新增了邮件发送服务类 Smtp.class.php
-
-*  重写了session， 新增了memcache介质存储
-
-*  修复了文章列表页分页数据重复bug
-
-version 1.0.0
---
-<strong>实现了框架的基本功能</strong>
-
-* 实现URL解析
-
-*  实现数据DB层的操作
-
-*  实现MVC设计模式
-
-*  完成基本工具类，如果文件上传，图片裁剪，生成缩略图，文件处理等
+<br />
+<
