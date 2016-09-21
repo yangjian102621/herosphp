@@ -1,32 +1,13 @@
-/**
-custom styles
-*/
-.navbar-inverse {
-  background-color: #24282F; }
-  .navbar-inverse .navbar-collapse {
-    background-color: #24282F; }
-  .navbar-inverse .dropdown-menu.user > li > a {
-    padding-top: 8px;
-    padding-bottom: 8px; }
-
-body {
-  background-color: #333943; }
-  body .content-body {
-    padding: 0; }
-
-.main {
-  padding: 50px 0px 0px 0px;
-  width: 100%; }
-  .main .left-section {
-    max-width: 250px; }
-  .main .right-section {
-    padding: 0; }
-    .main .right-section .breadcrumb {
-      background-color: #D4D4D4;
-      border-radius: 0;
-      line-height: 2; }
-      .main .right-section .breadcrumb .glyphicon-chevron-right {
-        font-size: 10px;
-        font-weight: 200; }
+.inner-iframe .breadcrumb {
+  background-color: #D4D4D4;
+  border-radius: 0;
+  line-height: 2; }
+  .inner-iframe .breadcrumb .glyphicon-chevron-right {
+    font-size: 10px;
+    font-weight: 200; }
+.inner-iframe .inner-container {
+  padding: 10px 20px; }
+  .inner-iframe .inner-container .content-add-form {
+    max-width: 800px; }
 
 /*# sourceMappingURL=style.css.map */

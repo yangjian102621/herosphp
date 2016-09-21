@@ -1,44 +1,22 @@
 //reset css
+.inner-iframe {
+	.breadcrumb {
+		background-color: #D4D4D4;
+		border-radius:0;
+		line-height: 2;
 
-/**
-custom styles
-*/
-.navbar-inverse {
-	.navbar-collapse {
-		background-color: #24282F;
-	}
-	background-color: #24282F;
-
-	.dropdown-menu.user > li > a {
-		padding-top: 8px;
-		padding-bottom: 8px;
-	}
-}
-body {
-	background-color: #333943;
-	.content-body {
-		padding: 0;
-	}
-}
-.main {
-	padding: 50px 0px 0px 0px;
-	width: 100%;
-
-	.left-section {
-		max-width: 250px;
-	}
-
-	.right-section {
-		.breadcrumb {
-			background-color: #D4D4D4;
-			border-radius:0;
-			line-height: 2;
-
-			.glyphicon-chevron-right {
-				font-size: 10px;
-				font-weight: 200;
-			}
+		.glyphicon-chevron-right {
+			font-size: 10px;
+			font-weight: 200;
 		}
-		padding: 0;
+	}
+
+	.inner-container {
+		padding: 10px 20px;
+
+		.content-add-form {
+			max-width: 800px;
+		}
 	}
 }
+
