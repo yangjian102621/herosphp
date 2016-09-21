@@ -14,7 +14,7 @@
 	<!-- Bootstrap core CSS -->
 	{res:css bootstrap.min.css}
 	<!-- Custom styles for this template -->
-	{res:css style.css}
+	{res:css index.css}
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -47,48 +47,83 @@
 
 <div class="container-fluid content-body">
 	<div class="main">
-		<section class="left-section col-sm-3" id="left-section">
-			<ul class="nav nav-stacked">
-				<li><a href="index.html"><i class="fa fa-home"></i> <span>Dashboard</span></a></li>
-				<li class="nav-parent"><a href=""><i class="fa fa-edit"></i> <span>Forms</span></a>
+		<section class="left-section">
+			<ul class="nav">
+				<li class="nav-parent">
+					<a href="javascript:void(0);">
+						<i class="glyphicon glyphicon-home"></i> <span>表单元素</span>
+						<i class="pull-right glyphicon glyphicon-plus"></i>
+					</a>
 					<ul class="children">
-						<li><a href="general-forms.html"><i class="fa fa-caret-right"></i> General Forms</a></li>
-						<li><a href="form-layouts.html"><i class="fa fa-caret-right"></i> Form Layouts</a></li>
-						<li><a href="form-validation.html"><i class="fa fa-caret-right"></i> Form Validation</a></li>
-						<li><a href="form-wizards.html"><i class="fa fa-caret-right"></i> Form Wizards</a></li>
-						<li><a href="wysiwyg.html"><i class="fa fa-caret-right"></i> Text Editor</a></li>
-						<li><a href="code-editor.html"><i class="fa fa-caret-right"></i> Code Editor</a></li>
-						<li><a href="x-editable.html"><i class="fa fa-caret-right"></i> X-Editable</a></li>
+						<li><a href="/admin/index/form" target="content_iframe"><i class="glyphicon glyphicon-record"></i> 基本元素</a></li>
+						<li><a href="form-layouts.html"><i class="glyphicon glyphicon-record"></i> 搜索框</a></li>
+						<li><a href="form-validation.html"><i class="glyphicon glyphicon-record"></i> 编辑器</a></li>
+						<li><a href="x-editable.html"><i class="glyphicon glyphicon-record"></i> 其他页面</a></li>
 					</ul>
+
 				</li>
 
+				<li class="nav-parent">
+					<a href="javascript:void(0);">
+						<i class="glyphicon glyphicon-cog"></i> <span>网站设置</span>
+						<i class="pull-right glyphicon glyphicon-plus"></i>
+					</a>
+					<ul class="children">
+						<li><a href="general-forms.html"><i class="glyphicon glyphicon-record"></i> General Forms</a></li>
+						<li><a href="form-layouts.html"><i class="glyphicon glyphicon-record"></i> Form Layouts</a></li>
+						<li><a href="form-validation.html"><i class="glyphicon glyphicon-record"></i> Form Validation</a></li>
+						<li><a href="x-editable.html"><i class="glyphicon glyphicon-record"></i> X-Editable</a></li>
+					</ul>
+				</li>
+				<li class="nav-parent">
+					<a href="javascript:void(0);">
+						<i class="glyphicon glyphicon-signal"></i> <span>商铺中心</span>
+						<i class="pull-right glyphicon glyphicon-plus"></i>
+					</a>
+				</li>
+				<li class="nav-parent">
+					<a href="javascript:void(0);">
+						<i class="glyphicon glyphicon-cloud"></i> <span>Sass服务</span>
+						<i class="pull-right glyphicon glyphicon-plus"></i>
+					</a>
+				</li>
 			</ul>
 		</section>
 
-		<section class="right-section col-sm-9" id="right-section">
-			<ul class="breadcrumb">
-				<li>
-					<i class="glyphicon glyphicon-home"></i>
-					<span>当前位置：</span>
-					<a href="#">用户中心</a>
-					<i class="glyphicon glyphicon-chevron-right"></i>
-					<a href="#">修改密码</a>
-				</li>
-			</ul>
+		<section class="right-section">
+			<iframe src="{$indexPage}" name="content_iframe" id="content-iframe"></iframe>
 		</section>
 
 	</div>
 </div>
 
+<footer>
+
+	<div>
+		<span>
+			© 2016 <a href="http://www.r9it.com" alt="herosphp">HerosPHP All Rights Reserve</a>
+		</span>
+	</div>
+</footer>
 {res:js jquery.min.js}
 {res:js bootstrap/bootstrap.min.js}
 <script>
+	//resize the layout
+	function resizeLayout() {
+		$('#content-iframe').height($(window).height() - 95);
+	}
+
 	$(document).ready(function() {
-		var leftWith = $('#left-section')[0].offsetWidth;
-		if ( leftWith == 250 ) {
-			$('#right-section').width($(document).width() - leftWith);
-		}
+		resizeLayout();
+		//初始化菜单事件
+		$(".nav-parent .pull-right").on('click', function() {
+			$(".nav-parent").find(".children").slideUp("fast");
+			$(this).parent().next().slideDown("fast");
+			$(".nav-parent").find(".glyphicon-minus").addClass("glyphicon-plus").removeClass('glyphicon-minus');
+			$(this).addClass("glyphicon-minus").removeClass('glyphicon-plus');
+		});
 	});
+	$(window).resize(function() {__global.resizeLayout();});
 </script>
 </body>
 </html>

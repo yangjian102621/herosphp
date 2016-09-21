@@ -1,6 +1,5 @@
 /**
  * put your common js code here
- * Created by yangjian on 16-5-17.
  */
 //全局JS对象
 var __global = {
@@ -10,7 +9,7 @@ var __global = {
 		timer: 2000,   //提示框的显示时间
 		dialog_width: 80, //对话窗口的高度
 		dialog_height : 90, //对话框高度
-		max_width: 1280 //退化框的最大宽度
+		max_width: 1280 //对话框的最大宽度
 	},
 
 	//列表内容的配置文档
@@ -19,6 +18,7 @@ var __global = {
 		checkboxName: 'ids[]',   //checkbox 的name属性，用来过滤全选的checkbox
 		tableId: 'J_ListTable'         //数据类表ID
 	}
+
 };
 $(document).ready(function() {
 

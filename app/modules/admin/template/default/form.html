@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+{include app:admin.header}
+<body>
+
+<div class="inner-iframe">
+	<ul class="breadcrumb">
+		<li>
+			<i class="glyphicon glyphicon-home"></i>
+			<span>当前位置：</span>
+			<a href="#">表单元素</a>
+			<i class="glyphicon glyphicon-chevron-right"></i>
+			<a href="#">基本元素</a>
+		</li>
+	</ul>
+
+	<div class="inner-container">
+
+		<form role="form" class="content-add-form" autocomplete="off">
+			<div class="form-group">
+				<label>Email address</label>
+				<input type="text" class="form-control" placeholder="Enter email">
+			</div>
+
+			<div class="form-group">
+				<label>Email address</label>
+				<input type="text" class="form-control" placeholder="Enter email">
+			</div>
+
+			<div class="form-group">
+				<label>Password</label>
+				<input type="password" class="form-control" placeholder="Password">
+			</div>
+
+			<div class="form-group">
+				<label>开关</label>
+				<div>
+					<input type="checkbox" class="bswitch" data-size="large" data-handle-width="100">
+					<input type="checkbox" class="bswitch" data-size="normal" checked data-on-text="开启" data-off-text="关闭">
+					<input type="checkbox" class="bswitch" data-size="small">
+					<input type="checkbox" class="bswitch" data-size="mini">
+				</div>
+			</div>
+			<button type="submit" class="btn btn-default">Submit</button>
+		</form>
+
+	</div>
+</div>
+{include app:admin.res}
+
+<script>
+	$(document).ready(function() {
+
+		$(".bswitch").bootstrapSwitch({
+			onColor : 'success'
+		});
+
+	});
+</script>
+</body>
+</html>

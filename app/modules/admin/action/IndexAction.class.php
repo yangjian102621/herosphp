@@ -19,8 +19,14 @@ class IndexAction extends Controller {
     public function index(HttpRequest $request) {
 
         $this->setView("index");
+        $this->assign("indexPage", '/admin/index/form');
+
+    }
+
+    public function form(HttpRequest $request) {
+
+        $this->setView("form");
 
     }
   
 }
-?>
