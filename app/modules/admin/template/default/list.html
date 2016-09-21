@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+{include app:admin.header}
+<body>
+
+<div class="inner-iframe">
+	<ul class="breadcrumb">
+		<li>
+			<i class="glyphicon glyphicon-home"></i>
+			<span>当前位置：</span>
+			<a href="#">基本页面</a>
+			<i class="glyphicon glyphicon-chevron-right"></i>
+			<a href="#">列表页</a>
+		</li>
+	</ul>
+
+	<div class="inner-container">
+
+		<div class="table-responsive">
+			<table class="table table-bordered table-hover">
+				<thead>
+				<tr>
+					<th>#</th>
+					<th>Table heading</th>
+					<th>Table heading</th>
+					<th>Table heading</th>
+					<th>Table heading</th>
+					<th>Table heading</th>
+					<th>Table heading</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td>1</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+				</tr>
+				<tr>
+					<td>3</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+					<td>Table cell</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+</div>
+{include app:admin.res}
+
+<script>
+	$(document).ready(function() {
+
+		//switch
+		$(".bswitch").bootstrapSwitch({
+			onColor : 'success'
+		});
+
+		//icheck
+		$(".icheck").iCheck({
+			checkboxClass: 'icheckbox_minimal-blue',
+			radioClass: 'iradio_minimal-blue',
+			increaseArea: '20%' // optional
+		});
+
+		//select2
+		$('.select2').select2({});
+
+	});
+</script>
+</body>
+</html>

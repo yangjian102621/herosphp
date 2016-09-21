@@ -51,12 +51,12 @@
 			<ul class="nav">
 				<li class="nav-parent">
 					<a href="javascript:void(0);">
-						<i class="glyphicon glyphicon-home"></i> <span>表单元素</span>
+						<i class="glyphicon glyphicon-home"></i> <span>基本页面</span>
 						<i class="pull-right glyphicon glyphicon-plus"></i>
 					</a>
 					<ul class="children">
-						<li><a href="/admin/index/form" target="content_iframe"><i class="glyphicon glyphicon-record"></i> 基本元素</a></li>
-						<li><a href="form-layouts.html"><i class="glyphicon glyphicon-record"></i> 搜索框</a></li>
+						<li><a href="javascript:void(0);" data-url="/admin/index/form"><i class="glyphicon glyphicon-record"></i> 表单页</a></li>
+						<li><a href="javascript:void(0);" data-url="/admin/index/clist"><i class="glyphicon glyphicon-record"></i> 列表页</a></li>
 						<li><a href="form-validation.html"><i class="glyphicon glyphicon-record"></i> 编辑器</a></li>
 						<li><a href="x-editable.html"><i class="glyphicon glyphicon-record"></i> 其他页面</a></li>
 					</ul>
@@ -116,14 +116,44 @@
 	$(document).ready(function() {
 		resizeLayout();
 		//初始化菜单事件
-		$(".nav-parent .pull-right").on('click', function() {
+		$(".nav-parent > a").on('click', function(e) {
+
+			if ( $(this).next().is(":visible") ) return;
+
 			$(".nav-parent").find(".children").slideUp("fast");
-			$(this).parent().next().slideDown("fast");
+			$(this).next().slideDown("fast");
 			$(".nav-parent").find(".glyphicon-minus").addClass("glyphicon-plus").removeClass('glyphicon-minus');
-			$(this).addClass("glyphicon-minus").removeClass('glyphicon-plus');
+			$(this).find(".pull-right").addClass("glyphicon-minus").removeClass('glyphicon-plus');
+			e.stopPropagation();
+		});
+
+		//初始化菜单选择项
+		$(function() {
+			var exp = new RegExp("url=([^&]*)");
+			var r = location.href.match(exp);
+			$(".nav-parent").each(function(idx, ele) {
+
+				$(ele).find(".children a").each(function(idx1, item) {
+					var url = $(item).attr("data-url");
+					if ( r && url == r[1] ) {
+						$(ele).find(".children").show();
+						return false;
+					}
+				});
+
+			});
+		});
+
+		//处理页面跳转
+		$(".nav-parent .children a").on("click", function() {
+			var url = $(this).attr("data-url");
+			var stateObject = {url:url};
+			$("#content-iframe").attr('src', url);
+			history.pushState(stateObject, null, "/admin/index/?url="+url);
 		});
 	});
-	$(window).resize(function() {__global.resizeLayout();});
+	$(window).resize(function() {resizeLayout();});
+
 </script>
 </body>
 </html>

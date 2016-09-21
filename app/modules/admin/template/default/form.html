@@ -28,6 +28,17 @@
 			</div>
 
 			<div class="form-group">
+				<label>选择银行</label>
+				<select class="form-control">
+					<option value="1">中信银行</option>
+					<option value="2">平安银行</option>
+					<option value="3">广发银行</option>
+					<option value="4">光大银行</option>
+					<option value="5">交通银行</option>
+				</select>
+			</div>
+
+			<div class="form-group">
 				<label>Password</label>
 				<input type="password" class="form-control" placeholder="Password">
 			</div>
@@ -41,7 +52,39 @@
 					<input type="checkbox" class="bswitch" data-size="mini">
 				</div>
 			</div>
-			<button type="submit" class="btn btn-default">Submit</button>
+
+			<div class="form-group">
+				<label>checkbox</label>
+				<div>
+					<label><input type="checkbox" class="icheck" checked> 选项一</label>
+					<label><input type="checkbox" class="icheck"> 选项二</label>
+					<label><input type="checkbox" class="icheck"> 选项三</label>
+					<label><input type="checkbox" class="icheck"> 选项四</label>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label>radio</label>
+				<div>
+					<label><input type="radio" name="icheck" class="icheck" checked> 选项一</label>
+					<label><input type="radio" name="icheck" class="icheck"> 选项二</label>
+					<label><input type="radio" name="icheck" class="icheck"> 选项三</label>
+					<label><input type="radio" name="icheck" class="icheck"> 选项四</label>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label>select2(支持搜索的下拉框)</label>
+				<select class="form-control select2">
+					<option value="1">中信银行</option>
+					<option value="2">平安银行</option>
+					<option value="3">广发银行</option>
+					<option value="4">光大银行</option>
+					<option value="5">交通银行</option>
+				</select>
+			</div>
+
+ 			<button type="submit" class="btn btn-primary">提交表单</button>
 		</form>
 
 	</div>
@@ -51,9 +94,20 @@
 <script>
 	$(document).ready(function() {
 
+		//switch
 		$(".bswitch").bootstrapSwitch({
 			onColor : 'success'
 		});
+
+		//icheck
+		$(".icheck").iCheck({
+			checkboxClass: 'icheckbox_minimal-blue',
+			radioClass: 'iradio_minimal-blue',
+			increaseArea: '20%' // optional
+		});
+
+		//select2
+		$('.select2').select2({});
 
 	});
 </script>

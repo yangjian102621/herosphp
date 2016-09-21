@@ -18,14 +18,22 @@ class IndexAction extends Controller {
      */
     public function index(HttpRequest $request) {
 
+        $url = $request->getParameter('url', 'trim');
+        if ( !$url ) $url = "/admin/index/form";
         $this->setView("index");
-        $this->assign("indexPage", '/admin/index/form');
+        $this->assign("indexPage", $url);
 
     }
 
     public function form(HttpRequest $request) {
 
         $this->setView("form");
+
+    }
+
+    public function clist(HttpRequest $request) {
+
+        $this->setView("list");
 
     }
   
