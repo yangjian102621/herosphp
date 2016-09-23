@@ -6,6 +6,7 @@ use herosphp\core\Controller;
 use herosphp\core\Loader;
 use herosphp\exception\HeroException;
 use herosphp\http\HttpRequest;
+use herosphp\utils\AjaxResult;
 
 /**
  * 后台管理 index 控制器
@@ -25,16 +26,23 @@ class IndexAction extends Controller {
 
     }
 
-    public function form(HttpRequest $request) {
-
-        $this->setView("form");
-
+    //添加数据
+    public function insert(HttpRequest $request) {
+        AjaxResult::ajaxSuccessResult();
     }
 
     public function clist(HttpRequest $request) {
 
-        $this->setView("list");
+        $this->setView("clist");
 
+    }
+
+    public function remove(HttpRequest $request) {
+        AjaxResult::ajaxSuccessResult();
+    }
+
+    public function iframe(HttpRequest $request) {
+        $this->setView("user/iframe");
     }
   
 }

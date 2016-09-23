@@ -60,6 +60,10 @@ class Template {
          */
         '/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i'	=> '<?php echo \$${1}[\'${2}\'][\'${3}\']?>',
 
+        //for 循环
+        '/{for ([^\}]+)}/i'	=> '<?php for ${1} {?>',
+        '/{\/for}/i'    => '<?php } ?>',
+
         /**
          * foreach key => value 形式循环输出
          * foreach ( $array as $key => $value )
@@ -269,10 +273,12 @@ class Template {
             $tempPath = $pathInfo[1];
         }
         //切割module.templateName,找到对应模块的模板
-        $moduleInfo = explode('.', $tempPath);
-        $tempDir = APP_ROOT.$appName.'/modules/'.$moduleInfo[0].'/template/'.$this->configs['template'].'/';
-        $compileDir = APP_RUNTIME_PATH.'views/'.$appName.'/'.$moduleInfo[0].'/';
-        $filename = $moduleInfo[1].EXT_TPL;   //模板文件名称
+        $pos = strpos($tempPath, '.');
+        $module = substr($tempPath, 0, $pos);
+        $__path = substr($tempPath, $pos);
+        $tempDir = APP_ROOT.$appName.'/modules/'.$module.'/template/'.$this->configs['template'].'/';
+        $compileDir = APP_RUNTIME_PATH.'views/'.$appName.'/'.$module.'/';
+        $filename = str_replace('.', '/', $__path).EXT_TPL;   //模板文件名称
         $tempFile = $tempDir.$filename;
         $compileFile = $compileDir.$filename.'.php';
         //编译文件

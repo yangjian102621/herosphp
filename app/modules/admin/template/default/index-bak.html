@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="icon" href="../../favicon.ico">
+
+	<title>index page</title>
+
+	<!-- Bootstrap core CSS -->
+	{res:css bootstrap.min.css}
+	<!-- Custom styles for this template -->
+	{res:css index.css}
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	{res:js bootstrap/html5shiv.min.js}
+	{res:js bootstrap/respond.min.js}
+	<![endif]-->
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">Project name</a>
+		</div>
+		<div id="navbar" class="navbar-collapse collapse">
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">您好，阳建 <span class="caret"></span></a>
+					<ul class="dropdown-menu user" role="menu">
+						<li><a href="#"><i class="glyphicon glyphicon-user"></i> 个人资料</a></li>
+						<li><a href="#"><i class="glyphicon glyphicon-edit"></i> 修改账户</a></li>
+						<li><a href="#"><i class="glyphicon glyphicon-off"></i> 修改账户</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div class="container-fluid content-body">
+	<div class="main">
+		<section class="left-section">
+			<ul class="nav">
+				<li class="nav-parent">
+					<a href="javascript:void(0);">
+						<i class="glyphicon glyphicon-home"></i> <span>基本页面</span>
+						<i class="pull-right glyphicon glyphicon-plus"></i>
+					</a>
+					<ul class="children">
+						<li><a href="javascript:void(0);" data-url="/admin/index/form"><i class="glyphicon glyphicon-record"></i> 表单页</a></li>
+						<li><a href="javascript:void(0);" data-url="/admin/index/clist"><i class="glyphicon glyphicon-record"></i> 列表页</a></li>
+						<li><a href="form-validation.html"><i class="glyphicon glyphicon-record"></i> 编辑器</a></li>
+						<li><a href="x-editable.html"><i class="glyphicon glyphicon-record"></i> 其他页面</a></li>
+					</ul>
+
+				</li>
+
+				<li class="nav-parent">
+					<a href="javascript:void(0);">
+						<i class="glyphicon glyphicon-cog"></i> <span>网站设置</span>
+						<i class="pull-right glyphicon glyphicon-plus"></i>
+					</a>
+					<ul class="children">
+						<li><a href="general-forms.html"><i class="glyphicon glyphicon-record"></i> General Forms</a></li>
+						<li><a href="form-layouts.html"><i class="glyphicon glyphicon-record"></i> Form Layouts</a></li>
+						<li><a href="form-validation.html"><i class="glyphicon glyphicon-record"></i> Form Validation</a></li>
+						<li><a href="x-editable.html"><i class="glyphicon glyphicon-record"></i> X-Editable</a></li>
+					</ul>
+				</li>
+				<li class="nav-parent">
+					<a href="javascript:void(0);">
+						<i class="glyphicon glyphicon-signal"></i> <span>商铺中心</span>
+						<i class="pull-right glyphicon glyphicon-plus"></i>
+					</a>
+				</li>
+				<li class="nav-parent">
+					<a href="javascript:void(0);">
+						<i class="glyphicon glyphicon-cloud"></i> <span>Sass服务</span>
+						<i class="pull-right glyphicon glyphicon-plus"></i>
+					</a>
+				</li>
+			</ul>
+		</section>
+
+		<section class="right-section">
+			<iframe src="{$indexPage}" name="content_iframe" id="content-iframe"></iframe>
+		</section>
+
+	</div>
+</div>
+
+<footer>
+
+	<div>
+		<span>
+			© 2016 <a href="http://www.r9it.com" alt="herosphp">HerosPHP All Rights Reserve</a>
+		</span>
+	</div>
+</footer>
+{res:js jquery.min.js}
+{res:js bootstrap/bootstrap.min.js}
+<script>
+	//resize the layout
+	function resizeLayout() {
+		$('#content-iframe').height($(window).height() - 95);
+	}
+
+	$(document).ready(function() {
+		resizeLayout();
+		//初始化菜单事件
+		$(".nav-parent > a").on('click', function(e) {
+
+			if ( $(this).next().is(":visible") ) return;
+
+			$(".nav-parent").find(".children").slideUp("fast");
+			$(this).next().slideDown("fast");
+			$(".nav-parent").find(".glyphicon-minus").addClass("glyphicon-plus").removeClass('glyphicon-minus');
+			$(this).find(".pull-right").addClass("glyphicon-minus").removeClass('glyphicon-plus');
+			e.stopPropagation();
+		});
+
+		//初始化菜单选择项
+		$(function() {
+			var exp = new RegExp("url=([^&]*)");
+			var r = location.href.match(exp);
+			$(".nav-parent").each(function(idx, ele) {
+
+				$(ele).find(".children a").each(function(idx1, item) {
+					var url = $(item).attr("data-url");
+					if ( r && url == r[1] ) {
+						$(ele).find(".children").show();
+						return false;
+					}
+				});
+
+			});
+		});
+
+		//处理页面跳转
+		$(".nav-parent .children a").on("click", function() {
+			var url = $(this).attr("data-url");
+			var stateObject = {url:url};
+			$("#content-iframe").attr('src', url);
+			history.pushState(stateObject, null, "/admin/index/?url="+url);
+		});
+	});
+	$(window).resize(function() {resizeLayout();});
+
+</script>
+</body>
+</html>
