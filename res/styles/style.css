@@ -92,6 +92,9 @@ body {
 .text-error {
   color: #cc0000; }
 
+.form-search {
+  padding-bottom: 10px; }
+
 @media (min-width: 1200px) {
   .main .left-section {
     width: 15%; }

@@ -22,6 +22,51 @@
 
 				<div class="inner-container">
 
+					<form class="form-inline form-search" role="form">
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">标题</div>
+								<input class="form-control input-sm" type="text" placeholder="Enter email">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">作者</div>
+								<input class="form-control input-sm" type="text" placeholder="Enter email">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">标题</div>
+								<input class="form-control input-sm" type="text" placeholder="Enter email">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">发布日期</div>
+								<input class="form-control input-sm" type="text" placeholder="Enter email">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">标题</div>
+								<input class="form-control input-sm" type="text" placeholder="Enter email">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">作者</div>
+								<input class="form-control input-sm" type="text" placeholder="Enter email">
+							</div>
+						</div>
+						<button type="submit" class="btn btn-primary btn-sm">
+							<i class="glyphicon glyphicon-search"></i> 搜索</button>
+					</form>
+
 					<form id="J_List_Form">
 
 						<div class="table-responsive">
@@ -33,8 +78,8 @@
 									<th>Table heading</th>
 									<th>Table heading</th>
 									<th>Table heading</th>
-									<th>Table heading</th>
-									<th>Table heading</th>
+									<th>审核状态</th>
+									<th>操作</th>
 								</tr>
 								</thead>
 								<tbody>
@@ -45,7 +90,9 @@
 									<td>Table cell</td>
 									<td>Table cell</td>
 									<td>Table cell</td>
-									<td>Table cell</td>
+									<td>
+										<input type="checkbox" class="bswitch" value="1" data-size="mini" checked data-on-text="通过" data-off-text="失败">
+									</td>
 									<td>
 										<a href="/admin/index/remove" class="btn btn-danger btn-xs item-remove">
 											<i class="glyphicon glyphicon-trash"></i> 删除</a>

@@ -26,6 +26,7 @@ var __global = {
 
 	jformErrorMessage : {
 		empty : "请填写{cname}.",
+		mobile : "请输入合法的手机号码.",
 		email : "请输入合法的电子邮件地址.",
 		idnum : "请输入合法的身份证号码.",
 		number : "请输入有效的数字."
@@ -84,7 +85,7 @@ define(function(require, exports) {
 		});
 
 		//绑定tr和checkbox的选中事件
-		$(".table-hover tr").on("click", function(e) {
+		$(".table-hover tbody tr").on("click", function(e) {
 			$(this).find(".icheck").iCheck('toggle');
 			e.stopPropagation(); //阻止冒泡
 		});
@@ -139,6 +140,12 @@ define(function(require, exports) {
 		$(".bswitch").bootstrapSwitch({
 			onColor : 'success',
 			offColor : 'danger'
+		}).on("switchChange.bootstrapSwitch", function(event, state) {
+			if ( state == false ) {
+				$(this).val(0);
+			} else {
+				$(this).val(1);
+			}
 		});
 
 		//icheck初始化
