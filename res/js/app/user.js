@@ -2,6 +2,7 @@
  * put your common js code here
  */
 define(function(require, exports) {
+
 	//加载依赖
 	require("ajaxproxy");
 	var common = require("common");
@@ -58,26 +59,31 @@ define(function(require, exports) {
 	});
 
 	//初始化编辑器控件
-	require("editor");
-	KindEditor.ready(function(K) {
-		K.create('.editor', {
-			uploadJson : '../php/upload_json.php',
-			fileManagerJson : '../php/file_manager_json.php',
-			allowFileManager : true,
-			imageUploadLimit : 20,
-			imageSizeLimit : '1MB',
-			afterBlur: function(){this.sync();}
-		});
+	exports.editor = function(configs) {
+		require("editor");
+		KindEditor.ready(function(K) {
+			K.create('.editor', {
+				uploadJson : '../php/upload_json.php',
+				fileManagerJson : '../php/file_manager_json.php',
+				allowFileManager : false,
+				//imageUploadLimit : 20,
+				imageSizeLimit : '1MB',
+				afterBlur: function(){this.sync();}
+			});
 
-	});
+		});
+	}
 
 	//初始化上传控件
-	require('jupload');
-	$("#upload").JUpload({
-		url : "/test/upload/upload",
-		src : "src",
-		datas : ["/res/upload/2016/091474885586-430720.jpg","/res/upload/2016/09/1474885661-791066.jpg"],
-		image_container : "image-box"
-	});
+	exports.upload = function(configs) {
+		require('jupload');
+		$("#upload").JUpload({
+			url : "/test/upload/upload",  //后台上传路径
+			max_filenum : 5,
+			src : "src",
+			datas : configs.datas,
+			image_container : "image-box"
+		});
 
+	}
 });

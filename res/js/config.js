@@ -32,8 +32,7 @@
 			"ajaxproxy": "{framework}/AjaxProxy.min.js",
 			"jtemplate": "{framework}/JTemplate.min.js",
 			"jform": "{framework}/JForm.min.js",
-			"datatimepicker": "{framework}/datetimepicker/js/bootstrap-datetimepicker.min.js",
-			"datatimepicker-lang": "{framework}/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js",
+			"datetimepicker": "{framework}/datetimepicker/js/bootstrap-datetimepicker.min.js",
 			"editor": "{framework}/kindeditor/kindeditor.js",
 			"jupload": "{framework}/jupload/JUpload.min.js",
 

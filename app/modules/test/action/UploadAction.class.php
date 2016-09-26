@@ -38,7 +38,7 @@ class UploadAction extends Controller {
             //图片的最大高度, 0没有限制
             'max_height' => 0,
             //文件的最大尺寸
-            'max_size' =>  10024000,     /* 文件size的最大 1MB */
+            'max_size' =>  1020*1024 * 10,     /* 文件size的最大 1MB */
         );
         $upload = new FileUpload($config);
         $result = $upload->upload('src');

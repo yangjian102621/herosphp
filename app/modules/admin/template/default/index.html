@@ -19,6 +19,13 @@
 					</li>
 				</ul>
 
+				<!-- Nav tabs -->
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="/admin/index/"><i class="glyphicon glyphicon-plus"></i> 添加用户</a></li>
+					<li><a href="/admin/index/clist"><i class="glyphicon glyphicon-th-list"></i> 用户列表</a></li>
+					<li><a href="/admin/index/edit"><i class="glyphicon glyphicon-edit"></i> 编辑用户</a></li>
+				</ul>
+
 				<div class="inner-container">
 
 					<form role="form" class="content-add-form" id="content-add-form" autocomplete="off">
@@ -101,7 +108,10 @@
 
 								</div>
 								<div class="pull-left">
-									<a href="javascript:void(0);" name="src" class="btn btn-info" id="upload">上传图片</a>
+									<span name="src" class="img-upload text-center" id="upload">
+										<i class="glyphicon glyphicon-picture"></i>
+										<span class="upload-text"><i class="glyphicon glyphicon-plus"></i> 添加图片</span>
+									</span>
 								</div>
 							</div>
 						</div>
@@ -132,7 +142,15 @@
 {include app:admin.inc.footer}
 
 <script>
-	seajs.use("user");
+	seajs.use("user", function(exports) {
+		exports.editor();
+		exports.upload({
+			datas : ["/res/upload/2016/09/1474894071-267284.jpg",
+				"/res/upload/2016/09/1474894084-227191.jpg",
+				"/res/upload/2016/09/1474894088-187560.jpg",
+				"/res/upload/2016/09/1474894091-463185.jpg"]
+		});
+	});
 </script>
 </body>
 </html>

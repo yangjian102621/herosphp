@@ -41,8 +41,8 @@ class IndexAction extends Controller {
         AjaxResult::ajaxSuccessResult();
     }
 
-    public function iframe(HttpRequest $request) {
-        $this->setView("user/iframe");
+    public function edit(HttpRequest $request) {
+        $this->setView("user/edit");
     }
   
 }

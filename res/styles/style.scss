@@ -95,6 +95,7 @@ body {
 				background-color: #D4D4D4;
 				border-radius:0;
 				line-height: 2;
+				margin-bottom: 10px;
 
 				.glyphicon-chevron-right {
 					font-size: 10px;
@@ -149,6 +150,27 @@ body {
 }
 .text-error {
 	color: #cc0000;
+}
+//图片上传
+$imgHeight : 118px;
+.img-upload {
+	cursor: pointer;
+	margin-left:5px;
+	display: block;
+	width: $imgHeight;
+	height:$imgHeight;
+	border: 1px solid #ccc;
+	margin-top: 4px;
+
+	.glyphicon-picture {
+		font-size: 40px;
+		display: block;
+		margin-top: 20px;
+	}
+	.upload-text {
+		display: block;
+		padding: 10px 20px;
+	}
 }
 
 .form-search {

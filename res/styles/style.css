@@ -58,7 +58,8 @@ body {
     .main .right-section .inner-iframe .breadcrumb {
       background-color: #D4D4D4;
       border-radius: 0;
-      line-height: 2; }
+      line-height: 2;
+      margin-bottom: 10px; }
       .main .right-section .inner-iframe .breadcrumb .glyphicon-chevron-right {
         font-size: 10px;
         font-weight: 200; }
@@ -92,6 +93,22 @@ body {
 
 .text-error {
   color: #cc0000; }
+
+.img-upload {
+  cursor: pointer;
+  margin-left: 5px;
+  display: block;
+  width: 118px;
+  height: 118px;
+  border: 1px solid #ccc;
+  margin-top: 4px; }
+  .img-upload .glyphicon-picture {
+    font-size: 40px;
+    display: block;
+    margin-top: 20px; }
+  .img-upload .upload-text {
+    display: block;
+    padding: 10px 20px; }
 
 .form-search {
   padding-bottom: 10px; }

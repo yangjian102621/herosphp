@@ -55,8 +55,7 @@ define(function(require, exports) {
 	require("switch");
 	require("jtemplate");
 	require("jform");
-	require("datatimepicker");
-	require("datatimepicker-lang");
+	require("datetimepicker");
 
 	exports.init = function() {
 
@@ -129,6 +128,10 @@ define(function(require, exports) {
 			return false;
 		});
 
+		//屏蔽当前active tab点击事件
+		$(".nav-tabs .active a").click(function(){
+			return false;
+		});
 	}
 
 	exports.initElements = function() {
@@ -169,6 +172,16 @@ define(function(require, exports) {
 		$('.select2').select2({});
 
 		//初始化日历控件
+		$.fn.datetimepicker.dates['zh-CN'] = {
+			days: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"],
+			daysShort: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+			daysMin:  ["日", "一", "二", "三", "四", "五", "六", "日"],
+			months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+			monthsShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+			today: "今天",
+			suffix: [],
+			meridiem: ["上午", "下午"]
+		};
 		$('.mdate').datetimepicker({
 			language : "zh-CN",  //语言包
 			format: "yyyy-mm-dd", //日期格式
