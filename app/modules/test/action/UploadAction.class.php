@@ -4,6 +4,7 @@ namespace test\action;
 use herosphp\core\Controller;
 use herosphp\files\FileUpload;
 use herosphp\http\HttpRequest;
+use herosphp\utils\AjaxResult;
 
 /**
  * 文件上传测试
@@ -27,8 +28,9 @@ class UploadAction extends Controller {
      */
     public function upload( HttpRequest $request ) {
 
+        $dir = "upload/".date('Y')."/".date('m');
         $config = array(
-            "upload_dir" => RES_PATH."upload/".date('Y')."/".date('m'),
+            "upload_dir" => RES_PATH.$dir,
             //允许上传的文件类型
             'allow_ext' => 'jpg|jpeg|png|gif|txt|pdf|rar|zip|swf|bmp|c|java|mp3',
             //图片的最大宽度, 0没有限制
@@ -40,10 +42,11 @@ class UploadAction extends Controller {
         );
         $upload = new FileUpload($config);
         $result = $upload->upload('src');
-        __print($result);
-        __print($upload->getUploadMessage());
-        die();
+        if ( $result ) {
+            AjaxResult::ajaxResult(AjaxResult::OP_SUCCESS, "/res/{$dir}/".$result['file_name']);
+        } else {
+            AjaxResult::ajaxResult(AjaxResult::OP_FAILURE, $upload->getUploadMessage());
+        }
     }
 
 }
-?>

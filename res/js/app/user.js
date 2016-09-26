@@ -57,5 +57,27 @@ define(function(require, exports) {
 
 	});
 
+	//初始化编辑器控件
+	require("editor");
+	KindEditor.ready(function(K) {
+		K.create('.editor', {
+			uploadJson : '../php/upload_json.php',
+			fileManagerJson : '../php/file_manager_json.php',
+			allowFileManager : true,
+			imageUploadLimit : 20,
+			imageSizeLimit : '1MB',
+			afterBlur: function(){this.sync();}
+		});
+
+	});
+
+	//初始化上传控件
+	require('jupload');
+	$("#upload").JUpload({
+		url : "/test/upload/upload",
+		src : "src",
+		datas : ["/res/upload/2016/091474885586-430720.jpg","/res/upload/2016/09/1474885661-791066.jpg"],
+		image_container : "image-box"
+	});
 
 });

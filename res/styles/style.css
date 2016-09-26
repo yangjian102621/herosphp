@@ -64,27 +64,28 @@ body {
         font-weight: 200; }
     .main .right-section .inner-iframe .inner-container {
       padding: 10px 20px; }
-      .main .right-section .inner-iframe .inner-container .content-add-form {
-        max-width: 800px; }
-        .main .right-section .inner-iframe .inner-container .content-add-form .btn-group-or {
-          position: relative; }
-          .main .right-section .inner-iframe .inner-container .content-add-form .btn-group-or .btn-primary {
-            padding-right: 20px; }
-          .main .right-section .inner-iframe .inner-container .content-add-form .btn-group-or .btn-default {
-            padding-left: 20px; }
-          .main .right-section .inner-iframe .inner-container .content-add-form .btn-group-or .or {
-            position: absolute;
-            z-index: 10;
-            padding: 5px;
-            width: 30px;
-            height: 30px;
-            left: 75px;
-            top: 2px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 15px;
-            background-color: #5CB85C;
-            color: #ffffff; }
+      .main .right-section .inner-iframe .inner-container .content-add-form .btn-group {
+        margin-top: 20px;
+        margin-bottom: 30px; }
+      .main .right-section .inner-iframe .inner-container .content-add-form .btn-group-or {
+        position: relative; }
+        .main .right-section .inner-iframe .inner-container .content-add-form .btn-group-or .btn-primary {
+          padding-right: 20px; }
+        .main .right-section .inner-iframe .inner-container .content-add-form .btn-group-or .btn-default {
+          padding-left: 20px; }
+        .main .right-section .inner-iframe .inner-container .content-add-form .btn-group-or .or {
+          position: absolute;
+          z-index: 10;
+          padding: 5px;
+          width: 30px;
+          height: 30px;
+          left: 75px;
+          top: 2px;
+          font-size: 14px;
+          font-weight: bold;
+          border-radius: 15px;
+          background-color: #5CB85C;
+          color: #ffffff; }
 
 .pop-layer-box {
   padding: 10px 20px; }

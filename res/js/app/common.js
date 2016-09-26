@@ -40,7 +40,9 @@ var __global = {
 	},
 
 	resizeLayout : function() {
-		$('#right-section').height($(window).height() - 95);
+		if ( $('#right-section').height() < ($(window).height() - 95) ) {
+			$('#right-section').height($(window).height() - 95);
+		}
 	}
 
 };
@@ -53,6 +55,8 @@ define(function(require, exports) {
 	require("switch");
 	require("jtemplate");
 	require("jform");
+	require("datatimepicker");
+	require("datatimepicker-lang");
 
 	exports.init = function() {
 
@@ -163,6 +167,17 @@ define(function(require, exports) {
 
 		//select2
 		$('.select2').select2({});
+
+		//初始化日历控件
+		$('.mdate').datetimepicker({
+			language : "zh-CN",  //语言包
+			format: "yyyy-mm-dd", //日期格式
+			minView : "month", //最小视图，默认精确到小时
+			autoclose: true,
+			todayBtn: true,
+			pickerPosition: "bottom-left"
+		});
+
 	}
 
 	//通用表单验证处理

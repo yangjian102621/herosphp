@@ -106,7 +106,12 @@ body {
 				padding: 10px 20px;
 
 				.content-add-form {
-					max-width: 800px;
+					//max-width: 800px;
+
+					.btn-group {
+						margin-top: 20px;
+						margin-bottom: 30px;
+					}
 
 					.btn-group-or {
 						position: relative;

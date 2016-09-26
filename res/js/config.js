@@ -1,4 +1,4 @@
-(function () {
+;(function () {
 	/*IE8下未开启调试，console出现错误提示兼容*/
 	window.console = window.console || {};
 	window.console.log = window.console.log || function () {
@@ -32,6 +32,10 @@
 			"ajaxproxy": "{framework}/AjaxProxy.min.js",
 			"jtemplate": "{framework}/JTemplate.min.js",
 			"jform": "{framework}/JForm.min.js",
+			"datatimepicker": "{framework}/datetimepicker/js/bootstrap-datetimepicker.min.js",
+			"datatimepicker-lang": "{framework}/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js",
+			"editor": "{framework}/kindeditor/kindeditor.js",
+			"jupload": "{framework}/jupload/JUpload.min.js",
 
 			"common": "{app}/common.js",
 			"user": "{app}/user.js",
