@@ -218,17 +218,11 @@ class MysqlQueryBuilder {
                         continue;
                     }
 
-                    //4. like查询 array('title' => array('$like' => '%abc%'))
-                    if ( $key1 == '$like' ) {
-                        $subCondi[] = "`{$key}` LIKE '{$value1}'";
-                        continue;
-                    }
-
                     /**
                      * 5. null查询,数据库中没有初始化的数据默认值为null, 此时不能用 name='' 或者name='null'查询
-                     * array('name' => array('null' => 1|-1)) 1 => null, -1 => not null
+                     * array('name' => array('$null' => 1|-1)) 1 => null, -1 => not null
                      */
-                    if ( $key1 == 'null' ) {
+                    if ( $key1 == '$null' ) {
                         if ( $value1 == 1 ) {
                             $subCondi[] = "`{$key}` is null";
                         } elseif( $value1 == -1 ) {

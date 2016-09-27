@@ -9,6 +9,7 @@ use herosphp\http\HttpRequest;
 use herosphp\string\StringUtils;
 use herosphp\utils\AjaxResult;
 use herosphp\utils\FileUpload;
+use herosphp\utils\HashUtils;
 
 /**
  * demo action
@@ -30,18 +31,46 @@ class DemoAction extends CommonAction {
     public function mysql() {
 
         $model = Loader::model("user");
+
         //添加数据 C_Model::insert();
 //        $address = array('东莞','深圳','广州','北京','上海','杭州');
-//        for ( $i = 0; $i < 100; $i++ ) {
+//        for ( $i = 0; $i < 10; $i++ ) {
 //            $data = array(
-//                "id" => StringUtils::genGlobalUid(true),
 //                "name" => "user_{$i}",
 //                "age" => $i,
+//                "mobile" => "18575670125",
+//                "bcontent" => "bcontent_{$i}",
+//                "email" => "908799776{$i}@qq.com",
+//                "mobile" => "18575670125",
+//                "shop_name" => "小明的AV种子店{$i}",
+//                "shop_address" => "大东莞厚街",
+//                "shop_type" => "成人用品",
 //                "address" => $address[mt_rand(0,5)]);
 //
-//            var_dump($model->insert($data));
+//            var_dump($model->replace($data));
 //        }
 
+//        $conditions = array('name' => array('$in' => array('user_1', 'user_2')));
+//        var_dump($model->deletes($conditions));
+
+//        $data = array(
+//                "name" => "user_update",
+//                "age" => 123,
+//                "mobile" => "18575670125",
+//                "bcontent" => "bcontent_update",
+//                "email" => "908799776_update@qq.com",
+//                "mobile" => "18575670125",
+//                "shop_name" => "小明的AV种子店_update",
+//                "shop_address" => "大东莞厚街_update",
+//                "shop_type" => "成人用品_update",
+//                "address" => '_update');
+//
+//        $conditions = array('name' => 'user_5');
+//        var_dump($model->updates($data, $conditions));
+
+        $conditions = array('name' => 'user_update');
+        $items = $model->getItems($conditions);
+        __print($items);
 //        $conditions = array('title' => '%abc%', 'name' => 'asdasdasd');
 //        die(MysqlQueryBuilder::buildConditions($conditions));
 
@@ -83,13 +112,13 @@ class DemoAction extends CommonAction {
 //            ->find();
 
         //C_Model::update
-        $data = array(
-            'name' => 'xiaoming',
-            'age' => 30,
-            'address' => '我爱北京天安门'
-        );
-        $conditions = array('id' => 'B21A-57B30872-01655B98-538F-FBED5277');
-        $model->updates($data, $conditions);
+//        $data = array(
+//            'name' => 'xiaoming',
+//            'age' => 30,
+//            'address' => '我爱北京天安门'
+//        );
+//        $conditions = array('id' => 'B21A-57B30872-01655B98-538F-FBED5277');
+//        $model->updates($data, $conditions);
 //        __print($model->where($conditions)->findOne());
 
         //C_Model::count
@@ -107,12 +136,12 @@ class DemoAction extends CommonAction {
 //        $model->sets('age', 200, $condition);
 //        __print($model->getItems($condition));
 
-        $model->beginTransaction();
-        $condition = array('id' => array('$in' => array('B21A-57B30872-01655B98-538F-FBED5277', 'B21A-57B30872-0125BDA8-8184-2B481B89')));
-        $model->sets('age', 500, $condition);
-        __print($model->getItems($condition));
-        $model->rollback();
-        __print($model->getItems($condition));
+//        $model->beginTransaction();
+//        $condition = array('id' => array('$in' => array('B21A-57B30872-01655B98-538F-FBED5277', 'B21A-57B30872-0125BDA8-8184-2B481B89')));
+//        $model->sets('age', 500, $condition);
+//        __print($model->getItems($condition));
+//        $model->rollback();
+//        __print($model->getItems($condition));
 
 
 

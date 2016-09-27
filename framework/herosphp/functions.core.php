@@ -74,7 +74,7 @@ function tprintWarning( $message ) {
  */
 function getHashCode( $str ) {
 
-    return \herosphp\utils\HashUtils::BKDRHash($str);
+    return \herosphp\utils\HashUtils::JSHash($str);
 
 }
 

@@ -78,9 +78,9 @@ class MongoModel implements IModel {
     }
 
     /**
-     * @see IModel::insert()
+     * @see IModel::add()
      */
-    public function insert($data)
+    public function add($data)
     {
         $data = $this->loadFilterData($data);
         if ( $data == false ) {

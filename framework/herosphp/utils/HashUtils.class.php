@@ -21,17 +21,24 @@ class HashUtils {
      * @return int
      */
     public static function BKDRHash( $str ) {
-        if ( is_numeric($str) ) {
-            return ($str & 0x7FFFFFFF);
-        }
-        $hcode = 0;
-        $len = strlen($str);
-        $seed = 31;    // 31 131 1313 13131 131313 etc..
-        for ( $i = 0; $i < $len; $i++ ) {
-            $hcode = (int) ($hcode * $seed + ord($str[$i]));
+
+        $hval = 0;
+        $len  = strlen($str);
+
+        /*
+         * 4-bytes integer we will directly take
+         * its int value as the final hash value.
+        */
+        $seed = 131;    // 31 131 1313 13131 131313 etc..
+        if ( $len <= 11 && is_numeric($str) ) {
+            $hval = intval($str);
+        } else {
+            for ( $i = 0; $i < $len; $i++ ) {
+                $hval = (int) ($hval * $seed + (ord($str[$i]) % 127));
+            }
         }
 
-        return ($hcode & 0x7FFFFFFF);
+        return ($hval & 0x7FFFFFFF);
     }
 
     /**

@@ -113,7 +113,7 @@ Abstract class ACache {
                 if ( is_numeric($this->factor) ) {
                     $cacheDir .= ($this->factor % self::$_FILE_OPACITY).'/';
                 } else {
-                    $factor = HashUtils::BKDRHash($this->factor);
+                    $factor = HashUtils::JSHash($this->factor);
                     $cacheDir .= ($factor % self::$_FILE_OPACITY).'/';
                 }
                 $filename .= '_'.$this->factor;

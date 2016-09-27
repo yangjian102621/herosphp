@@ -22,7 +22,7 @@ namespace herosphp\model;
       * @param $data
       * @return int
       */
-     public function insert($data);
+     public function add($data);
 
      /**
       * 替换数据

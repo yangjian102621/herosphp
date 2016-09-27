@@ -1,6 +1,6 @@
 <?php
 /*---------------------------------------------------------------------
- * 数据库访问模型model mysql实现
+ * 分片数据模型
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -36,13 +36,8 @@ class C_Model implements IModel {
     //是否自动产生ID，如果没有传入的ID的话
     protected $autoPrimary = true;
 
-    /**
-     * 配置关联模型，用来对数据表进行垂直分割
-     * array(key => array('fields' => '', 'model' => ''))
-     * @var array
-     */
-    protected $flagments = array();
-    protected $isFlagment = false;
+    //分片数量
+    protected $shardingNum = 5;
 
     //数据表名称
     protected $table = '';
