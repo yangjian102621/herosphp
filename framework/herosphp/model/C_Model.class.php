@@ -115,7 +115,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        if ( !isset($data[$this->primaryKey]) && $this->autoPrimary ) {
+        if ( $this->autoPrimary ) {
             $data[$this->primaryKey] = StringUtils::genGlobalUid();
         }
         if ( $this->isFlagment ) {
@@ -154,7 +154,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        if ( !isset($data[$this->primaryKey]) && $this->autoPrimary ) {
+        if ( $this->autoPrimary ) {
             $data[$this->primaryKey] = StringUtils::genGlobalUid();
         }
         if ( $this->isFlagment ) {

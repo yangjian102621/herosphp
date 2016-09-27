@@ -1,6 +1,6 @@
 <?php
 /*---------------------------------------------------------------------
- * 分片数据模型
+ * 分片数据模型实现，适用于主表数据的关联数据，比如文章评论，用户图片等。
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -19,11 +19,12 @@ use herosphp\db\mysql\MysqlQueryBuilder;
 use herosphp\filter\Filter;
 use herosphp\string\StringUtils;
 use herosphp\utils\ArrayUtils;
+use herosphp\utils\HashUtils;
 
 Loader::import('model.IModel', IMPORT_FRAME);
 
 
-class C_Model implements IModel {
+class ShardingModel implements IModel {
 
     /**
      * 数据库连接资源
@@ -36,11 +37,16 @@ class C_Model implements IModel {
     //是否自动产生ID，如果没有传入的ID的话
     protected $autoPrimary = true;
 
-    //分片数量
-    protected $shardingNum = 5;
+    //分片数量,推荐是用质数(3,5,7,11,13...)
+    protected $shardingNum = 7;
 
     //数据表名称
     protected $table = '';
+
+    //分片路由,一般为关联外键(userid, aid)
+    protected $shardingRouter = null;
+
+
 
     /**
      * 字段映射
@@ -102,7 +108,6 @@ class C_Model implements IModel {
 
     /**
      * @see IModel::add()
-     * 如果开启了数据分段(垂直分割)， 则需要启用事务来实现原子性操作
      */
     public function add($data)
     {
@@ -110,33 +115,18 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        if ( !isset($data[$this->primaryKey]) && $this->autoPrimary ) {
+        if ( $this->autoPrimary ) {
             $data[$this->primaryKey] = StringUtils::genGlobalUid();
         }
-        if ( $this->isFlagment ) {
-            $this->beginTransaction();
+
+        if ( $this->shardingRouter == null || is_array($this->shardingRouter) ) {
+            E('The sharding router is invalid.');
         }
-        $result = $this->db->insert($this->table, $data);
-        if ( $this->isFlagment ) {
-
-            if ( $result != false ) {
-                foreach ( $this->flagments as $value ) {
-                    $model = Loader::model($value['model']);
-                    $data[$model->primaryKey] = $data[$this->primaryKey]; //注入关联外键
-                    if ( $model->add($data) == false ) {
-                        $this->rollback();
-                        return false;
-                    }
-                }
-            }
-
-            $this->commit();
-        }
-
+        $table = $this->getShardingTables($this->shardingRouter);
+        $result = $this->db->insert($table, $data);
         if ( $result === true ) {
             $result = $data[$this->primaryKey];
         }
-
         return $result;
     }
 
@@ -149,31 +139,14 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        if ( !isset($data[$this->primaryKey]) && $this->autoPrimary ) {
+        if ( $this->autoPrimary ) {
             $data[$this->primaryKey] = StringUtils::genGlobalUid();
         }
-        if ( $this->isFlagment ) {
-            $this->beginTransaction();
+        if ( $this->shardingRouter == null || is_array($this->shardingRouter) ) {
+            E('The sharding router is invalid.');
         }
-        $result = $this->db->replace($this->table, $data);
-
-        if ( $this->isFlagment ) {
-
-            if ( $result != false ) {
-                foreach ( $this->flagments as $value ) {
-                    $model = Loader::model($value['model']);
-                    $data[$model->primaryKey] = $data[$this->primaryKey]; //注入关联外键
-                    if ( $model->replace($data) == false ) {
-                        $this->rollback();
-                        return false;
-                    }
-                }
-            }
-
-            $this->commit();
-        }
-
-        return $result;
+        $table = $this->getShardingTables($this->shardingRouter);
+        return $this->db->replace($table, $data);
     }
 
     /**
@@ -190,33 +163,23 @@ class C_Model implements IModel {
      */
     public function deletes($conditions)
     {
-        if ( $this->isFlagment ) {
+        $tables = $this->getShardingTables($this->shardingRouter);
+        if ( is_string($tables) ) {
+            return $this->db->delete($tables, $conditions);
+        }
+        if ( is_array($tables) && !empty($tables) ) {
+            //通过事务来实现原子性操作
             $this->beginTransaction();
-            $items = $this->getItems($conditions, $this->primaryKey);
-            $ids = array();
-            foreach ( $items as $val ) {
-                $ids[] = $val[$this->primaryKey];
-            }
-            unset($items);
-            $result = $this->db->delete($this->table, $conditions);
-            if ( $result != false ) {
-                foreach ( $this->flagments as $value ) {
-                    $model = Loader::model($value['model']);
-                    $_res = $model->deletes(array(
-                        $model->primaryKey => array('$in' => $ids)
-                    ));
-                    if ( $_res == false ) {
-                        $this->rollback();
-                        return false;
-                    }
+            foreach ( $tables as $table ) {
+                if ( $this->db->delete($table, $conditions) == false ) {
+                    $this->rollback();
+                    return false;
                 }
             }
-
             $this->commit();
-            return $result;
-        } else {
-            return $this->db->delete($this->table, $conditions);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -243,33 +206,28 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        if ( $this->isFlagment ) {
+
+        $tables = $this->getShardingTables($this->shardingRouter);
+        if ( is_string($tables) ) {
+            return $this->db->update($tables, $data, $conditions);
+        }
+
+        if ( is_array($tables) && !empty($tables) ) {
+            //通过事务来实现原子性操作
             $this->beginTransaction();
-            $items = $this->getItems($conditions, $this->primaryKey);
-            $ids = array();
-            foreach ( $items as $val ) {
-                $ids[] = $val[$this->primaryKey];
-            }
-            unset($items);
-            $result = $this->db->update($this->table, $data, $conditions);
-            if ( $result != false ) {
-                foreach ( $this->flagments as $value ) {
-                    $model = Loader::model($value['model']);
-                    $_res = $model->updates($data, array(
-                        $model->primaryKey => array('$in' => $ids)
-                    ));
-                    if ( $_res == false ) {
-                        $this->rollback();
-                        return false;
-                    }
+            foreach ( $tables as $table ) {
+                if ( $this->db->update($table, $data, $conditions) == false ) {
+                    $this->rollback();
+                    return false;
                 }
             }
 
             $this->commit();
-            return $result;
-        } else {
-            return $this->db->update($this->table, $data, $conditions);
+            return true;
         }
+
+        return false;
+
     }
 
     /**
@@ -277,30 +235,24 @@ class C_Model implements IModel {
      */
     public function getItems($conditions, $fields, $order, $limit, $group, $having)
     {
-        $items =  $this->db->find($this->table,$conditions, $fields, $order, $limit, $group, $having);
+        $tables = $this->getShardingTables($this->shardingRouter);
+        if ( is_string($tables) ) {
 
-        if ( $items && $this->isFlagment ) {
-            //组合id查询条件
-            $ids = array();
-            foreach ($items as $val) {
-                if ( isset($val[$this->primaryKey]) ) {
-                    $ids[] = $val[$this->primaryKey];
-                }
-            }
-            if ( !empty($ids) ) {
-                foreach( $this->flagments as $value ) {
-                    $model = Loader::model($value['model']);
-                    $__items = $model->getItems(array(
-                        $model->primaryKey => array('$in' => $ids)
-                    ), $value['fields']);
-                    //用primaryKey 作为数组的索引
-                    $__items = ArrayUtils::changeArrayKey($__items, $model->primaryKey);
-                    foreach ( $items as $key => $v ) {
-                        $items[$key] = array_merge($v, $__items[$v[$this->primaryKey]]);
-                    }
+            $items =  $this->db->find($tables, $conditions, $fields, $order, $limit, $group, $having);
+
+        } else if ( is_array($tables) && !empty($tables) ) {
+
+            $items = array();
+            foreach ( $tables as $table ) {
+                $__items = $this->db->find($table, $conditions, $fields, $order, $limit, $group, $having);
+                if ( !empty($__items) ) {
+                    //合并查询结果
+                    $items = array_merge($items, $__items);
                     unset($__items);
                 }
             }
+
+            //对新数组进行排序
         }
 
         //做字段别名映射
@@ -543,6 +495,53 @@ class C_Model implements IModel {
      */
     public function setTable($table) {
         $this->table = $table;
+    }
+
+    /**
+     * 根据路由信息获取分片表
+     * @param $router
+     * @return string|void
+     */
+    public function getShardingTables($router) {
+        if ( $router == null ) {
+            return $this->__getAllShardingTables();
+        }
+        if ( is_numeric($router) ) {
+
+        }
+        if ( is_array($router) ) { //来自多个分片的路由
+            $tables = array();
+            foreach ( $router as $value ) {
+                if ( is_string($value) ) {
+                    $value = HashUtils::DJPHash($value);
+                }
+                $shardingNode = $value % $this->shardingNum;
+                $tables[$shardingNode] = $this->table.'_'.$shardingNode;
+            }
+            return $tables;
+        } else {
+            if ( is_string($router) ) {
+                $router = HashUtils::DJPHash($router);
+            }
+            return $this->table.'_'.($router % $this->shardingNum);
+        }
+
+    }
+
+    //获取所有的数据分片表
+    public function __getAllShardingTables() {
+
+        $tables = array();
+        for ($i = 0; $i < $this->shardingNum; $i++ ) {
+            $tables[] = $this->table.'_'.$i;
+        }
+        return $tables;
+    }
+
+    //设置分片路由
+    public function setShardingRouter($shardingRouter)
+    {
+        $this->shardingRouter = $shardingRouter;
     }
 
     /**

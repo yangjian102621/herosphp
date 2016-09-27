@@ -11,7 +11,7 @@
 define('DB_ACCESS', DB_ACCESS_SINGLE);  //默认使用单台数据库服务器
 return array(
     //mysql数据库配置
-    'mysql'     =>  array(
+    DB_TYPE_MYSQL     =>  array(
         array(
             'db_type'      => 'mysql',
             'db_host'      => 'localhost',
@@ -48,7 +48,7 @@ return array(
 
     //mongo DB 数据库配置
     'mongo'     => array(
-        'host'      => 'localhost',
+        'host'      => '192.168.1.119',
         'port'      => 27017,
         'user'      => 'root',
         'pass'      => '123456',
