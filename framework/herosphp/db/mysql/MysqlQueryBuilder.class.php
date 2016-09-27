@@ -280,6 +280,11 @@ class MysqlQueryBuilder {
             }
         }
 
+        //2.like查询 array('title' => '%abc%')
+        if ( $value[0] == '%' || $value[strlen($value) - 1] == '%' ) {
+            return "LIKE '{$value}'";
+        }
+
         return is_numeric($value) ? "={$value}" : "='{$value}'";
     }
 

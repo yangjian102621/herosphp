@@ -31,16 +31,19 @@ class DemoAction extends CommonAction {
 
         $model = Loader::model("user");
         //添加数据 C_Model::insert();
-        $address = array('东莞','深圳','广州','北京','上海','杭州');
-        for ( $i = 0; $i < 100; $i++ ) {
-            $data = array(
-                "id" => StringUtils::genGlobalUid(true),
-                "name" => "user_{$i}",
-                "age" => $i,
-                "address" => $address[mt_rand(0,5)]);
+//        $address = array('东莞','深圳','广州','北京','上海','杭州');
+//        for ( $i = 0; $i < 100; $i++ ) {
+//            $data = array(
+//                "id" => StringUtils::genGlobalUid(true),
+//                "name" => "user_{$i}",
+//                "age" => $i,
+//                "address" => $address[mt_rand(0,5)]);
+//
+//            var_dump($model->insert($data));
+//        }
 
-            var_dump($model->insert($data));
-        }
+//        $conditions = array('title' => '%abc%', 'name' => 'asdasdasd');
+//        die(MysqlQueryBuilder::buildConditions($conditions));
 
         //C_Model::query();
 //        $list = $model->query("select * from fiidee_user order by id desc limit 20");
