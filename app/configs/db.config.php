@@ -11,7 +11,7 @@
 define('DB_ACCESS', DB_ACCESS_SINGLE);  //默认使用单台数据库服务器
 return array(
     //mysql数据库配置
-    DB_TYPE_MYSQL     =>  array(
+    'mysql'     =>  array(
         array(
             'db_type'      => 'mysql',
             'db_host'      => 'localhost',

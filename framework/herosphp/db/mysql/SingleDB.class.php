@@ -198,7 +198,7 @@ class SingleDB implements Idb {
             $_query = "UPDATE {$table} SET " . $_keys . " WHERE ".$where;
             $result = $this->excute($_query);
             if ( $result != false ) {
-                return $result->rowCount();
+                return true;
             }
         }
         return false;

@@ -30,28 +30,38 @@ class DemoAction extends CommonAction {
     //mysql模型测试
     public function mysql() {
 
-        $model = Loader::model("user");
+        $model = Loader::model("userInfo");
 
         //添加数据 C_Model::insert();
 //        $address = array('东莞','深圳','广州','北京','上海','杭州');
-//        for ( $i = 0; $i < 10; $i++ ) {
+//        for ( $i = 0; $i < 100; $i++ ) {
+//            $model->setShardingRouter($i+1);
 //            $data = array(
 //                "name" => "user_{$i}",
 //                "age" => $i,
-//                "mobile" => "18575670125",
-//                "bcontent" => "bcontent_{$i}",
+//                "mobile" => "1857567012{$i}",
+//                "bcontent" => "bcontent_".($i-1),
 //                "email" => "908799776{$i}@qq.com",
-//                "mobile" => "18575670125",
 //                "shop_name" => "小明的AV种子店{$i}",
 //                "shop_address" => "大东莞厚街",
 //                "shop_type" => "成人用品",
 //                "address" => $address[mt_rand(0,5)]);
 //
-//            var_dump($model->replace($data));
+//            var_dump($model->add($data));
 //        }
+//        $list = $model->limit(0, 20)->field('userid,email')->sort(array("mobile" => 1, 'bcontent' => -1))->find();
+//        __print($list);
 
-//        $conditions = array('name' => array('$in' => array('user_1', 'user_2')));
-//        var_dump($model->deletes($conditions));
+
+        $conditions = array('userid' => array('$in' => array('b21a57eb8ba802b408281595e0711199', 'b21a57eb8bec00ac2970ab88b88dc4e5')));
+        __print($model->getItems($conditions));
+        $data = array(
+        "mobile" => "18575670121",
+        "bcontent" => "bcontent_update",
+        "email" => "908799776_update@qq.com");
+        var_dump($model->deletes($conditions));
+
+        __print($model->getItems($conditions));
 
 //        $data = array(
 //                "name" => "user_update",
@@ -68,9 +78,9 @@ class DemoAction extends CommonAction {
 //        $conditions = array('name' => 'user_5');
 //        var_dump($model->updates($data, $conditions));
 
-        $conditions = array('name' => 'user_update');
-        $items = $model->getItems($conditions);
-        __print($items);
+//        $conditions = array('name' => 'user_update');
+//        $items = $model->getItems($conditions);
+//        __print($items);
 //        $conditions = array('title' => '%abc%', 'name' => 'asdasdasd');
 //        die(MysqlQueryBuilder::buildConditions($conditions));
 

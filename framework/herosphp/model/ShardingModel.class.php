@@ -168,16 +168,13 @@ class ShardingModel implements IModel {
             return $this->db->delete($tables, $conditions);
         }
         if ( is_array($tables) && !empty($tables) ) {
-            //通过事务来实现原子性操作
-            $this->beginTransaction();
+            //至少要删除了 一条信息，则表示删除成功了
+            $result = false;
             foreach ( $tables as $table ) {
-                if ( $this->db->delete($table, $conditions) == false ) {
-                    $this->rollback();
-                    return false;
-                }
+                $result += $this->db->delete($table, $conditions);
             }
-            $this->commit();
-            return true;
+
+            return $result >= 1 ? $result : false;
         }
         return false;
     }
@@ -221,7 +218,6 @@ class ShardingModel implements IModel {
                     return false;
                 }
             }
-
             $this->commit();
             return true;
         }
@@ -240,7 +236,21 @@ class ShardingModel implements IModel {
 
             $items =  $this->db->find($tables, $conditions, $fields, $order, $limit, $group, $having);
 
-        } else if ( is_array($tables) && !empty($tables) ) {
+        } else if ( is_array($tables) && !empty($tables) ) {    //多表查询，合并排序
+
+            /**
+             * 如果是用php进行自定义排序的话，查询字段一定要包含排序字段
+             * 如果没有包含，则自动追加进去
+             */
+            if ( is_string($fields) && $fields != '*' ) {
+                $fields = explode(',', $fields);
+            }
+            $validateOrder = self::getValidateOrder($order);
+            if ( $validateOrder != false && $fields != '*' ) {
+                foreach ( $validateOrder['sort_field'] as $value ) {
+                    $fields[] = $value;
+                }
+            }
 
             $items = array();
             foreach ( $tables as $table ) {
@@ -252,7 +262,28 @@ class ShardingModel implements IModel {
                 }
             }
 
-            //对新数组进行排序
+            //对新数组进行排序 array('sort_field' => $sortField, 'sort_way' => $sortWay)
+            if ( $validateOrder != false ) {
+                $sortParams = array(); //排序参数
+                foreach ( $validateOrder['sort_field'] as $key => $sortField ) {
+                    //build the dimension data array
+                    $dimension = array();
+                    foreach ( $items as $value ) {
+                        $dimension[] = $value[$sortField];
+                    }
+                    $sortParams[] = $dimension;
+                    //build the sort way
+                    if ( $validateOrder['sort_way'][$key] == 'DESC' ) {
+                        $sortParams[] = SORT_DESC;
+                    } else {
+                        $sortParams[] = SORT_ASC;
+                    }
+                }
+
+                $sortParams[] = &$items;
+                call_user_func_array('array_multisort', $sortParams);
+                //__print($items);
+            }
         }
 
         //做字段别名映射
@@ -542,6 +573,38 @@ class ShardingModel implements IModel {
     public function setShardingRouter($shardingRouter)
     {
         $this->shardingRouter = $shardingRouter;
+    }
+
+    //获取有效的排序
+    public static function getValidateOrder($order) {
+
+        if ( !$order ) return false;
+        $sortField = array();   //排序字段
+        $sortWay = array(); //排序方式
+        if ( is_string($order) ) {
+            //id desc, name asc
+            if ( ($pos = strpos($order, ',')) !== false ) {
+                $order = explode(',', $order);
+                foreach($order as $val) {
+                    $val = trim(preg_replace('/\s+/', ' ', $val));
+                    $arr = explode(' ', $val);
+                    if( $arr[0] != '' ) $sortField[] = $arr[0];
+                    if ( $arr[1] != '' ) $sortWay[] = strtoupper($arr[1]);
+                }
+            }
+
+        } else if ( is_array($order) ) {
+            foreach ( $order as $key => $value ) {
+                $sortField[] = $key;
+                if ( $value == 1 ) {
+                    $sortWay[] = 'ASC';
+                } else if ( $value == -1 ) {
+                    $sortWay[] = 'DESC';
+                }
+            }
+        }
+
+        return array('sort_field' => $sortField, 'sort_way' => $sortWay);
     }
 
     /**

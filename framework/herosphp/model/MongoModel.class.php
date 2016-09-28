@@ -40,7 +40,7 @@ class MongoModel implements IModel {
      * 数据过滤规则
      * @var array
      */
-    private $filterMap = array();
+    protected $filterMap = array();
 
     private $where = array();
 
@@ -49,8 +49,6 @@ class MongoModel implements IModel {
     private $sort = array();
 
     private $limit = array();
-
-    private $group = '';
 
     /**
      * 初始化数据库连接

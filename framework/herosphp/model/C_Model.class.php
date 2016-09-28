@@ -127,7 +127,7 @@ class C_Model implements IModel {
             if ( $result != false ) {
                 foreach ( $this->flagments as $value ) {
                     $model = Loader::model($value['model']);
-                    $data[$model->primaryKey] = $data[$this->primaryKey]; //注入关联外键
+                    $data[$model->getPrimaryKey()] = $data[$this->primaryKey]; //注入关联外键
                     if ( $model->add($data) == false ) {
                         $this->rollback();
                         return false;
@@ -167,7 +167,7 @@ class C_Model implements IModel {
             if ( $result != false ) {
                 foreach ( $this->flagments as $value ) {
                     $model = Loader::model($value['model']);
-                    $data[$model->primaryKey] = $data[$this->primaryKey]; //注入关联外键
+                    $data[$model->getPrimaryKey()] = $data[$this->primaryKey]; //注入关联外键
                     if ( $model->replace($data) == false ) {
                         $this->rollback();
                         return false;
@@ -196,6 +196,7 @@ class C_Model implements IModel {
     public function deletes($conditions)
     {
         if ( $this->isFlagment ) {
+            //通过事务来实现原子性操作
             $this->beginTransaction();
             $items = $this->getItems($conditions, $this->primaryKey);
             $ids = array();
@@ -203,12 +204,13 @@ class C_Model implements IModel {
                 $ids[] = $val[$this->primaryKey];
             }
             unset($items);
+
             $result = $this->db->delete($this->table, $conditions);
             if ( $result != false ) {
                 foreach ( $this->flagments as $value ) {
                     $model = Loader::model($value['model']);
                     $_res = $model->deletes(array(
-                        $model->primaryKey => array('$in' => $ids)
+                        $model->getPrimaryKey() => array('$in' => $ids)
                     ));
                     if ( $_res == false ) {
                         $this->rollback();
@@ -249,6 +251,7 @@ class C_Model implements IModel {
             return false;
         }
         if ( $this->isFlagment ) {
+            //通过事务来实现原子性操作
             $this->beginTransaction();
             $items = $this->getItems($conditions, $this->primaryKey);
             $ids = array();
@@ -256,12 +259,13 @@ class C_Model implements IModel {
                 $ids[] = $val[$this->primaryKey];
             }
             unset($items);
+
             $result = $this->db->update($this->table, $data, $conditions);
             if ( $result != false ) {
                 foreach ( $this->flagments as $value ) {
                     $model = Loader::model($value['model']);
                     $_res = $model->updates($data, array(
-                        $model->primaryKey => array('$in' => $ids)
+                        $model->getPrimaryKey() => array('$in' => $ids)
                     ));
                     if ( $_res == false ) {
                         $this->rollback();
@@ -296,10 +300,10 @@ class C_Model implements IModel {
                 foreach( $this->flagments as $value ) {
                     $model = Loader::model($value['model']);
                     $__items = $model->getItems(array(
-                        $model->primaryKey => array('$in' => $ids)
+                        $model->getPrimaryKey() => array('$in' => $ids)
                     ), $value['fields']);
                     //用primaryKey 作为数组的索引
-                    $__items = ArrayUtils::changeArrayKey($__items, $model->primaryKey);
+                    $__items = ArrayUtils::changeArrayKey($__items, $model->getPrimaryKey());
                     foreach ( $items as $key => $v ) {
                         $items[$key] = array_merge($v, $__items[$v[$this->primaryKey]]);
                     }

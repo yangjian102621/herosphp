@@ -6,10 +6,9 @@
 
 namespace app\models;
 
-use herosphp\filter\Filter;
-use herosphp\model\C_Model;
+use herosphp\model\ShardingModel;
 
-class UserInfoModel extends C_Model {
+class UserInfoModel extends ShardingModel {
 
     public function __construct() {
 
@@ -18,6 +17,9 @@ class UserInfoModel extends C_Model {
 
         //设置表数据表主键，默认为id
         $this->setPrimaryKey('userid');
+
+        //分片数量
+        $this->shardingNum = 7;
 
     }
 } 
