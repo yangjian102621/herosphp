@@ -18,7 +18,6 @@ use herosphp\db\DBFactory;
 use herosphp\db\mysql\MysqlQueryBuilder;
 use herosphp\filter\Filter;
 use herosphp\string\StringUtils;
-use herosphp\utils\ArrayUtils;
 use herosphp\utils\HashUtils;
 
 Loader::import('model.IModel', IMPORT_FRAME);
@@ -252,9 +251,33 @@ class ShardingModel implements IModel {
                 }
             }
 
+            /**
+             * 1. 分别到各个分片去查询，得到结果合并
+             * 2. 合并后的查询结果重新排序
+             * 3. 根据limit获取数组的前面N个元素
+             */
             $items = array();
+            $size   = 0;
+            $start  = 0;
+            if ( $limit ) {
+                $limitArr = MysqlQueryBuilder::parseLimitAsArray($limit);;
+                $offset = $limitArr[0];
+                $size   = $limitArr[1];
+                $shardingLen = count($tables);
+
+                /**
+                 * 计算分页核心算法， 为了保证分页的时候不遗漏数据，每个分片每次查询的数据是 $size * shardingLen
+                 * 重新计算offset 和 pagesize
+                 */
+                $start  = $offset % ($shardingLen * $size);
+                $pageno = max(1, ceil(($offset/$size + 1) / $shardingLen));
+                $offset = ($pageno - 1) * $size;
+                $bsize  = $size * $shardingLen;
+                $_limit = "{$offset},{$bsize}";
+            }
+
             foreach ( $tables as $table ) {
-                $__items = $this->db->find($table, $conditions, $fields, $order, $limit, $group, $having);
+                $__items = $this->db->find($table, $conditions, $fields, $order, $_limit, $group, $having);
                 if ( !empty($__items) ) {
                     //合并查询结果
                     $items = array_merge($items, $__items);
@@ -262,27 +285,14 @@ class ShardingModel implements IModel {
                 }
             }
 
-            //对新数组进行排序 array('sort_field' => $sortField, 'sort_way' => $sortWay)
+            //对查询结果重新排序
             if ( $validateOrder != false ) {
-                $sortParams = array(); //排序参数
-                foreach ( $validateOrder['sort_field'] as $key => $sortField ) {
-                    //build the dimension data array
-                    $dimension = array();
-                    foreach ( $items as $value ) {
-                        $dimension[] = $value[$sortField];
-                    }
-                    $sortParams[] = $dimension;
-                    //build the sort way
-                    if ( $validateOrder['sort_way'][$key] == 'DESC' ) {
-                        $sortParams[] = SORT_DESC;
-                    } else {
-                        $sortParams[] = SORT_ASC;
-                    }
-                }
+                 self::sortResults($validateOrder, $items);
 
-                $sortParams[] = &$items;
-                call_user_func_array('array_multisort', $sortParams);
-                //__print($items);
+                //取排序后的前 pagesize 条记录
+                if ( $limit && $size < count($items) ) {
+                    $items = array_slice($items, $start, $size);
+                }
             }
         }
 
@@ -314,16 +324,42 @@ class ShardingModel implements IModel {
         if ( !is_array($condition) ) {
             $condition = array($this->primaryKey => $condition);
         }
-        $item = $this->db->findOne($this->table, $condition, $fields, $order);
+        $tables = $this->getShardingTables($this->shardingRouter);
+        if ( is_string($tables) ) {
+            $item = $this->db->findOne($tables, $condition, $fields, $order);
 
-        if ( isset($item[$this->primaryKey]) && $this->isFlagment ) {
-            foreach( $this->flagments as $value ) {
-                $model = Loader::model($value['model']);
-                $__item = $model->getItem($item[$this->primaryKey], $value['fields']);
-                $item = array_merge($item, $__item);
-                unset($__item);
+        } elseif ( is_array($tables) ) {
+
+            /**
+             * 如果是用php进行自定义排序的话，查询字段一定要包含排序字段
+             * 如果没有包含，则自动追加进去
+             */
+            if ( is_string($fields) && $fields != '*' ) {
+                $fields = explode(',', $fields);
             }
+            $validateOrder = self::getValidateOrder($order);
+            if ( $validateOrder != false && $fields != '*' ) {
+                foreach ( $validateOrder['sort_field'] as $value ) {
+                    $fields[] = $value;
+                }
+            }
+
+            //获取每个分片的查询结果，然后再再根据排序，取出第一条
+            $results = array();
+            foreach ( $tables as $table ) {
+                $__item = $this->db->findOne($table, $condition, $fields, $order);
+                if ( $__item == false ) continue;
+                $results[] = $__item;
+            }
+
+            //对查询结果重新排序
+            if ( $validateOrder != false ) {
+                self::sortResults($validateOrder, $results);
+                $item = $results[0];
+            }
+
         }
+
         //做字段别名映射
         $mappings = $this->getMapping();
         if ( !empty($mappings) ) {
@@ -333,6 +369,34 @@ class ShardingModel implements IModel {
             }
         }
         return $item;
+    }
+
+    /**
+     * 对查询结果进行重新排序
+     * @param $validateOrder 排序方式数组
+     * array('sort_field' => $sortField, 'sort_way' => $sortWay)
+     * @param $results 查询结果，引用传值
+     */
+    protected static function sortResults($validateOrder, &$results) {
+
+        $sortParams = array(); //排序参数
+        foreach ( $validateOrder['sort_field'] as $key => $sortField ) {
+            //build the dimension data array
+            $dimension = array();
+            foreach ( $results as $value ) {
+                $dimension[] = $value[$sortField];
+            }
+            $sortParams[] = $dimension;
+            //build the sort way
+            if ( $validateOrder['sort_way'][$key] == 'DESC' ) {
+                $sortParams[] = SORT_DESC;
+            } else {
+                $sortParams[] = SORT_ASC;
+            }
+        }
+
+        $sortParams[] = &$results;
+        call_user_func_array('array_multisort', $sortParams);
     }
 
     public function findOne()
@@ -376,8 +440,26 @@ class ShardingModel implements IModel {
         if ( is_numeric($offset) ) {
             $update_str = "{$field}={$field}+{$offset}";
         }
-        $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
-        return $this->db->excute($query);
+        $tables = $this->getShardingTables($this->shardingRouter);
+        if ( is_string($tables) ) {
+            $query = "UPDATE {$tables} SET {$update_str} WHERE {$conditions}";
+            return ($this->db->excute($query) != false);
+        }
+
+        if ( is_array($tables) && !empty($tables) ) {
+            //通过事务来实现原子性操作
+            $this->beginTransaction();
+            foreach ( $tables as $table ) {
+                $query = "UPDATE {$table} SET {$update_str} WHERE {$conditions}";
+                if ( $this->db->excute($query) == false ) {
+                    $this->rollback();
+                    return false;
+                }
+            }
+            $this->commit();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -406,8 +488,27 @@ class ShardingModel implements IModel {
         if ( is_numeric($offset) ) {
             $update_str = "{$field}={$field}-{$offset}";
         }
-        $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
-        return $this->db->excute($query);
+        $tables = $this->getShardingTables($this->shardingRouter);
+        if ( is_string($tables) ) {
+            $query = "UPDATE {$tables} SET {$update_str} WHERE {$conditions}";
+            return $this->db->excute($query);
+        }
+
+        if ( is_array($tables) ) {
+            $this->beginTransaction();
+            foreach ($tables as $table) {
+                $query = "UPDATE {$table} SET {$update_str} WHERE {$conditions}";
+                if ( $this->db->excute($query) == false ) {
+                    $this->rollback();
+                    return false;
+                }
+            }
+            $this->commit();
+            return true;
+        }
+
+        return false;
+
     }
 
     /**
@@ -534,12 +635,17 @@ class ShardingModel implements IModel {
      * @return string|void
      */
     public function getShardingTables($router) {
-        if ( $router == null ) {
-            return $this->__getAllShardingTables();
-        }
-        if ( is_numeric($router) ) {
 
+        if ( is_numeric($router) ) {
+            $shardingNode = intval($router) % $this->shardingNum;
+            return $this->table.'_'.$shardingNode;
         }
+
+        if ( is_string($router) ) {
+            $router = HashUtils::DJPHash($router);
+            return $this->table.'_'.($router % $this->shardingNum);
+        }
+
         if ( is_array($router) ) { //来自多个分片的路由
             $tables = array();
             foreach ( $router as $value ) {
@@ -550,13 +656,9 @@ class ShardingModel implements IModel {
                 $tables[$shardingNode] = $this->table.'_'.$shardingNode;
             }
             return $tables;
-        } else {
-            if ( is_string($router) ) {
-                $router = HashUtils::DJPHash($router);
-            }
-            return $this->table.'_'.($router % $this->shardingNum);
         }
 
+        return $this->__getAllShardingTables();
     }
 
     //获取所有的数据分片表

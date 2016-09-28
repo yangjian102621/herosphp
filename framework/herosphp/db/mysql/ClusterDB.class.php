@@ -279,7 +279,6 @@ class ClusterDB implements ICusterDB {
      */
     public function &findOne($table, $condition=null, $field=null, $sort=null)
     {
-        $item = array();
         $query = MysqlQueryBuilder::getInstance()
             ->table($table)
             ->where($condition)
@@ -288,9 +287,9 @@ class ClusterDB implements ICusterDB {
 
         $result = $this->excute($query->buildQueryString());
         if ( $result != false ) {
-            $item = $result->fetch(PDO::FETCH_ASSOC);
+            return $result->fetch(PDO::FETCH_ASSOC);
         }
-        return $item;
+        return false;
     }
 
     /**

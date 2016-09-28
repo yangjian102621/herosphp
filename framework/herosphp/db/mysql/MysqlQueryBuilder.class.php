@@ -120,23 +120,47 @@ class MysqlQueryBuilder {
 
     /**
      * 设置查询偏移
-     * @param array $limit 标准格式:array($skip, $size)
+     * @param array $limit 标准格式:array($page, $size)
      * @return $this
      */
     public function limit($limit) {
+        $this->limit = self::parseLimit($limit);
+        return $this;
+    }
+
+    //解析limit字符串
+    public static function parseLimit($limit) {
         //1. limit(10);
         if ( is_numeric($limit) ) {
-            $this->limit = "0, {$limit}";
-
-            //2. limit("10, 50")
-        } else if ( is_string( $limit ) ) {
-            $this->limit = $limit;
-
-            //3. limit(array(10, 20))
-        } else if ( is_array($limit) ) {
-            $this->limit = implode(',', $limit);
+            return "0, {$limit}";
         }
-        return $this;
+        //2. limit("10, 50")
+        if ( is_string( $limit ) ) {
+            $limit = explode(',', $limit);
+        }
+        //3. limit(array(10, 20))
+        if ( is_array($limit) ) {
+            $limit[0] = ($limit[0] - 1) * $limit[1];
+            return implode(',', $limit);
+        }
+        //推荐列表查询一定是要分页的，如果没有分页则显示前20页
+        return '0, 20';
+    }
+
+    public static function parseLimitAsArray($limit) {
+        //1. limit(10);
+        if ( is_numeric($limit) ) {
+            return array(0, $limit);
+        }
+        //2. limit("10, 50")
+        if ( is_string( $limit ) ) {
+            return explode(',', $limit);
+        }
+        //3. limit(array(10, 20))
+        if ( is_array($limit) ) {
+            return $limit;
+        }
+        return array(0, 20);
     }
 
     /**

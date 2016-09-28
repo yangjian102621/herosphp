@@ -296,6 +296,7 @@ class C_Model implements IModel {
                     $ids[] = $val[$this->primaryKey];
                 }
             }
+            //查出关联表的数据，然后合并数据
             if ( !empty($ids) ) {
                 foreach( $this->flagments as $value ) {
                     $model = Loader::model($value['model']);
@@ -403,7 +404,7 @@ class C_Model implements IModel {
             $update_str = "{$field}={$field}+{$offset}";
         }
         $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
-        return $this->db->excute($query);
+        return ($this->db->excute($query) != false);
     }
 
     /**
@@ -433,7 +434,7 @@ class C_Model implements IModel {
             $update_str = "{$field}={$field}-{$offset}";
         }
         $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
-        return $this->db->excute($query);
+        return ($this->db->excute($query) != false);
     }
 
     /**
