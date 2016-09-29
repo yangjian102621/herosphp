@@ -138,7 +138,7 @@ class C_Model implements IModel {
             $this->commit();
         }
 
-        if ( $result === true ) {
+        if ( $result === true ) { //非自增ID
             $result = $data[$this->primaryKey];
         }
 

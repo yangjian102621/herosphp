@@ -54,8 +54,25 @@ class DemoAction extends CommonAction {
 //        $list_1 = $model->limit(1, 40)->field('userid,email')->sort(array("mobile" => 1, 'bcontent' => -1))->find();
 //        __print($list_1);
 
-        __print($model->getItem('b21a57eb8ba801e016bc6d68e39402a3'));
+//        $data = array(
+//            'username' => "xiaoming",
+//            'password' => "password_xiaoming",
+//            'mobile' => "1876575468",
+//        );
+//        var_dump($model->add($data));
+        __print($model->getItem('b21a57ed2f0a011343949104c3e221e8'));
 
+//        for ($i = 0; $i < 100; $i++) {
+//            $model->setShardingRouter($i+1);
+//            $data = array(
+//                'username' => "username_{$i}",
+//                'password' => "password_{$i}",
+//                'mobile' => "password_{$i}",
+//            );
+//            var_dump($model->add($data));
+//        }
+//        __print($model->getItem('b21a57ed1edd03ee3060379480cd4454'));
+//        __print($model->count());
 //        $conditions = array('userid' => array('$in' => array('b21a57eb8ba802b408281595e0711199', 'b21a57eb8bec00ac2970ab88b88dc4e5')));
 //        __print($model->getItems($conditions));
 //        $data = array(

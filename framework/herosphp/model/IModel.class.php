@@ -74,7 +74,7 @@ namespace herosphp\model;
       * 更新一条数据
       * @param $data
       * @param $id
-      * @return boolean
+      * @return bool
       */
      public function update($data, $id);
 
@@ -82,7 +82,7 @@ namespace herosphp\model;
       * 批量更新数据
       * @param $data
       * @param $conditions
-      * @return mixed
+      * @return bool
       */
      public function updates($data, $conditions);
 

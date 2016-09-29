@@ -135,6 +135,7 @@ class Herosphp {
 
             'herosphp\model\C_Model'       => 'model.C_Model',
             'herosphp\model\ShardingRouterModel'       => 'model.ShardingRouterModel',
+            'herosphp\model\SimpleShardingModel'       => 'model.SimpleShardingModel',
             'herosphp\model\MongoModel'       => 'model.MongoModel',
 
             'herosphp\lock\SemSynLock'       => 'lock.SemSynLock',

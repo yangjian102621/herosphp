@@ -6,9 +6,9 @@
 
 namespace app\models;
 
-use herosphp\model\ShardingRouterModel;
+use herosphp\model\SimpleShardingModel;
 
-class UserInfoModel extends ShardingRouterModel {
+class UserInfoModel extends SimpleShardingModel {
 
     public function __construct() {
 
@@ -16,7 +16,7 @@ class UserInfoModel extends ShardingRouterModel {
         parent::__construct('user_info');
 
         //设置表数据表主键，默认为id
-        $this->setPrimaryKey('userid');
+        $this->setPrimaryKey('id');
 
         //分片数量
         $this->shardingNum = 7;
