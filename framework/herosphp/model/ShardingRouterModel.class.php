@@ -1,6 +1,9 @@
 <?php
 /*---------------------------------------------------------------------
- * 分片数据模型实现，适用于主表数据的关联数据，比如文章评论，用户图片等。
+ * 分片数据模型实现，适用于主表数据的关联数据，比如文章评论，用户图片等。 <br />
+ * 注意:一般都需要有分片路由的（如userid, aid等）如果没有分片路由，则在查询数据列表(getItems()方法)的时候，会出现数据误差 < br />
+ * 具体表现为，如果使用了分页查询，假设你的分片数量为shardingNum = 7，则当分页的page > shardingNum 的时候会有部分数据查不到 </ br>
+ * 分片的数据映射越均匀，则这个误差越小。
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -23,7 +26,7 @@ use herosphp\utils\HashUtils;
 Loader::import('model.IModel', IMPORT_FRAME);
 
 
-class ShardingModel implements IModel {
+class ShardingRouterModel implements IModel {
 
     /**
      * 数据库连接资源
@@ -44,8 +47,6 @@ class ShardingModel implements IModel {
 
     //分片路由,一般为关联外键(userid, aid)
     protected $shardingRouter = null;
-
-
 
     /**
      * 字段映射
@@ -256,7 +257,7 @@ class ShardingModel implements IModel {
              * 2. 合并后的查询结果重新排序
              * 3. 根据limit获取数组的前面N个元素
              */
-            $items = array();
+            $results = array();
             $size   = 0;
             $start  = 0;
             if ( $limit ) {
@@ -280,18 +281,21 @@ class ShardingModel implements IModel {
                 $__items = $this->db->find($table, $conditions, $fields, $order, $_limit, $group, $having);
                 if ( !empty($__items) ) {
                     //合并查询结果
-                    $items = array_merge($items, $__items);
+                    $results = array_merge($results, $__items);
                     unset($__items);
                 }
             }
 
             //对查询结果重新排序
             if ( $validateOrder != false ) {
-                 self::sortResults($validateOrder, $items);
+                 self::sortResults($validateOrder, $results);
 
                 //取排序后的前 pagesize 条记录
-                if ( $limit && $size < count($items) ) {
-                    $items = array_slice($items, $start, $size);
+                if ( $limit && $size < count($results) ) {
+                    $items = array_slice($results, $start, $size);
+                    unset($results);
+                } else {
+                    $items = &$results;
                 }
             }
         }
@@ -355,8 +359,8 @@ class ShardingModel implements IModel {
             //对查询结果重新排序
             if ( $validateOrder != false ) {
                 self::sortResults($validateOrder, $results);
-                $item = $results[0];
             }
+            $item = $results[0];
 
         }
 
@@ -379,6 +383,7 @@ class ShardingModel implements IModel {
      */
     protected static function sortResults($validateOrder, &$results) {
 
+        if ( count($results) == 1 ) return;
         $sortParams = array(); //排序参数
         foreach ( $validateOrder['sort_field'] as $key => $sortField ) {
             //build the dimension data array
@@ -411,7 +416,16 @@ class ShardingModel implements IModel {
      */
     public function count($conditions)
     {
-        return $this->db->count($this->table, $conditions);
+        $tables = $this->getShardingTables($this->shardingRouter);
+        if ( is_string($tables) ) {
+            return $this->db->count($tables, $conditions);
+        }
+
+        $total = 0;
+        foreach ($tables as $table) {
+            $total += $this->db->count($table, $conditions);
+        }
+        return $total;
     }
 
     /**

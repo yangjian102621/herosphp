@@ -6,9 +6,9 @@
 
 namespace app\models;
 
-use herosphp\model\ShardingModel;
+use herosphp\model\ShardingRouterModel;
 
-class UserInfoModel extends ShardingModel {
+class UserInfoModel extends ShardingRouterModel {
 
     public function __construct() {
 

@@ -28,8 +28,6 @@ class MysqlQueryBuilder {
 
     private $limit = ''; //查询limit
 
-    private $conditions = array();
-
     /**
      * 字段比较操作符
      * @var array
@@ -68,7 +66,7 @@ class MysqlQueryBuilder {
         return $this;
     }
 
-    public function where(array $conditions) {
+    public function where($conditions) {
         if ( is_array($conditions) ) $this->where = $conditions;
         return $this;
     }
@@ -88,7 +86,7 @@ class MysqlQueryBuilder {
      * @param array $having
      * @return $this
      */
-    public function having(array $having) {
+    public function having($having) {
         if ( is_array($having) ) $this->having = $having;
         return $this;
     }
@@ -136,7 +134,7 @@ class MysqlQueryBuilder {
         }
         //2. limit("10, 50")
         if ( is_string( $limit ) ) {
-            $limit = explode(',', $limit);
+            return $limit;
         }
         //3. limit(array(10, 20))
         if ( is_array($limit) ) {
@@ -147,20 +145,28 @@ class MysqlQueryBuilder {
         return '0, 20';
     }
 
+    /**
+     * @param $limit array($page, $pagesize)
+     * @return array
+     */
     public static function parseLimitAsArray($limit) {
+        $offset = 0;
+        $pagesize = 20;
         //1. limit(10);
         if ( is_numeric($limit) ) {
-            return array(0, $limit);
+            $offset = 0;
+            $pagesize = $limit;
         }
         //2. limit("10, 50")
         if ( is_string( $limit ) ) {
-            return explode(',', $limit);
+            $limit = explode(',', $limit);
         }
         //3. limit(array(10, 20))
         if ( is_array($limit) ) {
-            return $limit;
+            $offset = ($limit[0] - 1) * $limit[1];
+            $pagesize = $limit[1];
         }
-        return array(0, 20);
+        return array($offset, $pagesize);
     }
 
     /**
@@ -327,5 +333,3 @@ class MysqlQueryBuilder {
     }
 
 }
-
-?>

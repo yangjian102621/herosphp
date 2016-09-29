@@ -146,7 +146,7 @@ function url($url) {
 
         }
     }
-    return $url;    //短链接
+    return '/'.$url;    //短链接
 
 }
 

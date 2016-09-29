@@ -49,19 +49,22 @@ class DemoAction extends CommonAction {
 //
 //            var_dump($model->add($data));
 //        }
-//        $list = $model->limit(0, 20)->field('userid,email')->sort(array("mobile" => 1, 'bcontent' => -1))->find();
+//        $list = $model->limit(8, 5)->field('userid,email')->sort(array("mobile" => 1, 'bcontent' => -1))->find();
 //        __print($list);
+//        $list_1 = $model->limit(1, 40)->field('userid,email')->sort(array("mobile" => 1, 'bcontent' => -1))->find();
+//        __print($list_1);
 
+        __print($model->getItem('b21a57eb8ba801e016bc6d68e39402a3'));
 
-        $conditions = array('userid' => array('$in' => array('b21a57eb8ba802b408281595e0711199', 'b21a57eb8bec00ac2970ab88b88dc4e5')));
-        __print($model->getItems($conditions));
-        $data = array(
-        "mobile" => "18575670121",
-        "bcontent" => "bcontent_update",
-        "email" => "908799776_update@qq.com");
-        var_dump($model->deletes($conditions));
-
-        __print($model->getItems($conditions));
+//        $conditions = array('userid' => array('$in' => array('b21a57eb8ba802b408281595e0711199', 'b21a57eb8bec00ac2970ab88b88dc4e5')));
+//        __print($model->getItems($conditions));
+//        $data = array(
+//        "mobile" => "18575670121",
+//        "bcontent" => "bcontent_update",
+//        "email" => "908799776_update@qq.com");
+//        var_dump($model->deletes($conditions));
+//
+//        __print($model->getItems($conditions));
 
 //        $data = array(
 //                "name" => "user_update",

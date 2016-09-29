@@ -134,7 +134,7 @@ class Herosphp {
             'herosphp\db\mongo\MongoQueryBuilder'       => 'db.mongo.MongoQueryBuilder',
 
             'herosphp\model\C_Model'       => 'model.C_Model',
-            'herosphp\model\ShardingModel'       => 'model.ShardingModel',
+            'herosphp\model\ShardingRouterModel'       => 'model.ShardingRouterModel',
             'herosphp\model\MongoModel'       => 'model.MongoModel',
 
             'herosphp\lock\SemSynLock'       => 'lock.SemSynLock',
