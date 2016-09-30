@@ -108,10 +108,12 @@ function url($url) {
     $url = ltrim($url, '/');
     $args = '';
     $urlInfo = parse_url($url);
+
     if ( $urlInfo['path'] && $urlInfo['path'] != '/' ) {
         $filename = str_replace(EXT_URI, '', $urlInfo['path']);
         $filename = rtrim($filename, "/");
         $pathInfo = explode('/', $filename);
+        __print($pathInfo);
         //提取pathinfo参数
         $paramArr = array();
         if ( count($pathInfo) > 3 ) {
@@ -129,22 +131,23 @@ function url($url) {
                     }
                 }
             }
-
-            if ( $urlInfo['query'] ) {
-                $query = preg_replace('/[&|=]/', '-', $urlInfo['query']);
-                if ( $query ) $args .= $args == '' ? $query : '-'.$query;
-            }
-
-            $newUrl = "/{$pathInfo[0]}/{$pathInfo[1]}/{$pathInfo[2]}";
-            if ( !empty($paramArr) ) {
-                $newUrl .= '/'.implode('-', $paramArr);
-            }
-            if ( trim($args) != '' ) $newUrl .= '/'.$args;
-            $newUrl .= EXT_URI;
-            $newUrl = rtrim($newUrl,'/');
-            return $newUrl;
-
         }
+
+        //获取常规参数
+        if ( $urlInfo['query'] ) {
+            $query = preg_replace('/[&|=]/', '-', $urlInfo['query']);
+            if ( $query ) $args .= $args == '' ? $query : '-'.$query;
+        }
+
+        $newUrl = "/{$pathInfo[0]}/{$pathInfo[1]}/{$pathInfo[2]}";
+        if ( !empty($paramArr) ) {
+            $newUrl .= '/'.implode('-', $paramArr);
+        }
+
+        if ( trim($args) != '' ) $newUrl .= '/'.$args;
+        $newUrl .= EXT_URI;
+        $newUrl = rtrim($newUrl,'/');
+        return $newUrl;
     }
     return '/'.$url;    //短链接
 

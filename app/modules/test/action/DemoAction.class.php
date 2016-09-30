@@ -28,8 +28,8 @@ class DemoAction extends CommonAction {
     }
 
     //mysql模型测试
-    public function mysql() {
-
+    public function mysql(HttpRequest $request) {
+        
         $model = Loader::model("userInfo");
 
         //添加数据 C_Model::insert();
@@ -60,7 +60,16 @@ class DemoAction extends CommonAction {
 //            'mobile' => "1876575468",
 //        );
 //        var_dump($model->add($data));
-        __print($model->getItem('b21a57ed2f0a011343949104c3e221e8'));
+        $id = 'b21a57edb51c058cd854d2d420f98a5e';
+        __print($model->getItem($id));
+        $data = array(
+            'username' => "xiaoming_update",
+            'password' => "password_xiaoming_update",
+            'mobile' => "1876575468_update",
+        );
+        $model->update($data, $id);
+
+        __print($model->getItem($id));
 
 //        for ($i = 0; $i < 100; $i++) {
 //            $model->setShardingRouter($i+1);

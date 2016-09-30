@@ -3,7 +3,7 @@ CREATE TABLE `user_info_0`(
 	id char(32) NOT NULL COMMENT '主键',
 	username varchar(32) NOT NULL COMMENT '用户名',
 	UNIQUE KEY `username` (`username`),
-	pass varchar(32) NOT NULL COMMENT '密码',
+	password varchar(32) NOT NULL COMMENT '密码',
 	mobile varchar(32) NOT NULL comment '手机号码'
 	,PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -13,7 +13,7 @@ CREATE TABLE `user_info_1`(
 	id char(32) NOT NULL COMMENT '主键',
 	username varchar(32) NOT NULL COMMENT '用户名',
 	UNIQUE KEY `username` (`username`),
-	pass varchar(32) NOT NULL COMMENT '密码',
+	password varchar(32) NOT NULL COMMENT '密码',
 	mobile varchar(32) NOT NULL comment '手机号码'
 	,PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -24,7 +24,7 @@ CREATE TABLE `user_info_2`(
 	id char(32) NOT NULL COMMENT '主键',
 	username varchar(32) NOT NULL COMMENT '用户名',
 	UNIQUE KEY `username` (`username`),
-	pass varchar(32) NOT NULL COMMENT '密码',
+	password varchar(32) NOT NULL COMMENT '密码',
 	mobile varchar(32) NOT NULL comment '手机号码'
 	,PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -34,7 +34,7 @@ CREATE TABLE `user_info_3`(
 	id char(32) NOT NULL COMMENT '主键',
 	username varchar(32) NOT NULL COMMENT '用户名',
 	UNIQUE KEY `username` (`username`),
-	pass varchar(32) NOT NULL COMMENT '密码',
+	password varchar(32) NOT NULL COMMENT '密码',
 	mobile varchar(32) NOT NULL comment '手机号码'
 	,PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -44,7 +44,7 @@ CREATE TABLE `user_info_4`(
 	id char(32) NOT NULL COMMENT '主键',
 	username varchar(32) NOT NULL COMMENT '用户名',
 	UNIQUE KEY `username` (`username`),
-	pass varchar(32) NOT NULL COMMENT '密码',
+	password varchar(32) NOT NULL COMMENT '密码',
 	mobile varchar(32) NOT NULL comment '手机号码'
 	,PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -54,7 +54,7 @@ CREATE TABLE `user_info_5`(
 	id char(32) NOT NULL COMMENT '主键',
 	username varchar(32) NOT NULL COMMENT '用户名',
 	UNIQUE KEY `username` (`username`),
-	pass varchar(32) NOT NULL COMMENT '密码',
+	password varchar(32) NOT NULL COMMENT '密码',
 	mobile varchar(32) NOT NULL comment '手机号码'
 	,PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -64,7 +64,7 @@ CREATE TABLE `user_info_6`(
 	id char(32) NOT NULL COMMENT '主键',
 	username varchar(32) NOT NULL COMMENT '用户名',
 	UNIQUE KEY `username` (`username`),
-	pass varchar(32) NOT NULL COMMENT '密码',
+	password varchar(32) NOT NULL COMMENT '密码',
 	mobile varchar(32) NOT NULL comment '手机号码'
 	,PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
