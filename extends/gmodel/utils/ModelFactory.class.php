@@ -9,6 +9,7 @@ namespace gmodel\utils;
  */
 use gmodel\GModel;
 use herosphp\files\FileUtils;
+use herosphp\string\StringBuffer;
 
 class ModelFactory {
 
@@ -45,7 +46,6 @@ class ModelFactory {
                 continue;
             }
             $pk = $value->find("pk", 0);
-
             $content = str_replace("{table_name}", $value->name, $tempContent);
             if ( $pk ) {
                 $content = str_replace("{pk}", $pk->name, $content);
@@ -54,6 +54,40 @@ class ModelFactory {
             $content = str_replace("{app_name}", APP_NAME, $content);
             $content = str_replace("{author}", $configs["author"], $content);
             $content = str_replace("{email}", $configs["email"], $content);
+
+            //检查模型是否分段
+            $flagments = $value->find("flagments", 0);
+            if ( !empty($flagments) ) {
+                $sb = new StringBuffer();
+                $tab = 2;
+                $sb->appendLine('//设置数据分段');
+                $sb->appendTab('$this->isFlagment = true;', $tab);
+                $models = $flagments->find("model");
+                $sb->appendTab('$this->flagments = array(', $tab);
+                foreach ($models as $model) {
+                    $sb->appendTab('array(', $tab+1);
+                    $sb->appendTab("'fields' => '{$model->fields}',", $tab+2);
+                    $sb->appendTab("'model' => '{$model->name}',", $tab+2);
+                    $sb->appendTab('),', 3);
+                }
+                $sb->appendTab(');', $tab);
+                $content = str_replace("{flagments}", $sb->toString(), $content);
+            } else {
+                $content = str_replace("{flagments}", '', $content);
+            }
+
+            //设置数据分片
+            $shardingNum = intval($value->getAttribute("sharding-num"));
+            if ( $shardingNum > 0 ) {
+                $sb = new  StringBuffer();
+                $sb->appendLine('//设置数据分片数量');
+                $sb->appendTab('$this->shardingNum = '.$shardingNum.';', 2);
+                $replacements = array('C_Model' => 'SimpleShardingModel');
+                $replacements['{sharding_num}'] = $sb->toString();
+                $content = str_replace(array_keys($replacements), $replacements, $content);
+            } else {
+                $content = str_replace("{sharding_num}", '', $content);
+            }
 
             if ( file_put_contents($modelFile, $content) !== false ) {
                 tprintOk("create model file '{$modelFile}' successfully.");

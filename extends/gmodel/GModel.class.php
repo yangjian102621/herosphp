@@ -38,7 +38,7 @@ class GModel {
             tprintError("请指定模块和操作！"); die();
         }
         //获取并解析xml文档
-        $xmlFilePath = APP_PATH."xml/{$module}.xml";
+        $xmlFilePath = APP_PATH."build/{$module}.xml";
         self::$XML = new simple_html_dom(file_get_contents($xmlFilePath));
 
         $this->module = $module;
@@ -49,7 +49,7 @@ class GModel {
     public function execute() {
 
         switch ( $this->opt ) {
-            case "table":
+            case "db":
                 DBFactory::create(self::$XML);
                 break;
 

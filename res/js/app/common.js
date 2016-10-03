@@ -80,6 +80,7 @@ define(function(require, exports) {
 			$(ele).find(".children a").each(function(idx1, item) {
 				var url = $(item).attr("href");
 				if ( url == location.pathname ) {
+					$(this).parent().addClass('active');
 					$(ele).find(".children").show();
 					return false;
 				}
@@ -106,7 +107,7 @@ define(function(require, exports) {
 				borderWidth : 8,
 				lock : true,
 				effect : 0,
-				content : '<div style="padding-top: 15px;">该操作会删除选中记录，继续操作吗？</div>',
+				content : '<div style="padding-top: 15px;">确定要删除该条记录吗？</div>',
 				icon : 'warn',
 				button : {
 					'确认' : function() {

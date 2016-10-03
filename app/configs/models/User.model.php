@@ -36,12 +36,12 @@ class UserModel extends C_Model {
 
         $this->flagments = array(
 
-            'user_info' => array(
+            array(
                 'fields' => 'userid, bcontent, mobile, email',
                 'model' => 'userInfo'
             ),
 
-            'user_shop' => array(
+            array(
                 'fields' => 'userid, shop_name, shop_address, shop_type',
                 'model' => 'userShop'
             )

@@ -1,7 +1,7 @@
 <?php
-namespace {module}\action;
+namespace admin\action;
 
-use common\action\CommonAction;
+use admin\action\CommonAction;
 use herosphp\http\HttpRequest;
 
 /**
@@ -9,7 +9,4 @@ use herosphp\http\HttpRequest;
  * @package {module}\action
  * @author {author}<{email}>
  */
-class {class_name} extends CommonAction {
-
-    public function index(HttpRequest $request) {}
-}
+class {class_name} extends CommonAction {}

@@ -1,17 +1,13 @@
 <?php
 namespace admin\action;
 
-use herosphp\bean\Beans;
-use herosphp\core\Controller;
-use herosphp\core\Loader;
-use herosphp\exception\HeroException;
 use herosphp\http\HttpRequest;
 use herosphp\utils\AjaxResult;
 
 /**
  * 后台管理 index 控制器
  */
-class IndexAction extends Controller {
+class IndexAction extends CommonAction {
 
     /**
      * 首页方法
@@ -27,7 +23,7 @@ class IndexAction extends Controller {
     }
 
     //添加数据
-    public function insert(HttpRequest $request) {
+    public function insert($data) {
         AjaxResult::ajaxSuccessResult();
     }
 
@@ -43,6 +39,10 @@ class IndexAction extends Controller {
 
     public function edit(HttpRequest $request) {
         $this->setView("user/edit");
+    }
+
+    public function error(HttpRequest $request) {
+        $this->showMessage(self::MESSAGE_ERROR, COM_ERR_MSG);
     }
   
 }

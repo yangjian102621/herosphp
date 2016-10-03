@@ -215,8 +215,8 @@ abstract class CommonService implements ICommonService {
         return $this;
     }
 
-    public function limit($from, $size) {
-        $this->limit = array($from, $size);
+    public function limit($page, $size) {
+        $this->limit = array($page, $size);
         return $this;
     }
 

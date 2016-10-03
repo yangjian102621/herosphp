@@ -1,0 +1,46 @@
+{include app:admin.inc.header}
+
+{include app:admin.inc.top}
+
+<div class="container-fluid content-body">
+	<div class="main">
+		{include app:admin.inc.menu}
+
+		<section class="right-section" id="right-section">
+			<!-- start of inner-frame -->
+			<div class="inner-iframe">
+
+				<h2 style="padding-left: 20px;">404 Error Page：</h2>
+
+				<div class="inner-container">
+					<div class="error-page clearfix">
+						<h2 class="headline text-yellow"> 404</h2>
+						<div class="error-content">
+							<h3><i class="glyphicon glyphicon-warning-sign text-yellow"></i> 抱歉! 页面没有找到.</h3>
+							<p>
+								我们绕了地球一圈，还是没有找到你需要的访问的页面.
+								尽管如此, 你可以选择 <a href="javascript:window.history.go(-1);">返回</a>
+							</p>
+						</div><!-- /.error-content -->
+					</div>
+				</div>
+
+			</div><!-- end of inner -->
+		</section>
+
+	</div>
+</div>
+
+{include app:admin.inc.footer}
+
+{if $gotoUrl}
+<script>
+	$(document).ready(function() {
+		setTimeout(function() {
+			location.replace('{$gotoUrl}');
+		}, 2000)
+	});
+</script>
+{/if}
+</body>
+</html>

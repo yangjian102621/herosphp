@@ -17,5 +17,10 @@ class {model_name} extends C_Model {
 
         //设置表数据表主键，默认为id
         $this->setPrimaryKey('{pk}');
+
+        {flagments}
+
+        {sharding_num}
+
     }
 } 

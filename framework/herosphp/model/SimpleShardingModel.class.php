@@ -57,18 +57,6 @@ class SimpleShardingModel implements IModel {
      */
     protected $filterMap = array();
 
-    private $where = array();
-
-    private $fields = array();
-
-    private $sort = array();
-
-    private $limit = array();
-
-    private $group = '';
-
-    private $having = array();
-
     /**
      * 初始化数据库连接
      * @param string $table 数据表

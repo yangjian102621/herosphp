@@ -24,7 +24,8 @@ class ControllerFactory {
 
         $root = $xml->find("root", 1);
         $configs = array(
-            "module" => $root->getAttribute("module"),
+            //"module" => $root->getAttribute("module"),
+            "module" => 'admin',
             "author" => $root->getAttribute("author"),
             "email" => $root->getAttribute("email")
         );

@@ -11,7 +11,7 @@
 define('DB_ACCESS', DB_ACCESS_SINGLE);  //默认使用单台数据库服务器
 return array(
     //mysql数据库配置
-    DB_TYPE_MYSQL     =>  array(
+    'mysql'     =>  array(
         array(
             'db_type'      => 'mysql',
             'db_host'      => '{db_host}',
@@ -20,7 +20,6 @@ return array(
             'db_pass'      => '{db_pass}',
             'db_name'      => '{db_name}',
             'db_charset'   => '{db_charset}',
-            'table_prefix'   => '{table_prefix}',
             'serial'       => 'db-write',      //写服务器,如果没有配置读写分离，则此处不用理它
         ),
 
@@ -32,7 +31,6 @@ return array(
             'db_pass'      => '123456',
             'db_name'      => 'test',
             'db_charset'   => 'utf8',
-            'table_prefix'   => 'herosphp_',
             'serial'       => 'db-read',   //读服务器,如果没有配置读写分离，则此处不用理它
         ),
 
@@ -44,7 +42,6 @@ return array(
             'db_pass'      => '123456',
             'db_name'      => 'test',
             'db_charset'   => 'utf8',
-            'table_prefix'   => 'herosphp_',
             'serial'       => 'db-read',   //读服务器,如果没有配置读写分离，则此处不用理它
         ),
     ),
