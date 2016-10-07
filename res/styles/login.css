@@ -1,0 +1,33 @@
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  background: #e4e7ea url("images/loader.gif") no-repeat center center; }
+
+body {
+  background: url("images/bg-login.jpg") !important; }
+
+.login-box {
+  margin: auto;
+  max-width: 500px;
+  margin: 100px auto;
+  padding-top: 20px;
+  color: #000000;
+  box-shadow: 0px 0px 0px 5px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  background-color: #ffffff; }
+  .login-box .login-form {
+    padding: 20px 40px 40px 40px; }
+    .login-box .login-form .form-group .input-group .form-control {
+      padding: 18px;
+      font-size: 16px; }
+    .login-box .login-form .form-group .input-group .input-group-addon > i {
+      font-size: 18px; }
+    .login-box .login-form .form-group .input-group .code {
+      padding: 0;
+      overflow: hidden; }
+
+/*# sourceMappingURL=login.css.map */

@@ -36,6 +36,7 @@
 			"editor": "{framework}/kindeditor/kindeditor.js",
 			"jupload": "{framework}/jupload/JUpload.min.js",
 
+			"login": "{app}/login.js",
 			"common": "{app}/common.js",
 			"user": "{app}/user.js",
 

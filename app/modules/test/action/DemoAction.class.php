@@ -29,7 +29,7 @@ class DemoAction extends CommonAction {
 
     //mysql模型测试
     public function mysql(HttpRequest $request) {
-        
+
         $model = Loader::model("userInfo");
 
         //添加数据 C_Model::insert();
