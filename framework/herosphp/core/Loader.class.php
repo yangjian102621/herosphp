@@ -28,7 +28,7 @@ class Loader {
     /**
      * 加载一个类或者加载一个包
      * 如果加载的包中有子文件夹不进行循环加载
-     * 参数格式：'article.model.articleModel'
+     * 参数格式：'app:article.model.articleModel'
      * article.model.articleModel 相对的路径信息
      * 如果不填写应用名称 ，例如‘article.model.articleModel’，那么加载路径则相对于默认的应用路径
      *
@@ -47,13 +47,18 @@ class Loader {
         if ( isset(self::$IMPORTED_FILES[$classKey]) )  return false;
 
         //组合文件路径
+        $app = APP_NAME;
+        if ( ($pos = strpos($classPath, ':')) !== false ) {
+            $app = substr($classPath, 0, $pos);
+            $classPath = substr($classPath, $pos);
+        }
         switch ( $type ) {
             case IMPORT_CLIENT :
-                $path = APP_PATH.'client'.'/';
+                $path = APP_ROOT.$app.'/client'.'/';
                 break;
 
             case IMPORT_APP :
-                $path = APP_PATH.'modules/';
+                $path = APP_ROOT.$app.'/modules/';
                 break;
 
             case IMPORT_FRAME :

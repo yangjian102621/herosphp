@@ -20,7 +20,7 @@ class DemoAction extends CommonAction {
 
     public function index(HttpRequest $request) {
 
-        $service = Beans::get("test.user.service");
+        $service = Beans::get("test.user.service", "SAAS");
         __print($service);
         $this->setView("index");
         $this->assign("title", "欢迎使用Herosphp");

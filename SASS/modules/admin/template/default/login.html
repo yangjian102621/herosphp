@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="icon" href="../../favicon.ico">
+
+	<title>login page</title>
+
+	{res:css bootstrap.min.css}
+
+	<!-- Custom styles for this template -->
+	{res:css login.css}
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	{res:js bootstrap/html5shiv.min.js}
+	{res:js bootstrap/respond.min.js}
+	<![endif]-->
+	{res:js framework/jquery.min.js}
+</head>
+
+<body>
+<!-- Preloader -->
+<div id="preloader">
+	<div id="status"><i class="fa fa-spinner fa-spin"></i></div>
+</div>
+
+<div class="container">
+	<div class="login-box">
+		<h3 class="text-center">Herosphp管理后台</h3>
+		<form role="form" class="login-form">
+			<div class="form-group">
+				<div class="input-group">
+					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+					<input type="text" class="form-control" placeholder="请输入用户名">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="input-group">
+					<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+					<input type="password" class="form-control" placeholder="请输入密码">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="input-group">
+					<span class="input-group-addon"><i class="glyphicon glyphicon-picture"></i></span>
+					<input type="password" class="form-control" placeholder="请输入验证码">
+					<span class="input-group-addon code">
+						<img src="/admin/index/scode" onclick="this.src='/admin/index/scode?'+Math.random();">
+					</span>
+				</div>
+			</div>
+			<div class="form-group">
+				<button class="btn btn-lg btn-primary btn-block" type="submit">
+					登&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;录</button>
+			</div>
+		</form>
+	</div><!--/login box-->
+</div><!--/container-->
+
+{res:js sea.min.js}
+{res:js config.js}
+
+<script>
+	seajs.use("login");
+</script>
+</body>
+
+</html>
