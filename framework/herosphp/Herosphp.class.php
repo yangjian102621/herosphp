@@ -14,8 +14,6 @@
 if(version_compare(PHP_VERSION,'5.3.0','<'))  die('require PHP > 5.3.0 !');
 
 define('FRAME_VERSION', '3.0.0'); //框架版本
-define('SERVER_NODE_NAME', 'server_node_1'); //当前服务器节点，分布式部署时需要使用
-define('APP_PATH', APP_ROOT.APP_NAME."/"); //当前应用根目录
 require_once APP_FRAME_PATH.'Heros.const.php'; //引入系统常量文件
 require_once APP_FRAME_PATH.'functions.core.php';//包含框架全局函数
 require_once APP_PATH . 'functions.php'; //包含公共函数页面

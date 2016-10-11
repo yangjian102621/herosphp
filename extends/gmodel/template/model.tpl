@@ -4,7 +4,7 @@
  * @author  {author} <{email}>
  */
 
-namespace {app_name}\models;
+namespace models;
 
 use herosphp\model\C_Model;
 
@@ -17,9 +17,8 @@ class {model_name} extends C_Model {
 
         //设置表数据表主键，默认为id
         $this->setPrimaryKey('{pk}');
-
+        {autoPrimaryKey}
         {flagments}
-
         {sharding_num}
 
     }

@@ -46,19 +46,19 @@ class Loader {
         $classKey = $classPath.'_'.$type.'_'.$extension;
         if ( isset(self::$IMPORTED_FILES[$classKey]) )  return false;
 
-        //组合文件路径
-        $app = APP_NAME;
-        if ( ($pos = strpos($classPath, ':')) !== false ) {
-            $app = substr($classPath, 0, $pos);
-            $classPath = substr($classPath, $pos);
-        }
+//        //组合文件路径
+//        $app = APP_NAME;
+//        if ( ($pos = strpos($classPath, ':')) !== false ) {
+//            $app = substr($classPath, 0, $pos);
+//            $classPath = substr($classPath, $pos);
+//        }
         switch ( $type ) {
             case IMPORT_CLIENT :
-                $path = APP_ROOT.$app.'/client'.'/';
+                $path = APP_PATH.'client'.'/';
                 break;
 
             case IMPORT_APP :
-                $path = APP_ROOT.$app.'/modules/';
+                $path = APP_PATH.'modules/';
                 break;
 
             case IMPORT_FRAME :
@@ -177,9 +177,9 @@ class Loader {
     public static function model( $modelName ) {
 
         $modelName = ucfirst($modelName);
-        $modelPath = APP_NAME.'.configs.models';
+        $modelPath = 'www.'.APP_NAME.'.configs.models';
         Loader::import($modelPath.'.'.$modelName, IMPORT_CUSTOM, EXT_MODEL);
-        $className = APP_NAME.'\\models\\'.$modelName.'Model';
+        $className = 'models\\'.$modelName.'Model';
         return new $className();
 
     }

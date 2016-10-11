@@ -76,7 +76,7 @@ class Template {
          * foreach ( $array as $value )
          */
         '/{loop\s+\$(.*?)\s+\$([0-9a-z_]{1,})\s*}/i'	=> '<?php foreach ( \$${1} as \$${2} ) { ?>',
-		'/{\/loop}/i'	=> '<?php } ?>',
+        '/{\/loop}/i'	=> '<?php } ?>',
 
         /**
          * {run}标签： 执行php表达式
@@ -105,14 +105,14 @@ class Template {
          * require|include
          */
         '/{(require|include)\s{1,}([0-9a-z_\.\:]{1,})\s*}/i'
-							=> '<?php include $this->getIncludePath(\'${2}\')?>',
+        => '<?php include $this->getIncludePath(\'${2}\')?>',
 
         /**
          * 引入静态资源 css file,javascript file
          */
         '/{(res|cres):([a-z]{1,})\s+([^\}]+)\s*}/i'
-							=> '<?php echo $this->importResource(\'${1}\', \'${2}\', \'${3}\')?>'
-	);
+        => '<?php echo $this->importResource(\'${1}\', \'${2}\', \'${3}\')?>'
+    );
 
     /**
      * 模板编译配置
@@ -125,15 +125,15 @@ class Template {
      * @var array
      */
     private static $resTemplate = array(
-		'css'	=> "<link rel=\"stylesheet\" type=\"text/css\" href=\"{url}\" />\n",
-		'less'	=> "<link rel=\"stylesheet/less\" type=\"text/css\" href=\"{url}\" />\n",
-		'js'	=> "<script charset=\"utf-8\" type=\"text/javascript\" src=\"{url}\"></script>\n"
-	);
+        'css'	=> "<link rel=\"stylesheet\" type=\"text/css\" href=\"{url}\" />\n",
+        'less'	=> "<link rel=\"stylesheet/less\" type=\"text/css\" href=\"{url}\" />\n",
+        'js'	=> "<script charset=\"utf-8\" type=\"text/javascript\" src=\"{url}\"></script>\n"
+    );
 
-	/**
-	 * 构造函数
-	 */
-	public function __construct() {
+    /**
+     * 构造函数
+     */
+    public function __construct() {
 
         $webApp = WebApplication::getInstance();
         $this->configs = $webApp->getConfigs();
@@ -149,16 +149,16 @@ class Template {
         $this->templateDir = APP_PATH.'modules/'.$this->configs['module'].'/template/'.$this->configs['template'].'/';
         $this->compileDir = APP_RUNTIME_PATH.APP_NAME.'/'.'views/'.$this->configs['module'].'/';
 
-	}
+    }
 
-	/**
-	 * 增加模板替换规则
+    /**
+     * 增加模板替换规则
      * @param array $rules
-	 */
+     */
     public  function addRules( $rules ) {
         if ( is_array($rules) && !empty($rules) )
-		    self::$tempRules = array_merge(self::$tempRules, $rules);
-	}
+            self::$tempRules = array_merge(self::$tempRules, $rules);
+    }
 
     /**
      * 将变量分配到模板
@@ -166,17 +166,17 @@ class Template {
      * @param  string $value 变量值
      */
     public function assign( $varname, $value ) {
-		$this->templateVar[$varname] = $value;
-	}
+        $this->templateVar[$varname] = $value;
+    }
 
-	/**
-	 * 获取指定模板变量
-	 * @param string $varname 变量名
+    /**
+     * 获取指定模板变量
+     * @param string $varname 变量名
      * @return mixed
-	 */
-	public function getTemplateVar( $varname ) {
-		return $this->templateVar[$varname];
-	}
+     */
+    public function getTemplateVar( $varname ) {
+        return $this->templateVar[$varname];
+    }
 
     /**
      * 获取所有模板变量
@@ -186,12 +186,12 @@ class Template {
         return $this->templateVar;
     }
 
-	/**
-	 * 编译模板
-	 * @param 		string 		$tempFile 	 	模板文件路径
-	 * @param		string		$compileFile	编译文件路径
-	 */
-	private function complieTemplate( $tempFile, $compileFile ) {
+    /**
+     * 编译模板
+     * @param 		string 		$tempFile 	 	模板文件路径
+     * @param		string		$compileFile	编译文件路径
+     */
+    private function complieTemplate( $tempFile, $compileFile ) {
 
         //根据缓存情况编译模板
         if ( !file_exists($compileFile)
@@ -220,15 +220,15 @@ class Template {
             }
         }
 
-	}
+    }
 
-	/**
-	 * 显示模板
-	 * @param		string		$tempFile		模板文件名称
-	 */
-	public function display( $tempFile=null ) {
+    /**
+     * 显示模板
+     * @param		string		$tempFile		模板文件名称
+     */
+    public function display( $tempFile=null ) {
 
-		//如果没有传入模板文件，则访问默认模块下的默认模板
+        //如果没有传入模板文件，则访问默认模块下的默认模板
         if ( !$tempFile ) {
             $tempFile = $this->configs['action'].'_'.$this->configs['method'].EXT_TPL;
         } else {
@@ -242,29 +242,29 @@ class Template {
             $tempFile = substr($tempFile, $idx+1);
         }
         $compileFile = $tempFile.'.php';
-		if ( file_exists($this->templateDir.$tempFile) ) {
+        if ( file_exists($this->templateDir.$tempFile) ) {
             $this->complieTemplate($this->templateDir.$tempFile, $this->compileDir.$compileFile);
-			extract($this->templateVar);	//分配变量
-			include $this->compileDir.$compileFile;		//包含编译生成的文件
-		} else {
-			if ( APP_DEBUG ) {
+            extract($this->templateVar);	//分配变量
+            include $this->compileDir.$compileFile;		//包含编译生成的文件
+        } else {
+            if ( APP_DEBUG ) {
                 E("要编译的模板[".$this->templateDir.$tempFile."] 不存在！");
             }
-		}
+        }
 
-	}
+    }
 
-	/**
-	 * 获取include路径
+    /**
+     * 获取include路径
      * 参数格式说明：app:module.templateName
      * 'home:public.top'
      * 如果没有申明应用则默认以当前的应用为相对路径
-	 * @param string $tempPath	        被包含的模板路径
+     * @param string $tempPath	        被包含的模板路径
      * @return string
-	 */
-	public function getIncludePath( $tempPath = null ) {
+     */
+    public function getIncludePath( $tempPath = null ) {
 
-	    if ( !$tempPath ) return '';
+        if ( !$tempPath ) return '';
         if ( strpos($tempPath, ':') === FALSE ) {
             $appName = APP_NAME;    //默认为当前应用
         } else {
@@ -276,15 +276,15 @@ class Template {
         $pos = strpos($tempPath, '.');
         $module = substr($tempPath, 0, $pos);
         $__path = substr($tempPath, $pos);
-        $tempDir = APP_ROOT.$appName.'/modules/'.$module.'/template/'.$this->configs['template'].'/';
+        $tempDir = APP_PATH.'modules/'.$module.'/template/'.$this->configs['template'].'/';
         $compileDir = APP_RUNTIME_PATH.'views/'.$appName.'/'.$module.'/';
         $filename = str_replace('.', '/', $__path).EXT_TPL;   //模板文件名称
         $tempFile = $tempDir.$filename;
         $compileFile = $compileDir.$filename.'.php';
         //编译文件
         $this->complieTemplate($tempFile, $compileFile);
-		return $compileFile;
-	}
+        return $compileFile;
+    }
 
     /**
      * 获取日期
@@ -313,14 +313,14 @@ class Template {
         return mb_substr($str, 0, $length, 'UTF-8').'...';
     }
 
-	/**
-	 * 引进静态资源如css，js
+    /**
+     * 引进静态资源如css，js
      * @param string $section 资源所属片区(res => 模块内部的资源, gres => 全局资源)
-	 * @param string $type 资源类别
-	 * @param string $path 资源路径
+     * @param string $type 资源类别
+     * @param string $path 资源路径
      * @return string
-	 */
-	public function importResource( $section, $type, $path ) {
+     */
+    public function importResource( $section, $type, $path ) {
         //获取资源的目录
         $resUrl = $this->configs['res_url'].RES_URL;
 
@@ -340,21 +340,21 @@ class Template {
         $result = str_replace('{url}', $src, $template);
 
         return $result;
-	}
+    }
 
-	/**
-	 * 获取页面执行后的代码
-	 * @param	string $tempFile
-	 * @return	string $html
-	*/
-	public function &getExecutedHtml( $tempFile ) {
+    /**
+     * 获取页面执行后的代码
+     * @param	string $tempFile
+     * @return	string $html
+     */
+    public function &getExecutedHtml( $tempFile ) {
 
-		ob_start();
-		$this->display( $tempFile );
+        ob_start();
+        $this->display( $tempFile );
         $html = ob_get_contents();
-		ob_end_clean();
-		return  $html;
+        ob_end_clean();
+        return  $html;
 
-	}
+    }
 
 }

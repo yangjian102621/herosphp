@@ -115,7 +115,7 @@ class ShardingRouterModel implements IModel {
         if ( $data == false ) {
             return false;
         }
-        if ( $this->autoPrimary ) {
+        if ( !isset($data[$this->primaryKey]) && $this->autoPrimary ) {
             $data[$this->primaryKey] = StringUtils::genGlobalUid();
         }
 
@@ -139,7 +139,7 @@ class ShardingRouterModel implements IModel {
         if ( $data == false ) {
             return false;
         }
-        if ( $this->autoPrimary ) {
+        if ( !isset($data[$this->primaryKey]) && $this->autoPrimary ) {
             $data[$this->primaryKey] = StringUtils::genGlobalUid();
         }
         if ( $this->shardingRouter == null || is_array($this->shardingRouter) ) {

@@ -89,6 +89,13 @@ class ModelFactory {
                 $content = str_replace("{sharding_num}", '', $content);
             }
 
+            //设置自动自增主键
+            if ( $pk->ai ) {
+                $content = str_replace("{autoPrimaryKey}", '$this->autoPrimary = false;', $content);
+            } else {
+                $content = str_replace("{autoPrimaryKey}", '$this->autoPrimary = true;', $content);
+            }
+
             if ( file_put_contents($modelFile, $content) !== false ) {
                 tprintOk("create model file '{$modelFile}' successfully.");
             } else {

@@ -20,12 +20,14 @@ class DemoAction extends CommonAction {
 
     public function index(HttpRequest $request) {
 
-        $service = Beans::get("test.user.service");
-        __print($service);
+//        $service = Beans::get("test.user.service");
+//        __print($service);
         $this->setView("index");
         $this->assign("title", "欢迎使用Herosphp");
 
-        $conditions = array('name' => 'xiaoming', '#address' => 'shenzhen');
+        $conditions = array(
+            'name' => 'xiaoming',
+            '$or' => array('name' => 'xiaoming', 'address' => 'shenzhen'));
         $builder = MysqlQueryBuilder::buildConditions($conditions);
         die($builder);
     }

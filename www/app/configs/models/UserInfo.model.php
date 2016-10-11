@@ -4,7 +4,7 @@
  * @author  yangjian <yangjian102621@gmail.com>
  */
 
-namespace app\models;
+namespace models;
 
 use herosphp\model\SimpleShardingModel;
 

@@ -34,7 +34,7 @@ class C_Model implements IModel {
     //数据表主键
     protected $primaryKey = 'id';
     //是否自动产生ID，如果没有传入的ID的话
-    protected $autoPrimary = true;
+    protected $autoPrimary = false;
 
     /**
      * 配置关联模型，用来对数据表进行垂直分割
@@ -115,7 +115,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        if ( $this->autoPrimary ) {
+        if ( !isset($data[$this->primaryKey]) && $this->autoPrimary ) {
             $data[$this->primaryKey] = StringUtils::genGlobalUid();
         }
         if ( $this->isFlagment ) {
@@ -154,7 +154,7 @@ class C_Model implements IModel {
         if ( $data == false ) {
             return false;
         }
-        if ( $this->autoPrimary ) {
+        if ( !isset($data[$this->primaryKey]) && $this->autoPrimary ) {
             $data[$this->primaryKey] = StringUtils::genGlobalUid();
         }
         if ( $this->isFlagment ) {
