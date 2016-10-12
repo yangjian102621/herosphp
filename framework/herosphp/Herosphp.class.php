@@ -162,6 +162,7 @@ class Herosphp {
             Loader::import(self::$LIB_CLASS[$className], IMPORT_FRAME, EXT_PHP);
         } else {
             Loader::import(self::$APP_CLASS[$className], IMPORT_APP, EXT_PHP);
+            Loader::import(self::$APP_CLASS[$className], IMPORT_CUSTOM, EXT_PHP);
         }
     }
 

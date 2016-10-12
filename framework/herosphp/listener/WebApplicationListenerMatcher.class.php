@@ -14,6 +14,7 @@
 namespace herosphp\listener;
 
 use herosphp\core\Loader;
+use herosphp\http\HttpRequest;
 
 Loader::import('listener.IWebAplicationListener', IMPORT_FRAME);
 
@@ -32,7 +33,7 @@ abstract class WebApplicationListenerMatcher implements  IWebAplicationListener 
      * action 方法调用之前
      * @return mixed
      */
-    public function beforeActionInvoke()
+    public function beforeActionInvoke(HttpRequest $request)
     {
         // TODO: Implement beforeActionInvoke() method.
     }
@@ -41,7 +42,7 @@ abstract class WebApplicationListenerMatcher implements  IWebAplicationListener 
      * 响应发送之前
      * @return mixed
      */
-    public function beforeSendResponse($actionInstance)
+    public function beforeSendResponse(HttpRequest $request, $actionInstance)
     {
         // TODO: Implement beforeSendResponse() method.
     }

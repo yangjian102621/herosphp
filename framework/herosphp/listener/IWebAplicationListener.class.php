@@ -11,6 +11,8 @@
 
 namespace herosphp\listener;
 
+use herosphp\http\HttpRequest;
+
 interface IWebAplicationListener {
 
     /**
@@ -23,14 +25,14 @@ interface IWebAplicationListener {
      * action 方法调用之前
      * @return mixed
      */
-    public function beforeActionInvoke();
+    public function beforeActionInvoke(HttpRequest $request);
 
     /**
      * 响应发送之前
      * @param \herosphp\core\Controller $actionInstance
      * @return mixed
      */
-    public function beforeSendResponse($actionInstance);
+    public function beforeSendResponse(HttpRequest $request, $actionInstance);
 
     /**
      * 响应发送之后

@@ -20,6 +20,8 @@ class DemoAction extends CommonAction {
 
     public function index(HttpRequest $request) {
 
+        __print($request->getParameters());
+
 //        $service = Beans::get("test.user.service");
 //        __print($service);
         $this->setView("index");

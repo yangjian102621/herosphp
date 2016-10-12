@@ -81,11 +81,15 @@ class Loader {
             chdir($dir);
             $classFiles = glob('*'.$extension);
             foreach ($classFiles as $file ) {
-                require $dir.'/'.$file;
+                if ( file_exists($dir.'/'.$file) ) {
+                    require $dir.'/'.$file;
+                }
             }
 
         } else {    //包含单个文件
-            require $path.$classPath.$extension;
+            if ( $path.$classPath.$extension ) {
+                require $path.$classPath.$extension;
+            }
         }
 
         self::$IMPORTED_FILES[$classKey] = 1;

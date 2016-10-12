@@ -2,6 +2,7 @@
 
 namespace common\listener;
 
+use herosphp\http\HttpRequest;
 use herosphp\listener\IWebAplicationListener;
 use herosphp\listener\WebApplicationListenerMatcher;
 
@@ -25,7 +26,7 @@ use herosphp\listener\WebApplicationListenerMatcher;
       * action 方法调用之前
       * @return mixed
       */
-     public function beforeActionInvoke()
+     public function beforeActionInvoke(HttpRequest $request)
      {
          // TODO: Implement beforeActionInvoke() method.
      }
@@ -34,9 +35,8 @@ use herosphp\listener\WebApplicationListenerMatcher;
       * 响应发送之前
       * @return mixed
       */
-     public function beforeSendResponse($actionInstance)
+     public function beforeSendResponse(HttpRequest $request, $actionInstance)
      {
-         // TODO: Implement beforeSendResponse() method.
      }
 
      /**
