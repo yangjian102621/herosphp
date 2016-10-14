@@ -11,9 +11,10 @@
 
 namespace herosphp\listener;
 
+use herosphp\core\Controller;
 use herosphp\http\HttpRequest;
 
-interface IWebAplicationListener {
+interface IWebApplicationListener {
 
     /**
      * 请求初始化之前
@@ -32,13 +33,13 @@ interface IWebAplicationListener {
      * @param \herosphp\core\Controller $actionInstance
      * @return mixed
      */
-    public function beforeSendResponse(HttpRequest $request, $actionInstance);
+    public function beforeSendResponse(HttpRequest $request, Controller $actionInstance);
 
     /**
      * 响应发送之后
      * @param \herosphp\core\Controller $actionInstance
      * @return mixed
      */
-    public function afterSendResponse($actionInstance);
+    public function afterSendResponse(Controller $actionInstance);
 
 }

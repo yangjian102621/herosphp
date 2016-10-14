@@ -2,8 +2,9 @@
 
 namespace common\listener;
 
+use herosphp\core\Controller;
 use herosphp\http\HttpRequest;
-use herosphp\listener\IWebAplicationListener;
+use herosphp\listener\IWebApplicationListener;
 use herosphp\listener\WebApplicationListenerMatcher;
 
 /**
@@ -11,7 +12,7 @@ use herosphp\listener\WebApplicationListenerMatcher;
  * @package common\listener
  * @author yangjian102621@gmail.com
  */
- class DefaultWebappListener extends WebApplicationListenerMatcher implements IWebAplicationListener {
+ class DefaultWebappListener extends WebApplicationListenerMatcher implements IWebApplicationListener {
 
      /**
       * 请求初始化之前
@@ -35,7 +36,7 @@ use herosphp\listener\WebApplicationListenerMatcher;
       * 响应发送之前
       * @return mixed
       */
-     public function beforeSendResponse(HttpRequest $request, $actionInstance)
+     public function beforeSendResponse(HttpRequest $request, Controller $actionInstance)
      {
      }
 
@@ -43,7 +44,7 @@ use herosphp\listener\WebApplicationListenerMatcher;
       * 响应发送之后
       * @return mixed
       */
-     public function afterSendResponse($actionInstance)
+     public function afterSendResponse(Controller $actionInstance)
      {
          // TODO: Implement afterSendResponse() method.
      }
