@@ -3,6 +3,8 @@
 namespace common\service;
 
 use common\service\interfaces\ICommonService;
+use herosphp\core\Loader;
+use herosphp\model\C_Model;
 
 /**
  * 通用服务接口实现
@@ -13,7 +15,7 @@ abstract class CommonService implements ICommonService {
 
     /**
      * 数据模型操作DAO
-     * @var \common\dao\interfaces\ICommonDao
+     * @var C_Model
      */
     protected $modelDao;
 
@@ -30,7 +32,16 @@ abstract class CommonService implements ICommonService {
     private $having = array();
 
     /**
-     * @param \common\dao\interfaces\ICommonDao $modelDao
+     * 构造函数，初始化modelDao
+     * @param $model
+     */
+    public function __construct($model) {
+
+        $this->setModelDao(Loader::model($model));
+    }
+
+    /**
+     * @param $modelDao
      */
     public function setModelDao($modelDao)
     {
@@ -38,7 +49,7 @@ abstract class CommonService implements ICommonService {
     }
 
     /**
-     * @return \common\dao\interfaces\ICommonDao
+     * @return C_Model
      */
     public function getModelDao()
     {
@@ -83,6 +94,14 @@ abstract class CommonService implements ICommonService {
     public function getItems($conditions, $fields, $order, $limit, $group, $having)
     {
         return $this->modelDao->getItems($conditions, $fields, $order, $limit, $group, $having);
+    }
+
+    public function find()
+    {
+        $items = &$this->getItems($this->where, $this->fields, $this->sort, $this->limit, $this->group, $this->having);
+        $this->clearConditions();
+        return $items;
+
     }
 
     /**
@@ -203,6 +222,15 @@ abstract class CommonService implements ICommonService {
     public function getDB()
     {
         return $this->modelDao->getDB();
+    }
+
+    protected function clearConditions() {
+        $this->where = array();
+        $this->fields = array();
+        $this->sort = array();
+        $this->limit = array();
+        $this->group = '';
+        $this->having = array();
     }
 
     public function where($where) {

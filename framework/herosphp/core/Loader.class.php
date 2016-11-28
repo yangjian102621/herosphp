@@ -13,17 +13,14 @@ namespace herosphp\core;
 
 class Loader {
 
-    /**
-     * 已经导入的class文件
-     * @var array
-     */
-    private static $IMPORTED_FILES = array();
+    //imported class cache
+    protected static $IMPORTED_FILES = array();
 
-    /**
-     * 已经导入的配置文档
-     * @var array
-     */
-    private static $CONFIGS = array();
+    //imported configs cache
+    protected static $CONFIGS = array();
+
+    //model cache array
+    protected static $MODELS = array();
 
     /**
      * 加载一个类或者加载一个包
@@ -87,7 +84,7 @@ class Loader {
             }
 
         } else {    //包含单个文件
-            if ( $path.$classPath.$extension ) {
+            if ( file_exists($path.$classPath.$extension) ) {
                 require $path.$classPath.$extension;
             }
         }
@@ -180,11 +177,14 @@ class Loader {
      */
     public static function model( $modelName ) {
 
-        $modelName = ucfirst($modelName);
-        $modelPath = 'www.'.APP_NAME.'.configs.models';
-        Loader::import($modelPath.'.'.$modelName, IMPORT_CUSTOM, EXT_MODEL);
-        $className = 'models\\'.$modelName.'Model';
-        return new $className();
+        if ( !isset(self::$MODELS[$modelName]) ) {
+            $modelName = ucfirst($modelName);
+            $modelPath = 'www.'.APP_NAME.'.configs.models';
+            Loader::import($modelPath.'.'.$modelName, IMPORT_CUSTOM, EXT_MODEL);
+            $className = 'models\\'.$modelName.'Model';
+            self::$MODELS[$modelName] = new $className();
+        }
+        return self::$MODELS[$modelName];
 
     }
 }

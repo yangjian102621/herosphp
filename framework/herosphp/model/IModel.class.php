@@ -55,9 +55,9 @@ namespace herosphp\model;
       * @param $having
       * @return mixed
       */
-     public function getItems($conditions, $fields, $order, $limit, $group, $having);
+     public function &getItems($conditions, $fields, $order, $limit, $group, $having);
 
-     public function find();
+     public function &find();
 
      /**
       * 获取单条数据
@@ -66,9 +66,9 @@ namespace herosphp\model;
       * @param $order
       * @return mixed
       */
-     public function getItem($condition, $fields, $order);
+     public function &getItem($condition, $fields, $order);
 
-     public function findOne();
+     public function &findOne();
 
      /**
       * 更新一条数据
@@ -159,6 +159,24 @@ namespace herosphp\model;
 
      //判断是否开启了事物
      public function inTransaction();
+
+     /**
+      * 写锁定
+      * @return boolean
+      */
+     public function writeLock();
+
+     /**
+      * 读锁定
+      * @return boolean
+      */
+     public function readLock();
+
+     /**
+      * 解锁
+      * @return boolean
+      */
+     public function unLock();
 
      /**
       * @return IModel

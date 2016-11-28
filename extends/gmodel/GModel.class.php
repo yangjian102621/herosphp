@@ -70,7 +70,7 @@ class GModel {
                 break;
 
             case "--all":
-                DBFactory::create(self::$XML);
+                //DBFactory::create(self::$XML);
                 ModelFactory::create(self::$XML);
                 DaoFactory::create(self::$XML);
                 ServiceFactory::create(self::$XML);

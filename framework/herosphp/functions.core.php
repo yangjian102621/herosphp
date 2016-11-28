@@ -16,7 +16,6 @@ function __print() {
     $_args = func_get_args();  //获取函数的参数
 
     if( count($_args) < 1 ) {
-        \herosphp\core\Debug::appendMessage('必须为myprint()参数');
         trigger_error('必须为myprint()参数');
         return;
     }
@@ -113,7 +112,6 @@ function url($url) {
         $filename = str_replace(EXT_URI, '', $urlInfo['path']);
         $filename = rtrim($filename, "/");
         $pathInfo = explode('/', $filename);
-        __print($pathInfo);
         //提取pathinfo参数
         $paramArr = array();
         if ( count($pathInfo) > 3 ) {
@@ -295,5 +293,20 @@ function location( $url ) {
 //获取框架版本号
 function getFrameVersion() {
     return FRAME_VERSION;
+}
+
+//获取http头信息
+function getHttpHeader($key) {
+    return $_SERVER["HTTP_".str_replace('-', '_', strtoupper($key))];
+}
+
+function getHttpHeaders() {
+    $headers = array();
+    foreach ($_SERVER as $key => $value) {
+        if ( strpos($key, 'HTTP_') === 0 ) {
+            $headers[strtolower(substr($key, 5))] = $value;
+        }
+    }
+    return $headers;
 }
 

@@ -140,7 +140,7 @@ class Page {
             $leftPages .= '<li><a href="'.$this->buildUrl($this->url.'1').'" class="page_list page_Rounded5">1</a></li>';
             //$leftPages .= '<li><a href="'.url($this->url.'2').'" class="page_list page_Rounded5">2</a></li>';
 
-            $pageData['1'] = $this->buildUrl($this->url.'1');
+            //$pageData['1'] = $this->buildUrl($this->url.'1');
 
             //打印左边省略号
             if ( $style & PAGE_DOT ) {
@@ -178,7 +178,7 @@ class Page {
 
             //$rightPages .= '<li><a href="'.url($this->url.($this->pageNum - 1)).'">'.($this->pageNum - 1).'</a></li>';
             $rightPages .= '<li><a href="'.$this->buildUrl($this->url.$this->pageNum).'">'.$this->pageNum.'</a></li>';
-            $pageData[$this->pageNum] = $this->buildUrl($this->url.$this->pageNum);
+            //$pageData[$this->pageNum] = $this->buildUrl($this->url.$this->pageNum);
 
         } else {
             for ( $i = ($this->pageNow + 1); $i <= $this->pageNum; $i++  ) {
@@ -255,14 +255,16 @@ class Page {
     /**
      * 获取分页数据
      * @param int $style
+     * @param $showFirstPage 当只有一页的时候是否显示分页列表
      * @return array
      */
-    public function getPageData( $style = DEFAULT_PAGE_STYLE ) {
+    public function getPageData( $style = DEFAULT_PAGE_STYLE, $showFirstPage=false) {
 
-        if ( $this->pageNum <= 1 ) return array();
+        if ( $this->pageNum <= 1 && $showFirstPage == false ) return array();
 
         $pages = array('url' => $this->buildUrl($this->url.'{page}'));
         if ( $style & PAGE_TOTAL_NUM ) $pages['total'] = $this->totalRows;
+        $pages['first'] = $this->buildUrl($this->url."1");
         if ( $style & PAGE_PREV ) {
             if ( $this->pageNow > 1 ) {
                 $pages['prev'] = $this->buildUrl($this->url.($this->pageNow -1));
@@ -281,6 +283,7 @@ class Page {
                 $pages['next'] = '#';
             }
         }
+        $pages['last'] = $this->buildUrl($this->url.$this->pageNum);
         return $pages;
 
     }

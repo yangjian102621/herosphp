@@ -8,13 +8,7 @@ $beans = array(
 	'test.user.service' => array(
 		'@type' => Beans::BEAN_OBJECT,
 		'@class' => 'test\service\UserService',
-		'@attributes' => array(
-			'@bean/modelDao'=>array(
-				'@type'=>Beans::BEAN_OBJECT,
-				'@class'=>'test\dao\UserDao',
-				'@params' => array('User')
-			)
-		),
+		'@params' => array('User')
 	)
 );
 return $beans;

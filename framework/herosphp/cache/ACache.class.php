@@ -101,7 +101,7 @@ Abstract class ACache {
         if ( $key ) {
             $dir = getHashCode($key) % self::$_FILE_OPACITY;
             $cacheDir .= "common/{$dir}/";
-            return $cacheDir."{$key}.cache";
+            return $cacheDir.md5($key);
         } else {
             $cacheDir .= $this->baseKey.'/';
             $filename = $this->baseKey;

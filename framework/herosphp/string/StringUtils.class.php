@@ -77,7 +77,7 @@ class StringUtils {
      * @return string
      */
     public static function jsonEncode($array) {
-        return urlencode(json_encode($array));
+        return json_encode($array, JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -86,8 +86,41 @@ class StringUtils {
      * @return mixed
      */
     public static function jsonDecode($string) {
-
-        $string = urldecode($string);
         return json_decode($string, true);
+    }
+
+    /**
+     * 下划线转驼峰
+     * @param $str
+     * @return string
+     */
+    public static function underline2hump($str) {
+
+        $str = trim($str);
+        if ( strpos($str, "_") === false ) return $str;
+
+        $arr = explode("_", $str);
+        $__str = $arr[0];
+        for( $i = 1; $i < count($arr); $i++ ) {
+            $__str .= ucfirst($arr[$i]);
+        }
+        return $__str;
+    }
+
+    /**
+     * 驼峰转下划线
+     * @param $str
+     * @return mixed
+     */
+    public static function hump2Underline($str) {
+        $arr = array();
+        for( $i = 1; $i < strlen($str); $i++ ) {
+            if ( ord($str[$i]) > 64 && ord($str[$i]) < 91 ) {
+                $arr[] = "_".strtolower($str[$i]);
+            } else {
+                $arr[] = $str[$i];
+            }
+        }
+        return implode('', $arr);
     }
 } 

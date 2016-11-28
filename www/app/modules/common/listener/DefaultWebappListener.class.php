@@ -2,9 +2,9 @@
 
 namespace common\listener;
 
-use herosphp\core\Controller;
+use herosphp\core\WebApplication;
 use herosphp\http\HttpRequest;
-use herosphp\listener\IWebApplicationListener;
+use herosphp\listener\IWebAplicationListener;
 use herosphp\listener\WebApplicationListenerMatcher;
 
 /**
@@ -12,7 +12,7 @@ use herosphp\listener\WebApplicationListenerMatcher;
  * @package common\listener
  * @author yangjian102621@gmail.com
  */
- class DefaultWebappListener extends WebApplicationListenerMatcher implements IWebApplicationListener {
+ class DefaultWebappListener extends WebApplicationListenerMatcher implements IWebAplicationListener {
 
      /**
       * 请求初始化之前
@@ -29,22 +29,26 @@ use herosphp\listener\WebApplicationListenerMatcher;
       */
      public function beforeActionInvoke(HttpRequest $request)
      {
-         // TODO: Implement beforeActionInvoke() method.
+
      }
 
      /**
       * 响应发送之前
       * @return mixed
       */
-     public function beforeSendResponse(HttpRequest $request, Controller $actionInstance)
+     public function beforeSendResponse(HttpRequest $request, $actionInstance)
      {
+         $webApp = WebApplication::getInstance();
+         //注册当前app的配置信息
+         $actionInstance->assign('appConfigs', $webApp->getConfigs());
+         $actionInstance->assign('params', $webApp->getHttpRequest()->getParameters());
      }
 
      /**
       * 响应发送之后
       * @return mixed
       */
-     public function afterSendResponse(Controller $actionInstance)
+     public function afterSendResponse($actionInstance)
      {
          // TODO: Implement afterSendResponse() method.
      }

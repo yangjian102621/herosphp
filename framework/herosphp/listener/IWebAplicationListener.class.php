@@ -1,8 +1,6 @@
 <?php
-
 /*---------------------------------------------------------------------
- * 应用程序生命周期匹配器
- * @package herosphp\listener
+ * 应用程序生命周期监听器接口
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -13,30 +11,21 @@
 
 namespace herosphp\listener;
 
-use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
 
-Loader::import('listener.IWebAplicationListener', IMPORT_FRAME);
-
-abstract class WebApplicationListenerMatcher implements  IWebAplicationListener {
+interface IWebAplicationListener {
 
     /**
      * 请求初始化之前
      * @return mixed
      */
-    public function beforeRequestInit()
-    {
-        // TODO: Implement beforeRequestInit() method.
-    }
+    public function beforeRequestInit();
 
     /**
      * action 方法调用之前
      * @return mixed
      */
-    public function beforeActionInvoke(HttpRequest $request)
-    {
-        // TODO: Implement beforeActionInvoke() method.
-    }
+    public function beforeActionInvoke(HttpRequest $request);
 
     /**
      * 在控制器的住方法调用之后无论如何也会调用的，比如在控制器调用之后直接die掉，
@@ -45,25 +34,20 @@ abstract class WebApplicationListenerMatcher implements  IWebAplicationListener 
      * @param \herosphp\core\Controller $actionInstance
      * @return mixed
      */
-    public function actionInvokeFinally(HttpRequest $request, $actionInstance) {
-        // TODO: Implement beforeActionInvoke() method.
-    }
+    public function actionInvokeFinally(HttpRequest $request, $actionInstance);
 
     /**
      * 响应发送之前
+     * @param \herosphp\core\Controller $actionInstance
      * @return mixed
      */
-    public function beforeSendResponse(HttpRequest $request, $actionInstance)
-    {
-        // TODO: Implement beforeSendResponse() method.
-    }
+    public function beforeSendResponse(HttpRequest $request, $actionInstance);
 
     /**
      * 响应发送之后
+     * @param \herosphp\core\Controller $actionInstance
      * @return mixed
      */
-    public function afterSendResponse($actionInstance)
-    {
-        // TODO: Implement afterSendResponse() method.
-    }
+    public function afterSendResponse($actionInstance);
+
 }

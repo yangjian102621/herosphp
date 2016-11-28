@@ -10,6 +10,8 @@ namespace herosphp\utils;
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
+use herosphp\string\StringUtils;
+
 class AjaxResult {
 
     /**
@@ -44,7 +46,7 @@ class AjaxResult {
      * 显示ajax操作失败默认结果
      */
     public static function ajaxFailtureResult(){
-        $result = new AjaxResult(self::OP_FAILURE, "操作失败!");
+        $result = new AjaxResult(self::OP_FAILURE, "操作失败.");
         die($result->toJsonMessage());
     }
 
@@ -52,7 +54,7 @@ class AjaxResult {
      * 显示ajax操作成功默认结果
      */
     public static function ajaxSuccessResult(){
-        $result = new AjaxResult(self::OP_SUCCESS, "操作成功!");
+        $result = new AjaxResult(self::OP_SUCCESS, "操作成功.");
         die($result->toJsonMessage());
     }
 
@@ -126,11 +128,17 @@ class AjaxResult {
     }
 
     /**
+     * 判断是否成功
+     * @return bool
+     */
+    public function isSucess() {
+        return $this->code == self::OP_SUCCESS;
+    }
+
+    /**
      * 返回Json格式结果
      */
     public function toJsonMessage(){
-        return json_encode(array('code'=>$this->getCode(), 'message'=>$this->getMessage(), 'data'=>$this->getData()));
+        return StringUtils::jsonEncode(array('code'=>$this->getCode(), 'message'=>$this->getMessage(), 'data'=>$this->getData()));
     }
 }
-
-?>

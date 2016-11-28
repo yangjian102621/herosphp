@@ -14,10 +14,10 @@ header("Content-Type:text/html; charset=utf-8");
 
 // 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false
 define('APP_DEBUG', true);
-
 //设置错误等级
 define('ERROR_LEVEL', E_ALL & ~E_NOTICE  & ~E_WARNING &~E_STRICT);
 
+define('PHP_UNIT' , true);
 // 定义当前访问的应用
 define('APP_NAME', basename(__DIR__));
 
@@ -34,7 +34,7 @@ define('APP_FRAME_PATH', APP_ROOT.'framework/herosphp/');
 require APP_FRAME_PATH . 'Herosphp.class.php';
 
 //注册第三方库自动加载
-//require APP_ROOT . "vendor/autoload.php";
+require APP_ROOT . "vendor/autoload.php";
 
 //启动应用程序
 Herosphp::run();
