@@ -14,7 +14,7 @@ class UserModel extends C_Model {
     public function __construct() {
 
         //创建model对象并初始化数据表名称
-        parent::__construct('fiidee_user');
+        parent::__construct('area');
 
         $this->isFlagment = true;
 
@@ -34,19 +34,19 @@ class UserModel extends C_Model {
 //                array("require" => "个人简介不能为空."))
 //        );
 
-        $this->flagments = array(
-
-            array(
-                'fields' => 'userid, bcontent, mobile, email',
-                'model' => 'userInfo'
-            ),
-
-            array(
-                'fields' => 'userid, shop_name, shop_address, shop_type',
-                'model' => 'userShop'
-            )
-
-        );
+//        $this->flagments = array(
+//
+//            array(
+//                'fields' => 'userid, bcontent, mobile, email',
+//                'model' => 'userInfo'
+//            ),
+//
+//            array(
+//                'fields' => 'userid, shop_name, shop_address, shop_type',
+//                'model' => 'userShop'
+//            )
+//
+//        );
 
         //设置数据表字段别名映射
 //        $maping = array(

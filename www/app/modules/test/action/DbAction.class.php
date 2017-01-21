@@ -16,7 +16,7 @@ use herosphp\utils\HashUtils;
  * @package commom\action
  * @author yangjian<yangjian102621@gmail.com>
  */
-class DemoAction extends CommonAction {
+class DbAction extends CommonAction {
 
     public function index(HttpRequest $request) {
 
@@ -284,7 +284,7 @@ class DemoAction extends CommonAction {
     public function service() {
 
         $service = Beans::get('test.user.service');
-        __print($service->getItems());
+        __print($service->getItem(123));
         AjaxResult::ajaxSuccessResult();
     }
 }

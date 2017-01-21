@@ -175,7 +175,7 @@ class SimpleShardingModel implements IModel {
      * @param $conditions
      * @return array|mixed
      */
-    public function getItems($ids, $fields, $order, $limit, $group, $having)
+    public function &getItems($ids, $fields, $order, $limit, $group, $having)
     {
         $items = array();
         foreach ( $ids as $id ) {
@@ -184,7 +184,7 @@ class SimpleShardingModel implements IModel {
         return $items;
     }
 
-    public function find()
+    public function &find()
     {
         throw new UnSupportedOperationException('暂时不支持该操作。');
     }
@@ -194,7 +194,7 @@ class SimpleShardingModel implements IModel {
      * @param $id
      * @return array|bool|false|mixed
      */
-    public function getItem($id, $fields, $order)
+    public function &getItem($id, $fields, $order)
     {
         if ( is_array($id) ) {
             E('该方法只支持传入单个ID作为查询条件');
@@ -214,7 +214,7 @@ class SimpleShardingModel implements IModel {
         return $item;
     }
 
-    public function findOne()
+    public function &findOne()
     {
         throw new UnSupportedOperationException('暂时不支持该操作。');
     }
@@ -247,9 +247,21 @@ class SimpleShardingModel implements IModel {
      */
     public function increase($field, $offset, $id)
     {
-        $update_str = "{$field}=CONCAT({$field}, '{$offset}')";
-        if ( is_numeric($offset) ) {
-            $update_str = "{$field}={$field}+{$offset}";
+        $update_str = '';
+        if ( is_array($field) && is_array($offset) && count($field) == count($offset) ) {
+            foreach ( $field as $key => $value ) {
+                $updateUnit = "{$value}=CONCAT({$value}, '{$offset[$key]}')";
+                if ( is_numeric($offset[$key]) ) {
+                    $updateUnit = "{$value}={$value} + {$offset[$key]}";
+                }
+                $update_str .= $update_str == '' ? $updateUnit : ','.$updateUnit;
+            }
+        } else {
+            if ( is_numeric($offset) ) {
+                $update_str .= "{$field}={$field} + {$offset}";
+            } else {
+                $update_str .= "{$field}=CONCAT({$field}, '{$offset}')";
+            }
         }
         $table = $this->getShardingTables($id);
         $conditions = MysqlQueryBuilder::buildConditions(array($this->primaryKey => $id));
@@ -279,9 +291,21 @@ class SimpleShardingModel implements IModel {
      */
     public function reduce($field, $offset, $id)
     {
-        $update_str = "{$field}=REPLACE({$field}, '{$offset}', '')";
-        if ( is_numeric($offset) ) {
-            $update_str = "{$field}={$field}-{$offset}";
+        $update_str = '';
+        if ( is_array($field) && is_array($offset) && count($field) == count($offset) ) {
+            foreach ( $field as $key => $value ) {
+                $updateUnit = "{$value}=REPLACE({$value}, '{$offset[$key]}', '')";
+                if ( is_numeric($offset[$key]) ) {
+                    $updateUnit = "{$value}={$value} - {$offset[$key]}";
+                }
+                $update_str .= $update_str == '' ? $updateUnit : ','.$updateUnit;
+            }
+        } else {
+            if ( is_numeric($offset) ) {
+                $update_str .= "{$field}={$field} - {$offset}";
+            } else {
+                $update_str .= "{$field}=REPLACE({$field}, '{$offset}', '')";
+            }
         }
         $table = $this->getShardingTables($id);
         $conditions = MysqlQueryBuilder::buildConditions(array($this->primaryKey => $id));
@@ -481,5 +505,42 @@ class SimpleShardingModel implements IModel {
 
     public function having($having) {
         throw new UnSupportedOperationException('暂时不支持该操作。');
+    }
+
+    /**
+     * 写锁定
+     * @return boolean
+     */
+    public function writeLock()
+    {
+        //将所有的表锁定
+        $tables = $this->getShardingTables();
+        foreach ($tables as $value) {
+            $this->db->excute("LOCK TABLES {$value} WRITE");
+        }
+        return true;
+    }
+
+    /**
+     * 读锁定
+     * @return boolean
+     */
+    public function readLock()
+    {
+        //将所有的表锁定
+        $tables = $this->getShardingTables();
+        foreach ($tables as $value) {
+            $this->db->excute("LOCK TABLES {$value} READ");
+        }
+        return true;
+    }
+
+    /**
+     * 解锁
+     * @return boolean
+     */
+    public function unLock()
+    {
+        return $this->db->excute("UNLOCK TABLES");
     }
 }

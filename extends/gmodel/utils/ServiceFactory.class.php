@@ -149,7 +149,7 @@ class ServiceFactory {
         $sb->appendLine(');');
         $sb->appendLine('return $beans;');
 
-        if ( file_put_contents($beansFile, $sb->toString()) !== false ) {
+        if ( file_put_contents($beansFile, $sb->toString(), FILE_APPEND) !== false ) {
             tprintOk("create Beans config file '{$beansFile}' successfully.");
         } else {
             tprintError("create Beans config file '{$beansFile}' faild.");

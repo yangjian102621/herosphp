@@ -20,6 +20,5 @@ class {model_name} extends C_Model {
         {autoPrimaryKey}
         {flagments}
         {sharding_num}
-
     }
 } 

@@ -310,26 +310,3 @@ function getHttpHeaders() {
     return $headers;
 }
 
-//fixed bug for cache\FileCache line 34444 @ Haiwera 2016-10-28
-function cn_json_encode($mixed){
-	return json_encode($mixed,JSON_UNESCAPED_UNICODE);
-}
-function cn_json_decode($mixed,$t = true){
-	return json_decode($mixed,$t);
-}
-
-/**
- * 判断字符串是不是json
- * @author Liuyi
- * @created 2016-12-01
- */
-if( !function_exists('is_json') ) {
-    function is_json( $string )
-    {
-        if( $string=="" ) return false;
-        json_decode($string);
-        return (json_last_error() == JSON_ERROR_NONE);
-
-    }
-}
-

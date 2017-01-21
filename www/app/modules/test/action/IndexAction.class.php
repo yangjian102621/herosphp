@@ -25,24 +25,8 @@ class IndexAction extends Controller {
      * @param HttpRequest $request
      */
     public function index( HttpRequest $request ) {
-        for ($i = 0; $i < 100; $i++) {
-            __print(StringUtils::genGlobalUid());
-        }
-        die();
+        $this->setView("index");
+        $this->assign("title", "欢迎使用Herosphp");
     }
 
-    //获取用户列表
-    public function user() {
-
-        $service = Beans::get('test.user.service');
-
-        $query = MysqlEntity::getInstance()->field('*')->addOptWhere('id', '>=', 20)->addLikeWhere('username', '123');
-
-        $result = $service->getItems($query);
-        __print($result);
-        die();
-
-    }
-  
 }
-?>

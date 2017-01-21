@@ -13,6 +13,7 @@ Loader::import('test.service.interfaces.IUserService', IMPORT_APP);
  * @package test\service
  */
 class UserService extends CommonService implements IUserService {
+
     public function register()
     {
         __print("调用了 UserService::register 方法");

@@ -32,7 +32,7 @@ $config = array(
     //默认访问的页面
     'default_url' => array(
         'module' => 'test',
-        'action' => 'demo',
+        'action' => 'index',
         'method' => 'index' ),
 
     'template' => 'default',    //默认模板
