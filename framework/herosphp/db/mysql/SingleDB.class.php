@@ -11,8 +11,8 @@
 
 namespace herosphp\db\mysql;
 
-use herosphp\core\Debug;
 use herosphp\core\Loader;
+use herosphp\core\Log;
 use herosphp\db\interfaces\Idb;
 use herosphp\exception\DBException;
 use \PDO;
@@ -87,6 +87,10 @@ class SingleDB implements Idb {
      */
     public function excute($sql) {
 
+        if ( APP_DEBUG &&
+            (strpos($sql, 'INSERT') !== false || strpos($sql, 'UPDATE') !== false)) {
+            Log::info($sql, 'sql');
+        }
         if ( $this->link == null ) $this->connect();
         if ( DB_ESCAPE ) $sql = addslashes($sql);
         try {
@@ -100,7 +104,6 @@ class SingleDB implements Idb {
             }
             throw $exception;
         }
-        Debug::appendMessage($sql, 'sql');   //添加调试信息
         return $result;
     }
 
@@ -133,7 +136,12 @@ class SingleDB implements Idb {
 			if ( !in_array( $_key, $_T_fields ) ) continue;
 
 			$_fileds .= ( $_fileds=='' ) ? "`{$_key}`" : ", `{$_key}`" ;
-			$_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
+            if ( is_null($_val) ) {
+                $_val = 'NULL';
+            } else {
+                $_val = "'{$_val}'";
+            }
+			$_values .= ( $_values=='' ) ? "{$_val}" : ",{$_val}";
 
 		}
 
@@ -166,7 +174,12 @@ class SingleDB implements Idb {
             if ( !in_array( $_key, $_T_fields ) ) continue;
 
             $_fileds .= ( $_fileds=='' ) ? "`{$_key}`" : ", `{$_key}`";
-            $_values .= ( $_values=='' ) ? "'".$_val."'" : ",'".$_val."'";
+            if ( is_null($_val) ) {
+                $_val = 'NULL';
+            } else {
+                $_val = "'{$_val}'";
+            }
+            $_values .= ( $_values=='' ) ? "{$_val}" : ",{$_val}";
         }
 
         if ( $_fileds != '' ) {
@@ -192,7 +205,12 @@ class SingleDB implements Idb {
 
             //过滤不存在的字段
             if ( !in_array($_key, $_T_fields) ) continue;
-            $_keys .= $_keys == ''? "`{$_key}`='{$_val}'" : ", `{$_key}`='{$_val}'";
+            if ( is_null($_val) ) {
+                $_val = 'NULL';
+            } else {
+                $_val = "'{$_val}'";
+            }
+            $_keys .= $_keys == ''? "`{$_key}`={$_val}" : ", `{$_key}`={$_val}";
         }
         if ( $_keys !== '' ) {
             $_query = "UPDATE {$table} SET " . $_keys . " WHERE ".$where;

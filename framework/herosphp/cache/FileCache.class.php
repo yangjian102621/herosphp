@@ -31,7 +31,7 @@ class FileCache extends ACache implements ICache {
 		if ( !file_exists($cacheFile) ) return false;
 
         $text = file_get_contents($cacheFile);
-        $content = cn_json_decode($text);
+        $content = StringUtils::jsonDecode($text);
 		//判断缓存是否过期
 		if ( $content['expire'] > 0 && time() > (filemtime($cacheFile) + $content['expire']) ) {
 			return false;

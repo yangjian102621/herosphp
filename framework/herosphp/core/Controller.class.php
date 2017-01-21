@@ -23,14 +23,7 @@ abstract class Controller extends Template {
 	/**
      * 控制器初始化方法，每次请求必须先调用的方法，action子类可以重写这个方法进行页面的初始化
 	 */
-	public function C_start() {
-
-        $webApp = WebApplication::getInstance();
-        //注册当前app的配置信息
-        $this->assign('appConfigs', $webApp->getConfigs());
-        $this->assign('params', $webApp->getHttpRequest()->getParameters());
-
-    }
+	public function C_start() {}
 
     /**
      * 设置视图模板
@@ -46,6 +39,18 @@ abstract class Controller extends Template {
      */
     public function getView() {
         return $this->view;
+    }
+
+    //析够函数
+    public function __destruct()
+    {
+        $liseners = WebApplication::getInstance()->getListeners();
+        //调用响应发送后生命周期监听器
+        if ( !empty($liseners) ) {
+            foreach ( $liseners as $listener ) {
+                $listener->actionInvokeFinally(WebApplication::getInstance()->getHttpRequest(), $this);
+            }
+        }
     }
 
 }

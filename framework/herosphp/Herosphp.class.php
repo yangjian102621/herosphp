@@ -21,7 +21,6 @@ require_once APP_FRAME_PATH.'core/Loader.class.php';//包含资源加载器
 
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
-use herosphp\core\Debug;
 
 class Herosphp {
 
@@ -47,11 +46,8 @@ class Herosphp {
         date_default_timezone_set(TIME_ZONE);  //设置默认时区
 
         if ( APP_DEBUG ) {
-            Debug::start();
-            error_reporting(E_ALL);
+            error_reporting(ERROR_LEVEL);
             ini_set("display_errors", "On");
-            //设置捕获系统异常
-            set_error_handler(array('herosphp\core\Debug', 'customError'));
         } else {
             error_reporting(0);
             ini_set("display_errors", "Off");
@@ -61,7 +57,6 @@ class Herosphp {
         $application = WebApplication::getInstance();
         $application->execute($appConfigs);
 
-        //Debug::printMessage();
     }
 
     /**
@@ -85,7 +80,11 @@ class Herosphp {
         //设置错误等级
         error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE & ~E_WARNING);
 
-        Loader::import($taskName, IMPORT_CLIENT, '.php');
+        $className = ucfirst($taskName).'Task';
+        Loader::import("tasks.{$className}", IMPORT_CLIENT);
+        $clazz = new ReflectionClass("tasks\\{$className}");
+        $method = $clazz->getMethod('run');
+        $method->invoke($clazz->newInstance());
 
     }
 
@@ -98,7 +97,7 @@ class Herosphp {
             'herosphp\http\HttpRequest'          => 'http.HttpRequest',
             'herosphp\http\HttpClient'          => 'http.HttpClient',
             'herosphp\core\WebApplication'       => 'core.WebApplication',
-            'herosphp\core\Debug'       => 'core.Debug',
+            'herosphp\core\Log'       => 'core.Log',
             'herosphp\core\Loader'       => 'core.Loader',
             'herosphp\core\AppError'       => 'core.AppError',
             'herosphp\core\Template'       => 'core.Template',
@@ -116,6 +115,7 @@ class Herosphp {
             'herosphp\utils\AjaxResult'       => 'utils.AjaxResult',
             'herosphp\utils\HashUtils'       => 'utils.HashUtils',
             'herosphp\utils\Page'       => 'utils.Page',
+            'herosphp\utils\ModelTransformUtils'   => 'utils.ModelTransformUtils',
 
             'herosphp\string\StringBuffer'       => 'string.StringBuffer',
             'herosphp\string\StringUtils'       => 'string.StringUtils',

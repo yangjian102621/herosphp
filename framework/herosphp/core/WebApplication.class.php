@@ -17,7 +17,6 @@ use herosphp\bean\Beans;
 use herosphp\core\interfaces\IApplication;
 use herosphp\exception\HeroException;
 use herosphp\http\HttpRequest;
-use herosphp\files\FileUtils;
 
 Loader::import('core.interfaces.IApplication', IMPORT_FRAME);
 
@@ -81,19 +80,17 @@ class WebApplication implements IApplication {
         $this->requestInit();
 
         //invoker 方法调用
+		if(defined("PHP_UNIT") && PHP_UNIT == true){
+			return ;
+		}
         try {
             $this->actionInvoke();
         } catch(HeroException $e) {
             if ( APP_DEBUG ) { //如果是调试模式就抛出异常
                 throw $e;
-            } else if ( ADD_LOGS ) {
-                //否则记录日志
-                $logDir = APP_RUNTIME_PATH."logs/".APP_NAME."/";
-
-                if ( !file_exists($logDir) ) FileUtils::makeFileDirs($logDir);
-                file_put_contents($logDir.date("Y-m-d").".log", $e->toString(), FILE_APPEND);
-                return;
             } else {
+                //否则记录日志
+                Log::error($e->toString());
                 die("Hacker Attempt!");
             }
         }
@@ -238,6 +235,14 @@ class WebApplication implements IApplication {
      */
     public function getAppError() {
         return $this->appError;
+    }
+
+    /**
+     * @return array
+     */
+    public function getListeners()
+    {
+        return $this->listeners;
     }
 
 }

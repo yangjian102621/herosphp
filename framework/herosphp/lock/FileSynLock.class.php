@@ -37,7 +37,9 @@ class FileSynLock implements ISynLock {
     {
         if ( flock($this->file_handler, LOCK_EX) === false ) {
             E('获取文件锁失败，锁定失败.');
+            return false;
         }
+        return true;
     }
 
     /**
@@ -48,7 +50,9 @@ class FileSynLock implements ISynLock {
     {
         if ( flock($this->file_handler, LOCK_UN) === false ) {
             E('释放文件锁失败.');
+            return false;
         }
+        return true;
     }
 
     public function __destruct()

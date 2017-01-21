@@ -11,7 +11,6 @@
 
 namespace herosphp\db\mysql;
 
-use herosphp\core\Debug;
 use herosphp\core\Loader;
 use herosphp\db\interfaces\ICusterDB;
 use herosphp\exception\DBException;
@@ -110,17 +109,12 @@ class ClusterDB implements ICusterDB {
         }
 
         try {
-
             $_result = $_db->excute($_query);
-
         } catch ( PDOException $e ) {
             $_exception = new DBException("SQL错误!".$e->getMessage());
             $_exception->setCode($e->getCode());
             $_exception->setQuery($_query);
             throw $_exception;
-        }
-        if ( APP_DEBUG ) {
-            Debug::appendMessage($_query, 'sql');   //添加调试信息
         }
         return $_result;
     }

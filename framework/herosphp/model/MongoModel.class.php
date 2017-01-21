@@ -299,6 +299,30 @@ class MongoModel implements IModel {
     }
 
     /**
+     * @see IModel::writeLock()
+     */
+    public function writeLock()
+    {
+        throw new UnSupportedOperationException("暂时不支持此操作.");
+    }
+
+    /**
+     * @see IModel::readLock()
+     */
+    public function readLock()
+    {
+        throw new UnSupportedOperationException("暂时不支持此操作.");
+    }
+
+    /**
+     * @see IModel::unLock()
+     */
+    public function unLock()
+    {
+        throw new UnSupportedOperationException("暂时不支持此操作.");
+    }
+
+    /**
      * 获取查询条件
      * @param $conditons
      * @return MongoEntity
@@ -389,4 +413,5 @@ class MongoModel implements IModel {
     public function getDB() {
         return $this->db->getDB();
     }
+
 }

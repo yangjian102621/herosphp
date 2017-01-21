@@ -138,11 +138,12 @@ class MysqlQueryBuilder {
         }
         //3. limit(array(10, 20))
         if ( is_array($limit) ) {
+            if ( $limit[0] <= 0 ) $limit[0] = 1;
             $limit[0] = ($limit[0] - 1) * $limit[1];
             return implode(',', $limit);
         }
-        //推荐列表查询一定是要分页的，如果没有分页则显示前20页
-        return '0, 20';
+        //推荐列表查询一定是要分页的，如果没有分页则显示前1000条
+        return '0, 1000';
     }
 
     /**
@@ -185,6 +186,12 @@ class MysqlQueryBuilder {
          */
         $condi = array(" 1 ");
         foreach ( $where as $key => $value ) {
+
+			if ( is_array($value)){ 
+				if(isset($value['$in']) && empty($value['$in'])) continue;
+				if(isset($value['$nin']) && empty($value['$nin'])) continue;
+
+			}
             /**
              * 组合条件
              * array('name' => 'zhangsan', '$or' => array('name' => 'lisi', 'age'=>12))

@@ -16,7 +16,6 @@ function __print() {
     $_args = func_get_args();  //获取函数的参数
 
     if( count($_args) < 1 ) {
-        \herosphp\core\Debug::appendMessage('必须为myprint()参数');
         trigger_error('必须为myprint()参数');
         return;
     }
@@ -113,7 +112,6 @@ function url($url) {
         $filename = str_replace(EXT_URI, '', $urlInfo['path']);
         $filename = rtrim($filename, "/");
         $pathInfo = explode('/', $filename);
-        __print($pathInfo);
         //提取pathinfo参数
         $paramArr = array();
         if ( count($pathInfo) > 3 ) {
@@ -249,7 +247,7 @@ function addUrlArgs($url, $key, $value) {
 function getConfig($key) {
 
     if ( defined('RUN_CLI') ) {
-        $appConfigs = Loader::config('app'); //加载当前应用的配置信息
+        $appConfigs = \herosphp\core\Loader::config('app'); //加载当前应用的配置信息
         return $appConfigs[$key];
     } else {
         $webapp = \herosphp\core\WebApplication::getInstance();
@@ -263,7 +261,7 @@ function getConfig($key) {
  */
 function getConfigs() {
     if ( defined("RUN_CLI") ) {
-        $appConfigs = Loader::config('app'); //加载当前应用的配置信息
+        $appConfigs = \herosphp\core\Loader::config('app'); //加载当前应用的配置信息
         return $appConfigs;
     } else {
         $webapp = \herosphp\core\WebApplication::getInstance();
@@ -295,5 +293,43 @@ function location( $url ) {
 //获取框架版本号
 function getFrameVersion() {
     return FRAME_VERSION;
+}
+
+//获取http头信息
+function getHttpHeader($key) {
+    return $_SERVER["HTTP_".str_replace('-', '_', strtoupper($key))];
+}
+
+function getHttpHeaders() {
+    $headers = array();
+    foreach ($_SERVER as $key => $value) {
+        if ( strpos($key, 'HTTP_') === 0 ) {
+            $headers[strtolower(substr($key, 5))] = $value;
+        }
+    }
+    return $headers;
+}
+
+//fixed bug for cache\FileCache line 34444 @ Haiwera 2016-10-28
+function cn_json_encode($mixed){
+	return json_encode($mixed,JSON_UNESCAPED_UNICODE);
+}
+function cn_json_decode($mixed,$t = true){
+	return json_decode($mixed,$t);
+}
+
+/**
+ * 判断字符串是不是json
+ * @author Liuyi
+ * @created 2016-12-01
+ */
+if( !function_exists('is_json') ) {
+    function is_json( $string )
+    {
+        if( $string=="" ) return false;
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
+
+    }
 }
 

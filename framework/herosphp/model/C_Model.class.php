@@ -251,8 +251,6 @@ class C_Model implements IModel {
             return false;
         }
         if ( $this->isFlagment ) {
-            //通过事务来实现原子性操作
-            $this->beginTransaction();
             $items = $this->getItems($conditions, $this->primaryKey);
             $ids = array();
             foreach ( $items as $val ) {
@@ -264,17 +262,11 @@ class C_Model implements IModel {
             if ( $result != false ) {
                 foreach ( $this->flagments as $value ) {
                     $model = Loader::model($value['model']);
-                    $_res = $model->updates($data, array(
+                    $model->updates($data, array(
                         $model->getPrimaryKey() => array('$in' => $ids)
                     ));
-                    if ( $_res == false ) {
-                        $this->rollback();
-                        return false;
-                    }
                 }
             }
-
-            $this->commit();
             return $result;
         } else {
             return $this->db->update($this->table, $data, $conditions);
@@ -284,7 +276,7 @@ class C_Model implements IModel {
     /**
      * @see IModel::getItems()
      */
-    public function getItems($conditions, $fields, $order, $limit, $group, $having)
+    public function &getItems($conditions, $fields, $order, $limit, $group, $having)
     {
         $items =  $this->db->find($this->table,$conditions, $fields, $order, $limit, $group, $having);
 
@@ -306,7 +298,9 @@ class C_Model implements IModel {
                     //用primaryKey 作为数组的索引
                     $__items = ArrayUtils::changeArrayKey($__items, $model->getPrimaryKey());
                     foreach ( $items as $key => $v ) {
-                        $items[$key] = array_merge($v, $__items[$v[$this->primaryKey]]);
+                        if ( !empty($__items[$v[$this->primaryKey]]) ) {
+                            $items[$key] = array_merge($v, $__items[$v[$this->primaryKey]]);
+                        }
                     }
                     unset($__items);
                 }
@@ -328,7 +322,7 @@ class C_Model implements IModel {
         return $items;
     }
 
-    public function find()
+    public function &find()
     {
         return $this->getItems($this->where, $this->fields, $this->sort, $this->limit, $this->group, $this->having);
     }
@@ -336,7 +330,7 @@ class C_Model implements IModel {
     /**
      * @see IModel::getItem()
      */
-    public function getItem($condition, $fields, $order)
+    public function &getItem($condition, $fields, $order)
     {
         if ( !is_array($condition) ) {
             $condition = array($this->primaryKey => $condition);
@@ -347,8 +341,10 @@ class C_Model implements IModel {
             foreach( $this->flagments as $value ) {
                 $model = Loader::model($value['model']);
                 $__item = $model->getItem($item[$this->primaryKey], $value['fields']);
-                $item = array_merge($item, $__item);
-                unset($__item);
+                if ( !empty($__item) ) {
+                    $item = array_merge($item, $__item);
+                    unset($__item);
+                }
             }
         }
         //做字段别名映射
@@ -362,7 +358,7 @@ class C_Model implements IModel {
         return $item;
     }
 
-    public function findOne()
+    public function &findOne()
     {
         return $this->getItem($this->where, $this->fields, $this->sort);
     }
@@ -399,10 +395,23 @@ class C_Model implements IModel {
     public function batchIncrease($field, $offset, $conditions)
     {
         $conditions = MysqlQueryBuilder::buildConditions($conditions);
-        $update_str = "{$field}=CONCAT({$field}, '{$offset}')";
-        if ( is_numeric($offset) ) {
-            $update_str = "{$field}={$field}+{$offset}";
+        $update_str = '';
+        if ( is_array($field) && is_array($offset) && count($field) == count($offset) ) {
+            foreach ( $field as $key => $value ) {
+                $updateUnit = "{$value}=CONCAT({$value}, '{$offset[$key]}')";
+                if ( is_numeric($offset[$key]) ) {
+                    $updateUnit = "{$value}={$value} + {$offset[$key]}";
+                }
+                $update_str .= $update_str == '' ? $updateUnit : ','.$updateUnit;
+            }
+        } else {
+            if ( is_numeric($offset) ) {
+                $update_str .= "{$field}={$field} + {$offset}";
+            } else {
+                $update_str .= "{$field}=CONCAT({$field}, '{$offset}')";
+            }
         }
+
         $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
         return ($this->db->excute($query) != false);
     }
@@ -429,9 +438,21 @@ class C_Model implements IModel {
     public function batchReduce($field, $offset, $conditions)
     {
         $conditions = MysqlQueryBuilder::buildConditions($conditions);
-        $update_str = "{$field}=REPLACE({$field}, '{$offset}', '')";
-        if ( is_numeric($offset) ) {
-            $update_str = "{$field}={$field}-{$offset}";
+        $update_str = '';
+        if ( is_array($field) && is_array($offset) && count($field) == count($offset) ) {
+            foreach ( $field as $key => $value ) {
+                $updateUnit = "{$value}=REPLACE({$value}, '{$offset[$key]}', '')";
+                if ( is_numeric($offset[$key]) ) {
+                    $updateUnit = "{$value}={$value} - {$offset[$key]}";
+                }
+                $update_str .= $update_str == '' ? $updateUnit : ','.$updateUnit;
+            }
+        } else {
+            if ( is_numeric($offset) ) {
+                $update_str .= "{$field}={$field} - {$offset}";
+            } else {
+                $update_str .= "{$field}=REPLACE({$field}, '{$offset}', '')";
+            }
         }
         $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
         return ($this->db->excute($query) != false);
@@ -460,7 +481,7 @@ class C_Model implements IModel {
     public function sets($field, $value, $conditions)
     {
         $data = array($field => $value);
-        $this->updates($data, $conditions);
+        return $this->updates($data, $conditions);
     }
 
     /**
@@ -494,6 +515,31 @@ class C_Model implements IModel {
     {
         return $this->db->inTransaction();
     }
+
+    /**
+     * 写锁定
+     * @return boolean
+     */
+    public function writeLock(){
+        return $this->db->excute("lock tables {$this->table} write");
+    }
+
+    /**
+     * 读锁定
+     * @return boolean
+     */
+    public function readLock(){
+        return $this->db->excute("lock tables {$this->table} read");
+    }
+
+    /**
+     * 解锁
+     * @return boolean
+     */
+    public function unLock(){
+        return $this->db->excute("unlock tables");
+    }
+
 
     /**
      * 获取过滤后的数据
@@ -573,8 +619,8 @@ class C_Model implements IModel {
         return $this;
     }
 
-    public function limit($from, $size) {
-        $this->limit = array($from, $size);
+    public function limit($page, $size) {
+        $this->limit = array($page, $size);
         return $this;
     }
 
