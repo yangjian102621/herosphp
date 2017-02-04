@@ -521,7 +521,7 @@ class C_Model implements IModel {
      * @return boolean
      */
     public function writeLock(){
-        return $this->db->excute("LOCK TABLES {$this->table} WRITE");
+        return $this->db->excute("lock tables {$this->table} write");
     }
 
     /**
@@ -529,7 +529,7 @@ class C_Model implements IModel {
      * @return boolean
      */
     public function readLock(){
-        return $this->db->excute("LOCK TABLES {$this->table} READ");
+        return $this->db->excute("lock tables {$this->table} read");
     }
 
     /**
@@ -537,7 +537,7 @@ class C_Model implements IModel {
      * @return boolean
      */
     public function unLock(){
-        return $this->db->excute("UNLOCK TABLES");
+        return $this->db->excute("unlock tables");
     }
 
 

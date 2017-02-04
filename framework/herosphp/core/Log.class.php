@@ -33,6 +33,8 @@ class Log {
 
         if ( $message instanceof HeroException ) $message = $message->toString();
 
+        if ( is_object($message) ) $message = serialize($message);
+
         if ( is_array($message) ) $message = StringUtils::jsonEncode($message);
 
         $logDir = APP_RUNTIME_PATH . 'logs/' . APP_NAME . '/'.date('Y').'/'.date('m').'/';

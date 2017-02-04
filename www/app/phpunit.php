@@ -1,6 +1,6 @@
 <?php
 /*---------------------------------------------------------------------
- * 应用程序入口文件
+ * 单元测试入口文件
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -18,6 +18,7 @@ define('APP_DEBUG', true);
 define('ERROR_LEVEL', E_ALL & ~E_NOTICE  & ~E_WARNING &~E_STRICT);
 
 define('PHP_UNIT' , true);
+
 // 定义当前访问的应用
 define('APP_NAME', basename(__DIR__));
 
@@ -30,11 +31,14 @@ define('APP_PATH', APP_ROOT.'www/'.APP_NAME.'/'); //当前应用根目录
 //定义框架根目录
 define('APP_FRAME_PATH', APP_ROOT.'framework/herosphp/');
 
+//包含全局函数
+//require APP_ROOT . 'www/funcs.com.php';
+
 //包含系统框架的统一入口文件
 require APP_FRAME_PATH . 'Herosphp.class.php';
 
 //注册第三方库自动加载
-require APP_ROOT . "vendor/autoload.php";
+//require APP_ROOT . "vendor/autoload.php";
 
 //启动应用程序
 Herosphp::run();

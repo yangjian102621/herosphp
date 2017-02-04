@@ -80,7 +80,11 @@ class Herosphp {
         //设置错误等级
         error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE & ~E_WARNING);
 
-        Loader::import($taskName, IMPORT_CLIENT, '.php');
+        $className = ucfirst($taskName).'Task';
+        Loader::import("tasks.{$className}", IMPORT_CLIENT);
+        $clazz = new ReflectionClass("tasks\\{$className}");
+        $method = $clazz->getMethod('run');
+        $method->invoke($clazz->newInstance());
 
     }
 

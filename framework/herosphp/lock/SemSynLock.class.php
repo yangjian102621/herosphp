@@ -35,7 +35,9 @@ class SemSynLock implements ISynLock {
     {
         if ( sem_acquire($this->ipc_signal) === false ) {
             E('获取信号量锁失败，锁定失败.');
+            return false;
         }
+        return true;
     }
 
     /**
@@ -46,6 +48,8 @@ class SemSynLock implements ISynLock {
     {
         if ( sem_release($this->ipc_signal) === false ) {
             E('释放信号量锁失败.');
+            return false;
         }
+        return true;
     }
 }

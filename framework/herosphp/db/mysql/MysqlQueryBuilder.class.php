@@ -138,6 +138,7 @@ class MysqlQueryBuilder {
         }
         //3. limit(array(10, 20))
         if ( is_array($limit) ) {
+            if ( $limit[0] <= 0 ) $limit[0] = 1;
             $limit[0] = ($limit[0] - 1) * $limit[1];
             return implode(',', $limit);
         }

@@ -62,6 +62,7 @@ class Page {
     /* 提供一个魔术方法获取limit */
     public function __get( $var ) {
         if ( $var == 'limit' ) return $this->limit;
+        if ( $var == 'pageNum' ) return $this->pageNum;//新增获取总页数
     }
 
     /* 格式化当前页 */

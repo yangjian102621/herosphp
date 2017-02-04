@@ -247,7 +247,7 @@ function addUrlArgs($url, $key, $value) {
 function getConfig($key) {
 
     if ( defined('RUN_CLI') ) {
-        $appConfigs = Loader::config('app'); //加载当前应用的配置信息
+        $appConfigs = \herosphp\core\Loader::config('app'); //加载当前应用的配置信息
         return $appConfigs[$key];
     } else {
         $webapp = \herosphp\core\WebApplication::getInstance();
@@ -261,7 +261,7 @@ function getConfig($key) {
  */
 function getConfigs() {
     if ( defined("RUN_CLI") ) {
-        $appConfigs = Loader::config('app'); //加载当前应用的配置信息
+        $appConfigs = \herosphp\core\Loader::config('app'); //加载当前应用的配置信息
         return $appConfigs;
     } else {
         $webapp = \herosphp\core\WebApplication::getInstance();

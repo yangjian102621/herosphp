@@ -15,6 +15,21 @@ use herosphp\string\StringUtils;
 class AjaxResult {
 
     /**
+     * 单个结果KEY
+     */
+    const DATA_KEY_ITEM = "item";
+
+    /**
+     * 列表结果KEY
+     */
+    const DATA_KEY_ITEMS = "items";
+
+    /**
+     * 数据总数KEY
+     */
+    const DATA_KEY_COUNT = "count";
+
+    /**
      * 错误代码
      * @var int
      * 000 => 成功, 001 => 失败
@@ -32,6 +47,8 @@ class AjaxResult {
      * @var array
      */
     private $data;
+
+
 
     //code for operation successfully
     const OP_SUCCESS = '000';
@@ -64,6 +81,26 @@ class AjaxResult {
     public static function ajaxResult($code, $message, $data=array()){
         $result = new AjaxResult($code, $message, $data);
         die($result->toJsonMessage());
+    }
+
+    /**
+     * 返回一个成功的 result vo
+     * @param $message
+     * @param $data
+     * @return AjaxResult
+     */
+    public static function success($message='处理成功', $data=array()) {
+        return new AjaxResult(self::OP_SUCCESS, $message, $data);
+    }
+
+    /**
+     * 返回一个失败的 result vo
+     * @param $message
+     * @param $data
+     * @return AjaxResult
+     */
+    public static function fail($message,$data) {
+        return new AjaxResult(self::OP_FAILURE, $message, $data);
     }
 
     /**
@@ -125,6 +162,40 @@ class AjaxResult {
      */
     public function setData($data) {
         $this->data = $data;
+    }
+
+    /**
+     * add data to result set
+     * @param key
+     * @param value
+     */
+    public function putData($key, $value) {
+        $this->data[$key] = $value;
+    }
+
+
+    public function putItem($item){
+        $this->putData(self::DATA_KEY_ITEM, $item);
+    }
+
+    public function putItems($items){
+        $this->putData(self::DATA_KEY_ITEMS, $items);
+    }
+
+    public function putCount($value){
+        $this->putData(self::DATA_KEY_COUNT, $value);
+    }
+
+    public function getItems() {
+        return $this->data[self::DATA_KEY_ITEMS];
+    }
+
+    public function getItem() {
+        return $this->data[self::DATA_KEY_ITEM];
+    }
+
+    public function getCount() {
+        return $this->data[self::DATA_KEY_COUNT];
     }
 
     /**
