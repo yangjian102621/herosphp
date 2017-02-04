@@ -491,7 +491,7 @@ class SimpleShardingModel implements IModel {
         throw new UnSupportedOperationException('暂时不支持该操作。');
     }
 
-    public function limit($from, $size) {
+    public function limit($page, $size) {
         throw new UnSupportedOperationException('暂时不支持该操作。');
     }
 

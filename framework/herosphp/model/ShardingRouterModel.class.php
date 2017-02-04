@@ -584,6 +584,43 @@ class ShardingRouterModel implements IModel {
     }
 
     /**
+     * 写锁定
+     * @return boolean
+     */
+    public function writeLock()
+    {
+        //将所有的表锁定
+        $tables = $this->getShardingTables();
+        foreach ($tables as $value) {
+            $this->db->excute("LOCK TABLES {$value} WRITE");
+        }
+        return true;
+    }
+
+    /**
+     * 读锁定
+     * @return boolean
+     */
+    public function readLock()
+    {
+        //将所有的表锁定
+        $tables = $this->getShardingTables();
+        foreach ($tables as $value) {
+            $this->db->excute("LOCK TABLES {$value} READ");
+        }
+        return true;
+    }
+
+    /**
+     * 解锁
+     * @return boolean
+     */
+    public function unLock()
+    {
+        return $this->db->excute("UNLOCK TABLES");
+    }
+
+    /**
      * 获取过滤后的数据
      * @param $data
      * @return mixed
@@ -741,8 +778,8 @@ class ShardingRouterModel implements IModel {
         return $this;
     }
 
-    public function limit($from, $size) {
-        $this->limit = array($from, $size);
+    public function limit($page, $size) {
+        $this->limit = array($page, $size);
         return $this;
     }
 
@@ -760,4 +797,5 @@ class ShardingRouterModel implements IModel {
         $this->having = $having;
         return $this;
     }
+
 }

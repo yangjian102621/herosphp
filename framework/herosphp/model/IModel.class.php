@@ -191,7 +191,7 @@ namespace herosphp\model;
      /**
       * @return IModel
       */
-     public function limit($from, $size);
+     public function limit($page, $size);
 
      /**
       * @return IModel
