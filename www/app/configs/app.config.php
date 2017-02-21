@@ -41,7 +41,7 @@ $config = array(
     //短链接映射
     'url_mapping_rules' => array(
         '^\/newsdetail-(\d+)\/?$' => '/news/article/detail/?id=${1}',
-        '^\/session\/?$' => '/test/session/get',
+        '^\/admin\/?$' => '/admin/login/index',
     ),
 
     //以上都框架内置的配置变量，请不要删除，下面是用户自定义的变量可以添加或者删除
