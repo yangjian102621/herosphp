@@ -81,8 +81,12 @@ class C_Model implements IModel {
 
         //初始化数据库配置
         if ( !$config ) {
-            //默认使用第一个数据库服务器配置
-            $dbConfigs = Loader::config('db');
+            //根据不同环境来连接不同的数据库
+            if( defined('ENV_CFG') ){
+                $dbConfigs = Loader::config('db', 'env.'.ENV_CFG);
+            }else{
+                $dbConfigs = Loader::config('db');
+            }
             $db_config = $dbConfigs['mysql'];
             $this->table = $table;
             if ( DB_ACCESS == DB_ACCESS_SINGLE ) {  //单台服务器

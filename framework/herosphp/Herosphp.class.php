@@ -53,7 +53,12 @@ class Herosphp {
             ini_set("display_errors", "Off");
         }
 
-        $appConfigs = Loader::config('app'); //加载当前应用的配置信息
+        //根据环境配置来获取相应的配置,如果没有的话，就加载默认的
+        if( defined('ENV_CFG') ){
+            $appConfigs = Loader::config('app', 'env.'.ENV_CFG); //加载当前应用的配置信息
+        }else{
+            $appConfigs = Loader::config('app'); //加载当前应用的配置信息
+        }
         $application = WebApplication::getInstance();
         $application->execute($appConfigs);
 
