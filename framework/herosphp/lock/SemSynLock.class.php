@@ -23,6 +23,9 @@ class SemSynLock implements ISynLock {
 
     public function __construct($key)
     {
+        if ( !function_exists('sem_acquire') ) {
+            E("您的系统不支持信号量操作，请先安装 pcntl 扩展");
+        }
         if ( !is_long($key) ) E("传入了非法的信号量key");
         $this->ipc_signal = sem_get($key);
     }
