@@ -31,7 +31,7 @@ class SignUtil
 	}
 
 
-	public static function signString($params)
+	private static function signString($params)
 	{
 
 		if( is_string($params) ) {

@@ -3,9 +3,7 @@ namespace rsa;
 /**
  * RSA加解密类
  * “参数签名”用私钥加密，“验证签名”用公钥解密
- *
  * “内容加密”用公钥加密，“内容解密”用私钥解密
- *
  */
 
 class RSACrypt {
@@ -62,7 +60,6 @@ class RSACrypt {
 		$data = str_replace(array('+','/','='),array('-','_','@'),$data);
 		return $data;
 	}
-
 
 	//安全的b64decode
 	public static function urlsafe_b64decode($string) {
