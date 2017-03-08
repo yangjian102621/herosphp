@@ -1,6 +1,6 @@
 <?php
 
-namespace test\service\interfaces;
+namespace demo\service\interfaces;
 use common\service\interfaces\ICommonService;
 
 /**

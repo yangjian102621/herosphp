@@ -5,9 +5,9 @@ use herosphp\bean\Beans;
  * @author yangjian<yangjian102621@gmail.com>
  */
 $beans = array(
-	'test.user.service' => array(
+	'demo.user.service' => array(
 		'@type' => Beans::BEAN_OBJECT,
-		'@class' => 'test\service\UserService',
+		'@class' => 'demo\service\UserService',
 		'@params' => array('User')
 	)
 );

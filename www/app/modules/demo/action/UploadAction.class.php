@@ -1,5 +1,5 @@
 <?php
-namespace test\action;
+namespace demo\action;
 
 use herosphp\core\Controller;
 use herosphp\files\FileUpload;

@@ -1,5 +1,5 @@
 <?php
-namespace test\action;
+namespace demo\action;
 
 use common\action\CommonAction;
 use herosphp\bean\Beans;

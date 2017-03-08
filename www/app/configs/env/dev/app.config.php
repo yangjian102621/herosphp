@@ -31,7 +31,7 @@ $config = array(
     'res_url' => 'http://www.herosphp.my',      //静态资源的服务器地址(css, image)
     //默认访问的页面
     'default_url' => array(
-        'module' => 'test',
+        'module' => 'demo',
         'action' => 'index',
         'method' => 'index' ),
 
@@ -41,7 +41,7 @@ $config = array(
     //短链接映射
     'url_mapping_rules' => array(
         '^\/newsdetail-(\d+)\/?$' => '/news/article/detail/?id=${1}',
-        '^\/admin\/?$' => '/admin/login/index',
+        '^\/admin\/?$' => '/admin/index/login',
     ),
 
     //以上都框架内置的配置变量，请不要删除，下面是用户自定义的变量可以添加或者删除
