@@ -417,7 +417,8 @@ class C_Model implements IModel {
         }
 
         $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
-        return ($this->db->excute($query) != false);
+        $result = $this->db->excute($query);
+        return ($result->rowCount());
     }
 
     /**
@@ -459,7 +460,8 @@ class C_Model implements IModel {
             }
         }
         $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
-        return ($this->db->excute($query) != false);
+        $result = $this->db->excute($query);
+        return ($result->rowCount());
     }
 
     /**
