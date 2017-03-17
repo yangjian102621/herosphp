@@ -22,6 +22,9 @@ class Artisan {
 
     private static $LONG_OPTS = array(
         'make-model:'   => "Use to create Model. Optional value is model's name.",
+        'table:'   => "Specify the table for Model.",
+        'pk:'   => "Specify primary key of the table. Default value is 'id'",
+
         'make-controller:'   => "Use to create Controller. Optional value is Controller's name.",
         'make-service:'   => "Use to create Service. Optional value is Service's name.",
 
@@ -32,8 +35,8 @@ class Artisan {
         'dbname:'   => "Specify the name of database.",
         'charset:'   => "Specify the charset of database. Default value is UTF-8",
 
-        'table:'   => "Use to create Service. Optional value is Service's name.",
-        'xmlpath:'   => "Specify the table config xml file path or filename",
+        'make-table:'   => "Use to create database table. Optional value is tables configure xml file path.",
+
         'import:'   => 'Use to import database or table from sql file.',
 
         'author:'   => 'Specify the compontent file create author info. Default value is {yangjian}',
@@ -58,17 +61,22 @@ class Artisan {
 
         if ( $opts['make-db'] ) {
             $opts['dbname'] = $opts['make-db'];
-            GModel::createDatabase($opts);
+            return GModel::createDatabase($opts);
         }
 
-        print_r($opts);
-    }
+        if ( $opts['make-table'] ) {
+            $opts['xmlpath'] = $opts['make-table'];
+            return GModel::createTables($opts);
+        }
 
-    /**
-     * 创建Model
-     * @param $options
-     */
-    protected static function createModel($options) {
+        if ( $opts['make-model'] ) {
+            if ( strpos($opts['make-model'], '.xml') ) {
+                $opts['xmlpath'] = $opts['make-model'];
+            } else {
+                $opts['model'] = $opts['make-model'];
+            }
+            return GModel::createModel($opts);
+        }
 
     }
 

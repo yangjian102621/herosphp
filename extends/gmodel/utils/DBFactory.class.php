@@ -39,7 +39,6 @@ class DBFactory {
 
         $sql = "CREATE DATABASE IF NOT EXISTS `{$options["dbname"]}` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
         if ( self::query($sql) !== false ) {
-            self::query("USE `{$options["dbname"]}`;");
             tprintOk("create database '{$options['dbname']}' successfully.");
         } else {
             tprintError("Error : creeat database faild.");
@@ -83,6 +82,7 @@ class DBFactory {
         );
 
         self::$DB_CONFIGS = $configs; //初始化数据库配置
+        self::query("USE `{$configs["dbname"]}`;"); //选择数据库
 
         $tables = $xml->find("table");
         foreach ( $tables as $value ) {
@@ -97,6 +97,7 @@ class DBFactory {
                 }
                 $sql .= "COMMENT '主键',";
             }
+
             //添加字段
             $fields = $value->find("fields", 0);
             if ( $fields ) {
@@ -169,6 +170,5 @@ class DBFactory {
         printLine($sql); //打印sql语句
         return self::$CONN->query($sql);
     }
-
 
 }

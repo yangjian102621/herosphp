@@ -1,5 +1,4 @@
-<root dbhost="localhost" dbuser="root" dbpass="123456" dbname="herosphpTest" charset="utf8" module="user"
-      author="yangjian" email="yangjian102621@gmail.com">
+<root dbhost="localhost" dbuser="root" dbpass="123456" dbname="test1" charset="utf8">
 
   <table name="user" comment="用户表" engine="InnoDB" action-name="user">
     <pk name="id" type="char(32)" />
@@ -42,13 +41,4 @@
       <field name="edittime" type="timestamp" default="CURRENT_TIMESTAMP" comment="更新时间" />
     </fields>
   </table>
-
-  <!-- service and dao config -->
-  <!-- 注意: 如果一个DAO依赖于多个模型, 那么主模型必须放在最前面,
-  例如 model="user,news,admin", 'user' 那么我们认为user就是主模型. -->
-  <service-config>
-    <service name="UserService" dao="UserDao" model="user,news,admin" />
-    <service name="NewsService" dao="NewsDao" model="news" />
-    <service name="AdminService" dao="AdminDao" model="admin" />
-  </service-config>
 </root>

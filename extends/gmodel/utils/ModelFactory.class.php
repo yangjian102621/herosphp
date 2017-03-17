@@ -8,39 +8,25 @@ namespace gmodel\utils;
  *
  */
 use gmodel\GModel;
-use herosphp\files\FileUtils;
 use herosphp\string\StringBuffer;
 
 class ModelFactory {
 
     /**
-     * 创建数据模型文件，生成beans配置文件
+     * 根据xml文件创 Model 文件
      * @param simple_html_dom $xml
+     * @param array $configs
      */
-    public static function create($xml) {
-
-        $modelDir = APP_PATH."configs/models/";
-        if ( !is_writable(dirname($modelDir)) ) {
-            tprintError("Error: directory '{$modelDir}' is not writeadble， please add permissions.");
-            return;
-        }
-
-        //create directory
-        FileUtils::makeFileDirs($modelDir);
+    public static function createModelByXml($xml, $configs) {
 
         $root = $xml->find("root", 1);
-        $configs = array(
-            "module" => $root->getAttribute("module"),
-            "author" => $root->getAttribute("author"),
-            "email" => $root->getAttribute("email")
-        );
 
         $tables = $root->find("table");
         $tempContent = file_get_contents(dirname(__DIR__)."/template/model.tpl");
 
         foreach ( $tables as $value ) {
 
-            $modelFile = $modelDir.ucfirst(GModel::underline2hump($value->name)).".model.php";
+            $modelFile = $configs['module_dir'].ucfirst(GModel::underline2hump($value->name)).".model.php";
             if ( file_exists($modelFile) ) { //若文件已经存在则跳过
                 tprintWarning("Warnning : model file '{$modelFile}' has existed，skiped.");
                 continue;
@@ -104,6 +90,43 @@ class ModelFactory {
 
         }
 
+    }
+
+    /**
+     * 创建普通 Model 文件
+     * @param $options
+     */
+    public static function createModel($options) {
+
+        if ( !isset($options['model']) ) return tprintError("Error : --model is needed.");
+        if ( !isset($options['table']) ) return tprintError("Error : --table is needed.");
+        if ( !isset($options['pk']) ) $options['pk'] = 'id';
+        if ( !isset($options['author']) ) $options['author'] = 'yangjian';
+        if ( !isset($options['email']) ) $options['email'] = 'yangjian102621@gmail.com';
+        if ( !isset($options['date']) ) $options['date'] = date('Y-m-d');
+
+        $tempContent = file_get_contents(dirname(__DIR__)."/template/model.tpl");
+        $modelFile = $options['module_dir'].ucfirst(GModel::underline2hump($options['model'])).".model.php";
+        if ( file_exists($modelFile) ) { //若文件已经存在则跳过
+            return tprintWarning("Warnning : model file '{$modelFile}' has existed，skiped.");
+        }
+
+        $replacement = array(
+            "{table_name}" => $options['table'],
+            "{pk}" => $options['pk'],
+            "{model_name}" => ucfirst(GModel::underline2hump($options['model']))."Model",
+            "{author}" => $options['author'],
+            "{email}" => $options['email'],
+            "{autoPrimaryKey}" => '',
+            "{flagments}" => '',
+            "{sharding_num}" => '',
+        );
+        $content = str_replace(array_keys($replacement), $replacement, $tempContent);
+        if ( file_put_contents($modelFile, $content) !== false ) {
+            tprintOk("create model file '{$modelFile}' successfully.");
+        } else {
+            tprintError("Error: create model file '{$modelFile}' faild.");
+        }
     }
 
 }

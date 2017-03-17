@@ -7,6 +7,7 @@ use gmodel\utils\DBFactory;
 use gmodel\utils\ModelFactory;
 use gmodel\utils\ServiceFactory;
 use gmodel\utils\simple_html_dom;
+use herosphp\files\FileUtils;
 
 require_once "utils/simple_html_dom.php";
 require_once "utils/DBFactory.class.php";
@@ -33,15 +34,13 @@ class GModel {
      * 创建数据表
      * @param $options
      */
-    public static function createTable($options) {
+    public static function createTables($options) {
 
         //创建数据表
         if ( !$options['xmlpath'] ) {
             return tprintError("Please specified the --xmlpath option");
         }
-        if ( strpos($options['xmlpath'], '/') === false ) {
-            $options['xmlpath'] = APP_PATH."build/{$options['xmlpath']}.xml";
-        }
+        $options['xmlpath'] = self::getXmlFilename($options['xmlpath']);
         if ( !file_exists($options['xmlpath']) ) {
             return tprintError("File not found '{$options['xmlpath']}'");
         }
@@ -54,7 +53,20 @@ class GModel {
      * @param $options
      */
     public static function createModel($options) {
-        return ModelFactory::create($options);
+        $modelDir = APP_PATH."configs/models/";
+        if ( !is_writable(dirname($modelDir)) ) {
+            return tprintError("Error: directory '{$modelDir}' is not writeadble， please add permissions.");
+        }
+        //create directory
+        FileUtils::makeFileDirs($modelDir);
+        $options['module_dir'] = $modelDir;
+        if ( $options['xmlpath'] ) {
+            $options['xmlpath'] = self::getXmlFilename($options['xmlpath']);
+            $xml = new simple_html_dom(file_get_contents($options['xmlpath']));
+            return ModelFactory::createModelByXml($xml, $options);
+        } else {
+            return ModelFactory::createModel($options);
+        }
     }
 
     /**
@@ -89,6 +101,21 @@ class GModel {
             $__str .= ucfirst($arr[$i]);
         }
         return $__str;
+    }
+
+    /**
+     * 获取合适的xml文件名
+     * @param $filename
+     * @return string
+     */
+    protected static function getXmlFilename($filename) {
+        if ( strpos($filename, '/') === false ) {
+            $filename = APP_PATH."build/{$filename}";
+        }
+        if ( strpos($filename, '.xml') === false ) {
+            $filename .= ".xml";
+        }
+        return $filename;
     }
 
 
