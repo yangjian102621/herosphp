@@ -3,7 +3,6 @@
 namespace gmodel;
 
 use gmodel\utils\ControllerFactory;
-use gmodel\utils\DaoFactory;
 use gmodel\utils\DBFactory;
 use gmodel\utils\ModelFactory;
 use gmodel\utils\ServiceFactory;
@@ -12,7 +11,6 @@ use gmodel\utils\simple_html_dom;
 require_once "utils/simple_html_dom.php";
 require_once "utils/DBFactory.class.php";
 require_once "utils/ModelFactory.class.php";
-require_once "utils/DaoFactory.class.php";
 require_once "utils/ServiceFactory.class.php";
 require_once "utils/ControllerFactory.class.php";
 
@@ -24,60 +22,55 @@ require_once "utils/ControllerFactory.class.php";
 class GModel {
 
     /**
-     * @var simple_html_dom
+     * 创建数据库
+     * @param $options
      */
-    private static $XML = null; //xml对象
-
-    private $opt;   //操作
-    private $module; //模块
-
-    //构造函数
-    public function __construct($module, $opt) {
-
-        if ( !$module || !$opt ) {
-            tprintError("请指定模块和操作！"); die();
-        }
-        //获取并解析xml文档
-        $xmlFilePath = APP_PATH."build/{$module}.xml";
-        self::$XML = new simple_html_dom(file_get_contents($xmlFilePath));
-
-        $this->module = $module;
-        $this->opt = $opt;
+    public static function createDatabase($options) {
+        return DBFactory::createDatabase($options);
     }
 
-    //执行创建
-    public function execute() {
+    /**
+     * 创建数据表
+     * @param $options
+     */
+    public static function createTable($options) {
 
-        switch ( $this->opt ) {
-            case "db":
-                DBFactory::create(self::$XML);
-                break;
-
-            case "model":
-                ModelFactory::create(self::$XML);
-                break;
-
-            case "dao":
-                DaoFactory::create(self::$XML);
-                break;
-
-            case "service":
-                ServiceFactory::create(self::$XML);
-                break;
-
-            case "controller":
-                ControllerFactory::create(self::$XML);
-                break;
-
-            case "--all":
-                //DBFactory::create(self::$XML);
-                ModelFactory::create(self::$XML);
-                DaoFactory::create(self::$XML);
-                ServiceFactory::create(self::$XML);
-                ControllerFactory::create(self::$XML);
-                break;
+        //创建数据表
+        if ( !$options['xmlpath'] ) {
+            return tprintError("Please specified the --xmlpath option");
         }
+        if ( strpos($options['xmlpath'], '/') === false ) {
+            $options['xmlpath'] = APP_PATH."build/{$options['xmlpath']}.xml";
+        }
+        if ( !file_exists($options['xmlpath']) ) {
+            return tprintError("File not found '{$options['xmlpath']}'");
+        }
+        $xml = new simple_html_dom(file_get_contents($options['xmlpath']));
+        DBFactory::createTables($xml);
+    }
 
+    /**
+     * 创建模型
+     * @param $options
+     */
+    public static function createModel($options) {
+        return ModelFactory::create($options);
+    }
+
+    /**
+     * 创建服务
+     * @param $options
+     */
+    public static function createService($options) {
+        return ServiceFactory::create($options);
+    }
+
+    /**
+     * 创建控制器
+     * @param $options
+     */
+    public static function createController($options) {
+        return ControllerFactory::create($options);
     }
 
     /**

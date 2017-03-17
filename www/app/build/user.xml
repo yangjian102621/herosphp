@@ -1,5 +1,5 @@
-<root dbhost="localhost" dbuser="root" dbpass="123456" dbname="herosphpTest" charset="utf8"
-      author="yangjian" module="user" email="yangjian102621@gmail.com">
+<root dbhost="localhost" dbuser="root" dbpass="123456" dbname="herosphpTest" charset="utf8" module="user"
+      author="yangjian" email="yangjian102621@gmail.com">
 
   <table name="user" comment="用户表" engine="InnoDB" action-name="user">
     <pk name="id" type="char(32)" />
@@ -38,7 +38,7 @@
       <field name="user" type="varchar(32)" default="" comment="用户名" add-index="true" index-type="unique" />
       <field name="pass" type="varchar(32)" default="" comment="密码" />
       <field name="role_id" type="tinyint(4)" default="0" comment="角色ID" />
-      <field name="addtime" type="timestamp" default="CURRENT_TIMESTAMP" comment="添加时间" />
+      <field name="addtime" type="datetime" default="NULL" comment="添加时间" />
       <field name="edittime" type="timestamp" default="CURRENT_TIMESTAMP" comment="更新时间" />
     </fields>
   </table>

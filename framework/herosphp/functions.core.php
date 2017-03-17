@@ -37,6 +37,14 @@ function __print() {
 }
 
 /**
+ * 打印一行
+ * @param $msg
+ */
+function printLine($msg) {
+    echo ("{$msg} \n");
+}
+
+/**
  * 终端高亮打印绿色
  * @param $message
  */

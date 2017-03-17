@@ -9,12 +9,12 @@ namespace gmodel\utils;
  */
 class DBFactory {
 
-    private static $debug = true;   //是否开启调试模式
-
     /**
      * @var MySQLi
      */
-    private static $DB_CONN = null; //数据库连接
+    private static $CONN = null; //数据库连接
+
+    private static $DB_CONFIGS = array(); //数据库连接配置
 
     /**
      * 默认值映射
@@ -25,55 +25,36 @@ class DBFactory {
     );
 
     /**
-     * @var simple_html_dom|null
+     * @param $options创建数据库
      */
-    private static $XML = null;
+    public static function createDatabase($options) {
 
-    /**
-     * @param simple_html_dom $xml
-     * 创建数据库结构
-     */
-    public static function create($xml) {
+        if ( !isset($options['dbname']) ) return tprintError("Error : --dbname is needed.");
+        if ( !isset($options['dbhost']) ) $options['dbhost'] = '127.0.0.1';
+        if ( !isset($options['dbuser']) ) $options['dbuser'] = 'root';
+        if ( !isset($options['dbpass']) ) $options['dbpass'] = '123456';
+        if ( !isset($options['charset']) ) $options['charset'] = 'utf8';
 
-        self::$XML = $xml;
-        $root = self::$XML->find("root", 1);
-        $configs = array(
-            "dbhost" => $root->dbhost,
-            "dbuser" => $root->getAttribute("dbuser"),
-            "dbpass" => $root->getAttribute("dbpass"),
-            "dbname" => $root->getAttribute("dbname"),
-            "charset" => $root->getAttribute("charset")
-//            "table-prefix" => $root->getAttribute("table-prefix")
-        );
+        self::$DB_CONFIGS = $options; //初始化数据库配置
 
-        self::$DB_CONN = mysqli_connect($configs["dbhost"], $configs["dbuser"], $configs["dbpass"]);
-        if ( !self::$DB_CONN ) {
-            tprintError("Error : can not to connect to the database.");
-            return;
-        }
-        self::$DB_CONN->query("SET names {$configs["charset"]}");
-        self::$DB_CONN->query("SET character_set_client = {$configs["charset"]}");
-        self::$DB_CONN->query("SET character_set_results = {$configs["charset"]}");
-
-        $sql = "CREATE DATABASE IF NOT EXISTS `{$configs["dbname"]}` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+        $sql = "CREATE DATABASE IF NOT EXISTS `{$options["dbname"]}` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
         if ( self::query($sql) !== false ) {
-            self::query("USE `{$configs["dbname"]}`;");
-            tprintOk("create database successfully.");
+            self::query("USE `{$options["dbname"]}`;");
+            tprintOk("create database '{$options['dbname']}' successfully.");
         } else {
             tprintError("Error : creeat database faild.");
         }
 
         //生成数据库配置文档
-        $dbConfigFile = APP_PATH."configs/db.config.php";
+        $dbConfigFile = APP_PATH."configs/env/".ENV_CFG."/db.config.php";
         if ( !file_exists($dbConfigFile) ) {
             $tempContent = file_get_contents(dirname(__DIR__)."/template/db.config.tpl");
             if ( $tempContent != "" ) {
-                $content = str_replace("{db_host}", $configs["dbhost"], $tempContent);
-                $content = str_replace("{db_user}", $configs["dbuser"], $content);
-                $content = str_replace("{db_name}", $configs["dbname"], $content);
-                $content = str_replace("{db_pass}", $configs["dbpass"], $content);
-                $content = str_replace("{db_charset}", $configs["charset"], $content);
-                $content = str_replace("{table_prefix}", $configs["table-prefix"], $content);
+                $content = str_replace("{db_host}", $options["dbhost"], $tempContent);
+                $content = str_replace("{db_user}", $options["dbuser"], $content);
+                $content = str_replace("{db_name}", $options["dbname"], $content);
+                $content = str_replace("{db_pass}", $options["dbpass"], $content);
+                $content = str_replace("{db_charset}", $options["charset"], $content);
 
                 if ( file_put_contents($dbConfigFile, $content) !== false ) {
                     tprintOk("create db config file '{$dbConfigFile}' successfully！");
@@ -84,28 +65,28 @@ class DBFactory {
         } else {
             tprintWarning("config file '{$dbConfigFile}' has existed, skiped.");
         }
-
-        self::createTables($configs);
-
-    }
-
-    //执行查询
-    private static function query($sql) {
-
-        if ( self::$debug ) tprintWarning($sql);
-
-        return self::$DB_CONN->query($sql);
     }
 
     /**
-     * 创建表结构
-     * @param $configs
+     * @param simple_html_dom $xml
+     * 创建数据库结构
      */
-    private static function createTables($configs) {
+    public static function createTables($xml) {
 
-        $tables = self::$XML->find("table");
+        $root = $xml->find("root", 1);
+        $configs = array(
+            "dbhost" => $root->dbhost,
+            "dbuser" => $root->getAttribute("dbuser"),
+            "dbpass" => $root->getAttribute("dbpass"),
+            "dbname" => $root->getAttribute("dbname"),
+            "charset" => $root->getAttribute("charset")
+        );
+
+        self::$DB_CONFIGS = $configs; //初始化数据库配置
+
+        $tables = $xml->find("table");
         foreach ( $tables as $value ) {
-            $tableName = $configs["table-prefix"].$value->name;
+            $tableName = $value->name;
             self::query("DROP TABLE IF EXISTS `{$tableName}`");
             $sql = "CREATE TABLE `{$tableName}`(";
             $pk = $value->find("pk", 0);
@@ -150,11 +131,44 @@ class DBFactory {
 
             } else {
                 tprintError("create table '{$tableName}' faild.");
-                tprintError(self::$DB_CONN->error);
+                tprintError(self::$CONN->error);
             }
 
         }
 
     }
+
+    /**
+     * 连接数据库
+     * @param $configs
+     */
+    protected static function connect($configs) {
+        try {
+            self::$CONN = mysqli_connect($configs["dbhost"], $configs["dbuser"], $configs["dbpass"]);
+            if ( !self::$CONN ) {
+                tprintError("Error : can not to connect to the database.");
+                return;
+            }
+        } catch(\Exception $e) {
+            tprintError($e->getMessage());
+        }
+        self::$CONN->query("SET names {$configs["charset"]}");
+        self::$CONN->query("SET character_set_client = {$configs["charset"]}");
+        self::$CONN->query("SET character_set_results = {$configs["charset"]}");
+    }
+
+    /**
+     * 执行查询
+     * @param $sql
+     * @return mixed
+     */
+    private static function query($sql) {
+        if ( !self::$CONN ) {
+            self::connect(self::$DB_CONFIGS);
+        }
+        printLine($sql); //打印sql语句
+        return self::$CONN->query($sql);
+    }
+
 
 }

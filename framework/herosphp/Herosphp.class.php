@@ -21,6 +21,7 @@ require_once APP_FRAME_PATH.'core/Loader.class.php';//包含资源加载器
 
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
+use herosphp\Artisan;
 
 class Herosphp {
 
@@ -41,17 +42,7 @@ class Herosphp {
      */
     public static function run() {
 
-        self::_loadBaseLib();   //加载框架核心类
-
-        date_default_timezone_set(TIME_ZONE);  //设置默认时区
-
-        if ( APP_DEBUG ) {
-            error_reporting(ERROR_LEVEL);
-            ini_set("display_errors", "On");
-        } else {
-            error_reporting(0);
-            ini_set("display_errors", "Off");
-        }
+        self::init();
 
         //根据环境配置来获取相应的配置,如果没有的话，就加载默认的
         if( defined('ENV_CFG') ){
@@ -65,14 +56,29 @@ class Herosphp {
     }
 
     /**
-     * 执行客户端的php任务
+     * 客户端入口
+     */
+    public static function artisan() {
+        self::init();
+        Artisan::run();
+    }
+
+    /**
+     * 初始化
      * @param string $taskName  任务名称
      */
-    public static function runClient( $taskName = null ) {
+    public static function init() {
 
-        if ( $taskName == null || $taskName == '' ) {
-            tprintError('请传入需要执行的任务名称！');
-            die();
+        self::_loadBaseLib();   //加载框架核心类
+
+        date_default_timezone_set(TIME_ZONE);  //设置默认时区
+
+        if ( APP_DEBUG ) {
+            error_reporting(ERROR_LEVEL);
+            ini_set("display_errors", "On");
+        } else {
+            error_reporting(0);
+            ini_set("display_errors", "Off");
         }
 
         //加载框架核心类
@@ -80,16 +86,15 @@ class Herosphp {
         //设置默认时区
         date_default_timezone_set(TIME_ZONE);
         //设置时间用不超时
-        set_time_limit(0);
+        if ( RUN_CLI ) {
+            set_time_limit(0);
+        }
 
-        //设置错误等级
-        error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE & ~E_WARNING);
-
-        $className = ucfirst($taskName).'Task';
-        Loader::import("tasks.{$className}", IMPORT_CLIENT);
-        $clazz = new ReflectionClass("tasks\\{$className}");
-        $method = $clazz->getMethod('run');
-        $method->invoke($clazz->newInstance());
+//        $className = ucfirst($taskName).'Task';
+//        Loader::import("tasks.{$className}", IMPORT_CLIENT);
+//        $clazz = new ReflectionClass("tasks\\{$className}");
+//        $method = $clazz->getMethod('run');
+//        $method->invoke($clazz->newInstance());
 
     }
 
@@ -99,6 +104,7 @@ class Herosphp {
      */
     private static function _loadBaseLib() {
         self::$LIB_CLASS = array(
+            'herosphp\Artisan'          => 'Artisan',
             'herosphp\http\HttpRequest'          => 'http.HttpRequest',
             'herosphp\http\HttpClient'          => 'http.HttpClient',
             'herosphp\core\WebApplication'       => 'core.WebApplication',
