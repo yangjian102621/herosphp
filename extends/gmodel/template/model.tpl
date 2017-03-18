@@ -1,6 +1,6 @@
 <?php
 /**
- * {table_name} 数据表模型
+ * {desc}
  * @author  {author} <{email}>
  */
 

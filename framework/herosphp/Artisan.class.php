@@ -27,6 +27,8 @@ class Artisan {
 
         'make-controller:'   => "Use to create Controller. Optional value is Controller's name.",
         'make-service:'   => "Use to create Service. Optional value is Service's name.",
+        'module:' => 'Specify the module of Model|Service|Controller.',
+        'interface:' => 'Specify the Interface that Service implements.',
 
         'make-db:'   => "Use to create a database.",
         'dbhost:'   => "Specify the database server host. Default value is 127.0.0.1",
@@ -59,23 +61,28 @@ class Artisan {
             return self::printVersion();
         }
 
-        if ( $opts['make-db'] ) {
+        if ( $opts['make-db'] ) { //创建数库
             $opts['dbname'] = $opts['make-db'];
             return GModel::createDatabase($opts);
         }
 
-        if ( $opts['make-table'] ) {
+        if ( $opts['make-table'] ) { //创建数据表
             $opts['xmlpath'] = $opts['make-table'];
             return GModel::createTables($opts);
         }
 
-        if ( $opts['make-model'] ) {
+        if ( $opts['make-model'] ) { //创建模型
             if ( strpos($opts['make-model'], '.xml') ) {
                 $opts['xmlpath'] = $opts['make-model'];
             } else {
                 $opts['model'] = $opts['make-model'];
             }
             return GModel::createModel($opts);
+        }
+
+        if ( $opts['make-service'] ) { //创建服务
+            $opts['service'] = $opts['make-service'];
+            return GModel::createService($opts);
         }
 
     }
@@ -85,7 +92,7 @@ class Artisan {
         tprintOk('Welcome to use HerosPHP artisan.');
         self::printVersion();
         tprintOk('Usage: ');
-        printLine("  ./artisan [--model=Model | --service=Service | --controller=Controller | --import=sql] [options]");
+        printLine("  ./artisan [--make-model=Model | --make-service=Service | --make-controller=Controller | --import=sql] [options]");
         printLine();
         tprintOk('Options: ');
         foreach ( self::$LONG_OPTS as $key => $value ) {

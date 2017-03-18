@@ -37,7 +37,7 @@ class ModelFactory {
                 $content = str_replace("{pk}", $pk->name, $content);
             }
             $content = str_replace("{model_name}", ucfirst(GModel::underline2hump($value->name))."Model", $content);
-            $content = str_replace("{app_name}", APP_NAME, $content);
+            $content = str_replace("{desc}", $value->name. "数据表模型", $content);
             $content = str_replace("{author}", $configs["author"], $content);
             $content = str_replace("{email}", $configs["email"], $content);
 
@@ -113,6 +113,7 @@ class ModelFactory {
 
         $replacement = array(
             "{table_name}" => $options['table'],
+            "{desc}" => $options['desc'] ? $options['desc'] : "{$options['table']} 数据表模型",
             "{pk}" => $options['pk'],
             "{model_name}" => ucfirst(GModel::underline2hump($options['model']))."Model",
             "{author}" => $options['author'],
