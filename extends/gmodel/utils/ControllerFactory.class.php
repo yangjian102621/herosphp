@@ -13,87 +13,64 @@ use herosphp\string\StringBuffer;
 class ControllerFactory {
 
     /**
-     * @param simple_html_dom $xml
+     * 创建 controller 文件
+     * @param $options
      */
-    public static function create($xml) {
+    public static function create($options) {
 
-        $moduleDir = APP_PATH."modules/";
+        if ( !isset($options['module']) ) return tprintError("Error : --module is needed.");
+        if ( !isset($options['controller']) ) return tprintError("Error : controller name is needed.");
+        if ( !isset($options['author']) ) $options['author'] = 'yangjian';
+        if ( !isset($options['email']) ) $options['email'] = 'yangjian102621@gmail.com';
+        if ( !isset($options['date']) ) $options['date'] = date('Y-m-d');
+        if ( !isset($options['desc']) ) $options['desc'] = $options['controller'];
+
+        $moduleDir = APP_PATH."modules/{$options['module']}/";
         if ( !is_writable(dirname($moduleDir)) ) {
             tprintError("directory '{$moduleDir}' is not writeable， please add permissions.");
             return;
         }
-
-        $root = $xml->find("root", 1);
-        $configs = array(
-            "module" => $root->getAttribute("module"),
-            //"module" => $root->getAttribute("author"),
-            "author" => $root->getAttribute("author"),
-            "email" => $root->getAttribute("email")
-        );
-
         //创建目录
-        $module = $moduleDir."/admin/";
-        FileUtils::makeFileDirs($module."action");
-        FileUtils::makeFileDirs($module."template/default");
+        if ( !file_exists($moduleDir.'action') ) {
+            FileUtils::makeFileDirs($moduleDir.'action');
+        }
 
-        $tables = $root->find("table");
-        $tempContent = file_get_contents(dirname(__DIR__)."/template/controller.tpl");
-        $jsTempContent = file_get_contents(dirname(__DIR__)."/template/appjs.tpl");
-        $appjsConfigCode = new StringBuffer();
-        $appendCodeSymbol = '"common": "{app}/admin/common.js",';   //追加js的位置
-        $appjsConfigCode->appendLine($appendCodeSymbol);
-
-        foreach ( $tables as $value ) {
-
-            $tableName = $value->name;  //表名称
-            $actionName = $value->getAttribute("action-name");
-            if ( !$actionName ) continue;
-
-            $className = ucfirst($actionName)."Action";
-            $actionFile = $module."action/{$className}.class.php";
-            if ( file_exists($actionFile) ) { //若文件已经存在则跳过
-                tprintWarning("Warnning : controller file '{$actionFile}' is existed， skiped.");
-                continue;
-            }
-            $content = str_replace("{module}", $configs["module"], $tempContent);
-            $content = str_replace("{author}", $configs["author"], $content);
-            $content = str_replace("{email}", $configs["email"], $content);
-            $content = str_replace("{table_name}", $tableName, $content);
-            $content = str_replace("{class_name}", $className, $content);
-
-            //注入service bean
-            $serviceBean = "{$configs["module"]}.{$actionName}.service";
-            $content = str_replace('{service_bean}', $serviceBean, $content);
-
-            if ( file_put_contents($actionFile, $content) !== false ) {
-                tprintOk("create Controller file '{$actionFile}' successfully！");
-                $appjsConfigCode->appendTab('"'.$actionName.'": "{app}/admin/'.$actionName.'.js",', 3);
+        $replacements = array(
+            '{module}' => $options['module'],
+            '{desc}' => $options['desc'],
+            '{author}' => $options['author'],
+            '{email}' => $options['email'],
+            '{date}' => $options['date'],
+            '{className}' => ucfirst($options['controller'])."Action",
+            '{serviceBean}' => 'protected $serviceBean = "'.$options['module'].'.'.$options['controller'].'.service";',
+        );
+        if ( $options['module'] == 'admin' ) { //后台的控制器
+            $commonAction = $moduleDir."action/CommonAction.class.php";
+            if ( !file_exists($commonAction) ) {
+                copy(dirname(__DIR__)."codetpl/CommonAction.class.php", $moduleDir."action/CommonAction.class.php");
             } else {
-                tprintError("Error : create Controller file '{$actionFile}' faild.");
+                printLine("Basic action exsits.");
             }
-
-            //创建js文件
-            $jsfile = APP_ROOT."res/js/app/admin/{$actionName}.js";
-            $jsTempContent = str_replace('{action_name}', $actionName, $jsTempContent);
-            if ( !file_exists($jsfile) && file_put_contents($jsfile, $jsTempContent) !== false ) {
-                tprintOk("create js file '{$jsfile}' successfully！");
-
-            } else {
-                tprintError("Error : create js file '{$jsfile}' faild.");
-            }
-
-
-        } //end foreach
-
-        //替换js config 文件
-        $jsConfigFile = APP_ROOT."res/js/config.js";
-        $jscode = file_get_contents($jsConfigFile);
-        $jscode = str_replace($appendCodeSymbol, $appjsConfigCode->toString(), $jscode);
-        if ( file_put_contents($jsConfigFile, $jscode) !== false ) {
-            tprintOk("update js config file '{$jsConfigFile}' successfully！");
+            $tempFile = dirname(__DIR__)."/template/admin-controller.tpl";
         } else {
-            tprintError("Error : update js config file '{$jsConfigFile}' faild.");
+            $tempFile = dirname(__DIR__)."/template/controller.tpl";
+        }
+
+        $className = ucfirst($options['controller'])."Action";
+        $actionFile = $moduleDir."action/{$className}.class.php";
+        if ( file_exists($actionFile) ) { //若文件已经存在则跳过
+            return tprintWarning("Warnning : controller file '{$actionFile}' is existed， skiped.");
+        }
+
+        $tempContent = file_get_contents($tempFile);
+        $content = str_replace(array_keys($replacements), $replacements, $tempContent);
+
+        if ( file_put_contents($actionFile, $content) ) {
+            tprintOk("Create Controller '{$options['controller']}' successfully！");
+        } else {
+            tprintError("Error : Create Controller '{$options['controller']}' faild.");
         }
     }
+
 
 }

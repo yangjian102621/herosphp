@@ -1,47 +1,22 @@
 <?php
-namespace admin\action;
+namespace {module}\action;
 
-use admin\action\CommonAction;
+use herosphp\core\Controller;
 use herosphp\http\HttpRequest;
 
 /**
- * {table_name} action
- * @package {module}\action
- * @author {author}<{email}>
+ * {desc}
+ * @author {author}
+ * @email {email}
+ * @date {date}
  */
-class {class_name} extends CommonAction {
+class {className} extends Controller {
 
-    protected $serviceBean = '{service_bean}';
-
-    //数据列表页面
+    /**
+     * index page
+     */
     public function index( HttpRequest $request ) {
-        $this->setView('');
+       //some logic code here
     }
 
-    //数据添加页面
-    public function add(HttpRequest $request) {
-        $this->setView('');
-    }
-
-    //数据编辑页面
-    public function edit(HttpRequest $request) {
-        parent::edit($request);
-        $this->setView('');
-    }
-
-    //插入数据操作
-    public function insert(HttpRequest $request) {
-
-        $data = $request->getParameter('data');
-        parent::__insert($data);
-    }
-
-    //更新数据操作
-    public function update(HttpRequest $request) {
-
-        $data = $request->getParameter('data');
-        $id = $request->getParameter('id', 'trim');
-        parent::__update($data, $id);
-
-    }
 }

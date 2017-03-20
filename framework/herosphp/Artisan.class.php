@@ -28,7 +28,7 @@ class Artisan {
         'make-controller:'   => "Use to create Controller. Optional value is Controller's name.",
         'make-service:'   => "Use to create Service. Optional value is Service's name.",
         'module:' => 'Specify the module of Model|Service|Controller.',
-        'interface:' => 'Specify the Interface that Service implements.',
+        'extend:' => "Specify the parent class of Service. default value is 'common\\service\\CommonService'",
 
         'make-db:'   => "Use to create a database.",
         'dbhost:'   => "Specify the database server host. Default value is 127.0.0.1",
@@ -83,6 +83,11 @@ class Artisan {
         if ( $opts['make-service'] ) { //创建服务
             $opts['service'] = $opts['make-service'];
             return GModel::createService($opts);
+        }
+
+        if ( $opts['make-controller'] ) {
+            $opts['controller'] = $opts['make-controller'];
+            return GModel::createController($opts);
         }
 
     }
