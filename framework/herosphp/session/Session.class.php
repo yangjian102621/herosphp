@@ -45,5 +45,30 @@ class Session {
         }
 
     }
+
+    /**
+     * 强制进行GC
+     */
+    public static function gc() {
+
+        //loading session configures
+        $configs = Loader::config('session');
+        $session_configs = $configs[$configs['session_handler']];
+        switch ( $configs['session_handler'] ) {
+
+            case 'file':
+                FileSession::gc($session_configs);
+                break;
+
+            case 'memo':
+                MemSession::gc();
+                break;
+
+            case 'redis':
+                RedisSession::gc();
+                break;
+        }
+
+    }
 	
 }

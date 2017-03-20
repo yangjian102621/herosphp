@@ -151,12 +151,12 @@ class FileSession implements ISession {
      * @param int $maxLifeTime
      * @return bool
      */
-	public static function gc( $maxLifeTime ) {
+	public static function gc( $configs ) {
 
-		$sessionFiles = glob( self::$sessionSavePath.DIRECTORY_SEPARATOR.self::$config['session_file_prefix'].'*' );
+		$sessionFiles = glob( $configs['session_save_path'].DIRECTORY_SEPARATOR.$configs['session_file_prefix'].'*' );
 		if ( !empty($sessionFiles) ) {
 			foreach ( $sessionFiles as $value ) {
-				if ( filemtime($value) + $maxLifeTime < time() ) {
+				if ( filemtime($value) + $configs['gc_maxlifetime'] < time() ) {
 					@unlink($value);
 				}
 			}

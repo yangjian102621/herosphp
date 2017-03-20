@@ -37,6 +37,8 @@ class Artisan {
         'dbname:'   => "Specify the name of database.",
         'charset:'   => "Specify the charset of database. Default value is UTF-8",
 
+        'run:' => 'Excute a task in the client folder',
+
         'make-table:'   => "Use to create database table. Optional value is tables configure xml file path.",
 
         'import:'   => 'Use to import database or table from sql file.',
@@ -85,9 +87,17 @@ class Artisan {
             return GModel::createService($opts);
         }
 
-        if ( $opts['make-controller'] ) {
+        if ( $opts['make-controller'] ) { //创建控制器
             $opts['controller'] = $opts['make-controller'];
             return GModel::createController($opts);
+        }
+
+        if ( $opts['run'] ) { //运行任务
+            $className = ucfirst($opts['run']).'Task';
+            Loader::import("tasks.{$className}", IMPORT_CLIENT);
+            $clazz = new \ReflectionClass("tasks\\{$className}");
+            $method = $clazz->getMethod('run');
+            $method->invoke($clazz->newInstance());
         }
 
     }

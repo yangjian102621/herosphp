@@ -37,6 +37,12 @@ class SessionAction extends Controller {
         __print($_SESSION);
         die();
     }
+
+    public function gc(HttpRequest $request) {
+        Session::gc();
+        __print("session gc 回收成功。");
+        die();
+    }
   
 }
 ?>

@@ -19,7 +19,7 @@ return array (
 		'session_file_prefix' => 'heros_session_',		/* session file prefix */
 		'session_update_interval' => 30,				/* session update interval */
 		'session_save_path' => APP_RUNTIME_PATH."session",				/* session文件保存路径 */
-		'gc_maxlifetime' => 3600,				/* session gc lifetime */
+		'gc_maxlifetime' => 30,				/* session gc lifetime */
 	),
 	
 	//memcache session configure

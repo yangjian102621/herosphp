@@ -1,4 +1,8 @@
 #版本更新记录
+@3.0.1
+> 1. 新增了artisan文件，作为命令行的入口文件，并实现了artisan的一些常用功能，比如创建数据库，数据表，Controller, Service, Model等。
+> 2. 更新了session模块，新增了手动GC回收，目前只针对了FileSession做了实现。通过调用Session::gc()就可以进行GC回收了。
+
 @3.0.0
 ------
 > 进行了大版本的重构，主要是项目结构
