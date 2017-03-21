@@ -81,9 +81,9 @@ class ClusterDB implements ICusterDB {
             //设置数据库编码，默认使用UTF8编码
             $_charset = $config['db_charset'];
             if ( !$_charset ) $_charset = 'UTF8';
-            $_pdo->excute("SET names {$_charset}");
-            $_pdo->excute("SET character_set_client = {$_charset}");
-            $_pdo->excute("SET character_set_results = {$_charset}");
+            $_pdo->execute("SET names {$_charset}");
+            $_pdo->execute("SET character_set_client = {$_charset}");
+            $_pdo->execute("SET character_set_results = {$_charset}");
         } catch ( PDOException $e ) {
             if ( APP_DEBUG ) {
                 E("数据库连接失败".$e->getMessage());
@@ -97,10 +97,10 @@ class ClusterDB implements ICusterDB {
      * 1. 读的SQL语句发送到读服务器
      * 2. 写入SQL语句发送到写服务器
      * 3. 此方法将抛出异常
-     * @see Idb::excute()
+     * @see Idb::execute()
      * @throws DBException
      */
-    public function excute($_query)
+    public function execute($_query)
     {
         if ( $this->isReadSQL($_query) ) {      /* 读取数据操作 */
             $_db = $this->selectReadServer();
@@ -109,7 +109,7 @@ class ClusterDB implements ICusterDB {
         }
 
         try {
-            $_result = $_db->excute($_query);
+            $_result = $_db->execute($_query);
         } catch ( PDOException $e ) {
             $_exception = new DBException("SQL错误!".$e->getMessage());
             $_exception->setCode($e->getCode());
@@ -125,7 +125,7 @@ class ClusterDB implements ICusterDB {
     public function query($query)
     {
         $_result = array();
-        $_ret = $this->excute($query);
+        $_ret = $this->execute($query);
         if ( $_ret != false ) {
 
             while ( ($_rows = $_ret->fetch(PDO::FETCH_ASSOC)) != false )
@@ -186,7 +186,7 @@ class ClusterDB implements ICusterDB {
 
         if ( $_fileds != '' ) {
             $_query = "REPLACE INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
-            if ( $this->excute($_query) != false ) {
+            if ( $this->execute($_query) != false ) {
                 return true;
             }
 
@@ -212,7 +212,7 @@ class ClusterDB implements ICusterDB {
         }
         if ( $_keys !== '' ) {
             $_query = "UPDATE {$table} SET " . $_keys . " WHERE ".$where;
-            $result = $this->excute($_query);
+            $result = $this->execute($_query);
             if ( $result != false ) {
                 return $result->rowCount();
             }
@@ -230,7 +230,7 @@ class ClusterDB implements ICusterDB {
         $where = MysqlQueryBuilder::buildConditions($condition);
 
         $sql = "DELETE FROM {$table} WHERE {$where}";
-        $result = $this->excute($sql);
+        $result = $this->execute($sql);
         if ( $result ) {
             return $result->rowCount();
         }
@@ -258,7 +258,7 @@ class ClusterDB implements ICusterDB {
             ->group($group)
             ->having($having);
 
-        $result = $this->excute($query->buildQueryString());
+        $result = $this->execute($query->buildQueryString());
         if ( $result != false ) {
             while ( ($row = $result->fetch(PDO::FETCH_ASSOC)) != false ) {
                 $items[]  = $row;
@@ -279,7 +279,7 @@ class ClusterDB implements ICusterDB {
             ->fields($field)
             ->order($sort);
 
-        $result = $this->excute($query->buildQueryString());
+        $result = $this->execute($query->buildQueryString());
         if ( $result != false ) {
             return $result->fetch(PDO::FETCH_ASSOC);
         }
@@ -297,7 +297,7 @@ class ClusterDB implements ICusterDB {
             $sql .= " WHERE ".MysqlQueryBuilder::buildConditions($condition);
         }
 
-        $result = $this->excute($sql);
+        $result = $this->execute($sql);
         $res = $result->fetch(PDO::FETCH_ASSOC);
         return $res['total'];
     }
@@ -360,7 +360,7 @@ class ClusterDB implements ICusterDB {
     protected function getTableFields( $_table ) {
 
         $_sql = "SHOW COLUMNS FROM {$_table}";
-        $_ret = $this->excute( $_sql );
+        $_ret = $this->execute( $_sql );
 
         $_fields = array();
         if ( $_ret != false ) {

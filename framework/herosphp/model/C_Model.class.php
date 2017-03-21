@@ -417,7 +417,7 @@ class C_Model implements IModel {
         }
 
         $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
-        $result = $this->db->excute($query);
+        $result = $this->db->execute($query);
         return ($result->rowCount());
     }
 
@@ -460,7 +460,7 @@ class C_Model implements IModel {
             }
         }
         $query = "UPDATE {$this->table} SET {$update_str} WHERE {$conditions}";
-        $result = $this->db->excute($query);
+        $result = $this->db->execute($query);
         return ($result->rowCount());
     }
 
@@ -527,7 +527,7 @@ class C_Model implements IModel {
      * @return boolean
      */
     public function writeLock(){
-        return $this->db->excute("lock tables {$this->table} write");
+        return $this->db->execute("lock tables {$this->table} write");
     }
 
     /**
@@ -535,7 +535,7 @@ class C_Model implements IModel {
      * @return boolean
      */
     public function readLock(){
-        return $this->db->excute("lock tables {$this->table} read");
+        return $this->db->execute("lock tables {$this->table} read");
     }
 
     /**
@@ -543,7 +543,7 @@ class C_Model implements IModel {
      * @return boolean
      */
     public function unLock(){
-        return $this->db->excute("unlock tables");
+        return $this->db->execute("unlock tables");
     }
 
 

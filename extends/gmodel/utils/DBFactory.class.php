@@ -125,6 +125,9 @@ class DBFactory {
             }
 
             if ( $pk ) $sql .= "PRIMARY KEY (`{$pk->name}`)";
+            if ( !$value->engine ) {
+                $value->engine = "InnoDB";
+            }
             $sql .= ") ENGINE={$value->engine}  DEFAULT CHARSET={$configs['charset']} COMMENT='{$value->comment}' AUTO_INCREMENT=1 ;";
 
             if ( self::query($sql) !== false ) {

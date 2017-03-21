@@ -74,7 +74,7 @@ class MongoDB implements Idb {
     /**
      * @throws UnSupportedOperationException
      */
-    public function excute($sql)
+    public function execute($sql)
     {
         throw new UnSupportedOperationException("暂时不支持此操作.");
     }

@@ -18,7 +18,7 @@ interface Idb {
      * @param string $sql
      * @return mixed
      */
-    public function excute($sql);
+    public function execute($sql);
 
 
     /**

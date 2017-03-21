@@ -266,7 +266,7 @@ class SimpleShardingModel implements IModel {
         $table = $this->getShardingTables($id);
         $conditions = MysqlQueryBuilder::buildConditions(array($this->primaryKey => $id));
         $query = "UPDATE {$table} SET {$update_str} WHERE {$conditions}";
-       return $this->db->excute($query);
+       return $this->db->execute($query);
     }
 
     /**
@@ -310,7 +310,7 @@ class SimpleShardingModel implements IModel {
         $table = $this->getShardingTables($id);
         $conditions = MysqlQueryBuilder::buildConditions(array($this->primaryKey => $id));
         $query = "UPDATE {$table} SET {$update_str} WHERE {$conditions}";
-        return $this->db->excute($query) == false;
+        return $this->db->execute($query) == false;
     }
 
     /**
@@ -516,7 +516,7 @@ class SimpleShardingModel implements IModel {
         //将所有的表锁定
         $tables = $this->getShardingTables();
         foreach ($tables as $value) {
-            $this->db->excute("LOCK TABLES {$value} WRITE");
+            $this->db->execute("LOCK TABLES {$value} WRITE");
         }
         return true;
     }
@@ -530,7 +530,7 @@ class SimpleShardingModel implements IModel {
         //将所有的表锁定
         $tables = $this->getShardingTables();
         foreach ($tables as $value) {
-            $this->db->excute("LOCK TABLES {$value} READ");
+            $this->db->execute("LOCK TABLES {$value} READ");
         }
         return true;
     }
@@ -541,6 +541,6 @@ class SimpleShardingModel implements IModel {
      */
     public function unLock()
     {
-        return $this->db->excute("UNLOCK TABLES");
+        return $this->db->execute("UNLOCK TABLES");
     }
 }

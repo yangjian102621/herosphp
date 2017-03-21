@@ -11,6 +11,7 @@ use herosphp\string\StringBuffer;
 use herosphp\string\StringUtils;
 use herosphp\utils\AjaxResult;
 use herosphp\web\WebUtils;
+use qrcode\QRcode;
 use Workerman\Worker;
 
 /**
@@ -24,9 +25,17 @@ class IndexAction extends Controller {
      * 首页方法
      * @param HttpRequest $request
      */
-    public function index( HttpRequest $request ) {
+    public function index(HttpRequest $request) {
         $this->setView("index");
         $this->assign("title", "欢迎使用Herosphp");
+    }
+
+    /**
+     * 显示一个二维码
+     * @param HttpRequest $request
+     */
+    public function qrcode(HttpRequest $request) {
+        QRcode::png("http://www.herosphp.com")->show();
     }
 
 }

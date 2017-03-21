@@ -457,7 +457,7 @@ class ShardingRouterModel implements IModel {
         $tables = $this->getShardingTables($this->shardingRouter);
         if ( is_string($tables) ) {
             $query = "UPDATE {$tables} SET {$update_str} WHERE {$conditions}";
-            return ($this->db->excute($query) != false);
+            return ($this->db->execute($query) != false);
         }
 
         if ( is_array($tables) && !empty($tables) ) {
@@ -465,7 +465,7 @@ class ShardingRouterModel implements IModel {
             $this->beginTransaction();
             foreach ( $tables as $table ) {
                 $query = "UPDATE {$table} SET {$update_str} WHERE {$conditions}";
-                if ( $this->db->excute($query) == false ) {
+                if ( $this->db->execute($query) == false ) {
                     $this->rollback();
                     return false;
                 }
@@ -505,14 +505,14 @@ class ShardingRouterModel implements IModel {
         $tables = $this->getShardingTables($this->shardingRouter);
         if ( is_string($tables) ) {
             $query = "UPDATE {$tables} SET {$update_str} WHERE {$conditions}";
-            return $this->db->excute($query);
+            return $this->db->execute($query);
         }
 
         if ( is_array($tables) ) {
             $this->beginTransaction();
             foreach ($tables as $table) {
                 $query = "UPDATE {$table} SET {$update_str} WHERE {$conditions}";
-                if ( $this->db->excute($query) == false ) {
+                if ( $this->db->execute($query) == false ) {
                     $this->rollback();
                     return false;
                 }
@@ -592,7 +592,7 @@ class ShardingRouterModel implements IModel {
         //将所有的表锁定
         $tables = $this->getShardingTables();
         foreach ($tables as $value) {
-            $this->db->excute("LOCK TABLES {$value} WRITE");
+            $this->db->execute("LOCK TABLES {$value} WRITE");
         }
         return true;
     }
@@ -606,7 +606,7 @@ class ShardingRouterModel implements IModel {
         //将所有的表锁定
         $tables = $this->getShardingTables();
         foreach ($tables as $value) {
-            $this->db->excute("LOCK TABLES {$value} READ");
+            $this->db->execute("LOCK TABLES {$value} READ");
         }
         return true;
     }
@@ -617,7 +617,7 @@ class ShardingRouterModel implements IModel {
      */
     public function unLock()
     {
-        return $this->db->excute("UNLOCK TABLES");
+        return $this->db->execute("UNLOCK TABLES");
     }
 
     /**

@@ -1,6 +1,6 @@
 <root dbhost="localhost" dbuser="root" dbpass="123456" dbname="test1" charset="utf8">
 
-  <table name="user" comment="用户表" engine="InnoDB" action-name="user">
+  <table name="user" comment="用户表" engine="InnoDB">
     <pk name="id" type="char(32)" />
 
     <fields>
@@ -17,7 +17,7 @@
     </flagments>
   </table>
 
-  <table name="role" comment="角色表" engine="InnoDB" action-name="role" sharding-num="11">
+  <table name="role" comment="角色表" engine="InnoDB">
     <pk name="id" type="int(11)" ai="true" />
 
     <fields>
@@ -30,7 +30,7 @@
 
   </table>
 
-  <table name="admin" comment="管理员表" engine="InnoDB" action-name="admin">
+  <table name="admin" comment="管理员表" engine="InnoDB">
     <pk name="id" type="int(11)" ai="true" />
 
     <fields>

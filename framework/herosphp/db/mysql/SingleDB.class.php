@@ -80,12 +80,12 @@ class SingleDB implements Idb {
     }
 
     /**
-     * @see Idb::excute()
+     * @see Idb::execute()
      * @param string $sql
      * @return \PDOStatement
      * @throws DBException
      */
-    public function excute($sql) {
+    public function execute($sql) {
 
         if ( APP_DEBUG &&
             (strpos($sql, 'INSERT') !== false || strpos($sql, 'UPDATE') !== false)) {
@@ -113,7 +113,7 @@ class SingleDB implements Idb {
     public function query($query)
     {
         $_result = array();
-        $_ret = $this->excute($query);
+        $_ret = $this->execute($query);
         if ( $_ret != false ) {
 
             while ( ($_rows = $_ret->fetch(PDO::FETCH_ASSOC)) != false )
@@ -148,7 +148,7 @@ class SingleDB implements Idb {
 		if ( $_fileds != '' ) {
 			$_query = "INSERT INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
 
-			if ( $this->excute( $_query ) != false ) {
+			if ( $this->execute( $_query ) != false ) {
                 $last_insert_id = $this->link->lastInsertId();
                 if ( $last_insert_id > 0 ) { //返回自增id
                     return $last_insert_id;
@@ -184,7 +184,7 @@ class SingleDB implements Idb {
 
         if ( $_fileds != '' ) {
             $_query = "REPLACE INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
-            if ( $this->excute($_query) != false ) {
+            if ( $this->execute($_query) != false ) {
                 return true;
             }
 
@@ -214,7 +214,7 @@ class SingleDB implements Idb {
         }
         if ( $_keys !== '' ) {
             $_query = "UPDATE {$table} SET " . $_keys . " WHERE ".$where;
-            $result = $this->excute($_query);
+            $result = $this->execute($_query);
             if ( $result != false ) {
                 return $result->rowCount() > 0 ? $result->rowCount() : true;
             }
@@ -232,7 +232,7 @@ class SingleDB implements Idb {
         $where = MysqlQueryBuilder::buildConditions($condition);
 
         $sql = "DELETE FROM {$table} WHERE {$where}";
-        $result = $this->excute($sql);
+        $result = $this->execute($sql);
         if ( $result ) {
             return $result->rowCount();
         }
@@ -260,7 +260,7 @@ class SingleDB implements Idb {
             ->group($group)
             ->having($having);
 
-        $result = $this->excute($query->buildQueryString());
+        $result = $this->execute($query->buildQueryString());
         if ( $result != false ) {
             while ( ($row = $result->fetch(PDO::FETCH_ASSOC)) != false ) {
                 $items[]  = $row;
@@ -281,7 +281,7 @@ class SingleDB implements Idb {
             ->fields($field)
             ->order($sort);
 
-        $result = $this->excute($query->buildQueryString());
+        $result = $this->execute($query->buildQueryString());
         if ( $result != false ) {
             return $result->fetch(PDO::FETCH_ASSOC);
         }
@@ -299,7 +299,7 @@ class SingleDB implements Idb {
             $sql .= " WHERE ".MysqlQueryBuilder::buildConditions($condition);
         }
 
-        $result = $this->excute($sql);
+        $result = $this->execute($sql);
         $res = $result->fetch(PDO::FETCH_ASSOC);
         return $res['total'];
     }
@@ -372,7 +372,7 @@ class SingleDB implements Idb {
     protected function getTableFields( $_table ) {
 
         $_sql = "SHOW COLUMNS FROM {$_table}";
-        $_ret = $this->excute( $_sql );
+        $_ret = $this->execute( $_sql );
         $_fields = array();
         if ( $_ret != false ) {
             while ( ($_rows = $_ret->fetch()) != false ) {
