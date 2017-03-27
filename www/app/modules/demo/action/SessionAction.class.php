@@ -4,6 +4,7 @@ namespace demo\action;
 use herosphp\core\Controller;
 use herosphp\http\HttpRequest;
 use herosphp\session\Session;
+use herosphp\utils\JsonResult;
 
 /**
  * session测试
@@ -40,9 +41,7 @@ class SessionAction extends Controller {
 
     public function gc(HttpRequest $request) {
         Session::gc();
-        __print("session gc 回收成功。");
-        die();
+        JsonResult::jsonResult(400);
     }
   
 }
-?>

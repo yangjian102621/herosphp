@@ -1,7 +1,7 @@
 <?php
 namespace herosphp\utils;
 /*---------------------------------------------------------------------
- * Ajax请求结果数据返回
+ * json result vo
  * ---------------------------------------------------------------------
  * Copyright (c) 2013-now http://blog518.com All rights reserved.
  * ---------------------------------------------------------------------
@@ -12,7 +12,7 @@ namespace herosphp\utils;
 
 use herosphp\string\StringUtils;
 
-class AjaxResult {
+class JsonResult {
 
     /**
      * 单个结果KEY
@@ -32,75 +32,84 @@ class AjaxResult {
     /**
      * 错误代码
      * @var int
-     * 000 => 成功, 001 => 失败
      */
-    private $code;
+    private $_code = 200;
+
+    /**
+     * 状态码信息
+     * @var array
+     */
+    private static $_CODE_STATUS = [
+        200 => 'OK.',
+        100 => 'Fail.',
+        201 => 'Created.',
+        204 => 'No Contents.',
+        400 => 'Bad Request.',
+        401 => 'Not Authorized.',
+        503 => 'Access Forbidden.',
+        404 => 'Not Found.',
+        405 => 'Method Not Allow.',
+        500 => 'Server internal Error.',
+    ];
 
     /**
      * 消息
      * @var string
      */
-    private $message;
+    private $_message;
+
+    /**
 
     /**
      * 数据
      * @var array
      */
-    private $data;
-
-
-
-    //code for operation successfully
-    const OP_SUCCESS = '000';
-
-    //default code for operation failed
-    const OP_FAILURE = '001';
-
-    //error code 101: Invalid parameter operation
-    const INVALID_PARAM = '101';
+    private $_data;
 
     /**
-     * 显示ajax操作失败默认结果
+     * JsonResult constructor.
+     * @param $code
+     * @param $message
+     * @param $data
      */
-    public static function ajaxFailtureResult(){
-        $result = new AjaxResult(self::OP_FAILURE, "操作失败.");
-        die($result->toJsonMessage());
+    public function __construct($code, $message, $data){
+        $this->setCode($code);
+        $this->setMessage($message);
+        $this->setData($data);
     }
 
     /**
-     * 显示ajax操作成功默认结果
+     * 创建 JsonResult 实例, 并输出
+     * @param $code
+     * @param $message
+     * @param array $data
+     * @return JsonResult
      */
-    public static function ajaxSuccessResult(){
-        $result = new AjaxResult(self::OP_SUCCESS, "操作成功.");
-        die($result->toJsonMessage());
-    }
-
-    /**
-     * 显示ajax操作结果
-     */
-    public static function ajaxResult($code, $message, $data=array()){
-        $result = new AjaxResult($code, $message, $data);
-        die($result->toJsonMessage());
+    public static function jsonResult($code, $message, $data=array()) {
+        $result = new self($code, $message, $data);
+        $result->output();
     }
 
     /**
      * 返回一个成功的 result vo
-     * @param $message
-     * @param $data
-     * @return AjaxResult
+     * @param string $message
+     * @param array $data
+     * @return JsonResult
      */
-    public static function success($message='处理成功', $data=array()) {
-        return new AjaxResult(self::OP_SUCCESS, $message, $data);
+    public static function success($message='操作成功', $data=array()) {
+        $result = new self(200, $message, $data);
+        $result->output();
     }
 
     /**
      * 返回一个失败的 result vo
-     * @param $message
+     * @param string $message
      * @param $data
-     * @return AjaxResult
+     * @return JsonResult
      */
-    public static function fail($message,$data) {
-        return new AjaxResult(self::OP_FAILURE, $message, $data);
+    public static function fail($message='操作失败', $data) {
+        $result = new self(100, $message, $data);
+        $result->output();
     }
 
     /**
@@ -110,14 +119,8 @@ class AjaxResult {
      * @param $callback
      */
     public static function jsonp($code, $message, $callback){
-        $result = new AjaxResult($code, $message);
-        die($callback. "(". $result->toJsonMessage() .")");
-    }
-
-    public function __construct($code, $message, $data){
-        $this->setCode($code);
-        $this->setMessage($message);
-        $this->setData($data);
+        $result = new self($code, $message);
+        die($callback. "(". $result .")");
     }
 
     /**
@@ -125,7 +128,7 @@ class AjaxResult {
      */
     public function getCode()
     {
-        return $this->code;
+        return $this->_code;
     }
 
     /**
@@ -133,35 +136,35 @@ class AjaxResult {
      */
     public function setCode($code)
     {
-        $this->code = $code;
+        $this->_code = $code;
     }
 
     /**
      * @return the $message
      */
     public function getMessage() {
-        return $this->message;
+        return $this->_message;
     }
 
     /**
      * @param string $message
      */
     public function setMessage($message) {
-        $this->message = $message;
+        $this->_message = $message;
     }
 
     /**
      * @return the $data
      */
     public function getData() {
-        return $this->data;
+        return $this->_data;
     }
 
     /**
      * @param multitype: $data
      */
     public function setData($data) {
-        $this->data = $data;
+        $this->_data = $data;
     }
 
     /**
@@ -170,7 +173,7 @@ class AjaxResult {
      * @param value
      */
     public function putData($key, $value) {
-        $this->data[$key] = $value;
+        $this->_data[$key] = $value;
     }
 
 
@@ -187,15 +190,15 @@ class AjaxResult {
     }
 
     public function getItems() {
-        return $this->data[self::DATA_KEY_ITEMS];
+        return $this->_data[self::DATA_KEY_ITEMS];
     }
 
     public function getItem() {
-        return $this->data[self::DATA_KEY_ITEM];
+        return $this->_data[self::DATA_KEY_ITEM];
     }
 
     public function getCount() {
-        return $this->data[self::DATA_KEY_COUNT];
+        return $this->_data[self::DATA_KEY_COUNT];
     }
 
     /**
@@ -203,13 +206,27 @@ class AjaxResult {
      * @return bool
      */
     public function isSucess() {
-        return $this->code == self::OP_SUCCESS;
+        return $this->_code == 200;
     }
 
     /**
-     * 返回Json格式结果
+     * 转换字符串
+     * @return string
      */
-    public function toJsonMessage(){
+    public function __toString() {
+        if ( !$this->getMessage() ) {
+            $this->setMessage(self::$_CODE_STATUS[$this->_code]);
+        }
         return StringUtils::jsonEncode(array('code'=>$this->getCode(), 'message'=>$this->getMessage(), 'data'=>$this->getData()));
+    }
+
+    /**
+     * 以json格式输出
+     */
+    public function output() {
+        header( "HTTP/1.1 {$this->_code} ".self::$_CODE_STATUS[$this->_code] );
+        header('Content-type: application/json');
+        echo $this;
+        die();
     }
 }

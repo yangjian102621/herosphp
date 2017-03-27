@@ -4,7 +4,7 @@ namespace demo\action;
 use herosphp\core\Controller;
 use herosphp\files\FileUpload;
 use herosphp\http\HttpRequest;
-use herosphp\utils\AjaxResult;
+use herosphp\utils\JsonResult;
 
 /**
  * 文件上传测试
@@ -43,9 +43,9 @@ class UploadAction extends Controller {
         $upload = new FileUpload($config);
         $result = $upload->upload('src');
         if ( $result ) {
-            AjaxResult::ajaxResult(AjaxResult::OP_SUCCESS, "/res/{$dir}/".$result['file_name']);
+            JsonResult::jsonResult(200, "/res/{$dir}/".$result['file_name']);
         } else {
-            AjaxResult::ajaxResult(AjaxResult::OP_FAILURE, $upload->getUploadMessage());
+            JsonResult::jsonReult(201, $upload->getUploadMessage());
         }
     }
 

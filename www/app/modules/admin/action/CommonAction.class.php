@@ -5,6 +5,7 @@ use herosphp\bean\Beans;
 use herosphp\core\Controller;
 use herosphp\core\WebApplication;
 use herosphp\http\HttpRequest;
+use herosphp\utils\JsonResult;
 use herosphp\utils\Page;
 
 define('COM_ERR_MSG', '(⊙o⊙) 系统出了小差！');
@@ -20,7 +21,7 @@ abstract class CommonAction extends Controller {
     const MESSAGE_INFO = 'info'; //普通提示
     const MESSAGE_SUCESS = 'success'; //操作成功
 
-    const COM_ERR_MSG = '(⊙o⊙) 系统出了小差！'; //通用报错类型
+    const SYS_ERR = '(⊙o⊙) 系统出了小差！'; //通用报错类型
 
     //页码
     protected $page = 1;
@@ -139,9 +140,9 @@ abstract class CommonAction extends Controller {
         $service = Beans::get($this->getServiceBean());
 
         if ( $service->add($data) ) {
-            AjaxResult::ajaxSuccessResult();
+            JsonResult::success();
         } else {
-            AjaxResult::ajaxFailtureResult();
+            JsonResult::fail();
         }
     }
 
@@ -152,16 +153,16 @@ abstract class CommonAction extends Controller {
      */
     public function update( $data, HttpRequest $request ) {
 
-        if ( !$data ) AjaxResult::ajaxFailtureResult();
+        if ( !$data ) JsonResult::fail();
 
         $id = $request->getParameter('id', 'intval');
-        if ( $id <= 0 ) AjaxResult::ajaxResult('error', COM_ERR_MSG);
+        if ( $id <= 0 ) JsonResult::jsonResult(404, self::SYS_ERR);
 
         $service = Beans::get($this->getServiceBean());
         if ( $service->update($data, $id) ) {
-            AjaxResult::ajaxSuccessResult();
+            JsonResult::success();
         } else {
-            AjaxResult::ajaxFailtureResult();
+            JsonResult::fail();
         }
 
     }
@@ -185,9 +186,9 @@ abstract class CommonAction extends Controller {
 
         //全部数据保存成功，则该操作成功
         if ( $counter == count($hids) ) {
-            AjaxResult::ajaxResult('ok', '保存成功！');
+            JsonResult::success();
         } else {
-            AjaxResult::ajaxResult('error', '保存失败！');
+            JsonResult::fail();
         }
     }
 
@@ -198,12 +199,12 @@ abstract class CommonAction extends Controller {
     public function delete( HttpRequest $request ) {
 
         $id = $request->getParameter('id', 'intval');
-        if ( $id <= 0 ) AjaxResult::ajaxResult('error', COM_ERR_MSG);
+        if ( $id <= 0 ) JsonR('error', COM_ERR_MSG);
         $service = Beans::get($this->getServiceBean());
         if ( $service->delete($id) ) {
-            AjaxResult::ajaxSuccessResult();
+            JsonResult::success();
         } else {
-            AjaxResult::ajaxFailtureResult();
+            JsonResult::fail();
         }
     }
 
@@ -214,12 +215,12 @@ abstract class CommonAction extends Controller {
     public function deletes( HttpRequest $request ) {
 
         $ids = $request->getParameter('ids');
-        if ( empty($ids) ) AjaxResult::ajaxResult('error', COM_ERR_MSG);
+        if ( empty($ids) ) JsonResult::jsonResult(404, self::SYS_ERR);
         $service = Beans::get($this->getServiceBean());
         if ( $service->deletes($ids) ) {
-            AjaxResult::ajaxSuccessResult();
+            JsonResult::success();
         } else {
-            AjaxResult::ajaxFailtureResult();
+            JsonResult::fail();
         }
     }
 
@@ -234,7 +235,7 @@ abstract class CommonAction extends Controller {
         $service = Beans::get($this->getServiceBean());
         $exists = $service->getItem(array($field => $value));
         if ( $exists ) {
-            AjaxResult::ajaxResult('error', "{$value} 在数据库中已存在，请更换！");
+            JsonResult::jsonResult(201, "{$value} 在数据库中已存在，请更换！");
         }
 
     }

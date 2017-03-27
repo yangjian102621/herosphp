@@ -22,6 +22,8 @@ require_once APP_FRAME_PATH.'core/Loader.class.php';//包含资源加载器
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
 use herosphp\Artisan;
+use herosphp\api\GeneralApi;
+use herosphp\api\RestfulApi;
 
 class Herosphp {
 
@@ -46,9 +48,9 @@ class Herosphp {
 
         //根据环境配置来获取相应的配置,如果没有的话，就加载默认的
         if( defined('ENV_CFG') ){
-            $appConfigs = Loader::config('app', 'env.'.ENV_CFG); //加载当前应用的配置信息
+            $appConfigs = Loader::config('app', 'env.'.ENV_CFG);
         }else{
-            $appConfigs = Loader::config('app'); //加载当前应用的配置信息
+            $appConfigs = Loader::config('app');
         }
         $application = WebApplication::getInstance();
         $application->execute($appConfigs);
@@ -61,6 +63,14 @@ class Herosphp {
     public static function artisan() {
         self::init();
         Artisan::run();
+    }
+
+    /**
+     * api应用入口
+     */
+    public static function api() {
+        self::init();
+        GeneralApi::run();
     }
 
     /**
@@ -90,12 +100,6 @@ class Herosphp {
             set_time_limit(0);
         }
 
-//        $className = ucfirst($taskName).'Task';
-//        Loader::import("tasks.{$className}", IMPORT_CLIENT);
-//        $clazz = new ReflectionClass("tasks\\{$className}");
-//        $method = $clazz->getMethod('run');
-//        $method->invoke($clazz->newInstance());
-
     }
 
     /**
@@ -105,6 +109,9 @@ class Herosphp {
     private static function _loadBaseLib() {
         self::$LIB_CLASS = array(
             'herosphp\Artisan'          => 'Artisan',
+            'herosphp\api\GeneralApi'          => 'api.GeneralApi',
+            'herosphp\api\RestfulApi'          => 'api.RestfulApi',
+
             'herosphp\http\HttpRequest'          => 'http.HttpRequest',
             'herosphp\http\HttpClient'          => 'http.HttpClient',
             'herosphp\core\WebApplication'       => 'core.WebApplication',
@@ -123,7 +130,7 @@ class Herosphp {
             'herosphp\files\PHPZip'       => 'files.PHPZip',
 
             'herosphp\utils\ArrayUtils'       => 'utils.ArrayUtils',
-            'herosphp\utils\AjaxResult'       => 'utils.AjaxResult',
+            'herosphp\utils\JsonResult'       => 'utils.JsonResult',
             'herosphp\utils\HashUtils'       => 'utils.HashUtils',
             'herosphp\utils\Page'       => 'utils.Page',
             'herosphp\utils\ModelTransformUtils'   => 'utils.ModelTransformUtils',

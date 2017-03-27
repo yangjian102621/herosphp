@@ -10,10 +10,9 @@ $beans = array(
 		'@class' => 'demo\service\UserService',
 		'@params' => array('User')
 	),
-	'demo.user.service' => array(
+	'api.user.service' => array(
 		'@type' => Beans::BEAN_OBJECT,
-		'@class' => 'demo\service\user',
-		'@params' => array('User')
+		'@class' => 'api\service\UserService',
 	),
 	'demo.shop.service' => array(
 		'@type' => Beans::BEAN_OBJECT,

@@ -1,18 +1,9 @@
 <?php
 namespace demo\action;
 
-use herosphp\bean\Beans;
 use herosphp\core\Controller;
-use herosphp\core\Debug;
-use herosphp\core\WebApplication;
-use herosphp\db\entity\MysqlEntity;
 use herosphp\http\HttpRequest;
-use herosphp\string\StringBuffer;
-use herosphp\string\StringUtils;
-use herosphp\utils\AjaxResult;
-use herosphp\web\WebUtils;
 use qrcode\QRcode;
-use Workerman\Worker;
 
 /**
  * 首页测试

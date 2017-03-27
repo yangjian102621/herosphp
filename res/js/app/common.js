@@ -113,7 +113,7 @@ define(function(require, exports) {
 					'确认' : function() {
 						$.get(url, function(data) {
 							__confirm.close();
-							if ( data.code == "000" ) {
+							if ( data.code == 200 ) {
 								JDialog.tip.work({type:"ok", content:data.message, timer:1000});
 								setTimeout(function() {location.reload();}, 1000)
 							} else {
@@ -223,7 +223,7 @@ define(function(require, exports) {
 	 * @param failCallback 操作失败时回调函数
 	 */
 	exports.ajaxCallback = function(data, successCallback, failCallback) {
-		if ( data.code == "000" ) {
+		if ( data.code == 200 ) {
 			JDialog.tip.work({type:"ok", content:data.message, lock:true, timer:__global.jdialog.timer});
 			if ( typeof successCallback == 'function' ) {
 				successCallback();

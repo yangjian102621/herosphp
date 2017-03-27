@@ -3,7 +3,7 @@ namespace admin\action;
 
 use herosphp\http\HttpRequest;
 use herosphp\image\VerifyCode;
-use herosphp\utils\AjaxResult;
+use herosphp\utils\JsonResult;
 
 /**
  * 后台管理 index 控制器
@@ -25,7 +25,7 @@ class IndexAction extends CommonAction {
 
     //添加数据
     public function insert($data) {
-        AjaxResult::ajaxSuccessResult();
+        JsonResult::success();
     }
 
     public function clist(HttpRequest $request) {
@@ -35,7 +35,7 @@ class IndexAction extends CommonAction {
     }
 
     public function remove(HttpRequest $request) {
-        AjaxResult::ajaxSuccessResult();
+        JsonResult::success();
     }
 
     public function edit(HttpRequest $request) {

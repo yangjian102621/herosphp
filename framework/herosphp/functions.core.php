@@ -254,13 +254,12 @@ function addUrlArgs($url, $key, $value) {
  */
 function getConfig($key) {
 
-    if ( defined('RUN_CLI') ) {
-        $appConfigs = \herosphp\core\Loader::config('app'); //加载当前应用的配置信息
-        return $appConfigs[$key];
+    if( defined('ENV_CFG') ) {
+        $appConfigs = \herosphp\core\Loader::config('app', 'env.'.ENV_CFG);
     } else {
-        $webapp = \herosphp\core\WebApplication::getInstance();
-        return $webapp->getConfig($key);
+        $appConfigs =\herosphp\core\Loader::config('app');
     }
+    return $appConfigs[$key];
 }
 
 /**
@@ -268,12 +267,10 @@ function getConfig($key) {
  * @return array
  */
 function getConfigs() {
-    if ( defined("RUN_CLI") ) {
-        $appConfigs = \herosphp\core\Loader::config('app'); //加载当前应用的配置信息
-        return $appConfigs;
-    } else {
-        $webapp = \herosphp\core\WebApplication::getInstance();
-        return $webapp->getConfigs();
+    if( defined('ENV_CFG') ){
+        return \herosphp\core\Loader::config('app', 'env.'.ENV_CFG);
+    }else{
+        return \herosphp\core\Loader::config('app');
     }
 }
 

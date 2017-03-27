@@ -4,9 +4,13 @@
  */
 
 namespace demo\tests;
+use demo\service\UserService;
 use herosphp\bean\Beans;
 class UserServiceTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var UserService
+     */
     protected $service;
 
     public function setUp()
@@ -18,8 +22,8 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function register() {
-        $this->service->register();
+    public function hello() {
+        $this->service->hello();
     }
 
 }

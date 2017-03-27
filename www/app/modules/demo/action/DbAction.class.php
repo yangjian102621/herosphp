@@ -7,9 +7,9 @@ use herosphp\core\Loader;
 use herosphp\db\mysql\MysqlQueryBuilder;
 use herosphp\http\HttpRequest;
 use herosphp\string\StringUtils;
-use herosphp\utils\AjaxResult;
 use herosphp\utils\FileUpload;
 use herosphp\utils\HashUtils;
+use herosphp\utils\JsonResult;
 
 /**
  * demo action
@@ -278,13 +278,13 @@ class DbAction extends CommonAction {
         __print($items);
 
 
-        AjaxResult::ajaxSuccessResult();
+        JsonResult::success();
     }
 
     public function service() {
 
         $service = Beans::get('test.user.service');
         __print($service->getItem(123));
-        AjaxResult::ajaxSuccessResult();
+        JsonResult::success();
     }
 }
