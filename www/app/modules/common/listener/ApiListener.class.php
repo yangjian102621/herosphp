@@ -17,6 +17,7 @@ use herosphp\api\interfaces\IApiListener;
       */
      public function authorize($params)
      {
+         //这里写授权认证的代码
          return true;
      }
  }
