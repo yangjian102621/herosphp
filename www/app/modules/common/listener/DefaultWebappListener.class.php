@@ -29,7 +29,12 @@ use herosphp\listener\WebApplicationListenerMatcher;
       */
      public function beforeActionInvoke(HttpRequest $request)
      {
-
+         $module = $request->getModule();
+         if ( $module == 'api' ) {
+             //请求转发到api路由入口
+             $request->setAction('router');
+             $request->setMethod('index');
+         }
      }
 
      /**

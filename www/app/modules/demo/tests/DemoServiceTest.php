@@ -6,7 +6,9 @@
 namespace demo\tests;
 use demo\service\UserService;
 use herosphp\bean\Beans;
-class UserServiceTest extends \PHPUnit_Framework_TestCase
+use herosphp\http\HttpClient;
+
+class DemoServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var UserService
@@ -24,6 +26,16 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function hello() {
         $this->service->hello();
+    }
+
+    /**
+     * @test
+     */
+    public function httpclient() {
+
+        $result = HttpClient::delete('http://api.herosphp.my/shops/11111',
+            json_encode(array("username" => 'xxxxxx', "password" => "11111111")));
+        print_r($result);
     }
 
 }

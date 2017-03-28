@@ -1,6 +1,8 @@
 <?php
 namespace herosphp\http;
-use herosphp\core\Log;
+use herosphp\exception\HeroException;
+use herosphp\string\StringUtils;
+
 /**
  * 发送http请求类
  * Class HttpClient
@@ -8,31 +10,17 @@ use herosphp\core\Log;
  */
 class HttpClient {
 
-	private $curlTimeout = 30; //超时时间30s
-
-	//设置超时时间
-	public function setTimeout($timeout) {
-		$this->curlTimeout = $timeout;
-	}
-
 	/**
 	 * 发送 http GET 请求
 	 * @param $url
 	 * @param $params
-	 * @param null $headers 请求头信息
-	 * @param null $setting curl设置
+	 * @param array $headers 请求头信息
 	 * @param bool $return_header 是否返回头信息
-	 * @return array|bool|mixed
+	 * @return mixed
 	 */
-	public function get( $url, $params=null, $headers=null, $setting=null, $return_header = false )
+	public static function get( $url, $params=null, $headers=null, $return_header = false )
 	{
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_TIMEOUT, $this->curlTimeout);
-		if( stripos($url, 'https://') !== false ) { //支持https请求
-			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-		}
-
+		$self = new self();
 		if ( is_array($params) ) {
 			$params = http_build_query($params);
 		}
@@ -44,46 +32,9 @@ class HttpClient {
 			}
 		}
 
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_HEADER, 0);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		if ( is_array($headers) ) {
-			$_headers = array();
-			foreach ( $headers as $key => $value ) {
-				$_headers[] = "{$key}:$value";
-			}
-			curl_setopt($curl, CURLOPT_HTTPHEADER, $_headers);
-		}
-
-		//check and apply the setting
-		if ( $setting != NULL ) {
-			foreach ( $setting as $key => $val ) {
-				curl_setopt($curl, $key, $val);
-			}
-		}
-
-		$ret = curl_exec($curl);
-		$info = curl_getinfo($curl);
-		curl_close($curl);
-        curl_close($curl);
-        if (false === $ret) {
-            E("cURLException:".curl_error($curl));
-        }
-
-		if(  $return_header ) {
-			return array(
-				'header' => $info,
-				'body'   => $ret
-			);
-		}
-
-        if( intval($info['http_code']) == 200 ) {
-            return $ret;
-        }else{
-            E("cURLReturnNot200Exception:".$ret);
-        }
-
-		return false;
+		$curl = $self->_curlInit($url, $headers);
+		curl_setopt($curl, CURLOPT_HTTPGET, true);
+		return $self->_doRequest($curl, $return_header);
 	}
 
 	/**
@@ -91,25 +42,118 @@ class HttpClient {
 	 * @param $url
 	 * @param $params
 	 * @param null $headers
-	 * @param null $setting
 	 * @return bool|mixed
 	 */
-	public function post( $url, $params, $headers=null, $setting=null )
+	public static function post($url, $params, $headers=null)
 	{
+		$self = new self();
+		if ( is_array($params) ) {
+			$params = http_build_query($params);
+		}
+		$curl = $self->_curlInit($url, $headers);
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+
+		return $self->_doRequest($curl, false);
+	}
+
+	/**
+	 * 发送restful POST请求
+	 * @param $url
+	 * @param $params
+	 * @return mixed
+	 */
+	public static function restpost($url, $params) {
+		$self = new self();
+		if ( is_array($params) ) {
+			$params = StringUtils::jsonEncode($params);
+		}
+        $curl = $self->_curlInit($url, array('Content-Type' => 'application/json'));
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+
+		return $self->_doRequest($curl, false);
+	}
+
+
+
+    /**
+     * 发送restful PUT请求
+     * @param $url
+     * @param $params
+     * @return mixed
+     */
+    public static function put($url, $params) {
+        $self = new self();
+        if ( is_array($params) ) {
+            $params = StringUtils::jsonEncode($params);
+        }
+        $curl = $self->_curlInit($url, array('Content-Type' => 'application/json'));
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+
+        return $self->_doRequest($curl, false);
+    }
+
+    /**
+     * 发送restful DELETE请求
+     * @param $url
+     * @param $params
+     * @return mixed
+     */
+    public static function delete($url, $params) {
+        $self = new self();
+        if ( is_array($params) ) {
+            $params = StringUtils::jsonEncode($params);
+        }
+        $curl = $self->_curlInit($url, array('Content-Type' => 'application/json'));
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+
+        return $self->_doRequest($curl, false);
+    }
+
+	/**
+	 * 发送Http请求
+	 * @param $curl
+	 * @param $return_header
+	 * @return mixed
+	 * @throws HeroException
+	 */
+	private static function _doRequest($curl, $return_header=false) {
+
+		$ret	= curl_exec($curl);
+		$info	= curl_getinfo($curl);
+
+		curl_close($curl);
+		if( $ret == false ) {
+			throw new HeroException("cURLException:".curl_error($curl));
+		}
+
+		if(  $return_header ) {
+			return ['header' => $info, 'body'   => $ret];
+		} else {
+			return $ret;
+		}
+
+	}
+
+	/**
+	 * 创建curl对象
+	 * @param $url
+	 * @param $headers
+	 * @return resource
+	 */
+	private static function _curlInit($url, $headers) {
 		$curl	= curl_init();
-		curl_setopt($curl, CURLOPT_TIMEOUT, $this->curlTimeout);
 		if( stripos( $url, 'https://') !== FALSE ) {
 			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
 		}
-		if ( is_array($params) ) {
-			$params = http_build_query($params);
-		}
+
 		curl_setopt($curl, CURLOPT_URL, $url);
 		curl_setopt($curl, CURLOPT_HEADER, 0);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl, CURLOPT_POST, 1);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
 		if ( is_array($headers) ) {
 			$_headers = array();
 			foreach ( $headers as $key => $value ) {
@@ -117,26 +161,6 @@ class HttpClient {
 			}
 			curl_setopt($curl, CURLOPT_HTTPHEADER, $_headers);
 		}
-
-		//check and apply the setting
-		if ( $setting != null ) {
-			foreach ( $setting as $key => $val ) {
-				curl_setopt($curl, $key, $val);
-			}
-		}
-
-		$ret	= curl_exec($curl);
-		$info	= curl_getinfo($curl);
-		curl_close($curl);
-        if (false === $ret) {
-            E("cURLException:".curl_error($curl));
-        }
-		if( intval($info['http_code']) == 200 ) {
-			return $ret;
-		}else{
-            E("cURLReturnNot200Exception:".$ret);
-        }
-
-		return false;
+		return $curl;
 	}
 }

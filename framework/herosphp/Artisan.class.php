@@ -21,35 +21,35 @@ class Artisan {
     private static $SHORT_OPS = 'hv';
 
     private static $LONG_OPTS = array(
-        'make-model:'   => "Use to create Model. Optional value is model's name.",
-        'table:'   => "Specify the table for Model.",
-        'pk:'   => "Specify primary key of the table. Default value is 'id'",
+        'make-model:'   => "创建Model，参数是Model名称.",
+        'table:'   => "为Model指定数据表.",
+        'pk:'   => "指定数据表主键. 默认值：id",
 
-        'make-controller:'   => "Use to create Controller. Optional value is Controller's name.",
-        'make-service:'   => "Use to create Service. Optional value is Service's name.",
-        'module:' => 'Specify the module of Model|Service|Controller.',
-        'extend:' => "Specify the parent class of Service. default value is 'common\\service\\CommonService'",
+        'make-controller:'   => "创建Controller，参数是Controller名称.",
+        'make-service:'   => "创建Service，参数是Service名称.",
+        'module:' => '为 Model|Service|Controller 指定模块.',
+        'extend:' => "继承的父类. 默认值：'common\\service\\CommonService'",
 
-        'make-db:'   => "Use to create a database.",
-        'dbhost:'   => "Specify the database server host. Default value is 127.0.0.1",
-        'dbuser:'   => "Specify the user for connections of database. Default value is root",
-        'dbpass:'   => "Specify the password for database server user. Default value is 123456",
-        'dbname:'   => "Specify the name of database.",
-        'charset:'   => "Specify the charset of database. Default value is UTF-8",
+        'make-db:'   => "创建数据库.",
+        'dbhost:'   => "主机ip，默认值：127.0.0.1",
+        'dbuser:'   => "数据库用户名. 默认值：root",
+        'dbpass:'   => "数据库密码，默认值：123456",
+        'dbname:'   => "数据库名称.",
+        'charset:'   => "数据库字符编码. 默认值：UTF-8",
 
-        'run:' => 'Excute a task in the client folder',
+        'run:' => '执行一个客户端任务，参数是任务名称',
 
-        'make-table:'   => "Use to create database table. Optional value is tables configure xml file path.",
+        'make-table:'   => "创建数据表，需要传入数据表的xml配置文档路径.",
 
-        'import:'   => 'Use to import database or table from sql file.',
+        'import:'   => '从SQL文件导入数据.',
 
-        'author:'   => 'Specify the compontent file create author info. Default value is {yangjian}',
-        'email:'    => 'Specify the compontent file create author email info. Default value is {yangjian102621@gmail.com}',
-        'desc:'     => 'Specify the compontent file description info.',
-        'date:'     => 'Specify the compontent file create date info. Default value is the day that file is created.',
+        'author:'   => '组件创建作者 默认：{yangjian}',
+        'email:'    => '组件创建者邮箱 默认：{yangjian102621@gmail.com}',
+        'desc:'     => '组件描述.',
+        'date:'     => '组件创建日期，默认当天.',
 
-        'help'      => 'Show the help info. Shortcut -h.',
-        'version'   => 'Show the version info. Shortcut -v.'
+        'help'      => '显示帮助信息. Shortcut -h.',
+        'version'   => '显示版本信息. Shortcut -v.'
     );
 
     public static function run() {
@@ -113,7 +113,6 @@ class Artisan {
         foreach ( self::$LONG_OPTS as $key => $value ) {
             $key = rtrim($key, ":");
             printLine("  --{$key} {$value}");
-            printLine();
         }
     }
 

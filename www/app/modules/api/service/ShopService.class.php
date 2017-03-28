@@ -36,6 +36,6 @@ class ShopService implements IRestfulApiService {
 
     public function delete($ID)
     {
-        return new JsonResult(204);
+        return new JsonResult(200, "删除成功", "ID => {$ID}");
     }
 }
