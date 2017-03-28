@@ -9,7 +9,9 @@
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
-namespace herosphp\exception;
+namespace herosphp\db;
+
+use herosphp\exception\HeroException;
 
 class DBException extends HeroException {
 

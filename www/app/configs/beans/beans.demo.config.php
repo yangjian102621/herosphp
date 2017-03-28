@@ -14,6 +14,10 @@ $beans = array(
 		'@type' => Beans::BEAN_OBJECT,
 		'@class' => 'api\service\UserService',
 	),
+	'api.shop.service' => array(
+		'@type' => Beans::BEAN_OBJECT,
+		'@class' => 'api\service\ShopService',
+	),
 	'demo.shop.service' => array(
 		'@type' => Beans::BEAN_OBJECT,
 		'@class' => 'demo\service\shop',

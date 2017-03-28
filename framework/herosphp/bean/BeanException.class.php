@@ -9,9 +9,11 @@
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
-namespace herosphp\exception;
+namespace herosphp\bean;
 
-class BeanException extends HeroException{
+use herosphp\exception\HeroException;
+
+class BeanException extends HeroException {
 
     /**
      * Bean

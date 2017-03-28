@@ -12,7 +12,6 @@
 namespace herosphp\bean;
 
 use herosphp\core\Loader;
-use herosphp\exception\BeanException;
 use \ReflectionClass;
 
 class BeanUtil {

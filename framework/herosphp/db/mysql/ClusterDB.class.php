@@ -13,7 +13,8 @@ namespace herosphp\db\mysql;
 
 use herosphp\core\Loader;
 use herosphp\db\interfaces\ICusterDB;
-use herosphp\exception\DBException;
+use herosphp\db\DBException;
+use herosphp\exception\UnSupportedOperationException;
 use \PDO;
 use \PDOException;
 
@@ -64,8 +65,7 @@ class ClusterDB implements ICusterDB {
      */
     public function connect()
     {
-        return false;
-        //throw new DBException("暂时不支持该方法！");
+        throw new UnSupportedOperationException("Unsurpported Operation.");
     }
 
     /**

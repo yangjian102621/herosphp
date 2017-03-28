@@ -14,7 +14,7 @@ namespace herosphp\db\mysql;
 use herosphp\core\Loader;
 use herosphp\core\Log;
 use herosphp\db\interfaces\Idb;
-use herosphp\exception\DBException;
+use herosphp\db\DBException;
 use \PDO;
 use \PDOException;
 

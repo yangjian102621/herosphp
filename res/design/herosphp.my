@@ -1,0 +1,61 @@
+server {
+	listen   80;
+	server_name  www.herosphp.my;
+	root /php/herosphp;
+	autoindex on;
+	index index.html index.php index.htm;
+	#设定本虚拟主机的访问日志
+	access_log  /dev/null;
+	error_log /dev/null;
+
+	# Make site accessible from http://localhost/
+	
+	location ~ .*\.(php|php5)?$
+	{
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		include fastcgi_params;
+	}
+
+	#add surpport pathinfo visitd mode	
+	if (!-f $request_filename) {
+           rewrite ^/.*$ /www/app/index.php last;
+           break;
+    }
+	
+	location ~ /\.ht {
+		deny all;
+	}
+}
+
+server {
+	listen   80;
+	server_name  api.herosphp.my;
+	root /php/herosphp;
+	autoindex on;
+	index index.html index.php index.htm;
+	#设定本虚拟主机的访问日志
+	access_log  /dev/null;
+	error_log /dev/null;
+
+	# Make site accessible from http://localhost/
+	
+	location ~ .*\.(php|php5)?$
+	{
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		include fastcgi_params;
+	}
+
+	#add surpport pathinfo visitd mode	
+	if (!-f $request_filename) {
+           rewrite ^/.*$ /www/app/api.php last;
+           break;
+    }
+	
+	location ~ /\.ht {
+		deny all;
+	}
+}

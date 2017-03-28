@@ -70,7 +70,11 @@ class Herosphp {
      */
     public static function api() {
         self::init();
-        GeneralApi::run();
+        if ( RESTFUL_API ) {
+            RestfulApi::run();
+        } else {
+            GeneralApi::run();
+        }
     }
 
     /**
@@ -111,6 +115,9 @@ class Herosphp {
             'herosphp\Artisan'          => 'Artisan',
             'herosphp\api\GeneralApi'          => 'api.GeneralApi',
             'herosphp\api\RestfulApi'          => 'api.RestfulApi',
+            'herosphp\api\APIException'          => 'api.APIException',
+            'herosphp\api\interfaces\IRestfulApiService'          => 'api.interfaces.IRestfulApiService',
+            'herosphp\api\interfaces\IApiListener'          => 'api.interfaces.IApiListener',
 
             'herosphp\http\HttpRequest'          => 'http.HttpRequest',
             'herosphp\http\HttpClient'          => 'http.HttpClient',
@@ -122,7 +129,6 @@ class Herosphp {
             'herosphp\core\Controller'       => 'core.Controller',
 
             'herosphp\exception\HeroException'       => 'exception.HeroException',
-            'herosphp\exception\DBException'       => 'exception.DBException',
             'herosphp\exception\UnSupportedOperationException'       => 'exception.UnSupportedOperationException',
 
             'herosphp\files\FileUtils'       => 'files.FileUtils',
@@ -148,6 +154,7 @@ class Herosphp {
             'herosphp\db\DBFactory'       => 'db.DBFactory',
             'herosphp\db\mysql\MysqlQueryBuilder'       => 'db.mysql.MysqlQueryBuilder',
             'herosphp\db\mongo\MongoQueryBuilder'       => 'db.mongo.MongoQueryBuilder',
+            'herosphp\db\DBException'       => 'db.DBException',
 
             'herosphp\model\C_Model'       => 'model.C_Model',
             'herosphp\model\ShardingRouterModel'       => 'model.ShardingRouterModel',

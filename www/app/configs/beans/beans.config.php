@@ -19,6 +19,11 @@ $beans = array(
         )
     ),
 
+    Beans::BEAN_API_LISTENER => array (
+        '@type' => Beans::BEAN_OBJECT,
+        '@class' => 'common\listener\ApiListener'
+    ),
+
 
 );
 return $beans;

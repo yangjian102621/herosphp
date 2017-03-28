@@ -11,9 +11,8 @@
 
 namespace herosphp\bean;
 use herosphp\core\Loader;
-use herosphp\exception\BeanException;
 
-Loader::import('exception.BeanException', IMPORT_FRAME);
+Loader::import('bean.BeanException', IMPORT_FRAME);
 Loader::import('bean.BeanUtil', IMPORT_FRAME);
 abstract class Beans {
 
@@ -34,6 +33,11 @@ abstract class Beans {
      * @var string
      */
     const BEAN_WEBAPP_LISTENER = 'webapplication.listener.bean';
+
+    /**
+     * api应用程序拦截器 bean key
+     */
+    const BEAN_API_LISTENER = 'api.listener.bean';
 
     /**
      * Bean装配配置信息
@@ -134,7 +138,7 @@ abstract class Beans {
      * 根据属性配置装配Bean属性
      * @param Object $bean Bean对象
      * @param array $attributes 属性配置
-     * @throws \herosphp\exception\BeanException
+     * @throws BeanException
      */
     private static function attributesInstall($bean, $attributes){
         $attributesToInstall = array();	//用来存放处理过后的属性
@@ -173,7 +177,7 @@ abstract class Beans {
      * 根据方法调用配置调用指定Bean的方法
      * @param Object $bean Bean对象
      * @param array $invokes 方法调用配置
-     * @throws \herosphp\exception\BeanException
+     * @throws BeanException
      */
     private static function methodsInvoke($bean, $invokes){
         foreach( $invokes as $method=>$params ) {

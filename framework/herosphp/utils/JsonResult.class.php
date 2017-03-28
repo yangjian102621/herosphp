@@ -41,7 +41,6 @@ class JsonResult {
      */
     private static $_CODE_STATUS = [
         200 => 'OK.',
-        100 => 'Fail.',
         201 => 'Created.',
         204 => 'No Contents.',
         400 => 'Bad Request.',
@@ -107,8 +106,8 @@ class JsonResult {
      * @param $data
      * @return JsonResult
      */
-    public static function fail($message='操作失败', $data) {
-        $result = new self(100, $message, $data);
+    public static function fail($message='系统开了小差', $data) {
+        $result = new self(500, $message, $data);
         $result->output();
     }
 
