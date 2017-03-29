@@ -330,9 +330,9 @@ class Template {
         } else {
 
             if ( $type == 'css' || $type == 'less' ) {
-                $src = $resUrl.'styles/'.$path;
+                $src = $resUrl.APP_NAME.'/static/'.$path;
             } else if( $type == 'js' ) {
-                $src = $resUrl.'js/'.$path;
+                $src = $resUrl.APP_NAME.'/static/js/'.$path;
             }
         }
 

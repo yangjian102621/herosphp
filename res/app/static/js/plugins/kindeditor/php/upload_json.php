@@ -5,8 +5,8 @@ if ( !defined("DIR_OS") ) define("DIR_OS", DIRECTORY_SEPARATOR);
 ini_set("display_errors", "Off");
 ini_set("log_errors", "On");
 ini_set("error_log", ROOT.DIR_OS."error_log.txt");
-include ROOT.DIR_OS.'php'.DIR_OS.'JSON.php';
-include ROOT.DIR_OS.'php'.DIR_OS.'FileUpload.class.php';
+include ROOT . DIR_OS . 'php' . DIR_OS . 'JSON.php';
+include ROOT . DIR_OS . 'php' . DIR_OS . 'FileUpload.class.php';
 
 //接收参数
 $_module = trim($_GET['module']);
@@ -43,7 +43,7 @@ $file_url = $_upload_url . $_filename;
 
 //添加水印
 if ( !empty($_water) && $_dir == 'image' ) {
-	include ROOT.DIR_OS.'php'.DIR_OS.'Image.class.php';
+	include ROOT . DIR_OS . 'php' . DIR_OS . 'Image.class.php';
 	$image = Image::getInstance();
 	//添加图片水印
 	/*

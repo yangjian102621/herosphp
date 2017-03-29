@@ -1149,7 +1149,7 @@
 /* Custom style css (自定义添加插件样式)  */
 
 .ke-icon-filefilter{
-     background-image: url(./custom.png);
+     background-image: url(custom.png);
     background-position: 0px 0px;
     width: 20px;
     height: 16px;

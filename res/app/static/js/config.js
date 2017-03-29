@@ -16,25 +16,25 @@
 
 	var config = {
 		//模块系统的基础路径
-		base: '/res/',
+		base: '/res/app/static/',
 		vars: {
 			//"path":"/static/finance/js/",
-			"framework": "js/framework",
+			"plugins": "js/plugins",
 			"app": "js/app",
 		},
 		//别名
 		alias: {
-			"bootstrap": "{framework}/bootstrap/bootstrap.min.js",
-			"icheck": "{framework}/icheck/icheck.min.js",
-			"jdialog": "{framework}/jdialog/JDialog.min.js",
-			"select2": "{framework}/select2/select2.min.js",
-			"switch": "{framework}/switch/bootstrap-switch.min.js",
-			"ajaxproxy": "{framework}/AjaxProxy.min.js",
-			"jtemplate": "{framework}/JTemplate.min.js",
-			"jform": "{framework}/JForm.min.js",
-			"datetimepicker": "{framework}/datetimepicker/js/bootstrap-datetimepicker.min.js",
-			"editor": "{framework}/kindeditor/kindeditor.js",
-			"jupload": "{framework}/jupload/JUpload.min.js",
+			"bootstrap": "{plugins}/bootstrap/bootstrap.min.js",
+			"icheck": "{plugins}/icheck/icheck.min.js",
+			"jdialog": "{plugins}/jdialog/JDialog.min.js",
+			"select2": "{plugins}/select2/select2.min.js",
+			"switch": "{plugins}/switch/bootstrap-switch.min.js",
+			"ajaxproxy": "{plugins}/AjaxProxy.min.js",
+			"jtemplate": "{plugins}/JTemplate.min.js",
+			"jform": "{plugins}/JForm.min.js",
+			"datetimepicker": "{plugins}/datetimepicker/js/bootstrap-datetimepicker.min.js",
+			"editor": "{plugins}/kindeditor/kindeditor.js",
+			"jupload": "{plugins}/jupload/JUpload.min.js",
 
 			"login": "{app}/login.js",
 			"common": "{app}/common.js",

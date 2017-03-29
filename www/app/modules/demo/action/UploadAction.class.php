@@ -28,7 +28,7 @@ class UploadAction extends Controller {
      */
     public function upload( HttpRequest $request ) {
 
-        $dir = "upload/".date('Y')."/".date('m');
+        $dir = APP_NAME."/upload/".date('Y')."/".date('m');
         $config = array(
             "upload_dir" => RES_PATH.$dir,
             //允许上传的文件类型

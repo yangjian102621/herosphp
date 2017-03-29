@@ -5,7 +5,7 @@ if ( !defined("DIR_OS") ) define("DIR_OS", DIRECTORY_SEPARATOR);
 ini_set("display_errors", "Off");
 ini_set("log_errors", "On");
 ini_set("error_log", ROOT.DIR_OS."error_log.txt");
-include ROOT.DIR_OS.'php'.DIR_OS.'JSON.php';
+include ROOT . DIR_OS . 'php' . DIR_OS . 'JSON.php';
 
 //文件当前模块文件保存根目录
 $_module = $_GET['module'];
