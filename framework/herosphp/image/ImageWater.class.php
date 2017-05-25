@@ -14,6 +14,8 @@ namespace herosphp\image;
  * Author: <yangjian102621@gmail.com>
  *-----------------------------------------------------------------------*/
 
+use herosphp\string\StringUtils;
+
 class ImageWater {
 
     /**
@@ -24,60 +26,37 @@ class ImageWater {
     /**
      * @var Image resource 原图图片资源
      */
-    protected $imgSrc = NULL;
+    protected $imgSrc = null;
 
     /**
      * @var Image resource 目标图片资源
      */
-    protected $imgDst = NULL;
+    protected $imgDst = null;
 
-    /**
-     * @var int 水印位(置默认在右下角)
-     */
-    protected $position = 2;
+    private $fileSrc = null; //源图片路径
 
-    /**
-     * @var int 水印字体
-     */
-    protected $font = 1;
+    protected $position = 2;  //水印位(置默认在右下角)
 
-    /**
-     * @var int 水印透明度
-     */
-    protected $alpha = 80;
+    protected $font = 'YaHei'; //水印字体
 
-    /**
-     * @var string 图片后缀
-     */
-    protected $extension = '';
+    protected $alpha = 80; //水印透明度
 
-    /**
-     * @var int 水印字体大小
-     */
-    protected $fontSize = 30;
+    protected $extension = ''; //图片后缀
 
-    /**
-     * @var int 水印文字的倾斜读
-     */
-    protected $angle = 0;
+    protected $fontSize = 30; //水印字体大小
 
-    /**
-     * @var array 水印字体颜色(默认深红色#cc0000)
-     */
-    protected $fontColor = array(210, 0, 0);
+    protected $angle = 0; //水印文字倾斜角度
+
+    protected $fontColor = array(255, 255, 255); //水印字体颜色
 
     /**
      * water font map (水印字体映射表)
      * 想要添加字体的用户只需在../fonts 文件夹中添加字体文件，然后在这数组中添加与字体名称
      */
     public static $_FONT_MAP = array(
-        '0' 	=>  'suti.ttf', 			//新苏鹅卵石体
-        '1' 	=>  'mao-ze-dong.ttf', 		//毛泽东体
-        '2' 	=>  'hanyi-xiu-ying.ttf',	//汉仪秀英繁体
-        '3' 	=> 	'wending-huocai.ttf', 		//文鼎火柴体 (英文字体)
-        '4'		=>  'ruixian-jt.ttf',		//张海山锐线体简
-        '5'		=>  'hanyi-zhujie.ttf',		//汉仪竹节繁体
-        '6'		=>  'ye-jing.ttf'			//液晶体(英文字体)
+        'YaHei' 	=>  'YaHei.ttf', 			//微软雅黑
+        'YaHeiBold' 	=>  'YaHeiBold.ttf', 			//微软雅黑粗体
+        'ZhengHei' 	=>  'ZhengHei.ttf', 			//微软正黑
     );
 
     /**
@@ -103,7 +82,7 @@ class ImageWater {
      */
     public function imageWaterMark( $_img_src, $_water_path) {
 
-        $this->extension = self::getFileExt($_img_src);
+        $this->fileSrc = $_img_src;
         $sizeDst = $this->getImageSize($_img_src);
 
         //创建画布
@@ -119,8 +98,7 @@ class ImageWater {
         if ( $this->imgDst && $imgWater ) {
             imagecopymerge($this->imgDst, $imgWater, $waterPosition[0], $waterPosition[1], 0, 0, $waterSize[0], $waterSize[1], $this->alpha);
         }
-        //保存图片, 覆盖原图
-        return $this->saveImage($_img_src);
+
     }
 
     /**
@@ -131,7 +109,7 @@ class ImageWater {
      */
     public function stringWaterMark( $_img_src, $_water_str ) {
 
-        $this->extension = self::getFileExt($_img_src);
+        $this->fileSrc = $_img_src;
         $this->imgDst = $this->getImageSource($_img_src);
         $_color = imagecolorallocate($this->imgDst, $this->fontColor[0], $this->fontColor[1], $this->fontColor[2]);
         $sizeSrc = $this->getImageSize($_img_src);
@@ -147,24 +125,147 @@ class ImageWater {
             imagettftext($this->imgDst, $this->fontSize, $this->angle, $waterPosition[0], $waterPosition[1]+$_size[1], $_color, $_font, $_water_str);
         }
 
-        //保存图片，覆盖原图
-        return $this->saveImage($_img_src);
+    }
+
+    /**
+     * 在图片上绘制文字
+     * @param $imgFile 源图片地址
+     * @param $text 文字内容
+     * @param array $postionArray 文字坐标
+     * @return bool
+     */
+    public function drawText($imgFile, $text, $postionArray) {
+
+        if ( $imgFile ) {
+            $this->fileSrc = $imgFile;
+            $this->imgDst = $this->getImageSource($imgFile);
+        }
+        $_color = imagecolorallocate($this->imgDst, $this->fontColor[0], $this->fontColor[1], $this->fontColor[2]);
+        $_font = dirname(__FILE__).DIRECTORY_SEPARATOR.'fonts'.DIRECTORY_SEPARATOR.self::$_FONT_MAP[$this->font];
+
+        if ( is_array($text) ) {
+            for ( $i = 0; $i < count($text); $i++ ) {
+                $__text = $this->getEncodedText($text[$i]);
+                $_ttf_box = imagettfbbox($this->fontSize, $this->angle, $_font, $__text);
+                $textWidth = 0;
+                $textHeight = abs($_ttf_box[7])*($i+1);
+                if ( $i > 0 ) {
+                    $ttfBox = imagettfbbox($this->fontSize, $this->angle, $_font, "我");
+                    $textWidth -= $ttfBox[2] - $ttfBox[0];
+                    $textHeight += 0.5 * abs($_ttf_box[7]);
+                }
+                if ( $this->imgDst ) {
+                    imagettftext($this->imgDst, $this->fontSize, $this->angle, $postionArray[0]+$textWidth, $postionArray[1]+$textHeight, $_color, $_font, $__text);
+                }
+            }
+        } else {
+            $__text = $this->getEncodedText($text);
+            $_ttf_box = imagettfbbox($this->fontSize, $this->angle, $_font, $__text);
+            $textHeight = abs($_ttf_box[7]);
+            if ( $this->imgDst ) {
+                imagettftext($this->imgDst, $this->fontSize, $this->angle, $postionArray[0], $postionArray[1]+$textHeight, $_color, $_font, $__text);
+            }
+        }
 
     }
 
     /**
+     * 绘制垂直文本
+     * @param $imgFile
+     * @param $text
+     * @param $postionArray
+     */
+    public function drawVerticalText($imgFile, $text, $postionArray) {
+
+        if ( $imgFile ) {
+            $this->fileSrc = $imgFile;
+            $this->imgDst = $this->getImageSource($imgFile);
+        }
+        $_color = imagecolorallocate($this->imgDst, $this->fontColor[0], $this->fontColor[1], $this->fontColor[2]);
+        $_font = dirname(__FILE__).DIRECTORY_SEPARATOR.'fonts'.DIRECTORY_SEPARATOR.self::$_FONT_MAP[$this->font];
+
+        if ( is_array($text) ) {
+            for ( $i = 0; $i < count($text); $i++ ) {
+                //估算文本尺寸
+                $ttfBox = imagettfbbox($this->fontSize, $this->angle, $_font, "我");
+                $lineSpace = 10; //行距
+                $leftOffset= ($ttfBox[2] - $ttfBox[0]) * $i + $lineSpace*($i-1);
+                $textHeight = abs($ttfBox[7]);
+                if ( $this->imgDst ) {
+                    $textArr = $this->getVerticalTextArray($text[$i]); //获取垂直文本数组
+                    foreach( $textArr as $key => $val) {
+                        imagettftext($this->imgDst, $this->fontSize, $this->angle, $postionArray[0]+$leftOffset,
+                            $postionArray[1] + $textHeight * $key, $_color, $_font, $this->getEncodedText($val));
+                    }
+                }
+            }
+        } else {
+            //估算文字的高度和宽度
+            $_ttf_box = imagettfbbox($this->fontSize, $this->angle, $_font, $text);
+            $lineSpace = 5; //行距
+            $textHeight = abs($_ttf_box[7]) + $lineSpace;
+            if ( $this->font == 'YaHeiBold' ) { //如果是粗体，则增加垂直文本的字间距
+                $textHeight += 10;
+            }
+            if ( $this->imgDst ) {
+                $textArr = $this->getVerticalTextArray($text); //获取垂直文本数组
+                foreach( $textArr as $key => $val) {
+                    imagettftext($this->imgDst, $this->fontSize, $this->angle,
+                        $postionArray[0], $postionArray[1] + $textHeight * $key, $_color, $_font, $this->getEncodedText($val));
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 获取编码后的文本
+     * @param $text
+     * @return mixed|string
+     */
+    private function getEncodedText($text) {
+        return mb_convert_encoding($text, "html-entities", "utf-8");
+    }
+
+    /**
+     * 获取垂直文本数组
+     * @param $str
+     * @return array
+     */
+    private function getVerticalTextArray($str) {
+        $arr = array();
+        for ( $i = 0; $i < strlen($str); $i++ ) {
+            if ( ord($str[$i]) < 127 ) {
+                array_push($arr, $str[$i]);
+                continue;
+            }
+            if ( ord($str[$i]) > 127 &&
+                ord($str[$i+1]) > 127 &&
+                ord($str[$i+2]) > 127 ) {
+                array_push($arr, substr($str, $i, 3));
+                $i += 2;
+            }
+        }
+        return $arr;
+    }
+
+
+
+    /**
      * sava image
      * @param    string $filename 保存新的文件名称
-     * @param    int $quality 图片质量，仅对jpeg图像有效
      * @return   boolean
      */
-    public function saveImage($filename, $quality = 90) {
+    public function saveImage($filename=null) {
 
-        switch ( $this->extension ) {
+        if ( !$filename ) $filename = $this->fileSrc;
+
+        $extension = self::getFileExt($filename);
+        switch ( $extension ) {
 
             case 'jpg':
             case 'jpeg':
-                return imagejpeg($this->imgDst, $filename, $quality);
+                return imagejpeg($this->imgDst, $filename, 80);
 
             case 'gif':
                 return imagegif($this->imgDst, $filename);
@@ -176,6 +277,40 @@ class ImageWater {
 
         return false;
 
+    }
+
+    /**
+     * show the image
+     */
+    public function show($filename) {
+        if ( $filename ) {
+            header("Content-type: image/jpeg");
+            echo file_get_contents($filename);
+            return;
+        }
+
+        $extension = self::getFileExt($this->fileSrc);
+        switch ( $extension ) {
+            case 'jpg':
+            case 'jpeg':
+                header("Content-type: image/jpeg");
+                imagejpeg($this->imgDst);
+                break;
+
+            case 'gif':
+                header("Content-type: image/gif");
+                imagegif($this->imgDst);
+                break;
+
+            case 'png':
+                header("Content-type: image/png");
+                imagepng($this->imgDst);
+                break;
+
+            default:
+                die("No image support in this PHP server");
+
+        }
     }
 
     /**
@@ -238,7 +373,7 @@ class ImageWater {
      * @param        string $_filename 图片路径
      * @return null|resource
      */
-    protected function  &getImageSource( $_filename ) {
+    public function  &getImageSource( $_filename ) {
 
         $_img = NULL;
         $_ext = self::getFileExt($_filename);
@@ -296,19 +431,23 @@ class ImageWater {
     }
 
     /**
-     * @param int $font
+     * @param string $font
+     * @return $this
      */
     public function setFont($font)
     {
         $this->font = $font;
+        return $this;
     }
 
     /**
      * @param int $fontSize
+     * @return $this
      */
     public function setFontSize($fontSize)
     {
         $this->fontSize = $fontSize;
+        return $this;
     }
 
     /**
@@ -321,26 +460,32 @@ class ImageWater {
 
     /**
      * @param int $alpha
+     * @return $this
      */
     public function setAlpha($alpha)
     {
         $this->alpha = $alpha;
+        return $this;
     }
 
     /**
      * @param array $fontColor
+     * @return $this
      */
     public function setFontColor($fontColor)
     {
         $this->fontColor = $fontColor;
+        return $this;
     }
 
     /**
      * @param int $angle
+     * @return $this
      */
     public function setAngle($angle)
     {
         $this->angle = $angle;
+        return $this;
     }
 
     /**
@@ -353,7 +498,7 @@ class ImageWater {
 
         if ( $this->imgDst )
             imagedestroy($this->imgDst);
-        
+
     }
 
 }

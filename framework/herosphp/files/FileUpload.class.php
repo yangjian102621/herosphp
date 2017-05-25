@@ -192,7 +192,7 @@ class FileUpload {
      * @param $filename
      * @return string
      */
-    protected function getFileName($filename) {
+    public function getFileName($filename) {
 
 		$_ext = $this->getFileExt($filename);
 		return time().'-'.mt_rand(100000, 999999).'.'.$_ext;
