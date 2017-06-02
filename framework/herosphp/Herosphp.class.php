@@ -144,8 +144,8 @@ class Herosphp {
             'herosphp\string\StringBuffer'       => 'string.StringBuffer',
             'herosphp\string\StringUtils'       => 'string.StringUtils',
 
-            'herosphp\image\ImageThumb'       => 'image.ImageThumb',
-            'herosphp\image\ImageWater'       => 'image.ImageWater',
+            'herosphp\image\Image'       => 'image.Image',
+            'herosphp\image\Text'       => 'image.Text',
             'herosphp\image\VerifyCode'       => 'image.VerifyCode',
 
             'herosphp\web\Smtp'       => 'web.Smtp',
