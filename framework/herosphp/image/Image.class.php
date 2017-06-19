@@ -184,7 +184,6 @@ class Image {
         $content = $this->distribute($this->imgDst, $text);
 
         $ttfBox = imagettfbbox($text->getFontsize(), $text->getAngle(), $text->getFont(), "我");
-        $wordWidth = $ttfBox[2] - $ttfBox[0];  //文字宽度
         $wordHeight = abs($ttfBox[7]); //文字高度
 
         foreach ($content as $num => $line) {
@@ -207,7 +206,7 @@ class Image {
                     $text->getFontsize(),
                     $text->getAngle(),
                     $text->getStartX() ,
-                    $text->getStartY() + $wordHeight*($num+0.5) + $text->getLineHeight()*$num,
+                    $text->getStartY() + $wordHeight*($num+1) + $text->getLineHeight()*$num,
                     $color,
                     $text->getFont(),
                     $this->getEncodedText($__text));

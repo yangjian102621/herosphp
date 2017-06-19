@@ -68,7 +68,26 @@ class Session {
                 RedisSession::gc();
                 break;
         }
+        $_SESSION = null;
 
+    }
+
+    /**
+     * 获取session值
+     * @param $key
+     * @return mixed
+     */
+    public static function get($key) {
+        return $_SESSION[$key];
+    }
+
+    /**
+     * 设置session值
+     * @param $key
+     * @param $value
+     */
+    public static function set($key, $value) {
+        $_SESSION[$key] = $value;
     }
 	
 }

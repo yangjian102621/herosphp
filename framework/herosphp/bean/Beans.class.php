@@ -213,4 +213,3 @@ abstract class Beans {
         }
     }
 }
-?>

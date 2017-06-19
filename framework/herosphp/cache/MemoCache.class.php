@@ -81,4 +81,3 @@ class MemoCache implements ICache {
 		return self::$Mem->delete(self::KEY_PREFIX.$key, 0);
 	}
 }
-?>

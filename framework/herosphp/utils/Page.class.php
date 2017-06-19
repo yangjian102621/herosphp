@@ -41,7 +41,7 @@ class Page {
 
     private $urlPathType = self::URL_NORMAL;
 
-    public function __construct( $rows_num, $pagesize, $page_now, $outPage=3 ) {
+    public function __construct($rows_num, $pagesize, $page_now, $outPage=3) {
 
         $this->totalRows = $rows_num;
         $this->pagesize = $pagesize;
@@ -60,7 +60,7 @@ class Page {
     }
 
     /* 提供一个魔术方法获取limit */
-    public function __get( $var ) {
+    public function __get($var) {
         if ( $var == 'limit' ) return $this->limit;
         if ( $var == 'pageNum' ) return $this->pageNum;//新增获取总页数
     }
@@ -131,7 +131,7 @@ class Page {
      * @param string $type 返回的数据类型
      * @return string|array
      */
-    private function printPageList( $style, $type='string' ) {
+    private function printPageList($style, $type='string') {
 
         $pageList = '';
         $pageData = array();
@@ -204,23 +204,23 @@ class Page {
 
     }
 
-	public function setPagePrevText( $text ) {
+	public function setPagePrevText($text) {
 		$this->pagePrevText = $text;
 	}
 
-	public function setPageNextText( $text ) {
+	public function setPageNextText($text) {
 		$this->pageNextText = $text;
 	}
 
-	public function setPageTotalText( $text ) {
+	public function setPageTotalText($text) {
 		$this->pageTotalText = $text;
 	}
 
-	public function setPageGotoText( $text ) {
+	public function setPageGotoText($text) {
 		$this->pageGotoText = $text;
 	}
 
-    public function setUrlPathType(int $type) {
+    public function setUrlPathType($type) {
         $this->urlPathType = $type;
     }
 
@@ -238,7 +238,7 @@ class Page {
      * @param int $style
      * @return string
      */
-    public function showPageHandle( $style = DEFAULT_PAGE_STYLE ) {
+    public function showPageHandle($style = DEFAULT_PAGE_STYLE) {
 
         if ( $this->pageNum <= 1 ) return false;
 
@@ -259,7 +259,7 @@ class Page {
      * @param $showFirstPage 当只有一页的时候是否显示分页列表
      * @return array
      */
-    public function getPageData( $style = DEFAULT_PAGE_STYLE, $showFirstPage=false) {
+    public function getPageData($style = DEFAULT_PAGE_STYLE, $showFirstPage=false) {
 
         if ( $this->pageNum <= 1 && $showFirstPage == false ) return array();
 
@@ -289,4 +289,3 @@ class Page {
 
     }
 }
-?>

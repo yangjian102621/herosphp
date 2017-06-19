@@ -133,7 +133,7 @@ class Smtp
     /*
      * start the socket
      */
-    private function Open_Smtp_Socket( $_address = '' )
+    private function Open_Smtp_Socket($_address = '')
     {
         if ( $this->Smtp_Host == '' )
         {
@@ -197,4 +197,3 @@ class Smtp
         return $_address;
     }
 }
-?>

@@ -109,7 +109,7 @@ class Text {
      * @param int $fontsize
      * @return $this
      */
-    public function setFontsize(int $fontsize)
+    public function setFontsize($fontsize)
     {
         $this->fontsize = $fontsize;
         return $this;
@@ -127,7 +127,7 @@ class Text {
      * @param string $fontPath
      * @return $this
      */
-    public function setFont(string $fontPath)
+    public function setFont($fontPath)
     {
         $this->font = $fontPath;
         return $this;

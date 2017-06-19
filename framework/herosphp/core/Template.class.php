@@ -155,7 +155,7 @@ class Template {
 	 * 增加模板替换规则
      * @param array $rules
 	 */
-    public  function addRules( $rules ) {
+    public  function addRules($rules) {
         if ( is_array($rules) && !empty($rules) )
 		    self::$tempRules = array_merge(self::$tempRules, $rules);
 	}
@@ -165,7 +165,7 @@ class Template {
      * @param  string $varname
      * @param  string $value 变量值
      */
-    public function assign( $varname, $value ) {
+    public function assign($varname, $value) {
 		$this->templateVar[$varname] = $value;
 	}
 
@@ -174,7 +174,7 @@ class Template {
 	 * @param string $varname 变量名
      * @return mixed
 	 */
-	public function getTemplateVar( $varname ) {
+	public function getTemplateVar($varname) {
 		return $this->templateVar[$varname];
 	}
 
@@ -191,7 +191,7 @@ class Template {
 	 * @param 		string 		$tempFile 	 	模板文件路径
 	 * @param		string		$compileFile	编译文件路径
 	 */
-	private function complieTemplate( $tempFile, $compileFile ) {
+	private function complieTemplate($tempFile, $compileFile) {
 
         //根据缓存情况编译模板
         if ( !file_exists($compileFile)
@@ -226,7 +226,7 @@ class Template {
 	 * 显示模板
 	 * @param		string		$tempFile		模板文件名称
 	 */
-	public function display( $tempFile=null ) {
+	public function display($tempFile=null) {
 
 		//如果没有传入模板文件，则访问默认模块下的默认模板
         if ( !$tempFile ) {
@@ -262,7 +262,7 @@ class Template {
 	 * @param string $tempPath	        被包含的模板路径
      * @return string
 	 */
-	public function getIncludePath( $tempPath = null ) {
+	public function getIncludePath($tempPath = null) {
 
 	    if ( !$tempPath ) return '';
         if ( strpos($tempPath, ':') === FALSE ) {
@@ -292,7 +292,7 @@ class Template {
      * @param $format
      * @return string
      */
-    private function getDate( $time, $format ) {
+    private function getDate($time, $format) {
 
         if ( !$time ) return '';
         if ( !$format ) $format = 'Y-m-d H:i:s';
@@ -320,7 +320,7 @@ class Template {
 	 * @param string $path 资源路径
      * @return string
 	 */
-	public function importResource( $section, $type, $path ) {
+	public function importResource($section, $type, $path) {
         //获取资源的目录
         $resUrl = $this->configs['res_url'].RES_URL;
 
@@ -347,7 +347,7 @@ class Template {
 	 * @param	string $tempFile
 	 * @return	string $html
 	*/
-	public function &getExecutedHtml( $tempFile ) {
+	public function &getExecutedHtml($tempFile) {
 
 		ob_start();
 		$this->display( $tempFile );

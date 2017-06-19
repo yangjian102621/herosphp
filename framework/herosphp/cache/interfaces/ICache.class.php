@@ -44,4 +44,3 @@ interface ICache {
 	public function delete( $key );
 		
 }
-?>

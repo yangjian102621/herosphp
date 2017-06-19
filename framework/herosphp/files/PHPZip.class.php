@@ -51,7 +51,7 @@ class PHPZip {
      * @param $zip
      * @return bool
      */
-    public function createZip( $src, $zip ) {
+    public function createZip($src, $zip) {
 
 		if ( !file_exists($src) ) {
             if ( APP_DEBUG ) {
@@ -117,7 +117,7 @@ class PHPZip {
      * @param string $_files 需要打包的文件或者文件夹
      * @param string $_zip_dir
      */
-	private function addFilesToZip( $_files, $_zip_dir = NULL ) {
+	private function addFilesToZip($_files, $_zip_dir = NULL) {
 
 		if ( is_dir($_files) ) {
 			if ( ($handle = opendir($_files)) != FALSE ) {
@@ -148,4 +148,3 @@ class PHPZip {
 	}
 
 }
-?>

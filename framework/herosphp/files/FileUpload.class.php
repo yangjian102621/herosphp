@@ -78,7 +78,7 @@ class FileUpload {
      * @param        array() $_config
      * @notice        $_config keys  upload_dir, allowExt, max_szie
      */
-	public function __construct( $_config ) {
+	public function __construct($_config) {
 
 		if ( !isset($_config) ) return FALSE;
 
@@ -92,7 +92,7 @@ class FileUpload {
      * @param        bool $_base64
      * @return       mixed false or file info array.
      */
-	public function upload( $_field, $_base64 = false ) {
+	public function upload($_field, $_base64 = false) {
 
         if ( !$this->checkUploadDir() ) {
             $this->errNum = 6;
@@ -152,7 +152,7 @@ class FileUpload {
      * @param $_base64_data
      * @return bool|string
      */
-    protected function makeBase64Image( $_base64_data ) {
+    protected function makeBase64Image($_base64_data) {
 
 		$_img = base64_decode($_base64_data);
         $this->fileInfo['local_name'] = time().".png";
@@ -215,7 +215,7 @@ class FileUpload {
      * @param $path
      * @return bool
      */
-    public static function makeFileDirs( $path ) {
+    public static function makeFileDirs($path) {
         //必须考虑 "/" 和 "\" 两种目录分隔符
         $files = preg_split('/[\/|\\\]/s', $path);
         $_dir = '';
@@ -234,7 +234,7 @@ class FileUpload {
      * @param $filename
      * @return boolean
      */
-    protected function checkFileType( $filename ) {
+    protected function checkFileType($filename) {
 
         if ( $this->config['allow_ext'] == '*' ) {
             return true;
@@ -253,16 +253,16 @@ class FileUpload {
      * @param $filename
      * @return string
      */
-    protected function getFileExt( $filename ) {
-        $_pos = strrpos( $filename, '.' );
-        return strtolower( substr( $filename , $_pos+1 ) );
+    protected function getFileExt($filename) {
+        $_pos = strrpos($filename, '.');
+        return strtolower(substr($filename , $_pos+1));
     }
 
     /**
      * 检查文件大小是否合格
      * @param $filename
      */
-    protected function checkFileSize( $filename ) {
+    protected function checkFileSize($filename) {
 
         if ( filesize($filename) > $this->config['max_size'] ) {
             $this->errNum = 1;
@@ -300,4 +300,3 @@ class FileUpload {
 	}
 
 }
-?>

@@ -31,7 +31,7 @@ class MemSession implements  ISession {
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::start().
 	 */
-	public static function start( $config = NULL ) {
+	public static function start($config = NULL) {
 
         self::$handler = new \Memcache();
         self::$handler->connect($config['host'], $config['port']) or E("could not to connect the memcache server!");
@@ -54,7 +54,7 @@ class MemSession implements  ISession {
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::open().
 	 */
-	public static function open( $savePath, $sessionName ) {
+	public static function open($savePath, $sessionName) {
 		//do nothing here.
 		return TRUE;
 	}
@@ -70,7 +70,7 @@ class MemSession implements  ISession {
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::read().
 	 */
-	public static function read( $sessionId ) {
+	public static function read($sessionId) {
 
 		if ( self::$handler  == NULL ) return '';
 		$data = self::$handler->get( $sessionId );
@@ -81,7 +81,7 @@ class MemSession implements  ISession {
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::write().
 	 */
-	public static function write( $sessionId, $data ) {
+	public static function write($sessionId, $data) {
 
 		return self::$handler->set( $sessionId, $data,MEMCACHE_COMPRESSED, self::$config['gc_maxlifetime'] );
 	}
@@ -89,7 +89,7 @@ class MemSession implements  ISession {
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::destroy().
 	 */
-	public static function destroy( $sessionId ) {
+	public static function destroy($sessionId) {
 		$_SESSION = null;
 		return self::$handler->delete( $sessionId );
 	}
@@ -97,10 +97,9 @@ class MemSession implements  ISession {
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::gc().
 	 */
-	public static function gc( $maxLifeTime ) {
+	public static function gc($maxLifeTime) {
 		//do nothing here.
 		return TRUE;
 	}
 
 }
-?>

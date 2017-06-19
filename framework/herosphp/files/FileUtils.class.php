@@ -20,7 +20,7 @@ class FileUtils {
 	 * @param 	string 		$path			需要创建路径
 	 * @return 	boolean     成功时返回true，失败则返回false;
 	 */
-	public static function makeFileDirs( $path ) {
+	public static function makeFileDirs($path) {
         //必须考虑 "/" 和 "\" 两种目录分隔符
         $files = preg_split('/[\/|\\\]/s', $path);
         $_dir = '';
@@ -38,7 +38,7 @@ class FileUtils {
      * @param string  	文件名
      * @return string
 	 */
-	public static function getFileExt( $filename ) {
+	public static function getFileExt($filename) {
 		$_pos = strrpos( $filename, '.' );
 		return strtolower( substr( $filename , $_pos+1 ) );
 	}
@@ -48,7 +48,7 @@ class FileUtils {
      * @param $dir
      * @return boolean
      */
-    public static function removeDirs( $dir ) {
+    public static function removeDirs($dir) {
 
         $handle = opendir($dir);
         //删除文件夹下面的文件
@@ -78,7 +78,7 @@ class FileUtils {
      * @param $dst 目标文件
      * @return boolean
      */
-    public static function copyDir( $src, $dst ) {
+    public static function copyDir($src, $dst) {
         if ( is_file($src) ) {  //如果是文件，则直接拷贝
             return copy($src, $dst);
         }
@@ -168,4 +168,3 @@ class FileUtils {
         }
     }
 }
-?>

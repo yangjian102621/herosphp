@@ -12,7 +12,7 @@
 namespace herosphp\cache;
 
 use herosphp\cache\interfaces\ICache;
-use herosphp\utils\RedisUtils;
+use herosphp\cache\utils\RedisUtils;
 
 class RedisCache implements ICache {
 
@@ -62,4 +62,3 @@ class RedisCache implements ICache {
 		return RedisUtils::getInstance()->delete(self::KEY_PREFIX.$key);
 	}
 }
-?>

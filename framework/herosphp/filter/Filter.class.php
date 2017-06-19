@@ -44,7 +44,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isLatin( &$value ) {
+    private static function isLatin(&$value) {
         return (preg_match('/^[a-z0-9_]+$/i', $value) == 1);
     }
 
@@ -53,7 +53,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isUrl( &$value ) {
+    private static function isUrl(&$value) {
         return (filter_var($value, FILTER_VALIDATE_URL) != FALSE);
     }
 
@@ -62,7 +62,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isEmail( &$value ) {
+    private static function isEmail(&$value) {
         if ( $value == '' ) return true;
         return (filter_var($value, FILTER_VALIDATE_EMAIL) != FALSE);
     }
@@ -72,7 +72,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isString( &$value ) {
+    private static function isString(&$value) {
 		return is_string($value);
     }
 
@@ -81,7 +81,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isZip( &$value ) {
+    private static function isZip(&$value) {
         return (preg_match('/^[0-9]{6}$/', $value) == 1);
     }
 
@@ -90,7 +90,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isMobile( &$value ) {
+    private static function isMobile(&$value) {
         if ( $value == '' ) return true;
         return (preg_match('/^1[3|5|4|7|8][0-9]{9}$/', $value) == 1);
     }
@@ -100,7 +100,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isTelephone( &$value ) {
+    private static function isTelephone(&$value) {
         return (preg_match('/^0[1-9][0-9]{1,2}-[0-9]{7,8}$/', $value) == 1);
     }
 
@@ -109,7 +109,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isIdentity( &$value ) {
+    private static function isIdentity(&$value) {
         if ( $value == '' ) return true;
         if ( strlen($value) != 15 && strlen($value) != 18 )
             return false;
@@ -136,7 +136,7 @@ class Filter {
      * @param string $idcard_base 身份证号码的前十七位
      * @return string 检校码
      */
-    private static function idcard_verify_number( $idcard_base ) {
+    private static function idcard_verify_number($idcard_base) {
 
         if ( strlen($idcard_base) != 17 ) return false;
 
@@ -158,7 +158,7 @@ class Filter {
      * @param string $idcard 十五位身份证号码
      * @return bool|string
      */
-    private static function idcard_15to18( $idcard ) {
+    private static function idcard_15to18($idcard) {
 
         if ( strlen($idcard) != 15 ) return false;
 
@@ -178,7 +178,7 @@ class Filter {
      * @param string $idcard 十八位身份证号码
      * @return bool
      */
-    private static function idcard_checksum18( $idcard ) {
+    private static function idcard_checksum18($idcard) {
 
         if ( strlen($idcard) != 18 ) return false;
 
@@ -195,7 +195,7 @@ class Filter {
      * @param $value
      * @return mixed
      */
-    private static function sanitizeHtml( &$value ) {
+    private static function sanitizeHtml(&$value) {
         //sanitize regex rules
         $_rules = array( '/<[^>]*?\/?>/is' => '');
         return preg_replace(array_keys($_rules), $_rules, $value);
@@ -206,7 +206,7 @@ class Filter {
      * @param $value
      * @return mixed
      */
-    private static function sanitizeScript( &$value ) {
+    private static function sanitizeScript(&$value) {
         //1. 去除javascript脚本.
         //2. 移除html节点js事件.
         $_rules = array(
@@ -234,7 +234,7 @@ class Filter {
      * @param $error 错误信息
      * @return bool|int|mixed|string
      */
-    private static function check( &$value, &$model, &$error )
+    private static function check(&$value, &$model, &$error)
     {
         //非空验证
         if ( trim($value) == '' ) {
@@ -312,7 +312,7 @@ class Filter {
      * @param $error 错误信息
      * @return array|bool
      */
-    public static function loadFromModel( &$src, $model, &$error )
+    public static function loadFromModel(&$src, $model, &$error)
     {
         if ( !is_array($src) ) {
             $error = '数据模型格式错误';
@@ -338,6 +338,4 @@ class Filter {
 
         return $data;
     }
-
-
 }

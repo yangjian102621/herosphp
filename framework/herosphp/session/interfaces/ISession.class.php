@@ -20,7 +20,7 @@ interface ISession {
      * @param array $config config for session
      * @return mixed
      */
-    public static function start( $config = null );
+    public static function start($config = null);
 	
 	/**
 	 * session pen handler function. it excuted when the session is being opened.
@@ -29,7 +29,7 @@ interface ISession {
 	 * @param string $savePath	session save path, it used when the session handler is 'files'.
 	 * @param string $sessionName   name of session, set by php.ini 'session.name'.
 	 */
-	public static function open( $savePath, $sessionName );
+	public static function open($savePath, $sessionName);
 	
 	/**
 	 * close session.
@@ -43,7 +43,7 @@ interface ISession {
 	 *
 	 * @param string $sessionId		php session id
 	 */
-	public static function read( $sessionId );
+	public static function read($sessionId);
 	
 	/**
 	 * write data to session.
@@ -52,7 +52,7 @@ interface ISession {
 	 * @param string $sessionId  php session id.
 	 * @param string|array $data data to write to session.
 	 */
-	public static function write( $sessionId, $data );
+	public static function write($sessionId, $data);
 	
 	/**
 	 * destroy the session.
@@ -60,7 +60,7 @@ interface ISession {
 	 * 
 	 * @param		string		$sessionId			php session id.
 	 */
-	public static function destroy( $sessionId );
+	public static function destroy($sessionId);
 	
 	/**
 	 * session gc, determined by php.ini(session.gc_probability and session.gc_divisor)
@@ -68,7 +68,6 @@ interface ISession {
 	 * 
 	 * @param		int		$maxLifetime		session max lifetime.
 	 */
-	public static function gc( $maxLifetime );
+	public static function gc($maxLifetime);
 	
 }
-?>

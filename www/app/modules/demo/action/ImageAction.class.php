@@ -2,11 +2,13 @@
 namespace demo\action;
 
 use herosphp\core\Controller;
+use herosphp\core\Loader;
 use herosphp\http\HttpRequest;
 use herosphp\image\Image;
 use herosphp\image\ImageThumb;
 use herosphp\image\Text;
 use herosphp\image\VerifyCode;
+use herosphp\string\StringUtils;
 
 /**
  * 图片测试
@@ -16,6 +18,7 @@ use herosphp\image\VerifyCode;
 class ImageAction extends Controller {
 
     public function index(HttpRequest $request) {
+
         $filename = RES_PATH."test.png";
         $waterImage = RES_PATH."weixin.png";
         $image = Image::getInstance();
@@ -28,7 +31,8 @@ class ImageAction extends Controller {
         //$text = new Text($content);
         $text->setFontsize(30)
             ->setColor("#CC0000")
-            ->setStartY(20)
+            ->setStartX(0)
+            ->setStartY(0)
             ->setFont(Text::FONT_YAHEI)
             ->setLineHeight(10)
             ->setAlpha(127)
@@ -64,7 +68,6 @@ class ImageAction extends Controller {
 
     //生成缩略图
     public function thumb() {
-
         $thumb = ImageThumb::getInstance();
         $thumb->makeThumb(array(100, 100), 'src.png', 'dist.png', false);
         $thumb->crop(array(0,0), array(100,100), 'src.png', 'crop.png', false);

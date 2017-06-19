@@ -52,7 +52,7 @@ class VerifyCode {
 	/**
 	 * configure the attribute of the Verify code. <br />
 	 */
-	public function configure( $_array = NULL ) {
+	public function configure($_array = NULL) {
 		if ( $_array != NULL ) {
 			if ( isset( $_array['x'] ) ) $this->_config['x'] = $_array['x'];
 			if ( isset( $_array['y'] ) ) $this->_config['y'] = $_array['y'];
@@ -70,7 +70,7 @@ class VerifyCode {
      * @param int $_size number of chars to generate
      * @return  string
      */
-	public function generate( $_size = 3 ) {
+	public function generate($_size = 3) {
 		assert($_size > 0);
 		
 		$this->_codes = array();
@@ -127,7 +127,7 @@ class VerifyCode {
      * @param    $_file
      * @throws Exception
      */
-	public function saveToFile( $_file ) {
+	public function saveToFile($_file) {
 		throw new Exception('Invalid call to function saveToFile.');
 	}
 	
@@ -137,7 +137,7 @@ class VerifyCode {
 	 *
 	 * @param	string $_suffix image suffix
 	 */
-	public function show( $_suffix = 'png' ) {
+	public function show($_suffix = 'png') {
 		//echo implode(',', $this->_codes);
 		$this->createImage();
 
@@ -159,4 +159,3 @@ class VerifyCode {
 	}
 	
 }
-?>

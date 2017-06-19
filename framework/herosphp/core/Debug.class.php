@@ -96,4 +96,3 @@ class Debug {
 		echo '</div>';
 	 }
 }
-?>
