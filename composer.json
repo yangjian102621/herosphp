@@ -1,5 +1,5 @@
 {
-    "name": "phpframework/herosphp",
+    "name": "herosphp/framework",
     "description": "a lightweight PHP development framework - herosphp Framework",
     "type": "framework",
     "keywords": ["php framework","herosphp","lightweight"],
@@ -12,9 +12,19 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0",
-        "phpoffice/phpexcel": "^1.8",
-		"workerman/workerman" : "3.3.*"
+        "php": ">=5.3.0"
     },
+
+    "autoload": {
+        "files": [
+            "src/functions.core.php",
+            "src/Heros.const.php"
+        ],
+        "psr-4": {
+            "herosphp\\" : "src",
+            "app\\" : "app/modules"
+        }
+    },
+
     "minimum-stability": "dev"
 }

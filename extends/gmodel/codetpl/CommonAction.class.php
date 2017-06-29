@@ -156,7 +156,7 @@ abstract class CommonAction extends Controller {
         if ( !$data ) JsonResult::fail();
 
         $id = $request->getParameter('id', 'intval');
-        if ( $id <= 0 ) JsonResult::jsonResult(404, self::SYS_ERR);
+        if ( $id <= 0 ) JsonResult::result(404, self::SYS_ERR);
 
         $service = Beans::get($this->getServiceBean());
         if ( $service->update($data, $id) ) {
@@ -215,7 +215,7 @@ abstract class CommonAction extends Controller {
     public function deletes( HttpRequest $request ) {
 
         $ids = $request->getParameter('ids');
-        if ( empty($ids) ) JsonResult::jsonResult(404, self::SYS_ERR);
+        if ( empty($ids) ) JsonResult::result(404, self::SYS_ERR);
         $service = Beans::get($this->getServiceBean());
         if ( $service->deletes($ids) ) {
             JsonResult::success();
@@ -235,7 +235,7 @@ abstract class CommonAction extends Controller {
         $service = Beans::get($this->getServiceBean());
         $exists = $service->getItem(array($field => $value));
         if ( $exists ) {
-            JsonResult::jsonResult(201, "{$value} 在数据库中已存在，请更换！");
+            JsonResult::result(201, "{$value} 在数据库中已存在，请更换！");
         }
 
     }
