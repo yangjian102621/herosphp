@@ -28,7 +28,7 @@ http://git.oschina.net/blackfox/herosphp
 
 开发手册
 ========
-http://docs.r9it.com/herosphp/
+http://docs.r9it.com
 
 联系作者
 =====
