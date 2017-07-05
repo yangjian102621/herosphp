@@ -10,9 +10,13 @@ namespace herosphp\db\utils;
 use herosphp\exception\HeroException;
 use herosphp\string\StringBuffer;
 
+defined('MYSQL_JOIN_LEFT') || define('MYSQL_JOIN_LEFT', 'LEFT'); //做连接
+defined('MYSQL_JOIN_RIGHT') || define('MYSQL_JOIN_RIGHT', 'RIGHT'); //右连接
+defined('MYSQL_JOIN_INNER') || define('MYSQL_JOIN_INNER', 'INNER'); //内连接
 class MysqlQueryBuilder {
 
     private $table; //数据表
+    private $alias = null; //数据表别名
 
     private $fields = '*';  //查询字段
 
@@ -31,6 +35,12 @@ class MysqlQueryBuilder {
     private $limit = '0,10'; //查询limit
     private $closure = false; //是否进入闭包
     /**
+     * 联合查询的条件
+     * @var string
+     */
+    private $joinCondition = "";
+    private $joinStr = ""; //连接字符串
+    /**
      * 简单条件操作符
      * @var array
      */
@@ -47,6 +57,13 @@ class MysqlQueryBuilder {
         $this->havingCondition = new StringBuffer();
     }
 
+    /**
+     * 设置数据表别名
+     * @param $alias
+     */
+    public function alias($alias) {
+        $this->alias = $alias;
+    }
     /**
      * 设置查询字段
      * @param array $fields 推荐格式：array('id','name','pass')
@@ -105,6 +122,11 @@ class MysqlQueryBuilder {
      * @return string
      */
     public function parseWhere($field, $opt, $value) {
+
+        if ( $value == null ) {
+            $value = $opt;
+            $opt = '='; //默认是 = 操作符
+        }
         if (in_array($opt, self::$SIMPLE_OPTS)) {
             return "{$field} {$opt} '{$value}'";
         }
@@ -159,6 +181,23 @@ class MysqlQueryBuilder {
     }
 
     /**
+     * 设置连接方式
+     * @param $table
+     * @param string $joinType
+     */
+    public function join($table, $joinType=MYSQL_JOIN_LEFT) {
+        $this->joinStr = " {$joinType} JOIN {$table}";
+    }
+
+    /**
+     * 设置连接查询条件
+     * @param $joinCondition
+     */
+    public function on($joinCondition) {
+        $this->joinCondition = $joinCondition;
+    }
+
+    /**
      * 设置分组
      * @param  string $field 分组字段
      * @return $this
@@ -202,16 +241,6 @@ class MysqlQueryBuilder {
     }
 
     /**
-     * 往分组条件中追加字符串，主要是追加括号之类的
-     * @param $str
-     * @return $this
-     */
-    public function havingAppend($str) {
-
-        return $this;
-    }
-
-    /**
      * 处理排序
      * @param string $order
      * @return $this
@@ -246,6 +275,35 @@ class MysqlQueryBuilder {
         if ( $this->table == '' ) E("请在model中指定数据表.");
 
         $query = "SELECT {$this->fields} FROM ".$this->table;
+
+        if ( $this->alias != null )  $query .= " AS {$this->alias}";
+        if ( $this->joinStr ) $query .= $this->joinStr;
+        if ( $this->joinCondition ) $query .= " ON ".$this->joinCondition;
+
+        if ( !$this->condition->isEmpty() ) $query .= $this->condition->toString();
+        if ( $this->group ) $query .= " GROUP BY ".$this->group;
+        if ( !$this->havingCondition->isEmpty() ) $query .= $this->havingCondition->toString();
+        if ( $this->order ) $query .= " ORDER BY ".$this->order;
+        if ( $this->limit ) $query .= " LIMIT ".$this->limit;
+
+        $this->clear(); //初始化查询条件
+        return $query;
+    }
+
+    /**
+     * 创建的统计数量SQL语句
+     * @return string
+     * @throws HeroException
+     */
+    public function buildCountSql() {
+
+        if ( $this->table == '' ) E("请在model中指定数据表.");
+
+        $query = "SELECT count(*) as total FROM ".$this->table;
+
+        if ( $this->alias != null )  $query .= " AS {$this->alias}";
+        if ( $this->joinStr ) $query .= $this->joinStr;
+        if ( $this->joinCondition ) $query .= " ON ".$this->joinCondition;
 
         if ( !$this->condition->isEmpty() ) $query .= $this->condition->toString();
         if ( $this->group ) $query .= " GROUP BY ".$this->group;
@@ -285,8 +343,8 @@ class MysqlQueryBuilder {
      * 清空条件
      */
     public function clear() {
-        $this->condition = null;
-        $this->havingCondition = null;
+        $this->condition = new StringBuffer();
+        $this->havingCondition = new StringBuffer();
         $this->group = null;
         $this->fields = "*";
         $this->order = null;

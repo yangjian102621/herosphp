@@ -21,8 +21,7 @@
             "src/Heros.const.php"
         ],
         "psr-4": {
-            "herosphp\\" : "src",
-            "app\\" : "app/modules"
+            "herosphp\\" : "src"
         }
     },
 

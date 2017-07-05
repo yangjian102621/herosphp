@@ -69,7 +69,7 @@ class MysqlModel {
      * @param string $sql
      * @return mixed|\PDOStatement
      */
-    public function getList(string $sql)
+    public function getList($sql)
     {
         return $this->db->getList($sql);
     }
@@ -170,7 +170,6 @@ class MysqlModel {
     public function &find()
     {
         $sql = $this->sqlBuilder->buildQueryString();
-        echo $sql;
         return $this->db->getList($sql);
     }
 
@@ -201,8 +200,8 @@ class MysqlModel {
      */
     public function count()
     {
-        $conditions = $this->sqlBuilder->buildCondition();
-        return $this->db->count($this->table, $conditions);
+        $sql = $this->sqlBuilder->buildCountSql();
+        return $this->db->count($sql);
     }
 
     /**
@@ -410,10 +409,6 @@ class MysqlModel {
      */
     public function where($field, $opt=null, $value=null) {
         //如果是复杂的组合查询比如 (id=1 AND name='xxx') OR (sex='M' AND add='Beijing')
-        if ( $value == null ) {
-            $value = $opt;
-            $opt = '='; //默认是 = 操作符
-        }
         if ( is_callable($field) ) {
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
@@ -432,10 +427,6 @@ class MysqlModel {
      * @return $this
      */
     public function whereOr($field, $value=null, $opt=null) {
-        if ( $value == null ) {
-            $value = $opt;
-            $opt = '='; //默认是 = 操作符
-        }
         if ( is_callable($field) ) {
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
@@ -453,6 +444,16 @@ class MysqlModel {
      */
     public function fields($fields) {
         $this->sqlBuilder->fields($fields);
+        return $this;
+    }
+
+    /**
+     * 设置数据表别名
+     * @param $alias
+     * @return $this
+     */
+    public function alias($alias) {
+        $this->sqlBuilder->alias($alias);
         return $this;
     }
 
@@ -507,10 +508,7 @@ class MysqlModel {
      * @return $this
      */
     public function having($field, $opt=null, $value) {
-        if ( $value == null ) {
-            $value = $opt;
-            $opt = '='; //默认是 = 操作符
-        }
+
         if ( is_callable($field) ) {    //处理闭包
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
@@ -529,10 +527,7 @@ class MysqlModel {
      * @return $this
      */
     public function havingOr($field, $opt=null, $value) {
-        if ( $value == null ) {
-            $value = $opt;
-            $opt = '='; //默认是 = 操作符
-        }
+
         if ( is_callable($field) ) {    //处理闭包
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
@@ -540,6 +535,27 @@ class MysqlModel {
         } else {
             $this->sqlBuilder->addHaving($field, $opt, $value, 'OR');
         }
+        return $this;
+    }
+
+    /**
+     * 设置连接方式
+     * @param $table
+     * @param string $joinType
+     * @return $this
+     */
+    public function join($table, $joinType=MYSQL_JOIN_LEFT) {
+        $this->sqlBuilder->join($table, $joinType);
+        return $this;
+    }
+
+    /**
+     * 设置连接查询条件
+     * @param $joinCondition
+     * @return $this
+     */
+    public function on($joinCondition) {
+        $this->sqlBuilder->on($joinCondition);
         return $this;
     }
 }

@@ -24,8 +24,6 @@ class BeanUtil {
 
         if( !is_string($classPath) ) return null;
         try{
-            $importPath = str_replace('\\','.', $classPath);
-            Loader::import($importPath, IMPORT_APP, EXT_PHP);
             $instance = new ReflectionClass($classPath);
             if( is_array($params) ){
                 return $instance->newInstanceArgs($params);

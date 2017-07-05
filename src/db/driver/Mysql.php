@@ -264,18 +264,11 @@ class Mysql {
 
     /**
      * 获取某个条件匹配的总记录数
-     * @param $table
-     * @param array $condition
+     * @param string $sql
      * @return int
      */
-    public function count($table, $condition=null)
+    public function count($sql)
     {
-        $sql = "SELECT count(*) as total FROM {$table}";
-
-        if ( $condition != null ) {
-            $sql .= $condition;
-        }
-
         $result = $this->execute($sql);
         $res = $result->fetch(PDO::FETCH_ASSOC);
         return $res['total'];

@@ -7,8 +7,7 @@
  */
 namespace herosphp;
 
-use gmodel\GModel;
-use herosphp\core\Loader;
+use herosphp\gmodel\GModel;
 
 class Artisan {
 
@@ -22,7 +21,7 @@ class Artisan {
         'make-controller:'   => "创建Controller，参数是Controller名称.",
         'make-service:'   => "创建Service，参数是Service名称.",
         'module:' => '为 Model|Service|Controller 指定模块.',
-        'extend:' => "继承的父类. 默认值：'common\\service\\CommonService'",
+        'model:' => "指定的modelDao的类路径（带命名空间）.",
 
         'make-db:'   => "创建数据库.",
         'dbhost:'   => "主机ip，默认值：127.0.0.1",
@@ -88,8 +87,7 @@ class Artisan {
 
         if ( $opts['run'] ) { //运行任务
             $className = ucfirst($opts['run']).'Task';
-            Loader::import("tasks.{$className}", IMPORT_CLIENT);
-            $clazz = new \ReflectionClass("tasks\\{$className}");
+            $clazz = new \ReflectionClass("client\\tasks\\{$className}");
             $method = $clazz->getMethod('run');
             $method->invoke($clazz->newInstance());
         }

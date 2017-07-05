@@ -54,12 +54,10 @@ class WebApplication implements IApplication {
     private static $_INSTANCE = null;
 
     private function __construct() {
-        /**
-         * 加载应用程序监听器
-         * 1. 首先加载默认全局的程序监听器
-         * 2. 在请求初始化之后，检查当前模块下是否有监听器，如果有就再加载当前模块的监听器
-         */
-        $this->listeners[] = new DefaultWebappListener();
+        //加载应用程序的全局监听器
+        if (file_exists(APP_PATH."modules/DefaultWebappListener.php")) {
+            $this->listeners[] = new DefaultWebappListener();
+        }
 
         $this->appError = new AppError();
     }

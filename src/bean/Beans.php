@@ -22,18 +22,6 @@ abstract class Beans {
      * @var string
      */
     const BEAN_OBJECT_ARRAY = 'OB_ARRAY';
-
-    /**
-     * 应用程序监听器bean key
-     * @var string
-     */
-    const BEAN_WEBAPP_LISTENER = 'webapplication.listener.bean';
-
-    /**
-     * api应用程序拦截器 bean key
-     */
-    const BEAN_API_LISTENER = 'api.listener.bean';
-
     /**
      * Bean装配配置信息
      * @var array
@@ -50,9 +38,9 @@ abstract class Beans {
      * 获取指定ID的Bean
      * @param string $key Bean的key
      * @param boolean $new 是否创建新的bean,新创建的Bean不会放到容器中，如果要放到容器中，请使用set方法。
-     * @return \common\service\CommonService|Object 返回指定ID的Bean,如果Bean不存在则返回null
+     * @return Object 返回指定ID的Bean,如果Bean不存在则返回null
      */
-    public static function get( $key, $new=false ){
+    public static function get($key, $new=false) {
 
         if ( empty(self::$CONFIGS) ) {
             self::$CONFIGS = Loader::config('*', 'beans');
@@ -72,7 +60,7 @@ abstract class Beans {
      * 删除指定ID的Bean并返回被删除的Bean
      * @param string $key
      */
-    public static function delete( $key ){
+    public static function delete($key){
         self::$BEAN_POOL[$key] = null;  //释放bean占用的内存
     }
 

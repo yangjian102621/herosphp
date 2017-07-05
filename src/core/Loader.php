@@ -8,6 +8,7 @@
 
 namespace herosphp\core;
 
+use herosphp\model\CommonService;
 use herosphp\model\MysqlModel;
 
 class Loader {
@@ -18,8 +19,8 @@ class Loader {
     //imported configs cache
     protected static $CONFIGS = array();
 
-    //model cache array
-    protected static $MODELS = array();
+    //instance cache array
+    protected static $INSTANES = array();
 
     /**
      * 加载一个类或者加载一个包
@@ -150,17 +151,32 @@ class Loader {
     }
 
     /**
+     * 创建实体单例
+     * @param $classPath
+     * @return mixed
+     */
+    public static function singleton($classPath) {
+        if ( !isset(self::$INSTANES[$classPath]) ) {
+            $reflect = new \ReflectionClass($classPath);
+            self::$INSTANES[$classPath] = $reflect->newInstance();
+        }
+        return self::$INSTANES[$classPath];
+    }
+
+    /**
      * 加载modelDao
      * @param string $modelName
      * @return MysqlModel
      */
-    public static function model($modelName) {
+    public static function model($modelPath) {
+        return self::singleton($modelPath);
+    }
 
-        if ( !isset(self::$MODELS[$modelName]) ) {
-            $reflect = new \ReflectionClass($modelName);
-            self::$MODELS[$modelName] = $reflect->newInstance();
-        }
-        return self::$MODELS[$modelName];
-
+    /**
+     * @param $servicePath
+     * @return CommonService
+     */
+    public static function service($servicePath) {
+        return self::singleton($servicePath);
     }
 }
