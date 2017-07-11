@@ -38,6 +38,22 @@ QQ：906388445
 
 博客 : <a href="http://r9it.com/">小一辈无产阶级码农</a>
 
-<br />
-<br />
+#### 本地调试
+如果你想在本地直接调试herosphp框架，不想每次都要更新到 composer 仓库，然后再用 composer update 去composer仓库去更新。
+（这个过程慢的要死，就算你使用了中国镜像也慢）
+你可以通过任何方式将 herosphp 放入你的本地目录，如/code/php/herosphp
+然后在你的 app 项目的 composer.json 中加入如下配置
 
+```bash
+"repositories": [
+        {
+            "type": "path",
+            "url": "/code/php/herosphp"
+        }
+    ],
+```
+然后在 app 根目录下运行
+
+```bash
+composer require 'herosphp/framework:*@dev'
+```
