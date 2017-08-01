@@ -7,7 +7,6 @@
  */
 namespace herosphp\string;
 
-use herosphp\cache\CacheFactory;
 use herosphp\lock\SynLockFactory;
 
 class StringUtils {

@@ -426,7 +426,7 @@ class MysqlModel {
      * @param string|array $value
      * @return $this
      */
-    public function whereOr($field, $value=null, $opt=null) {
+    public function whereOr($field, $opt=null, $value=null) {
         if ( is_callable($field) ) {
             $this->sqlBuilder->enterClosure();
             call_user_func($field);

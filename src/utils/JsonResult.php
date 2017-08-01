@@ -220,7 +220,6 @@ class JsonResult {
      * 以json格式输出
      */
     public function output() {
-        header( "HTTP/1.1 {$this->_code} ".self::$_CODE_STATUS[$this->_code] );
         header('Content-type: application/json');
         echo $this;
         die();
