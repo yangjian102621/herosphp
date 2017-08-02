@@ -1,3 +1,5 @@
+# 注意，这个项目只是框架内核代码，只能作为依赖，不能直接运行，使用 DEMO 请移步 [http://git.oschina.net/blackfox/herosphp-app](http://git.oschina.net/blackfox/herosphp-app)
+
 为什么要造这个轮子？
 ====
 "PHP是世界上最好的变成语言，没有之一。"这句话虽然是一个梗但是他却代表了php这门语言在编程语言中的江湖地位。那既然是最好的语言，那么免不了就会出现各种各样的框架啦，包括php官方的zendframe, Laravel,Yii,包括国产的thinkPHP,ci等框架。那既然有这么多框架，为什么我们还要造这个轮子呢。原因有以下几点：
@@ -24,7 +26,9 @@ HerosPHP是一套web应用开发框架，我们觉得好开发框架应该是<st
 
 GitHub 源码地址
 ====
-http://git.oschina.net/blackfox/herosphp
+码云: [http://git.oschina.net/blackfox/herosphp](http://git.oschina.net/blackfox/herosphp)
+
+GitHub: [https://github.com/yangjian102621/herosphp](https://github.com/yangjian102621/herosphp)
 
 开发手册
 ========
@@ -35,6 +39,8 @@ http://docs.r9it.com
 邮箱：<a href="mailto:yangjian102621@gmail.com">yangjian102621@gmail.com</a>
 
 QQ：906388445
+
+技术交流QQ群：137352247
 
 博客 : <a href="http://r9it.com/">小一辈无产阶级码农</a>
 
