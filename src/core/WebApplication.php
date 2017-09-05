@@ -14,6 +14,7 @@ use herosphp\core\interfaces\IApplication;
 use herosphp\exception\FileNotFoundException;
 use herosphp\exception\HeroException;
 use herosphp\http\HttpRequest;
+use herosphp\listener\IWebApplicationListener;
 
 class WebApplication implements IApplication {
 
@@ -37,7 +38,7 @@ class WebApplication implements IApplication {
 
     /**
      * 应用程序监听器
-     * @var array
+     * @var array(IWebApplicationListener)
      */
     private $listeners = array();
 

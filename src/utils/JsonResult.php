@@ -220,7 +220,7 @@ class JsonResult {
      * 以json格式输出
      */
     public function output() {
-        header('Content-type: application/json');
+        header('Content-type: application/json;charset=utf-8');
         echo $this;
         die();
     }

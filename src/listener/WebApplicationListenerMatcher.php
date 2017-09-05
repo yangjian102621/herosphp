@@ -14,6 +14,12 @@ use herosphp\http\HttpRequest;
 abstract class WebApplicationListenerMatcher implements  IWebAplicationListener {
 
     /**
+     * 跳过监听的 URL
+     * @var array
+     */
+    static protected $SKIP_URLS = [];
+
+    /**
      * 请求初始化之前
      * @return mixed
      */
@@ -58,5 +64,33 @@ abstract class WebApplicationListenerMatcher implements  IWebAplicationListener 
     public function afterSendResponse($actionInstance)
     {
         // TODO: Implement afterSendResponse() method.
+    }
+
+    /**
+     * 检测某个请求是否被监听
+     * @param HttpRequest $request
+     * @return bool
+     */
+    public function isListening(HttpRequest $request) {
+
+        $uri = "/{$request->getMethod()}/{$request->getAction()}/{$request->getMethod()}";
+        $mappingRules = array();
+        foreach ( self::$SKIP_URLS as $value ) {
+            if ($value == "*") { //所有请求路径都不监听
+                return false;
+            }
+            if (strpos($value, "**") === false) {
+                
+            }
+        }
+        return preg_match($mappingRules, $uri);
+    }
+
+    /**
+     * 把地址加入到忽略列表
+     * @param $url
+     */
+    public function skipUrl($url) {
+        self::$SKIP_URLS[] = $url;
     }
 }

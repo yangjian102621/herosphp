@@ -123,7 +123,7 @@ class MysqlQueryBuilder {
      */
     public function parseWhere($field, $opt, $value) {
 
-        if ( $value === null ) {
+        if ( $value == null ) {
             $value = $opt;
             $opt = '='; //默认是 = 操作符
         }
