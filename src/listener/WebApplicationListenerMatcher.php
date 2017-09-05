@@ -73,17 +73,20 @@ abstract class WebApplicationListenerMatcher implements  IWebAplicationListener 
      */
     public function isListening(HttpRequest $request) {
 
-        $uri = "/{$request->getMethod()}/{$request->getAction()}/{$request->getMethod()}";
-        $mappingRules = array();
+        $uri = "/{$request->getModule()}/{$request->getAction()}/{$request->getMethod()}";
         foreach ( self::$SKIP_URLS as $value ) {
             if ($value == "*") { //所有请求路径都不监听
                 return false;
             }
             if (strpos($value, "**") === false) {
-                
+                return !in_array($uri, self::$SKIP_URLS);
+            } else { //包含 ** 通配符
+                $pos = strpos($value, "**");
+                $prefix = substr($value, 0, $pos);
+                return (strpos($uri, $prefix) === false);
             }
         }
-        return preg_match($mappingRules, $uri);
+        return true;
     }
 
     /**

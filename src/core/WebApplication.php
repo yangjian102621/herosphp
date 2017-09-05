@@ -135,7 +135,9 @@ class WebApplication implements IApplication {
         //调用生命周期监听器，方法调用之前
         if ( !empty($this->listeners) ) {
             foreach ( $this->listeners as $listener ) {
-                $listener->beforeActionInvoke($this->httpRequest);
+                if ($listener->isListening($this->httpRequest)) {
+                    $listener->beforeActionInvoke($this->httpRequest);
+                }
             }
         }
 
@@ -175,7 +177,9 @@ class WebApplication implements IApplication {
         //调用响应发送前生命周期监听器
         if ( !empty($this->listeners) ) {
             foreach ( $this->listeners as $listener ) {
-                $listener->beforeSendResponse($this->httpRequest, $this->actionInstance);
+                if ($listener->isListening($this->httpRequest)) {
+                    $listener->beforeSendResponse($this->httpRequest, $this->actionInstance);
+                }
             }
         }
 
@@ -185,7 +189,9 @@ class WebApplication implements IApplication {
         //调用响应发送后生命周期监听器
         if ( !empty($this->listeners) ) {
             foreach ( $this->listeners as $listener ) {
-                $listener->afterSendResponse($this->actionInstance);
+                if ($listener->isListening($this->httpRequest)) {
+                    $listener->afterSendResponse($this->actionInstance);
+                }
             }
         }
     }
