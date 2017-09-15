@@ -11,67 +11,73 @@ use herosphp\string\StringUtils;
 
 class JsonResult {
 
-    /**
-     * 单个结果KEY
-     */
-    const DATA_KEY_ITEM = "item";
+    const CODE_SUCCESS = "000";
+    const CODE_FAIL = "001";
 
     /**
-     * 列表结果KEY
+     * 单个数据
+     * @var mixed
      */
-    const DATA_KEY_ITEMS = "items";
+    private $item;
 
     /**
-     * 数据总数KEY
+     * 数据列表
+     * @var array
      */
-    const DATA_KEY_COUNT = "count";
+    private $items;
 
     /**
-     * 错误代码
+     * 列表数据条数
      * @var int
      */
-    private $_code = 200;
+    private $count;
+
+    /**
+     * 当前数据页码
+     * @var int
+     */
+    private $page;
+
+    /**
+     * 每页显示数据条数
+     * @var int
+     */
+    private $pagesize;
+
+    /**
+     * 附带数据
+     * @var mixed
+     */
+    private $extra;
+    /**
+     * 错误代码
+     * @var string
+     */
+    private $code = self::CODE_SUCCESS;
 
     /**
      * 状态码信息
-     * @var array
+         * @var array
      */
     private static $_CODE_STATUS = [
-        200 => 'OK.',
-        201 => 'Created.',
-        204 => 'No Contents.',
-        400 => 'Bad Request.',
-        401 => 'Not Authorized.',
-        503 => 'Access Forbidden.',
-        404 => 'Not Found.',
-        405 => 'Method Not Allow.',
-        500 => 'Server internal Error.',
+        self::CODE_SUCCESS => '操作成功.',
+        self::CODE_FAIL => '系统开了小差.',
     ];
 
     /**
      * 消息
      * @var string
      */
-    private $_message;
-
-    /**
-
-    /**
-     * 数据
-     * @var array
-     */
-    private $_data;
+    private $message;
 
     /**
      * JsonResult constructor.
      * @param $code
      * @param $message
-     * @param $data
      */
-    public function __construct($code, $message, $data){
+    public function __construct($code, $message){
         $this->setCode($code);
         $this->setMessage($message);
-        $this->setData($data);
     }
 
     /**
@@ -81,30 +87,28 @@ class JsonResult {
      * @param array $data
      * @return JsonResult
      */
-    public static function result($code, $message, $data=array()) {
-        $result = new self($code, $message, $data);
+    public static function result($code, $message) {
+        $result = new self($code, $message);
         $result->output();
     }
 
     /**
      * 返回一个成功的 result vo
      * @param string $message
-     * @param array $data
      * @return JsonResult
      */
-    public static function success($message='操作成功', $data=array()) {
-        $result = new self(200, $message, $data);
+    public static function success($message='操作成功') {
+        $result = new self(self::CODE_SUCCESS, $message);
         $result->output();
     }
 
     /**
      * 返回一个失败的 result vo
      * @param string $message
-     * @param $data
      * @return JsonResult
      */
-    public static function fail($message='系统开了小差', $data) {
-        $result = new self(500, $message, $data);
+    public static function fail($message='系统开了小差') {
+        $result = new self(self::CODE_FAIL, $message);
         $result->output();
     }
 
@@ -124,7 +128,7 @@ class JsonResult {
      */
     public function getCode()
     {
-        return $this->_code;
+        return $this->code;
     }
 
     /**
@@ -132,69 +136,117 @@ class JsonResult {
      */
     public function setCode($code)
     {
-        $this->_code = $code;
+        $this->code = $code;
     }
 
     /**
      * @return the $message
      */
     public function getMessage() {
-        return $this->_message;
+        return $this->message;
     }
 
     /**
      * @param string $message
      */
     public function setMessage($message) {
-        $this->_message = $message;
+        $this->message = $message;
     }
 
     /**
-     * @return the $data
+     * @return mixed
      */
-    public function getData() {
-        return $this->_data;
+    public function getItem()
+    {
+        return $this->item;
     }
 
     /**
-     * @param multitype: $data
+     * @param mixed $item
      */
-    public function setData($data) {
-        $this->_data = $data;
+    public function setItem($item)
+    {
+        $this->item = $item;
     }
 
     /**
-     * add data to result set
-     * @param key
-     * @param value
+     * @return array
      */
-    public function putData($key, $value) {
-        $this->_data[$key] = $value;
+    public function getItems()
+    {
+        return $this->items;
     }
 
-
-    public function putItem($item){
-        $this->putData(self::DATA_KEY_ITEM, $item);
+    /**
+     * @param array $items
+     */
+    public function setItems($items)
+    {
+        $this->items = $items;
     }
 
-    public function putItems($items){
-        $this->putData(self::DATA_KEY_ITEMS, $items);
+    /**
+     * @return int
+     */
+    public function getCount()
+    {
+        return $this->count;
     }
 
-    public function putCount($value){
-        $this->putData(self::DATA_KEY_COUNT, $value);
+    /**
+     * @param int $count
+     */
+    public function setCount($count)
+    {
+        $this->count = $count;
     }
 
-    public function getItems() {
-        return $this->_data[self::DATA_KEY_ITEMS];
+    /**
+     * @return int
+     */
+    public function getPage()
+    {
+        return $this->page;
     }
 
-    public function getItem() {
-        return $this->_data[self::DATA_KEY_ITEM];
+    /**
+     * @param int $page
+     */
+    public function setPage($page)
+    {
+        $this->page = $page;
     }
 
-    public function getCount() {
-        return $this->_data[self::DATA_KEY_COUNT];
+    /**
+     * @return int
+     */
+    public function getPagesize()
+    {
+        return $this->pagesize;
+    }
+
+    /**
+     * @param int $pagesize
+     */
+    public function setPagesize($pagesize)
+    {
+        $this->pagesize = $pagesize;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExtra()
+    {
+        return $this->extra;
+    }
+
+    /**
+     * @param mixed $extra
+     */
+    public function setExtra($extra)
+    {
+        $this->extra = $extra;
     }
 
     /**
@@ -202,7 +254,7 @@ class JsonResult {
      * @return bool
      */
     public function isSucess() {
-        return $this->_code == 200;
+        return $this->code == self::CODE_SUCCESS;
     }
 
     /**
@@ -211,9 +263,17 @@ class JsonResult {
      */
     public function __toString() {
         if ( !$this->getMessage() ) {
-            $this->setMessage(self::$_CODE_STATUS[$this->_code]);
+            $this->setMessage(self::$_CODE_STATUS[$this->code]);
         }
-        return StringUtils::jsonEncode(array('code'=>$this->getCode(), 'message'=>$this->getMessage(), 'data'=>$this->getData()));
+        return StringUtils::jsonEncode(array(
+            'code'=>$this->getCode(),
+            'message'=>$this->getMessage(),
+            'count'=>$this->getCount(),
+            'page'=>$this->getPage(),
+            'pagesize'=>$this->getPagesize(),
+            'extra'=>$this->getExtra(),
+            'item'=>$this->getItem(),
+            'items'=>$this->getItems()));
     }
 
     /**
