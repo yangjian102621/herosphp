@@ -21,7 +21,9 @@ class RedisSession implements  ISession {
     /**
      * @var array 配置信息
      */
-    private static $config;
+    private static $config = [
+        'prefix'=>''
+    ];
 
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::start().
@@ -30,7 +32,7 @@ class RedisSession implements  ISession {
 
 		self::$handler = new \Redis();
 		self::$handler->connect($config['host'], $config['port']);
-        self::$config = $config;
+        self::$config = array_merge(self::$config,$config);
         if ( !$config['gc_maxlifetime'] ) {
             self::$config['gc_maxlifetime'] = ini_get('session.gc_maxlifetime');
         }
@@ -68,7 +70,7 @@ class RedisSession implements  ISession {
 	public static function read( $sessionId ) {
 
 		if ( self::$handler  == NULL ) return '';
-		$data = self::$handler->get( $sessionId );
+		$data = self::$handler->get( self::$config['prefix'].$sessionId );
 		return $data;
 
 	}
@@ -77,7 +79,7 @@ class RedisSession implements  ISession {
 	 * @see	\herosphp\session\interfaces\ISession::write().
 	 */
 	public static function write( $sessionId, $data ) {
-		self::$handler->set( $sessionId, $data, self::$config['gc_maxlifetime']);
+		self::$handler->set( self::$config['prefix'].$sessionId, $data, self::$config['gc_maxlifetime']);
 	}
 
 	/**
@@ -85,7 +87,7 @@ class RedisSession implements  ISession {
 	 */
 	public static function destroy( $sessionId ) {
         $_SESSION = null;
-		return self::$handler->delete( $sessionId );
+		return self::$handler->delete( self::$config['prefix'].$sessionId );
 	}
 
 	/**
