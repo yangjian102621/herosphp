@@ -103,7 +103,7 @@ composer require 'herosphp/framework:*@dev'
 9. 在utils中新增了邮件发送服务类 Smtp.class.php
 10. 重写了session， 新增了memcache介质存储
 
-### version 1.0.0
+## version 1.0.0
 实现了框架的基本功能
 1. 项目组织结构
 2. URL解析
