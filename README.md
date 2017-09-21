@@ -39,7 +39,7 @@ GitHub: [https://github.com/yangjian102621/herosphp](https://github.com/yangjian
 
 开发手册
 ========
-http://docs.r9it.com
+http://docs.r9it.com/herosphp/v3.0/
 
 联系作者
 =====
