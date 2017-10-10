@@ -558,4 +558,21 @@ class MysqlModel {
         $this->sqlBuilder->on($joinCondition);
         return $this;
     }
+
+    /**
+     * @return MysqlQueryBuilder
+     */
+    public function getSqlBuilder()
+    {
+        return $this->sqlBuilder;
+    }
+
+    /**
+     * @param MysqlQueryBuilder $sqlBuilder
+     */
+    public function setSqlBuilder($sqlBuilder)
+    {
+        $this->sqlBuilder = $sqlBuilder;
+    }
+
 }

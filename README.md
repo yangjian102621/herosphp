@@ -73,6 +73,9 @@ composer require 'herosphp/framework:*@dev'
 
 版本更新记录
 ======
+## version 3.0.2
+1. 重构了 MysqlModel， 新增了 getSqlBuilder() 和 setSqlBuilder() 方法
+
 ## version 3.0.1
 1. 修复了 MysqlQueryBuilder::addWhere 方法的bug, 当第三个参数不传入时查询报错。
 2. 修复 JsonResult::output 输出日志乱码的bug。

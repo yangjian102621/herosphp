@@ -302,4 +302,22 @@ abstract class CommonService {
         $this->modelDao->on($joinCondition);
         return $this;
     }
+
+    /**
+     * @return MysqlQueryBuilder
+     */
+    public function getSqlBuilder()
+    {
+        return $this->modelDao->getSqlBuilder();
+    }
+
+    /**
+     * @param MysqlQueryBuilder $sqlBuilder
+     * @return $this
+     */
+    public function setSqlBuilder($sqlBuilder)
+    {
+       $this->modelDao->setSqlBuilder($sqlBuilder);
+        return $this;
+    }
 }
