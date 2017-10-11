@@ -320,4 +320,21 @@ abstract class CommonService {
        $this->modelDao->setSqlBuilder($sqlBuilder);
         return $this;
     }
+
+    /**
+     * @return MysqlModel
+     */
+    public function getModelDao()
+    {
+        return $this->modelDao;
+    }
+
+    /**
+     * @param MysqlModel $modelDao
+     */
+    public function setModelDao($modelDao)
+    {
+        $this->modelDao = $modelDao;
+    }
+
 }

@@ -75,6 +75,8 @@ composer require 'herosphp/framework:*@dev'
 ======
 ## version 3.0.2
 1. 重构了 MysqlModel， 新增了 getSqlBuilder() 和 setSqlBuilder() 方法
+2. 修改 JsonResult 的数据结构
+3. 增加Session存Redis带前缀prefix功能
 
 ## version 3.0.1
 1. 修复了 MysqlQueryBuilder::addWhere 方法的bug, 当第三个参数不传入时查询报错。
