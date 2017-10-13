@@ -336,5 +336,4 @@ abstract class CommonService {
     {
         $this->modelDao = $modelDao;
     }
-
 }
