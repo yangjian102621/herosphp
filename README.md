@@ -41,6 +41,11 @@ GitHub: [https://github.com/yangjian102621/herosphp](https://github.com/yangjian
 ========
 http://docs.r9it.com/herosphp/v3.0/
 
+
+demo 演示地址
+=======
+### [http://herosphp.r9it.com](http://herosphp.r9it.com)
+
 联系作者
 =====
 邮箱：<a href="mailto:yangjian102621@gmail.com">yangjian102621@gmail.com</a>
