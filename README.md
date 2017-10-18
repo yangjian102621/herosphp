@@ -78,6 +78,9 @@ composer require 'herosphp/framework:*@dev'
 
 版本更新记录
 ======
+## version 3.0.3
+1. 修复 MysqlModel::where 方法中闭包判断的bug， 之前使用的是 is_callable($field), 导致在 $field 是 url 这种函数名的时候会被当做闭包判断。
+
 ## version 3.0.2
 1. 重构了 MysqlModel， 新增了 getSqlBuilder() 和 setSqlBuilder() 方法
 2. 修改 JsonResult 的数据结构
