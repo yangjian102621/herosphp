@@ -80,6 +80,8 @@ composer require 'herosphp/framework:*@dev'
 ======
 ## version 3.0.3
 1. 修复 MysqlModel::where 方法中闭包判断的bug， 之前使用的是 is_callable($field), 导致在 $field 是 url 这种函数名的时候会被当做闭包判断。
+2. 给 RedisSession 的缓存加上前缀，需要在 app/configs/session.config.php 的 redis session configure 中加上 prefix key，
+指定redis session 存储前缀
 
 ## version 3.0.2
 1. 重构了 MysqlModel， 新增了 getSqlBuilder() 和 setSqlBuilder() 方法
