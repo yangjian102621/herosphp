@@ -12,16 +12,21 @@ use herosphp\session\interfaces\ISession;
 
 class RedisSession implements  ISession {
 
-    /**
-     * handler for memcache server
-     * @var Object
-     */
-    private static $handler = NULL;
+	/**
+	 * handler for memcache server
+	 * @var Object
+	 */
+	private static $handler = NULL;
 
-    /**
-     * @var array 配置信息
-     */
-    private static $config;
+	/**
+	 * @var array 配置信息
+	 */
+	private static $config;
+
+	/**
+	 * session 缓存前缀
+	 */
+	private static $prefix = '';
 
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::start().
@@ -30,11 +35,14 @@ class RedisSession implements  ISession {
 
 		self::$handler = new \Redis();
 		self::$handler->connect($config['host'], $config['port']);
-        self::$config = $config;
-        if ( !$config['gc_maxlifetime'] ) {
-            self::$config['gc_maxlifetime'] = ini_get('session.gc_maxlifetime');
-        }
+		self::$config = $config;
+		if ( !$config['gc_maxlifetime'] ) {
+			self::$config['gc_maxlifetime'] = ini_get('session.gc_maxlifetime');
+		}
 
+		if (!empty($config['prefix'])) {
+			self::$prefix = $config['prefix'];
+		}
 		session_set_save_handler(
 			array(__CLASS__,'open'),
 			array(__CLASS__,'close'),
@@ -68,7 +76,7 @@ class RedisSession implements  ISession {
 	public static function read( $sessionId ) {
 
 		if ( self::$handler  == NULL ) return '';
-		$data = self::$handler->get( $sessionId );
+		$data = self::$handler->get( self::$prefix.$sessionId );
 		return $data;
 
 	}
@@ -77,15 +85,15 @@ class RedisSession implements  ISession {
 	 * @see	\herosphp\session\interfaces\ISession::write().
 	 */
 	public static function write( $sessionId, $data ) {
-		self::$handler->set( $sessionId, $data, self::$config['gc_maxlifetime']);
+		self::$handler->set( self::$prefix.$sessionId, $data, self::$config['gc_maxlifetime']);
 	}
 
 	/**
 	 * @see	\herosphp\session\interfaces\ISession::destroy().
 	 */
 	public static function destroy( $sessionId ) {
-        $_SESSION = null;
-		return self::$handler->delete( $sessionId );
+		$_SESSION = null;
+		return self::$handler->delete( self::$prefix.$sessionId );
 	}
 
 	/**

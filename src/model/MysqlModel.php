@@ -409,7 +409,7 @@ class MysqlModel {
      */
     public function where($field, $opt=null, $value=null) {
         //如果是复杂的组合查询比如 (id=1 AND name='xxx') OR (sex='M' AND add='Beijing')
-        if ( is_callable($field) ) {
+        if ( $field instanceof \Closure ) {
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
             $this->sqlBuilder->addWhere(") ");
@@ -427,7 +427,7 @@ class MysqlModel {
      * @return $this
      */
     public function whereOr($field, $opt=null, $value=null) {
-        if ( is_callable($field) ) {
+        if ( $field instanceof \Closure ) {
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
             $this->sqlBuilder->addWhere(") ");
@@ -509,7 +509,7 @@ class MysqlModel {
      */
     public function having($field, $opt=null, $value) {
 
-        if ( is_callable($field) ) {    //处理闭包
+        if ( $field instanceof \Closure ) {    //处理闭包
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
             $this->sqlBuilder->addHaving(") ");
@@ -528,7 +528,7 @@ class MysqlModel {
      */
     public function havingOr($field, $opt=null, $value) {
 
-        if ( is_callable($field) ) {    //处理闭包
+        if ( $field instanceof \Closure ) {    //处理闭包
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
             $this->sqlBuilder->addHaving(") ");
@@ -558,4 +558,21 @@ class MysqlModel {
         $this->sqlBuilder->on($joinCondition);
         return $this;
     }
+
+    /**
+     * @return MysqlQueryBuilder
+     */
+    public function getSqlBuilder()
+    {
+        return $this->sqlBuilder;
+    }
+
+    /**
+     * @param MysqlQueryBuilder $sqlBuilder
+     */
+    public function setSqlBuilder($sqlBuilder)
+    {
+        $this->sqlBuilder = $sqlBuilder;
+    }
+
 }
