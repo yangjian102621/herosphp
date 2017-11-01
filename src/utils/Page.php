@@ -78,6 +78,8 @@ class Page {
         if ( $urlInfo['query'] ) {
             parse_str($urlInfo['query'], $query);
             unset($query['page']);
+            unset($query['ajax']);
+            unset($query['t']);
             if ( !empty($query) ) {
                 foreach ( $query as $key => $value ) {
                     $query[$key] = urldecode($value);
