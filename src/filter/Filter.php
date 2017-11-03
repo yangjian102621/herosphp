@@ -38,7 +38,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isLatin(&$value) {
+    public static function isLatin(&$value) {
         return (preg_match('/^[a-z0-9_]+$/i', $value) == 1);
     }
 
@@ -47,7 +47,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isUrl(&$value) {
+    public static function isUrl(&$value) {
         return (filter_var($value, FILTER_VALIDATE_URL) != FALSE);
     }
 
@@ -56,7 +56,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isEmail(&$value) {
+    public static function isEmail(&$value) {
         if ( $value == '' ) return true;
         return (filter_var($value, FILTER_VALIDATE_EMAIL) != FALSE);
     }
@@ -66,7 +66,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isString(&$value) {
+    public static function isString(&$value) {
 		return is_string($value);
     }
 
@@ -75,7 +75,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isZip(&$value) {
+    public static function isZip(&$value) {
         return (preg_match('/^[0-9]{6}$/', $value) == 1);
     }
 
@@ -84,7 +84,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isMobile(&$value) {
+    public static function isMobile(&$value) {
         if ( $value == '' ) return true;
         return (preg_match('/^1[3|5|4|7|8][0-9]{9}$/', $value) == 1);
     }
@@ -94,7 +94,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isTelephone(&$value) {
+    public static function isTelephone(&$value) {
         return (preg_match('/^0[1-9][0-9]{1,2}-[0-9]{7,8}$/', $value) == 1);
     }
 
@@ -103,7 +103,7 @@ class Filter {
      * @param $value
      * @return bool
      */
-    private static function isIdentity(&$value) {
+    public static function isIdentity(&$value) {
         if ( $value == '' ) return true;
         if ( strlen($value) != 15 && strlen($value) != 18 )
             return false;
@@ -119,7 +119,7 @@ class Filter {
      * @param $pattern
      * @return int
      */
-    private static function pregCheck(&$value, $pattern) {
+    public static function pregCheck(&$value, $pattern) {
 
         if ( !is_string($pattern) ) return false;
         return preg_match($pattern, $value);
@@ -189,7 +189,7 @@ class Filter {
      * @param $value
      * @return mixed
      */
-    private static function sanitizeHtml(&$value) {
+    public static function sanitizeHtml(&$value) {
         //sanitize regex rules
         $_rules = array( '/<[^>]*?\/?>/is' => '');
         return preg_replace(array_keys($_rules), $_rules, $value);
@@ -200,7 +200,7 @@ class Filter {
      * @param $value
      * @return mixed
      */
-    private static function sanitizeScript(&$value) {
+    public static function sanitizeScript(&$value) {
         //1. 去除javascript脚本.
         //2. 移除html节点js事件.
         $_rules = array(
@@ -217,7 +217,7 @@ class Filter {
      * @param $value
      * @return mixed
      */
-    private static function &sanitizeSQL(&$value) {
+    public static function &sanitizeSQL(&$value) {
         return str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"',     '\\Z'), $value);
     }
 
@@ -228,7 +228,7 @@ class Filter {
      * @param $error 错误信息
      * @return bool|int|mixed|string
      */
-    private static function check(&$value, &$model, &$error)
+    public static function check(&$value, &$model, &$error)
     {
         //非空验证
         if ( trim($value) == '' ) {
