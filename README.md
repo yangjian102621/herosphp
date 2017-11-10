@@ -83,6 +83,7 @@ composer require 'herosphp/framework:*@dev'
 2. 给 RedisSession 的缓存加上前缀，需要在 app/configs/session.config.php 的 redis session configure 中加上 prefix key，
 指定redis session 存储前缀
 3. 修改 Filter 类，将一些常用的过滤 API 暴露出去可以作为工具单独使用。
+4. 修复 MysqlModel::whereOr 闭包查询bug
 
 ## version 3.0.2
 1. 重构了 MysqlModel， 新增了 getSqlBuilder() 和 setSqlBuilder() 方法

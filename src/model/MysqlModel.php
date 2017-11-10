@@ -515,6 +515,7 @@ class MysqlModel {
     public function having($field, $opt=null, $value) {
 
         if ( $field instanceof \Closure ) {    //处理闭包
+            $this->sqlBuilder->sqlAppend(" AND (");
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
             $this->sqlBuilder->addHaving(") ");
@@ -534,6 +535,7 @@ class MysqlModel {
     public function havingOr($field, $opt=null, $value) {
 
         if ( $field instanceof \Closure ) {    //处理闭包
+            $this->sqlBuilder->sqlAppend(" OR (");
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
             $this->sqlBuilder->addHaving(") ");
