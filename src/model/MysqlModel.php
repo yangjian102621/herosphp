@@ -32,7 +32,10 @@ class MysqlModel {
     protected $table = '';
     //数据过滤规则
     protected $filterMap = array();
-    //SQL sqlBuilder
+    /**
+     * SQL sqlBuilder
+     * @var MysqlQueryBuilder
+     */
     protected $sqlBuilder;
 
     /**
@@ -410,6 +413,7 @@ class MysqlModel {
     public function where($field, $opt=null, $value=null) {
         //如果是复杂的组合查询比如 (id=1 AND name='xxx') OR (sex='M' AND add='Beijing')
         if ( $field instanceof \Closure ) {
+            $this->sqlBuilder->sqlAppend(" AND (");
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
             $this->sqlBuilder->addWhere(") ");
@@ -428,6 +432,7 @@ class MysqlModel {
      */
     public function whereOr($field, $opt=null, $value=null) {
         if ( $field instanceof \Closure ) {
+            $this->sqlBuilder->sqlAppend(" OR (");
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
             $this->sqlBuilder->addWhere(") ");

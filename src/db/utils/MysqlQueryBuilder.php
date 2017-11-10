@@ -106,7 +106,7 @@ class MysqlQueryBuilder {
             }
         } else {
             if ( $this->closure ) {
-                $this->condition->append(" {$logic} ({$whereStr}");
+                $this->condition->append(" {$whereStr}");
                 $this->outClosure();
             } else {
                 $this->condition->append(" {$logic} {$whereStr}");
@@ -337,6 +337,14 @@ class MysqlQueryBuilder {
      */
     public function outClosure() {
         $this->closure = false;
+    }
+
+    /**
+     * 追加自定义 SQL
+     * @param $sql
+     */
+    public function sqlAppend($sql) {
+        $this->condition->append($sql);
     }
 
     /**
