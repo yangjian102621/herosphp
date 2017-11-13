@@ -104,6 +104,9 @@ class Template {
         '/{(require|include)\s{1,}([0-9a-z_\.\:]{1,})\s*}/i'
 							=> '<?php include $this->getIncludePath(\'${2}\')?>',
 
+        '/{(res)\s+([^\}]+)\s*}/i'
+        => '<?php echo $this->getResourceURL(\'${2}\')?>',
+
         /**
          * 引入静态资源 css file,javascript file
          */
@@ -315,6 +318,18 @@ class Template {
         $result = str_replace('{url}', $src, $template);
         return $result;
 	}
+
+    /**
+     * 加载资源服务器上的图片或者文件
+     * @param $url
+     * @return string
+     */
+    public function getResourceURL($url) {
+        if (defined("RES_SERVER_URL")) {
+            return RES_SERVER_URL.$url;
+        }
+        return $url;
+    }
 
 	/**
 	 * 获取页面执行后的代码
