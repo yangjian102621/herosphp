@@ -9,13 +9,20 @@
 namespace herosphp\cache;
 
 use herosphp\cache\interfaces\ICache;
+use herosphp\core\Loader;
 use herosphp\files\FileUtils;
 use herosphp\string\StringUtils;
 
 class FileCache extends ACache implements ICache {
 
+
+	//加载缓存配置
+	public function initConfigs() {
+		$this->configs = Loader::config('file', 'cache');
+	}
+
     /**
-     * @see        ICache::get()
+     * @see ICache::get()
      * @param string $key
      * @param null $expire
      * @return bool|mixed|string

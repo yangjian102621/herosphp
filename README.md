@@ -84,6 +84,7 @@ composer require 'herosphp/framework:*@dev'
 指定redis session 存储前缀
 3. 修改 Filter 类，将一些常用的过滤 API 暴露出去可以作为工具单独使用。
 4. 修复 MysqlModel::whereOr 闭包查询bug
+5. 更改缓存工厂(CacheFactory)的实现，采用类似动态工厂的方式，如果再新增缓存实现的时候，不需要再更改工厂类的代码。
 
 ## version 3.0.2
 1. 重构了 MysqlModel， 新增了 getSqlBuilder() 和 setSqlBuilder() 方法

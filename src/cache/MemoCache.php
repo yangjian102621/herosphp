@@ -21,6 +21,11 @@ class MemoCache implements ICache {
     //所有缓存key的前缀
     const KEY_PREFIX = "CACHE_KET_PRIFIX_";
 
+    //加载缓存配置
+    public function initConfigs() {
+        $this->configs = Loader::config('memo', 'cache');
+    }
+
 
     /**
      * @var array 配置信息
@@ -31,12 +36,15 @@ class MemoCache implements ICache {
      * 初始化缓存配置信息
      * @param array $configs 缓存配置信息
      */
-    public function __construct( $configs ) {
-        if ( !$configs )
-            if ( APP_DEBUG ) E("cache configure args is needed！");
+    public function __construct() {
 
-        if ( !extension_loaded("memcache") ) E("please install memcache extension.");
-        $this->configs = $configs;
+        if (empty($this->configs)) {
+            $this->initConfigs();
+        }
+
+        if ( !extension_loaded("memcache") ) {
+            E("please install memcache extension.");
+        }
         $Mem = new \Memcache();
         foreach ( $this->configs['server'] as $value ) {
             call_user_func_array(array($Mem, 'addServer'), $value);

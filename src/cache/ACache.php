@@ -45,15 +45,6 @@ Abstract class ACache {
     protected $factor = null;
 
     /**
-     * 初始化缓存配置信息
-     * @param array $configs 缓存配置信息
-     */
-    public function __construct( $configs ) {
-        if ( !$configs ) E("cache configure is needed！");
-        $this->configs = $configs;
-    }
-
-    /**
      * @param string $baseKey
      * @return $this
      */

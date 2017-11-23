@@ -15,6 +15,12 @@
 namespace herosphp\cache\interfaces;
 
 interface ICache {
+
+	/**
+	 * 初始化配置信息
+	 * @return mixed
+	 */
+	public function initConfigs();
 	
 	/**
 	 * 获取缓存内容

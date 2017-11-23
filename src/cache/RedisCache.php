@@ -21,13 +21,10 @@ class RedisCache implements ICache {
      */
     private $configs = array();
 
-    /**
-     * 初始化缓存配置信息
-     * @param array $configs 缓存配置信息
-     */
-    public function __construct( $configs ) {
-        $this->configs = $configs;
-    }
+	//加载缓存配置
+	public function initConfigs() {
+		$this->configs = Loader::config('redis', 'cache');
+	}
 
     /**
      * @see    ICache::get()
