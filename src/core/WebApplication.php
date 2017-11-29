@@ -8,13 +8,10 @@
 
 namespace herosphp\core;
 
-use app\DefaultWebappListener;
-use herosphp\bean\Beans;
 use herosphp\core\interfaces\IApplication;
 use herosphp\exception\FileNotFoundException;
 use herosphp\exception\HeroException;
 use herosphp\http\HttpRequest;
-use herosphp\listener\IWebApplicationListener;
 
 class WebApplication implements IApplication {
 
@@ -57,7 +54,11 @@ class WebApplication implements IApplication {
     private function __construct() {
         //加载应用程序的全局监听器
         if (file_exists(APP_PATH."modules/DefaultWebappListener.php")) {
-            $this->listeners[] = new DefaultWebappListener();
+            $lisennerClassName = APP_NAME."\\DefaultWebappListener";
+            try {
+                $reflect = new \ReflectionClass($lisennerClassName);
+                $this->listeners[] = $reflect->newInstance();
+            } catch (\Exception $exception) {}
         }
 
         $this->appError = new AppError();
@@ -77,12 +78,13 @@ class WebApplication implements IApplication {
         $this->requestInit();
 
         //检查当前模块下是否有监听器，如果有则加载监听器
-        $lisennerClassName = "app\\".$this->httpRequest->getModule()."\\ModuleListener";
+        $lisennerClassName = APP_NAME."\\".$this->httpRequest->getModule()."\\ModuleListener";
         try {
             $reflect = new \ReflectionClass($lisennerClassName);
             $this->listeners[] = $reflect->newInstance();
-        } catch (\Exception $exception) {}
-
+        } catch (\Exception $exception) {
+            __print($exception);die();
+        }
         //如果是单元测试，则直接返回
 		if(defined("PHP_UNIT") && PHP_UNIT == true) return;
 
@@ -151,7 +153,7 @@ class WebApplication implements IApplication {
         if ( !file_exists($filename) ) {
             throw new FileNotFoundException($filename);
         }
-        $className = "app\\{$module}\\action\\".ucfirst($action)."Action";
+        $className = APP_NAME."\\{$module}\\action\\".ucfirst($action)."Action";
         $reflect = new \ReflectionClass($className);
         $this->actionInstance = $reflect->newInstance();
 

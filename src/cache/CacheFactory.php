@@ -8,8 +8,6 @@
 
 namespace herosphp\cache;
 
-use herosphp\core\Loader;
-
 class CacheFactory {
 
     private static $INSTANES = [];
