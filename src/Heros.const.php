@@ -23,11 +23,6 @@ define('EXT_TPL', '.html');     //模板文件后缀
 define('EXT_URI', '.shtml');     //uri 伪静态路径后缀
 
 /**
- * 以下定义数据库类别
- */
-define('DB_ESCAPE', false); //是否开启sql语句自动转义
-
-/**
  * 以下订制数据库访问策略，提供单台服务器访问和读写分离集群访问模式
  * 如果采用集群访问模式请在 /config/db.config.php文件中设置好你的数据库集群配置
  */

@@ -176,7 +176,7 @@ class MysqlQueryBuilder {
                 break;
 
         }
-        return $whereStr;
+        return addslashes($whereStr); //转义特殊字符
 
     }
 
