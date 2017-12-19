@@ -123,12 +123,16 @@ class MysqlQueryBuilder {
      */
     public function parseWhere($field, $opt, $value) {
 
-        if ( $value == null ) {
+        if ( $value === null ) {
             $value = $opt;
             $opt = '='; //默认是 = 操作符
         }
         if (in_array($opt, self::$SIMPLE_OPTS)) {
             return "{$field} {$opt} '{$value}'";
+        }
+        //字符串的时候转义
+        if (is_string($value)){
+            $value = addslashes($value);
         }
         $opt = strtoupper($opt);
         $whereStr = '';
