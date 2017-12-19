@@ -35,6 +35,12 @@ class RedisSession implements  ISession {
 
 		self::$handler = new \Redis();
 		self::$handler->connect($config['host'], $config['port']);
+
+		//session配置文件增加password配置
+        if ( !empty($config['password']) ) {
+           self::$handler->auth($config['password']);
+        }
+
 		self::$config = $config;
 		if ( !$config['gc_maxlifetime'] ) {
 			self::$config['gc_maxlifetime'] = ini_get('session.gc_maxlifetime');
