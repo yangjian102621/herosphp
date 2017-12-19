@@ -180,7 +180,7 @@ class MysqlQueryBuilder {
                 break;
 
         }
-        return addslashes($whereStr); //转义特殊字符
+		return $whereStr; //转义特殊字符
 
     }
 

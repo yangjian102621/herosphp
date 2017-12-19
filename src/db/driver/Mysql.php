@@ -130,7 +130,7 @@ class Mysql {
 		}
 
 		if ( $_fileds != '' ) {
-			$_query = "INSERT INTO {$table}(" . $_fileds . ") VALUES(" . addslashes($_values) . ")";
+			$_query = "INSERT INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
 
 			if ( $this->execute( $_query ) != false ) {
                 $last_insert_id = $this->link->lastInsertId();
@@ -168,7 +168,7 @@ class Mysql {
         }
 
         if ( $_fileds != '' ) {
-            $_query = "REPLACE INTO {$table}(" . $_fileds . ") VALUES(" . addslashes($_values) . ")";
+            $_query = "REPLACE INTO {$table}(" . $_fileds . ") VALUES(" . $_values . ")";
             if ( $this->execute($_query) != false ) {
                 return true;
             }
@@ -201,7 +201,7 @@ class Mysql {
             $_keys .= $_keys == ''? "`{$_key}`={$_val}" : ", `{$_key}`={$_val}";
         }
         if ( $_keys !== '' ) {
-            $_query = "UPDATE {$table} SET " . addslashes($_keys) . $condition;
+            $_query = "UPDATE {$table} SET " . $_keys . $condition;
             $result = $this->execute($_query);
             if ( $result != false ) {
                 return $result->rowCount() > 0 ? $result->rowCount() : true;
