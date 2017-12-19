@@ -107,7 +107,7 @@ class HttpRequest {
                     if ( trim($__p[0]) == '' ) {
                         continue;
                     }
-                    $_GET[$__p[0]] = $__p[1];
+                    $_GET[$__p[0]] = urldecode($__p[1]);
                 }
             }
 
