@@ -17,7 +17,7 @@ class CacheFactory {
      * @param $classPath
      * @return \herosphp\cache\interfaces\ICache
      */
-    public static function  create($classPath) {
+    public static function create($classPath) {
 
         if ( !isset(self::$INSTANES[$classPath]) ) {
             $reflect = new \ReflectionClass($classPath);

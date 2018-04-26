@@ -83,7 +83,7 @@ class WebApplication implements IApplication {
             $reflect = new \ReflectionClass($lisennerClassName);
             $this->listeners[] = $reflect->newInstance();
         } catch (\Exception $exception) {
-            __print($exception);die();
+            //__print($exception);die();
         }
         //如果是单元测试，则直接返回
 		if(defined("PHP_UNIT") && PHP_UNIT == true) return;
