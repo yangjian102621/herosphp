@@ -42,9 +42,11 @@ class VerifyCode {
 		}
 		return self::$_instance;
 	}
-	
+
 	/**
-	 * configure the attribute of the Verify code. <br />
+	 * configure the attribute of the Verify code.
+	 * @param null $_array
+	 * @return VerifyCode
 	 */
 	public function configure($_array = NULL) {
 		if ( $_array != NULL ) {
