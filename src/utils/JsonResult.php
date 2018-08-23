@@ -15,16 +15,10 @@ class JsonResult {
     const CODE_FAIL = "001";
 
     /**
-     * 单个数据
-     * @var mixed
+     * 数据
+     * @var object
      */
-    private $item;
-
-    /**
-     * 数据列表
-     * @var array
-     */
-    private $items;
+    private $data;
 
     /**
      * 列表数据条数
@@ -56,6 +50,12 @@ class JsonResult {
     private $code = self::CODE_SUCCESS;
 
     /**
+     * 是否成功
+     * @var bool
+     */
+    private $success = true;
+
+    /**
      * 状态码信息
          * @var array
      */
@@ -77,6 +77,11 @@ class JsonResult {
      */
     public function __construct($code, $message){
         $this->setCode($code);
+        if ($code == self::CODE_SUCCESS) {
+            $this->setSuccess(true);
+        } else if($code == self::CODE_FAIL) {
+            $this->setSuccess(false);
+        }
         $this->setMessage($message);
     }
 
@@ -99,6 +104,7 @@ class JsonResult {
      */
     public static function success($message='操作成功') {
         $result = new self(self::CODE_SUCCESS, $message);
+        $result->setSuccess(true);
         $result->output();
     }
 
@@ -109,22 +115,12 @@ class JsonResult {
      */
     public static function fail($message='系统开了小差') {
         $result = new self(self::CODE_FAIL, $message);
+        $result->setSuccess(false);
         $result->output();
     }
 
     /**
-     * 返回jsonp数据格式
-     * @param $code
-     * @param $message
-     * @param $callback
-     */
-    public static function jsonp($code, $message, $callback){
-        $result = new self($code, $message);
-        die($callback. "(". $result .")");
-    }
-
-    /**
-     * @return int
+     * @return string
      */
     public function getCode()
     {
@@ -132,10 +128,13 @@ class JsonResult {
     }
 
     /**
-     * @param int $code
+     * @param string $code
      */
     public function setCode($code)
     {
+        if ($code == self::CODE_SUCCESS) {
+            $this->setSuccess(true);
+        }
         $this->code = $code;
     }
 
@@ -154,35 +153,19 @@ class JsonResult {
     }
 
     /**
-     * @return mixed
+     * @return object
      */
-    public function getItem()
+    public function getData()
     {
-        return $this->item;
+        return $this->data;
     }
 
     /**
-     * @param mixed $item
+     * @param object $data
      */
-    public function setItem($item)
+    public function setData($data)
     {
-        $this->item = $item;
-    }
-
-    /**
-     * @return array
-     */
-    public function getItems()
-    {
-        return $this->items;
-    }
-
-    /**
-     * @param array $items
-     */
-    public function setItems($items)
-    {
-        $this->items = $items;
+        $this->data = $data;
     }
 
     /**
@@ -250,14 +233,6 @@ class JsonResult {
     }
 
     /**
-     * 判断是否成功
-     * @return bool
-     */
-    public function isSucess() {
-        return $this->code == self::CODE_SUCCESS;
-    }
-
-    /**
      * 转换字符串
      * @return string
      */
@@ -267,13 +242,13 @@ class JsonResult {
         }
         return StringUtils::jsonEncode(array(
             'code'=>$this->getCode(),
+            'success'=>$this->isSuccess(),
             'message'=>$this->getMessage(),
+            'data'=>$this->getData(),
             'count'=>$this->getCount(),
             'page'=>$this->getPage(),
             'pagesize'=>$this->getPagesize(),
-            'extra'=>$this->getExtra(),
-            'item'=>$this->getItem(),
-            'items'=>$this->getItems()));
+            'extra'=>$this->getExtra()));
     }
 
     /**
@@ -283,5 +258,21 @@ class JsonResult {
         header('Content-type: application/json;charset=utf-8');
         echo $this;
         die();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSuccess()
+    {
+        return $this->success;
+    }
+
+    /**
+     * @param boolean $success
+     */
+    public function setSuccess($success)
+    {
+        $this->success = $success;
     }
 }

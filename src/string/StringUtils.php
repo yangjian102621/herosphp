@@ -130,4 +130,23 @@ class StringUtils {
         }
         return $rgb;
     }
+
+    /**
+     * 生成随机字符串
+     * @param $length
+     * @return string
+     */
+    public static function genRandomString($length) {
+        $letters = array('1','2','3','4','5','6','7','8','9','0',
+            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o',
+            'p','q','r','s','t','u','v','w','x','y','z','A','B','C','D',
+            'E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S',
+            'T','U','V','W','X','Y','Z');
+        $str = array();
+        $count = count($letters);
+        while ($length-- > 0) {
+            $str[] = $letters[mt_rand() % $count];
+        }
+        return implode('', $str);
+    }
 } 

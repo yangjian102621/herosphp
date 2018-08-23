@@ -164,6 +164,32 @@ class HttpRequest {
     }
 
     /**
+     * @param string $name 获取整数的参数
+     * @return int
+     */
+    public function getIntParam($name) {
+        return intval($this->parameters[$name]);
+    }
+
+    /**
+     * 获取浮点型的参数
+     * @param $name
+     * @return float
+     */
+    public function getFloatParam($name) {
+        return floatval($this->parameters[$name]);
+    }
+
+    /**
+     * 获取字符串参数
+     * @param $name
+     * @return string
+     */
+    public function getStrParam($name) {
+        return trim($this->parameters[$name]);
+    }
+
+    /**
      * @param string $action
      */
     public function setAction($action)
