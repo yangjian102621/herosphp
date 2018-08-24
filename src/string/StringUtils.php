@@ -149,4 +149,14 @@ class StringUtils {
         }
         return implode('', $str);
     }
+
+    /**
+     * 根据明文和盐生成密码
+     * @param $src
+     * @param $salt
+     * @return string
+     */
+    public static function generatePassword($src, $salt) {
+        return md5($src.md5($salt));
+    }
 } 

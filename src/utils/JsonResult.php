@@ -49,6 +49,9 @@ class JsonResult {
      */
     private $code = self::CODE_SUCCESS;
 
+    // 是否发送 json 头信息
+    private $useJsonHeader = false;
+
     /**
      * 是否成功
      * @var bool
@@ -233,6 +236,22 @@ class JsonResult {
     }
 
     /**
+     * @return boolean
+     */
+    public function isUseJsonHeader()
+    {
+        return $this->useJsonHeader;
+    }
+
+    /**
+     * @param boolean $useJsonHeader
+     */
+    public function setUseJsonHeader($useJsonHeader)
+    {
+        $this->useJsonHeader = $useJsonHeader;
+    }
+
+    /**
      * 转换字符串
      * @return string
      */
@@ -255,7 +274,9 @@ class JsonResult {
      * 以json格式输出
      */
     public function output() {
-        header('Content-type: application/json;charset=utf-8');
+        if ($this->useJsonHeader) {
+            header('Content-type: application/json;charset=utf-8');
+        }
         echo $this;
         die();
     }

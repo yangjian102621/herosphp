@@ -68,6 +68,7 @@ class Mysql {
         } catch (PDOException $e ) {
             if ( APP_DEBUG ) {
                 E("数据库连接失败".$e->getMessage());
+                Log::error("数据库连接失败".$e->getMessage(), 'sql');
             }
         }
         return $this->link;
@@ -82,7 +83,7 @@ class Mysql {
     public function execute($sql) {
 
         //如果开启了调试模式，那么把所有对数据库写操作的语句记录下来
-        if ( APP_DEBUG &&
+        if ( SQL_LOG &&
             (strpos($sql, 'INSERT') !== false
                 || strpos($sql, 'DELETE') !== false
                     || strpos($sql, 'UPDATE') !== false)) {
