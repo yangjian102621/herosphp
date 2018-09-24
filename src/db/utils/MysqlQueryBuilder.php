@@ -310,10 +310,6 @@ class MysqlQueryBuilder {
         if ( $this->joinCondition ) $query .= " ON ".$this->joinCondition;
 
         if ( !$this->condition->isEmpty() ) $query .= $this->condition->toString();
-        if ( $this->group ) $query .= " GROUP BY ".$this->group;
-        if ( !$this->havingCondition->isEmpty() ) $query .= $this->havingCondition->toString();
-        if ( $this->order ) $query .= " ORDER BY ".$this->order;
-        if ( $this->limit ) $query .= " LIMIT ".$this->limit;
 
         $this->clear(); //初始化查询条件
         return $query;
