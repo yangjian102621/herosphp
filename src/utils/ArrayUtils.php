@@ -52,4 +52,18 @@ class ArrayUtils {
         $data = trim( $data );
         return (unserialize($data) != false);
     }
+
+    /**
+     * 将多维数组根据某一 key 进行分组
+     * @param $arr
+     * @param $key
+     * @return array
+     */
+    public static function arrayGroup($arr, $key){
+        $result = [];
+        foreach($arr as $k=>$v){
+            $result[$v[$key]][] = $v;
+        }
+        return $result;
+    }
 } 

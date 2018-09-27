@@ -8,6 +8,7 @@
 namespace herosphp\model;
 
 use herosphp\core\Loader;
+use herosphp\db\utils\MysqlQueryBuilder;
 
 abstract class CommonService {
 
