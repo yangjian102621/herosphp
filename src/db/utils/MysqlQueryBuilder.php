@@ -32,7 +32,7 @@ class MysqlQueryBuilder {
      * @var StringBuffer
      */
     private $havingCondition;
-    private $limit = '0,10'; //查询limit
+    private $limit = '0,10000'; //查询limit
     private $closure = false; //是否进入闭包
     /**
      * 联合查询的条件
