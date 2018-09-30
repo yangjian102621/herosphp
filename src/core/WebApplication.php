@@ -68,7 +68,7 @@ class WebApplication implements IApplication {
      * 执行应用程序
      * @param $configs
      * @throws HeroException
-     * @internal param 系统配置信息 $array
+     * @param param 系统配置信息 $array
      */
     public function execute($configs) {
 
