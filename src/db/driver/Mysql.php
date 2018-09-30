@@ -86,6 +86,7 @@ class Mysql {
         if ( SQL_LOG &&
             (strpos($sql, 'INSERT') !== false
                 || strpos($sql, 'DELETE') !== false
+                || strpos($sql, 'REPLACE') !== false
                     || strpos($sql, 'UPDATE') !== false)) {
             Log::info($sql, 'sql');
         }
