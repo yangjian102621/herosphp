@@ -35,7 +35,7 @@ class Log {
 
         $logDir = APP_RUNTIME_PATH . 'logs/'.date('Y').'/'.date('m').'/';
         if ( !file_exists($logDir) ) FileUtils::makeFileDirs($logDir);
-        return file_put_contents($logDir.date("Y-m-d").$logFile.self::LOG_INFO, '['.date('Y-m-d H:i:s').'] '.$message."\n", FILE_APPEND);
+        return file_put_contents($logDir.date("Y-m-d").'-'.$logFile.self::LOG_INFO, '['.date('Y-m-d H:i:s').'] '.$message."\n", FILE_APPEND);
     }
 
     /**
@@ -52,6 +52,6 @@ class Log {
 
         $logDir = APP_RUNTIME_PATH . 'logs/'.date('Y').'/'.date('m').'/';
         if ( !file_exists($logDir) ) FileUtils::makeFileDirs($logDir);
-        return file_put_contents($logDir.date("Y-m-d").$logFile.self::LOG_ERROR, '['.date('Y-m-d H:i:s').'] '.$message."\n", FILE_APPEND);
+        return file_put_contents($logDir.date("Y-m-d").'-'.$logFile.self::LOG_ERROR, '['.date('Y-m-d H:i:s').'] '.$message."\n", FILE_APPEND);
     }
 }
