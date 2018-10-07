@@ -101,6 +101,11 @@ abstract class CommonService {
      */
     public function update($data, $id)
     {
+        // check if there is exists the record
+        $item = $this->modelDao->findById($id);
+        if (empty($item)) {
+            return false;
+        }
         return $this->modelDao->update($data, $id);
     }
 
@@ -109,6 +114,10 @@ abstract class CommonService {
      */
     public function updates($data)
     {
+        $items = $this->modelDao->find();
+        if (empty($items)) {
+            return false;
+        }
         return $this->modelDao->updates($data);
     }
 
