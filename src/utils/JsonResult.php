@@ -50,7 +50,7 @@ class JsonResult {
     private $code = self::CODE_SUCCESS;
 
     // 是否发送 json 头信息
-    private $useJsonHeader = false;
+    private $useJsonHeader = true;
 
     /**
      * 是否成功
