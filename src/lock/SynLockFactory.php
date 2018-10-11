@@ -13,8 +13,6 @@ class SynLockFactory {
 
     private static $_FILELOCK_POOL = array(); //文件锁池
 
-    private static $_SEMLOCK_POOL = array(); //信号量锁池
-
     /**
      * 获取文件锁
      * @param $key
@@ -26,19 +24,6 @@ class SynLockFactory {
             self::$_FILELOCK_POOL[$key] = new FileSynLock($key);
         }
         return self::$_FILELOCK_POOL[$key];
-    }
-
-    /**
-     * 获取信号量锁
-     * @param $key
-     * @return ISynLock
-     */
-    public static function getSemSynLock($key) {
-
-        if ( !isset(self::$_SEMLOCK_POOL[$key])  ) {
-            self::$_SEMLOCK_POOL[$key] = new SemSynLock($key);
-        }
-        return self::$_SEMLOCK_POOL[$key];
     }
 
 } 
