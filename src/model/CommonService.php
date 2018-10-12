@@ -114,10 +114,12 @@ abstract class CommonService {
      */
     public function updates($data)
     {
+        $sqlBuilder = clone $this->modelDao->getSqlBuilder();
         $items = $this->modelDao->find();
         if (empty($items)) {
             return false;
         }
+        $this->modelDao->setSqlBuilder($sqlBuilder);
         return $this->modelDao->updates($data);
     }
 
@@ -134,6 +136,11 @@ abstract class CommonService {
      */
     public function increase($field, $offset, $id)
     {
+        // check if there is exists the record
+        $item = $this->modelDao->findById($id);
+        if (empty($item)) {
+            return false;
+        }
         return $this->modelDao->increase($field, $offset, $id);
     }
 
@@ -142,6 +149,12 @@ abstract class CommonService {
      */
     public function batchIncrease($field, $offset)
     {
+        $sqlBuilder = clone $this->modelDao->getSqlBuilder();
+        $items = $this->modelDao->find();
+        if (empty($items)) {
+            return false;
+        }
+        $this->modelDao->setSqlBuilder($sqlBuilder);
         return $this->modelDao->batchIncrease($field, $offset);
     }
 
@@ -150,6 +163,11 @@ abstract class CommonService {
      */
     public function reduce($field, $offset, $id)
     {
+        // check if there is exists the record
+        $item = $this->modelDao->findById($id);
+        if (empty($item)) {
+            return false;
+        }
         return $this->modelDao->reduce($field, $offset, $id);
     }
 
@@ -158,6 +176,12 @@ abstract class CommonService {
      */
     public function batchReduce($field, $offset)
     {
+        $sqlBuilder = clone $this->modelDao->getSqlBuilder();
+        $items = $this->modelDao->find();
+        if (empty($items)) {
+            return false;
+        }
+        $this->modelDao->setSqlBuilder($sqlBuilder);
         return $this->modelDao->batchReduce($field, $offset);
     }
 
@@ -166,6 +190,11 @@ abstract class CommonService {
      */
     public function set($field, $value, $id)
     {
+        // check if there is exists the record
+        $item = $this->modelDao->findById($id);
+        if (empty($item)) {
+            return false;
+        }
         return $this->modelDao->set($field, $value, $id);
     }
 
@@ -174,6 +203,12 @@ abstract class CommonService {
      */
     public function sets($field, $value)
     {
+        $sqlBuilder = clone $this->modelDao->getSqlBuilder();
+        $items = $this->modelDao->find();
+        if (empty($items)) {
+            return false;
+        }
+        $this->modelDao->setSqlBuilder($sqlBuilder);
         return $this->modelDao->sets($field, $value);
     }
 
