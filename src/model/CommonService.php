@@ -93,6 +93,7 @@ abstract class CommonService {
      */
     public function findById($id)
     {
+        $this->getSqlBuilder()->clear();
         return $this->modelDao->findById($id);
     }
 
@@ -106,6 +107,7 @@ abstract class CommonService {
         if (empty($item)) {
             return false;
         }
+        $this->getSqlBuilder()->clear();
         return $this->modelDao->update($data, $id);
     }
 
@@ -141,6 +143,7 @@ abstract class CommonService {
         if (empty($item)) {
             return false;
         }
+        $this->getSqlBuilder()->clear();
         return $this->modelDao->increase($field, $offset, $id);
     }
 
@@ -168,6 +171,7 @@ abstract class CommonService {
         if (empty($item)) {
             return false;
         }
+        $this->getSqlBuilder()->clear();
         return $this->modelDao->reduce($field, $offset, $id);
     }
 
@@ -195,6 +199,7 @@ abstract class CommonService {
         if (empty($item)) {
             return false;
         }
+        $this->getSqlBuilder()->clear();
         return $this->modelDao->set($field, $value, $id);
     }
 
