@@ -8,9 +8,10 @@
 
 namespace herosphp\cache;
 
+use herosphp\cache\interfaces\ICache;
 use herosphp\utils\HashUtils;
 
-Abstract class ACache {
+Abstract class ACache implements ICache {
 
     /**
      * 每个缓存文件夹的文件容量
