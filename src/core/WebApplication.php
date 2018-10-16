@@ -92,11 +92,11 @@ class WebApplication implements IApplication {
         try {
             $this->actionInvoke();
         } catch(HeroException $e) {
+            //记录日志
+            Log::error($e->toString());
             if ( APP_DEBUG ) { //如果是调试模式就抛出异常
                 throw $e;
             } else {
-                //否则记录日志
-                Log::error($e->toString());
                 die("Hacker Attempt!");
             }
         }

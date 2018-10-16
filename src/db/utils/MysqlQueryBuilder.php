@@ -59,6 +59,15 @@ class MysqlQueryBuilder {
     }
 
     /**
+     * 这里重写克隆方法，实现 MysqlQueryBuilder 对象的深度复制
+     */
+    public function __clone()
+    {
+        $this->condition = clone $this->condition;
+        $this->havingCondition = clone $this->havingCondition;
+    }
+
+    /**
      * 设置数据表别名
      * @param $alias
      */
