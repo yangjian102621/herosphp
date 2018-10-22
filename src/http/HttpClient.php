@@ -37,6 +37,10 @@ class HttpClient {
 		curl_setopt($curl, CURLOPT_HTTPGET, true);
 		return $self->_doRequest($curl, $return_header);
 	}
+	public static function getWithHeader($url, $params)
+	{
+		return self::get($url, $params, null, true);
+	}
 
 	/**
 	 * 发送http POST 请求

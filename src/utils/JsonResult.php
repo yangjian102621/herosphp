@@ -53,12 +53,6 @@ class JsonResult {
     private $useJsonHeader = true;
 
     /**
-     * 是否成功
-     * @var bool
-     */
-    private $success = true;
-
-    /**
      * 状态码信息
          * @var array
      */
@@ -80,11 +74,6 @@ class JsonResult {
      */
     public function __construct($code, $message){
         $this->setCode($code);
-        if ($code == self::CODE_SUCCESS) {
-            $this->setSuccess(true);
-        } else if($code == self::CODE_FAIL) {
-            $this->setSuccess(false);
-        }
         $this->setMessage($message);
     }
 
@@ -107,7 +96,6 @@ class JsonResult {
      */
     public static function success($message='操作成功') {
         $result = new self(self::CODE_SUCCESS, $message);
-        $result->setSuccess(true);
         $result->output();
     }
 
@@ -118,7 +106,6 @@ class JsonResult {
      */
     public static function fail($message='系统开了小差') {
         $result = new self(self::CODE_FAIL, $message);
-        $result->setSuccess(false);
         $result->output();
     }
 
@@ -135,9 +122,6 @@ class JsonResult {
      */
     public function setCode($code)
     {
-        if ($code == self::CODE_SUCCESS) {
-            $this->setSuccess(true);
-        }
         $this->code = $code;
     }
 
@@ -286,14 +270,6 @@ class JsonResult {
      */
     public function isSuccess()
     {
-        return $this->success;
-    }
-
-    /**
-     * @param boolean $success
-     */
-    public function setSuccess($success)
-    {
-        $this->success = $success;
+        return $this->code == self::CODE_SUCCESS;
     }
 }

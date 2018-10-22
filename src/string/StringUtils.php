@@ -62,6 +62,7 @@ class StringUtils {
      * @return mixed
      */
     public static function jsonDecode($string) {
+        $string = trim($string, "\xEF\xBB\xBF");
         return json_decode($string, true);
     }
 

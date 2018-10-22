@@ -176,7 +176,12 @@ class Loader {
      * @param $servicePath
      * @return CommonService
      */
-    public static function service($servicePath) {
-        return self::singleton($servicePath);
+    public static function service($servicePath, $singleton = true) {
+        if ($singleton) {
+            return self::singleton($servicePath);
+        } else {
+            $reflect = new \ReflectionClass($servicePath);
+            return $reflect->newInstance();
+        }
     }
 }
