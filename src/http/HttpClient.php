@@ -24,8 +24,6 @@ class HttpClient {
 		$self = new self();
 		if ( is_array($params) ) {
 			$params = http_build_query($params);
-		}
-		if ( $params ) {
 			if ( strpos($url, '?') == false ) {
 				$url .= '?'.$params;
 			} else {
@@ -40,6 +38,30 @@ class HttpClient {
 	public static function getWithHeader($url, $params)
 	{
 		return self::get($url, $params, null, true);
+	}
+
+	/**
+	 * 使用代理访问
+	 * @param $url
+	 * @param $proxy  代理配置
+	 * @param $params
+	 * @return mixed
+	 */
+	public static function getProxy($url, $proxy, $params, $returnHeader=false) {
+		$self = new self();
+		if ( is_array($params) ) {
+			$params = http_build_query($params);
+			if ( strpos($url, '?') == false ) {
+				$url .= '?'.$params;
+			} else {
+				$url .= '&'.$params;
+			}
+		}
+		$curl = $self->_curlInit($url, null);
+		curl_setopt ($curl, CURLOPT_PROXY, $proxy);
+		curl_setopt($curl, CURLOPT_HTTPGET, true);
+
+		return $self->_doRequest($curl, $returnHeader);
 	}
 
 	/**
@@ -61,26 +83,6 @@ class HttpClient {
 
 		return $self->_doRequest($curl, false);
 	}
-
-	/**
-	 * 发送restful POST请求
-	 * @param $url
-	 * @param $params
-	 * @return mixed
-	 */
-	public static function restpost($url, $params) {
-		$self = new self();
-		if ( is_array($params) ) {
-			$params = StringUtils::jsonEncode($params);
-		}
-        $curl = $self->_curlInit($url, array('Content-Type' => 'application/json'));
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-
-		return $self->_doRequest($curl, false);
-	}
-
-
 
     /**
      * 发送restful PUT请求
