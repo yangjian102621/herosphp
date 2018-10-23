@@ -312,3 +312,18 @@ function getHttpHeaders() {
     return $headers;
 }
 
+// 只允许 POST 请求方式
+function onlyPost() {
+    if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        header("HTTP/1.0 405 Method Not Allowed!");
+        die();
+    }
+}
+
+// 只允许 GET 请求方式
+function onlyGet() {
+    if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+        header("HTTP/1.0 405 Method Not Allowed!");
+        die();
+    }
+}

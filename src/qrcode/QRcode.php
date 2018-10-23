@@ -95,7 +95,7 @@ class QRcode {
      * 显示二维码
      */
     public function show() {
-        $qrsize = $this->size/27;
+        $qrsize = ($this->size/27) * 1.2;
         SQRcode::png(
             $this->text,
             $this->outfile,
