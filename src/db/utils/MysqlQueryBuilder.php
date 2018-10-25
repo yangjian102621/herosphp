@@ -31,7 +31,7 @@ class MysqlQueryBuilder {
      * 分组条件
      * @var StringBuffer
      */
-    const PAGE_SIZE = 1000; // 每页显示数量
+    const PAGE_SIZE = 10000; // 每页显示数量
     private $havingCondition;
     private $limit = '0,'.self::PAGE_SIZE; //查询limit
     private $closure = false; //是否进入闭包
