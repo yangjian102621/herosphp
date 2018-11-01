@@ -133,7 +133,7 @@ class Page {
         $pageData = array();
         //打印左边页码
         $leftPages = '';
-        if ( ($this->pageNow - $this->outPage) > 2  ) {
+        if ( ($this->pageNow - $this->outPage) >= 2  ) {
             $leftPages .= '<li><a href="'.$this->buildUrl($this->url.'1').'" class="page_list page_Rounded5">1</a></li>';
             //$leftPages .= '<li><a href="'.url($this->url.'2').'" class="page_list page_Rounded5">2</a></li>';
 
@@ -280,6 +280,7 @@ class Page {
                 $pages['next'] = '#';
             }
         }
+        $pages['page'] = $this->pageNow;
         $pages['last'] = $this->buildUrl($this->url.$this->pageNum);
         return $pages;
 
