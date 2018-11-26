@@ -11,7 +11,7 @@ class StringBuffer {
 
     private $strMap = array();
 
-    public function __construct($str)
+    public function __construct($str=null)
     {
         if ( $str ) $this->append($str);
     }
@@ -21,19 +21,19 @@ class StringBuffer {
     }
 
     //append content
-    public function append($str) {
+    public function append($str=null) {
 
         array_push($this->strMap, $str);
 
     }
 
     //append line
-    public function appendLine($str) {
+    public function appendLine($str=null) {
         $this->append($str."\n");
     }
 
     //append line with tab symbol
-    public function appendTab($str, $tabNum=1) {
+    public function appendTab($str=null, $tabNum=1) {
 
         $tab = "";
         for ( $i = 0; $i < $tabNum; $i++ ) {

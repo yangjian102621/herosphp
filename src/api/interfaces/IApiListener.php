@@ -13,5 +13,5 @@ interface  IApiListener {
      * @param $params
      * @return bool
      */
-    public function authorize($params);
+    public function authorize($params=null);
 }
