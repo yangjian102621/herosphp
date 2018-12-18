@@ -16,7 +16,7 @@ class RSACrypt {
 	function __construct() {
 
 		$this->pubkey  = file_get_contents(getConfig('rsa_public_key'));
-		$this->privkey = file_get_contents(getConfig('/rsa_private_key.pem'));
+		$this->privkey = file_get_contents(getConfig('rsa_private_key'));
 	}
 
     /**
