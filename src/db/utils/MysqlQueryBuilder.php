@@ -50,7 +50,7 @@ class MysqlQueryBuilder {
      * 复杂条件操作符
      * @var array
      */
-    protected static $COMPLEX_OPTS = ['IN', 'NIN', 'NOT', 'BETWEEN', 'LIKE','NULL','NNULL'];
+    protected static $COMPLEX_OPTS = ['IN', 'NIN', 'NOT', 'BETWEEN', 'LIKE','NULL','NNULL','CONTAIN'];
 
     public function __construct($table) {
         $this->table = $table;
@@ -187,6 +187,9 @@ class MysqlQueryBuilder {
 
             case 'NNULL':
                 $whereStr = "{$field} IS NOT NULL";
+                break;
+            case 'CONTAIN':
+                $whereStr = "LOCATE('{$value}', {$field}) > 0";
                 break;
 
         }
