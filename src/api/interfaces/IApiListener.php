@@ -10,8 +10,16 @@ namespace herosphp\api\interfaces;
 interface  IApiListener {
 
     /**
+     * API authorization interception processing
      * @param $params
      * @return bool
      */
     public function authorize($params=null);
+
+    /**
+     * determine if a request need authrization
+     * @param $url
+     * @return bool
+     */
+    public function needAuthrize($url);
 }

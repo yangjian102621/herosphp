@@ -7,6 +7,7 @@
  */
 namespace herosphp\api;
 use herosphp\bean\Beans;
+use herosphp\core\Loader;
 use herosphp\core\Log;
 use herosphp\utils\JsonResult;
 
@@ -21,7 +22,7 @@ class GeneralApi {
             $instance = new self();
             $urlParams = $instance->_getUrlParams();
             $instance->_invoke($urlParams);
-        } catch (\Exception $e) {
+        } catch (APIException $e) {
             Log::error($e); //记录日志
             JsonResult::result($e->getCode(), $e->getMessage());
         }
@@ -35,16 +36,25 @@ class GeneralApi {
      */
     private function _invoke($urlParams) {
 
-        $serviceBean = "api.".substr($urlParams[0], 0, strlen($urlParams[0])-1).".service";
-        $service = Beans::get($serviceBean);
-        if ( is_null($service) || !is_object($service) ) {
-            throw new APIException(404, "Can not find the servive '{$serviceBean}'.");
+        $serviceClassPath = APP_NAME."\\api\\service\\".ucfirst($urlParams[0])."Service";
+        try {
+            $service = Loader::service($serviceClassPath);
+        } catch(\Exception $e) {
+            throw new APIException(404, "Can not find the servive '{$serviceClassPath}'.");
         }
-
         $params = $_GET + $_POST; //获取参数
-        //这里做拦截和权限认证操作
-        $listener = Beans::get(Beans::BEAN_API_LISTENER);
-        if ( is_object($listener) && method_exists($listener, 'authorize') ) {
+
+        //检查当前模块下是否有监听器，如果有则加载监听器
+        $lisennerClassName = APP_NAME."\\api\\ModuleListener";
+        $listener = null;
+        try {
+            $reflect = new \ReflectionClass($lisennerClassName);
+            $listener = $reflect->newInstance();
+        } catch (\ReflectionException $exception) {
+            //__print($exception);die();
+        }
+        // 这里做拦截和权限认证操作
+        if ( $listener->needAuthrize("/{$urlParams[0]}/{$urlParams[1]}") ) {
             if ( !$listener->authorize($params) ) {
                 throw new APIException(401, "Authorized Faild.");
             }
@@ -54,7 +64,7 @@ class GeneralApi {
             $reflectMethods = new \ReflectionMethod($service, $urlParams[1]);
             $dependParams = array(); //依赖参数
             foreach ($reflectMethods->getParameters() as $value) {
-                if (isset($params[$value->getName()])) {
+                if (isset($params[$value->getName()])) { // 传入的参数的名称要跟服务方法的参数名相同
                     $dependParams[] = $params[$value->getName()];
                 } else if ($value->isDefaultValueAvailable()) {
                     $dependParams[] = $value->getDefaultValue();
@@ -75,8 +85,7 @@ class GeneralApi {
     private function _getUrlParams() {
         $pathInfo = parse_url($_SERVER['REQUEST_URI']);
         $params = explode('/', trim($pathInfo['path'], '/'));
-
-        if ( empty($params[1]) ) {
+        if (count($params) != 2) {
             throw new APIException(404, 'Invalid resource path.');
         }
         return $params;

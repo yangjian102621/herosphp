@@ -43,9 +43,9 @@ class BootStrap {
     /**
      * api应用入口
      */
-    public static function api() {
+    public static function runApi() {
         self::init();
-        if ( RESTFUL_API ) {
+        if ( defined(RESTFUL_API) && RESTFUL_API == true) {
             RestfulApi::run();
         } else {
             GeneralApi::run();
