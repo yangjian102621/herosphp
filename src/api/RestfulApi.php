@@ -7,7 +7,7 @@
  */
 namespace herosphp\api;
 
-use herosphp\bean\Beans;
+use herosphp\core\Loader;
 use herosphp\core\Log;
 use herosphp\exception\HeroException;
 use herosphp\string\StringUtils;
@@ -60,10 +60,11 @@ class RestfulApi {
      */
     private function _invoke($urlParams) {
 
-        $serviceBean = "api.".substr($urlParams[0], 0, strlen($urlParams[0])-1).".service";
-        $service = Beans::get($serviceBean);
-        if ( is_null($service) || !is_object($service) ) {
-            throw new APIException(404, "Can not find the servive '{$serviceBean}'.");
+        $serviceClassPath = APP_NAME."\\api\\service\\".ucfirst($urlParams[0])."Service";
+        try {
+            $service = Loader::service($serviceClassPath);
+        } catch(\Exception $e) {
+            throw new APIException(404, "Can not find the servive '{$serviceClassPath}'.");
         }
 
         $__params = $this->_getBodyParams(); //获取参数
@@ -71,14 +72,21 @@ class RestfulApi {
             $params['ID'] = $urlParams[1]; //注入ID
         }
 
-        //这里做拦截和权限认证操作
-        $listener = Beans::get(Beans::BEAN_API_LISTENER);
-        if ( is_object($listener) && method_exists($listener, 'authorize') ) {
+        //检查当前模块下是否有监听器，如果有则加载监听器
+        $lisennerClassName = APP_NAME."\\api\\ModuleListener";
+        $listener = null;
+        try {
+            $reflect = new \ReflectionClass($lisennerClassName);
+            $listener = $reflect->newInstance();
+        } catch (\ReflectionException $exception) {
+            //__print($exception);die();
+        }
+        // 这里做拦截和权限认证操作
+        if ( $listener->needAuthrize("/{$urlParams[0]}/{$urlParams[1]}") ) {
             if ( !$listener->authorize($params) ) {
                 throw new APIException(401, "Authorized Faild.");
             }
         }
-
 
         //根据不同的 HTTP 动词找到对应的方法
         switch ( $_SERVER['REQUEST_METHOD'] ) {
