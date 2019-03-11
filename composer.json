@@ -4,7 +4,7 @@
     "type": "framework",
     "keywords": ["php framework","herosphp","lightweight"],
     "homepage": "https://github.com/yangjian102621/herosphp",
-    "license": "Apache2",
+    "license": "MIT",
     "authors": [
         {
             "name": "blackfox",
