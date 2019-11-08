@@ -151,7 +151,7 @@ class WebApplication implements IApplication {
         $actionDir = APP_PATH."modules/{$module}/action/";
         $filename = $actionDir.ucfirst($action).'Action.php';
         if ( !file_exists($filename) ) {
-            throw new FileNotFoundException($filename);
+            throw new FileNotFoundException($filename, FileNotFoundException::ERROR_CODE);
         }
         $className = APP_NAME."\\{$module}\\action\\".ucfirst($action)."Action";
         $reflect = new \ReflectionClass($className);

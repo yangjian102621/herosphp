@@ -53,15 +53,6 @@ class JsonResult {
     private $useJsonHeader = true;
 
     /**
-     * 状态码信息
-         * @var array
-     */
-    private static $_CODE_STATUS = [
-        self::CODE_SUCCESS => '操作成功.',
-        self::CODE_FAIL => '系统开了小差.',
-    ];
-
-    /**
      * 消息
      * @var string
      */
@@ -84,9 +75,8 @@ class JsonResult {
      * @param array $data
      * @return JsonResult
      */
-    public static function result($code, $message) {
-        $result = new self($code, $message);
-        $result->output();
+    public static function instance($code, $message) {
+        return new JsonResult($code, $message);
     }
 
     /**
@@ -95,8 +85,7 @@ class JsonResult {
      * @return JsonResult
      */
     public static function success($message='操作成功') {
-        $result = new self(self::CODE_SUCCESS, $message);
-        $result->output();
+        return new JsonResult(self::CODE_SUCCESS, $message);
     }
 
     /**
@@ -105,8 +94,7 @@ class JsonResult {
      * @return JsonResult
      */
     public static function fail($message='系统开了小差') {
-        $result = new self(self::CODE_FAIL, $message);
-        $result->output();
+        return new JsonResult(self::CODE_FAIL, $message);
     }
 
     /**
@@ -239,10 +227,8 @@ class JsonResult {
      * 转换字符串
      * @return string
      */
-    public function __toString() {
-        if ( !$this->getMessage() ) {
-            $this->setMessage(self::$_CODE_STATUS[$this->code]);
-        }
+    public function __toString()
+    {
         return StringUtils::jsonEncode(array(
             'code'=>$this->getCode(),
             'success'=>$this->isSuccess(),
