@@ -24,7 +24,7 @@ class JsonResult {
      * 列表数据条数
      * @var int
      */
-    private $count;
+    private $total;
 
     /**
      * 当前数据页码
@@ -146,17 +146,17 @@ class JsonResult {
     /**
      * @return int
      */
-    public function getCount()
+    public function getTotal()
     {
-        return $this->count;
+        return $this->total;
     }
 
     /**
-     * @param int $count
+     * @param int $total
      */
-    public function setCount($count)
+    public function setTotal($total)
     {
-        $this->count = $count;
+        $this->total = $total;
     }
 
     /**
