@@ -9,6 +9,7 @@
 namespace herosphp\cache;
 
 use herosphp\cache\interfaces\ICache;
+use herosphp\exception\HeroException;
 
 class MemoCache implements ICache {
 
@@ -22,7 +23,8 @@ class MemoCache implements ICache {
     const KEY_PREFIX = "CACHE_KET_PRIFIX_";
 
     //加载缓存配置
-    public function initConfigs() {
+    public function initConfigs()
+    {
         $this->configs = Loader::config('memo', 'cache');
     }
 
@@ -35,6 +37,7 @@ class MemoCache implements ICache {
     /**
      * 初始化缓存配置信息
      * @param array $configs 缓存配置信息
+     * @throws HeroException
      */
     public function __construct() {
 

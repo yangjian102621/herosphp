@@ -53,6 +53,6 @@ class RedisCache implements ICache {
      * @return bool
      */
 	public function delete( $key ) {
-		return RedisUtils::getInstance()->delete(self::KEY_PREFIX.$key);
+		return RedisUtils::getInstance()->del(self::KEY_PREFIX.$key);
 	}
 }
