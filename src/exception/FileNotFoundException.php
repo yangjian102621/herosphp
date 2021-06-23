@@ -8,4 +8,7 @@
 
 namespace herosphp\exception;
 
-class FileNotFoundException extends HeroException {}
+class FileNotFoundException extends HeroException {
+
+    const ERROR_CODE = "100";
+}

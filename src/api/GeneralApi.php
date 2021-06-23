@@ -6,18 +6,22 @@
  * @since 2017-03-27 v2.0.0
  */
 namespace herosphp\api;
+use Exception;
 use herosphp\bean\Beans;
 use herosphp\core\Loader;
 use herosphp\core\Log;
 use herosphp\utils\JsonResult;
+use ReflectionException;
+use ReflectionMethod;
 
-class GeneralApi {
+class GeneralApi
+{
 
     /**
      * 调用服务
      */
-    public static function run() {
-
+    public static function run()
+    {
         try {
             $instance = new self();
             $urlParams = $instance->_getUrlParams();
@@ -34,12 +38,12 @@ class GeneralApi {
      * @param $urlParams array 访问url路径中提取的参数
      * @throws APIException
      */
-    private function _invoke($urlParams) {
-
+    private function _invoke($urlParams)
+    {
         $serviceClassPath = APP_NAME."\\api\\service\\".ucfirst($urlParams[0])."Service";
         try {
             $service = Loader::service($serviceClassPath);
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             throw new APIException(404, "Can not find the servive '{$serviceClassPath}'.");
         }
         $params = $_GET + $_POST; //获取参数
@@ -50,7 +54,7 @@ class GeneralApi {
         try {
             $reflect = new \ReflectionClass($lisennerClassName);
             $listener = $reflect->newInstance();
-        } catch (\ReflectionException $exception) {
+        } catch (ReflectionException $exception) {
             //__print($exception);die();
         }
         // 这里做拦截和权限认证操作
@@ -61,7 +65,7 @@ class GeneralApi {
         }
 
         try {
-            $reflectMethods = new \ReflectionMethod($service, $urlParams[1]);
+            $reflectMethods = new ReflectionMethod($service, $urlParams[1]);
             $dependParams = array(); //依赖参数
             foreach ($reflectMethods->getParameters() as $value) {
                 if (isset($params[$value->getName()])) { // 传入的参数的名称要跟服务方法的参数名相同
@@ -73,7 +77,7 @@ class GeneralApi {
                 }
             }
             $result = call_user_func_array(array($service, $urlParams[1]), $dependParams);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new APIException(500, $e->getMessage());
         }
         $result->output();  //输出json数据
@@ -82,7 +86,8 @@ class GeneralApi {
     /**
      * 解析URL，提取url参数
      */
-    private function _getUrlParams() {
+    private function _getUrlParams()
+    {
         $pathInfo = parse_url($_SERVER['REQUEST_URI']);
         $params = explode('/', trim($pathInfo['path'], '/'));
         if (count($params) != 2) {

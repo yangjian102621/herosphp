@@ -78,6 +78,13 @@ composer require 'herosphp/framework:*@dev'
 
 版本更新记录
 ======
+
+## version 3.0.5
+1. 完成 API 通用网关功能, 可以轻松创建 Http API 服务。不用创建控制器，直接把 service 层变成 API 服务接口。
+2. 移除 `src/bean` 组件（其功能已经被 Loader 更好的替代了）
+3. 优化异常处理, 修复一些已知的 Bug
+4. 更新开发文档
+
 ## version 3.0.3
 1. 修复 MysqlModel::where 方法中闭包判断的bug， 之前使用的是 is_callable($field), 导致在 $field 是 url 这种函数名的时候会被当做闭包判断。
 2. 给 RedisSession 的缓存加上前缀，需要在 app/configs/session.config.php 的 redis session configure 中加上 prefix key，

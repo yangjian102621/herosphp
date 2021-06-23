@@ -9,8 +9,6 @@ namespace herosphp\core;
 
 class AppError {
 
-    const CLASS_NOT_FOUND = 100;
-
     /**
      * 错误代码，0表示没有错误，其他表示程序出错
      * @var
