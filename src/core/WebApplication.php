@@ -12,12 +12,13 @@ use herosphp\core\interfaces\IApplication;
 use herosphp\exception\FileNotFoundException;
 use herosphp\exception\HeroException;
 use herosphp\http\HttpRequest;
+use ReflectionClass;
 
 class WebApplication implements IApplication {
 
     /**
      * http 请求对象
-     * @var \herosphp\http\HttpRequest
+     * @var HttpRequest
      */
     private $httpRequest;
 
@@ -41,7 +42,7 @@ class WebApplication implements IApplication {
 
     /**
      * 应用程序错误对象
-     * @var \herosphp\core\AppError
+     * @var AppError
      */
     private $appError = null;
 
@@ -56,7 +57,7 @@ class WebApplication implements IApplication {
         if (file_exists(APP_PATH."modules/DefaultWebappListener.php")) {
             $lisennerClassName = APP_NAME."\\DefaultWebappListener";
             try {
-                $reflect = new \ReflectionClass($lisennerClassName);
+                $reflect = new ReflectionClass($lisennerClassName);
                 $this->listeners[] = $reflect->newInstance();
             } catch (\Exception $exception) {}
         }
@@ -80,7 +81,7 @@ class WebApplication implements IApplication {
         //检查当前模块下是否有监听器，如果有则加载监听器
         $lisennerClassName = APP_NAME."\\".$this->httpRequest->getModule()."\\ModuleListener";
         try {
-            $reflect = new \ReflectionClass($lisennerClassName);
+            $reflect = new ReflectionClass($lisennerClassName);
             $this->listeners[] = $reflect->newInstance();
         } catch (\Exception $exception) {
             //__print($exception);die();
@@ -151,10 +152,10 @@ class WebApplication implements IApplication {
         $actionDir = APP_PATH."modules/{$module}/action/";
         $filename = $actionDir.ucfirst($action).'Action.php';
         if ( !file_exists($filename) ) {
-            throw new FileNotFoundException($filename);
+            throw new FileNotFoundException($filename, AppError::CLASS_NOT_FOUND);
         }
         $className = APP_NAME."\\{$module}\\action\\".ucfirst($action)."Action";
-        $reflect = new \ReflectionClass($className);
+        $reflect = new ReflectionClass($className);
         $this->actionInstance = $reflect->newInstance();
 
         //调用初始化方法
@@ -213,24 +214,7 @@ class WebApplication implements IApplication {
     }
 
     /**
-     * 获取指定key的配置值
-     * @param string $key 配置key
-     * @return mixed
-     */
-    public function getConfig( $key ) {
-        return $this->configs[$key];
-    }
-
-    /**
-     * @param \herosphp\http\HttpRequest $httpRequest
-     */
-    public function setHttpRequest($httpRequest)
-    {
-        $this->httpRequest = $httpRequest;
-    }
-
-    /**
-     * @return \herosphp\http\HttpRequest
+     * @return HttpRequest
      */
     public function getHttpRequest()
     {

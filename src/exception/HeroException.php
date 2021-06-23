@@ -8,7 +8,9 @@
 
 namespace herosphp\exception;
 
-class HeroException extends \Exception {
+use Exception;
+
+class HeroException extends Exception {
 
     public function __construct( $message, $code ){
         parent::__construct($message, $code);

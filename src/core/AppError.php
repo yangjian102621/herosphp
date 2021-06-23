@@ -9,6 +9,8 @@ namespace herosphp\core;
 
 class AppError {
 
+    const CLASS_NOT_FOUND = 100;
+
     /**
      * 错误代码，0表示没有错误，其他表示程序出错
      * @var
@@ -22,24 +24,10 @@ class AppError {
     private $message;
 
     /**
-     * @return mixed
-     */
-    public function getCode() {
-        return $this->code;
-    }
-
-    /**
      * @param mixed $code
      */
     public function setCode($code) {
         $this->code = $code;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMessage() {
-        return $this->message;
     }
 
     /**
@@ -48,7 +36,5 @@ class AppError {
     public function setMessage($message) {
         $this->message = $message;
     }
-
-
 
 }
