@@ -234,7 +234,7 @@ class JsonResult {
             'success'=>$this->isSuccess(),
             'message'=>$this->getMessage(),
             'data'=>$this->getData(),
-            'count'=>$this->getCount(),
+            'total'=>$this->getTotal(),
             'page'=>$this->getPage(),
             'pagesize'=>$this->getPagesize(),
             'extra'=>$this->getExtra()));
