@@ -381,9 +381,20 @@ abstract class CommonService {
 
     /**
      * @param MysqlModel $modelDao
+     * @return CommonService
      */
     public function setModelDao($modelDao)
     {
         $this->modelDao = $modelDao;
+        return $this;
+    }
+
+    /**
+     * @param $debug
+     * @return $this
+     */
+    public function setDebug($debug) {
+        $this->modelDao->setDebug($debug);
+        return $this;
     }
 }

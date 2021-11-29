@@ -14,8 +14,8 @@ class DBException extends HeroException {
 
     protected $query;       /* 查询语句 */
 
-    public function __contruct( $message ) {
-        parent::__contruct($message);
+    public function __contruct( $message, $code ) {
+        parent::__contruct($message, $code);
     }
 
     /**

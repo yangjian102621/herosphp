@@ -6,6 +6,8 @@
  * @since v1.2.1
  */
 
+use herosphp\exception\HeroException;
+
 /**
  * 打印函数, 打印变量(数据)
  */
@@ -89,7 +91,7 @@ function getHashCode( $str ) {
  * @throws herosphp\exception\HeroException
  */
 function E( $message, $code=0 ) {
-    $exception = new \herosphp\exception\HeroException($message, $code);
+    $exception = new HeroException($message, $code);
     throw $exception;
 }
 

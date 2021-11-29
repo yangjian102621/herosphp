@@ -7,7 +7,7 @@
  */
 namespace herosphp\lock;
 
-use herosphp\core\Loader;
+use herosphp\exception\HeroException;
 use herosphp\files\FileUtils;
 use herosphp\lock\interfaces\ISynLock;
 
@@ -24,7 +24,7 @@ class FileSynLock implements ISynLock {
 
     /**
      * 尝试去获取锁，成功返回false并且一直阻塞
-     * @throws \herosphp\exception\HeroException
+     * @throws HeroException
      */
     public function tryLock()
     {
@@ -37,7 +37,7 @@ class FileSynLock implements ISynLock {
 
     /**
      * 释放锁
-     * @throws \herosphp\exception\HeroException
+     * @throws HeroException
      */
     public function unlock()
     {

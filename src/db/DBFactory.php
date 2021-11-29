@@ -11,6 +11,7 @@ namespace herosphp\db;
 use herosphp\db\driver\mongo\Mongo;
 use herosphp\db\driver\Mysql;
 use herosphp\db\interfaces\Idb;
+use ReflectionException;
 
 class DBFactory {
 
@@ -35,9 +36,10 @@ class DBFactory {
 
     /**
      * 创建数据库连接实例
-     * @param int $accessType   连接方式（连接单个服务器还是连接集群）
+     * @param int $accessType 连接方式（连接单个服务器还是连接集群）
      * @param array $config 数据库的配置信息
      * @return Idb
+     * @throws ReflectionException
      */
     public static function createDB($accessType=DB_ACCESS_SINGLE, &$config = null) {
 

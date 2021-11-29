@@ -582,4 +582,8 @@ class MysqlModel {
         $this->sqlBuilder = $sqlBuilder;
     }
 
+    public function setDebug($debug) {
+        $this->db->setDebug($debug);
+    }
+
 }

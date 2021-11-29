@@ -8,6 +8,7 @@
 namespace herosphp;
 
 use herosphp\gmodel\GModel;
+use ReflectionClass;
 
 class Artisan {
 
@@ -52,42 +53,42 @@ class Artisan {
         if ( empty($opts) || isset($opts['help']) || isset($opts['h']) ) {
             return self::printHelpInfo();
         }
-        if ( isset($opts['version']) || isset($opts['v']) ) {
-            return self::printVersion();
-        }
-
-        if ( $opts['make-db'] ) { //创建数库
-            $opts['dbname'] = $opts['make-db'];
-            return GModel::createDatabase($opts);
-        }
-
-        if ( $opts['make-table'] ) { //创建数据表
-            $opts['xmlpath'] = $opts['make-table'];
-            return GModel::createTables($opts);
-        }
-
-        if ( $opts['make-model'] ) { //创建模型
-            if ( strpos($opts['make-model'], '.xml') ) {
-                $opts['xmlpath'] = $opts['make-model'];
-            } else {
-                $opts['model'] = $opts['make-model'];
-            }
-            return GModel::createModel($opts);
-        }
-
-        if ( $opts['make-service'] ) { //创建服务
-            $opts['service'] = $opts['make-service'];
-            return GModel::createService($opts);
-        }
-
-        if ( $opts['make-controller'] ) { //创建控制器
-            $opts['controller'] = $opts['make-controller'];
-            return GModel::createController($opts);
-        }
+//        if ( isset($opts['version']) || isset($opts['v']) ) {
+//            return self::printVersion();
+//        }
+//
+//        if ( $opts['make-db'] ) { //创建数库
+//            $opts['dbname'] = $opts['make-db'];
+//            return GModel::createDatabase($opts);
+//        }
+//
+//        if ( $opts['make-table'] ) { //创建数据表
+//            $opts['xmlpath'] = $opts['make-table'];
+//            return GModel::createTables($opts);
+//        }
+//
+//        if ( $opts['make-model'] ) { //创建模型
+//            if ( strpos($opts['make-model'], '.xml') ) {
+//                $opts['xmlpath'] = $opts['make-model'];
+//            } else {
+//                $opts['model'] = $opts['make-model'];
+//            }
+//            return GModel::createModel($opts);
+//        }
+//
+//        if ( $opts['make-service'] ) { //创建服务
+//            $opts['service'] = $opts['make-service'];
+//            return GModel::createService($opts);
+//        }
+//
+//        if ( $opts['make-controller'] ) { //创建控制器
+//            $opts['controller'] = $opts['make-controller'];
+//            return GModel::createController($opts);
+//        }
 
         if ( $opts['run'] ) { //运行任务
             $className = ucfirst($opts['run']).'Task';
-            $clazz = new \ReflectionClass("client\\tasks\\{$className}");
+            $clazz = new ReflectionClass("client\\tasks\\{$className}");
             $method = $clazz->getMethod('run');
             $method->invoke($clazz->newInstance());
         }

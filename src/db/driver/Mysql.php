@@ -10,6 +10,7 @@ namespace herosphp\db\driver;
 
 use herosphp\core\Log;
 use herosphp\db\DBException;
+use herosphp\exception\HeroException;
 use \PDO;
 use \PDOException;
 
@@ -17,7 +18,7 @@ class Mysql {
 
     /**
      * PDO 数据库连接实例
-     * @var \PDO
+     * @var PDO
      */
     private $link;
 
@@ -33,9 +34,13 @@ class Mysql {
      */
     private $transactions = 0;
 
+    // control for debug mode
+    private $debug = false;
+
     /**
      * 创建一个数据库操作对象,初始化配置参数
      * @param $config
+     * @throws HeroException
      */
     public  function __construct( $config ) {
 
@@ -46,8 +51,8 @@ class Mysql {
     }
 
     /**
-     * @throws DBException
-     * @return Resource
+     * @return bool|PDO
+     * @throws HeroException
      */
     public function connect()
     {
@@ -77,24 +82,21 @@ class Mysql {
     /**
      * 执行一条sql语句，直接返回结果
      * @param string $sql
-     * @return \PDOStatement
+     * @return PDOStatement
      * @throws DBException
+     * @throws HeroException
      */
     public function execute($sql) {
 
         //如果开启了调试模式，那么把所有对数据库写操作的语句记录下来
-        if ( SQL_LOG &&
-            (strpos($sql, 'INSERT') !== false
-                || strpos($sql, 'DELETE') !== false
-                || strpos($sql, 'REPLACE') !== false
-                    || strpos($sql, 'UPDATE') !== false)) {
+        if ($this->debug) {
             Log::info($sql, 'sql');
         }
         if ( $this->link == null ) $this->connect();
         try {
             $result = $this->link->query($sql);
         } catch ( PDOException $e ) {
-            $exception = new DBException("SQL错误:" . $e->getMessage());
+            $exception = new DBException("SQL错误:" . $e->getMessage(), 500);
             $exception->setCode($e->getCode());
             $exception->setQuery($sql);
             if ( APP_DEBUG ) {
@@ -110,6 +112,8 @@ class Mysql {
      * @param string $table 数据表或者集合名称
      * @param array $data 数据，必须为数组
      * @return mixed
+     * @throws DBException
+     * @throws HeroException
      */
     public function insert($table, $data)
     {
@@ -185,6 +189,8 @@ class Mysql {
      * @param array $data 数据
      * @param array $condition 查询条件
      * @return bool|int
+     * @throws DBException
+     * @throws HeroException
      */
     public function update($table, $data, $condition)
     {
@@ -216,6 +222,8 @@ class Mysql {
      * 获取数据列表
      * @param string $query
      * @return mixed
+     * @throws DBException
+     * @throws HeroException
      */
     public function &getList($query)
     {
@@ -234,6 +242,8 @@ class Mysql {
      * @param $table
      * @param array $condition 删除条件
      * @return bool|int
+     * @throws DBException
+     * @throws HeroException
      */
     public function delete($table, $condition)
     {
@@ -248,11 +258,12 @@ class Mysql {
     }
 
 
-
     /**
      * 获取一行数据
      * @param string $query
      * @return mixed
+     * @throws DBException
+     * @throws HeroException
      */
     public function &getOneRow($query)
     {
@@ -267,6 +278,8 @@ class Mysql {
      * 获取某个条件匹配的总记录数
      * @param string $sql
      * @return int
+     * @throws DBException
+     * @throws HeroException
      */
     public function count($sql)
     {
@@ -326,9 +339,15 @@ class Mysql {
 
     }
 
+    // enable/disable the debug mode
+    public function setDebug($debug) {
+        $this->debug = $debug;
+    }
+
     /**
      * 检查是否开启了事物
      * @return boolean
+     * @throws HeroException
      */
     public function inTransaction()
     {
@@ -338,8 +357,10 @@ class Mysql {
 
     /***
      * 获取指定数据表的所有字段
-     * @param		string 		$_table		table name
-     * @return 		array		fields array of table
+     * @param string $_table table name
+     * @return        array        fields array of table
+     * @throws DBException
+     * @throws HeroException
      */
     protected function getTableFields( $_table ) {
 

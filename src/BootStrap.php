@@ -24,7 +24,6 @@ class BootStrap {
      */
     public static function run() {
 
-        self::init();
         //根据环境配置来获取相应的配置
         $appConfigs = Loader::config('app', 'env.'.ENV_CFG);
         $application = WebApplication::getInstance();
@@ -36,38 +35,6 @@ class BootStrap {
      * 客户端入口
      */
     public static function artisan() {
-        self::init();
         Artisan::run();
     }
-
-    /**
-     * api应用入口
-     */
-    public static function runApi() {
-        self::init();
-        if ( defined(RESTFUL_API) && RESTFUL_API == true) {
-            RestfulApi::run();
-        } else {
-            GeneralApi::run();
-        }
-    }
-
-    /**
-     * 初始化
-     * @param string $taskName  任务名称
-     */
-    public static function init() {
-
-        date_default_timezone_set(TIME_ZONE);  //设置默认时区
-
-        if ( APP_DEBUG ) {
-            error_reporting(ERROR_LEVEL);
-            ini_set("display_errors", "On");
-        } else {
-            error_reporting(0);
-            ini_set("display_errors", "Off");
-        }
-
-    }
-
 }

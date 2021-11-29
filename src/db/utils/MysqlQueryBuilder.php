@@ -31,9 +31,8 @@ class MysqlQueryBuilder {
      * 分组条件
      * @var StringBuffer
      */
-    const PAGE_SIZE = 10000; // 每页显示数量
     private $havingCondition;
-    private $limit = '0,'.self::PAGE_SIZE; //查询limit
+    private $limit = null; //查询limit
     private $closure = false; //是否进入闭包
     /**
      * 联合查询的条件
@@ -273,11 +272,8 @@ class MysqlQueryBuilder {
      * @return $this
      */
     public function limit($limit) {
-        if ( $limit ) {
+        if ($limit > 0) {
             $this->limit = $limit;
-        } else {
-            //推荐列表查询一定是要分页的，如果没有分页则显示前1000条
-            $this->limit = '0, '.self::PAGE_SIZE;
         }
         return $this;
     }
@@ -369,7 +365,7 @@ class MysqlQueryBuilder {
         $this->group = null;
         $this->fields = "*";
         $this->order = null;
-        $this->limit = "0,".self::PAGE_SIZE;
+        $this->limit = null;
     }
 
 }
