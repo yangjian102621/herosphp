@@ -24,12 +24,18 @@ class Artisan
             E("Invalid url for {$params['__url__']}");
         }
 
+        // parse the cli url router
         $method = array_pop($urls);
+        if (trim($method) == '') {
+            E("Method can not be empty.");
+        }
         $className = array_pop($urls);
         $className = ucfirst($className).'Action';
         array_push($urls, $className);
         $classPath = implode('\\', $urls);
-        $clazz = new ReflectionClass("cli\\BlogAction");
+
+        // create new instance
+        $clazz = new ReflectionClass($classPath);
         $method = $clazz->getMethod($method);
         $method->invoke($clazz->newInstance());
     }
