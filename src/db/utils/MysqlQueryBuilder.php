@@ -97,7 +97,6 @@ class MysqlQueryBuilder {
      * @param $logic
      */
     public function addWhere($field, $opt=null, $value=null, $logic='AND') {
-
         //如果只有一个参数，则说明追加字符串
         if ( func_num_args() == 1 ) {
             $this->condition->append($field);

@@ -99,9 +99,7 @@ class Mysql {
             $exception = new DBException("SQL错误:" . $e->getMessage(), 500);
             $exception->setCode($e->getCode());
             $exception->setQuery($sql);
-            if ( APP_DEBUG ) {
-                __print($sql);
-            }
+            Log::info($sql, 'sql');
             throw $exception;
         }
         return $result;

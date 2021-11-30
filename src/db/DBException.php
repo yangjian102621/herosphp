@@ -12,7 +12,7 @@ use herosphp\exception\HeroException;
 
 class DBException extends HeroException {
 
-    protected $query;       /* 查询语句 */
+    protected string $query;       /* 查询语句 */
 
     public function __contruct( $message, $code ) {
         parent::__contruct($message, $code);

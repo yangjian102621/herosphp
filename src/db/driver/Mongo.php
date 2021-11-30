@@ -119,7 +119,6 @@ class Mongo {
     {
         $collection = $this->db->selectCollection($table);
         $where = MongoQueryBuilder::where($condition);
-        __print($where);
         $limit = MongoQueryBuilder::limit($limit);
         $sort = MongoQueryBuilder::sort($sort);
         $result = $collection->find($where, MongoQueryBuilder::fields($field));

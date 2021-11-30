@@ -86,8 +86,6 @@ class WebApplication implements IApplication {
         } catch (\Exception $exception) {
             //__print($exception);die();
         }
-        //如果是单元测试，则直接返回
-		if(defined("PHP_UNIT") && PHP_UNIT == true) return;
 
         //invoker 方法调用
         try {

@@ -9,7 +9,7 @@ namespace herosphp\string;
 
 class StringBuffer {
 
-    private $strMap = array();
+    private array $strMap = array();
 
     public function __construct($str=null)
     {
@@ -22,7 +22,6 @@ class StringBuffer {
 
     //append content
     public function append($str=null) {
-
         array_push($this->strMap, $str);
 
     }

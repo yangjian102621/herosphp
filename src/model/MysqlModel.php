@@ -8,6 +8,7 @@
 
 namespace herosphp\model;
 
+use Closure;
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
 use herosphp\db\DBFactory;
@@ -412,7 +413,7 @@ class MysqlModel {
      */
     public function where($field, $opt=null, $value=null) {
         //如果是复杂的组合查询比如 (id=1 AND name='xxx') OR (sex='M' AND add='Beijing')
-        if ( $field instanceof \Closure ) {
+        if ( $field instanceof Closure ) {
             $this->sqlBuilder->sqlAppend(" AND (");
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
@@ -431,7 +432,7 @@ class MysqlModel {
      * @return $this
      */
     public function whereOr($field, $opt=null, $value=null) {
-        if ( $field instanceof \Closure ) {
+        if ( $field instanceof Closure ) {
             $this->sqlBuilder->sqlAppend(" OR (");
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
@@ -514,7 +515,7 @@ class MysqlModel {
      */
     public function having($field, $opt=null, $value) {
 
-        if ( $field instanceof \Closure ) {    //处理闭包
+        if ( $field instanceof Closure ) {    //处理闭包
             $this->sqlBuilder->sqlAppend(" AND (");
             $this->sqlBuilder->enterClosure();
             call_user_func($field);
@@ -534,7 +535,7 @@ class MysqlModel {
      */
     public function havingOr($field, $opt=null, $value) {
 
-        if ( $field instanceof \Closure ) {    //处理闭包
+        if ( $field instanceof Closure ) {    //处理闭包
             $this->sqlBuilder->sqlAppend(" OR (");
             $this->sqlBuilder->enterClosure();
             call_user_func($field);

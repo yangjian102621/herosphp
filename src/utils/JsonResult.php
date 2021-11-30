@@ -85,7 +85,7 @@ class JsonResult {
      * @return JsonResult
      */
     public static function success($message='操作成功') {
-        return new JsonResult(self::CODE_SUCCESS, $message);
+        (new JsonResult(self::CODE_SUCCESS, $message))->output();
     }
 
     /**
@@ -94,7 +94,7 @@ class JsonResult {
      * @return JsonResult
      */
     public static function fail($message='系统开了小差') {
-        return new JsonResult(self::CODE_FAIL, $message);
+        (new JsonResult(self::CODE_FAIL, $message))->output();
     }
 
     /**
