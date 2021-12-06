@@ -37,6 +37,6 @@ class Artisan
         // create new instance
         $clazz = new ReflectionClass($classPath);
         $method = $clazz->getMethod($method);
-        $method->invoke($clazz->newInstance());
+        $method->invoke($clazz->newInstance(), array_slice($params, 2,));
     }
 }

@@ -39,8 +39,10 @@ class BootStrap
     {
         error_reporting(E_ERROR);
         $params = getCliArgs($argv, $argc);
-        if ($params['debug'] == 'true') {
+        if ($params['debug'] == 'true' || $params['debug'] == 1) {
             $_SERVER['debug'] = true;
+        } else {
+            $_SERVER['debug'] = false;
         }
         Artisan::run($params);
     }
