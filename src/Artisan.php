@@ -1,4 +1,5 @@
 <?php
+
 /**
  * client comand line tool
  * ---------------------------------------------------------------------
@@ -8,7 +9,7 @@
 
 namespace herosphp;
 
-use cli\BlogAction;
+use herosphp\core\Loader;
 use ReflectionClass;
 
 class Artisan
@@ -30,7 +31,7 @@ class Artisan
             E("Method can not be empty.");
         }
         $className = array_pop($urls);
-        $className = ucfirst($className).'Action';
+        $className = ucfirst($className) . 'Action';
         array_push($urls, $className);
         $classPath = implode('\\', $urls);
 
