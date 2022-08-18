@@ -1,4 +1,5 @@
 <?php
+
 /**
  * memcache 缓存
  * ---------------------------------------------------------------------
@@ -9,9 +10,11 @@
 namespace herosphp\cache;
 
 use herosphp\cache\interfaces\ICache;
+use herosphp\core\Loader;
 use herosphp\exception\HeroException;
 
-class MemoCache implements ICache {
+class MemoCache implements ICache
+{
 
     /**
      * Memcache 缓存实例
@@ -39,21 +42,22 @@ class MemoCache implements ICache {
      * @param array $configs 缓存配置信息
      * @throws HeroException
      */
-    public function __construct() {
+    public function __construct()
+    {
 
         if (empty($this->configs)) {
             $this->initConfigs();
         }
 
-        if ( !extension_loaded("memcache") ) {
+        if (!extension_loaded("memcache")) {
             E("please install memcache extension.");
         }
         $Mem = new \Memcache();
-        foreach ( $this->configs['server'] as $value ) {
+        foreach ($this->configs['server'] as $value) {
             call_user_func_array(array($Mem, 'addServer'), $value);
         }
-        if ( !$Mem->getstats() ) {
-            if ( APP_DEBUG ) {
+        if (!$Mem->getstats()) {
+            if (APP_DEBUG) {
                 E("Unable to connect the Memcache server!");
             }
         }
@@ -65,9 +69,10 @@ class MemoCache implements ICache {
      * @param string $key
      * @return array|mixed|string
      */
-	public function get( $key ) {
-		return self::$Mem->get(self::KEY_PREFIX.$key);
-	}
+    public function get($key)
+    {
+        return self::$Mem->get(self::KEY_PREFIX . $key);
+    }
 
     /**
      * @see ICache::set()
@@ -76,16 +81,18 @@ class MemoCache implements ICache {
      * @param null $expire
      * @return bool
      */
-	public function set( $key, $content, $expire=0) {
-		return self::$Mem->set(self::KEY_PREFIX.$key, $content, MEMCACHE_COMPRESSED, $expire);
-	}
+    public function set($key, $content, $expire = 0)
+    {
+        return self::$Mem->set(self::KEY_PREFIX . $key, $content, MEMCACHE_COMPRESSED, $expire);
+    }
 
     /**
      * @see    ICache::delete()
      * @param string $key
      * @return bool
      */
-	public function delete( $key ) {
-		return self::$Mem->delete(self::KEY_PREFIX.$key, 0);
-	}
+    public function delete($key)
+    {
+        return self::$Mem->delete(self::KEY_PREFIX . $key, 0);
+    }
 }

@@ -2,7 +2,11 @@
     "name": "herosphp/framework",
     "description": "a lightweight PHP development framework - herosphp Framework",
     "type": "framework",
-    "keywords": ["php framework","herosphp","lightweight"],
+    "keywords": [
+        "php framework",
+        "herosphp",
+        "lightweight"
+    ],
     "homepage": "https://github.com/yangjian102621/herosphp",
     "license": "MIT",
     "authors": [
@@ -12,18 +16,15 @@
         }
     ],
     "require": {
-        "php": "~7.2"
+        "php": "~8.1.2",
+        "workerman/workerman": "dev-master"
     },
-
     "autoload": {
-        "files": [
-            "src/functions.core.php",
-            "src/Heros.const.php"
-        ],
+        "files": [],
         "psr-4": {
-            "herosphp\\" : "src"
+            "herosphp\\": "./src",
+            "app\\": "./App"
         }
     },
-
     "minimum-stability": "dev"
 }
