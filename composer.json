@@ -23,7 +23,7 @@
         "files": [],
         "psr-4": {
             "herosphp\\": "./src",
-            "app\\": "./App"
+            "app\\": "./app"
         }
     },
     "minimum-stability": "dev"
