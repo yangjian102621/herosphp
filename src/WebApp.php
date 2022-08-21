@@ -6,6 +6,8 @@
 // * that can be found in the LICENSE file.
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+declare(strict_types=1);
+
 namespace herosphp;
 
 use app\controller\UserController;
@@ -73,6 +75,5 @@ class WebApp
     $user = new UserController();
     $user->index($request);
     $connection->send('hello world.');
-    Http::requestClass(HttpRequest::class);
   }
 }

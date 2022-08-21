@@ -5,6 +5,8 @@
 // * that can be found in the LICENSE file.
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+declare(strict_types=1);
+
 namespace herosphp\core;
 
 /**

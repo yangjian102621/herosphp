@@ -13,10 +13,9 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) die('require PHP > 5.3.0 !');
 define('FRAME_VERSION', '3.0.0'); //框架版本
 date_default_timezone_set(TIME_ZONE); //设置默认时区
 
+use herosphp\api\RestfulApi;
 use herosphp\core\Loader;
 use herosphp\core\WebApplication;
-use herosphp\api\GeneralApi;
-use herosphp\api\RestfulApi;
 
 class BootStrap
 {
@@ -26,6 +25,10 @@ class BootStrap
      */
     public static function run()
     {
+        if (APP_DEBUG) {
+            error_reporting(ERROR_LEVEL);
+            ini_set("display_errors", "On");
+        }
         //根据环境配置来获取相应的配置
         $appConfigs = Loader::config('app', 'env.' . ENV_CFG);
         $application = WebApplication::getInstance();

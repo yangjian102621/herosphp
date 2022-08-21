@@ -5,6 +5,7 @@
 // * Use of this source code is governed by a MIT-style license
 // * that can be found in the LICENSE file.
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+declare(strict_types=1);
 
 namespace herosphp\core;
 
