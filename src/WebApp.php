@@ -11,11 +11,18 @@ declare(strict_types=1);
 namespace herosphp;
 
 use app\controller\UserController;
+use FastRoute\Dispatcher;
+use FastRoute\RouteCollector;
+use herosphp\annotation\AnnotationParser;
 use herosphp\core\HttpRequest;
 use herosphp\core\Config;
+use herosphp\core\Router;
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
+use Workerman\Protocols\Http\Response;
 use Workerman\Worker;
+
+use function FastRoute\simpleDispatcher;
 
 /**
  * WebApp main program
@@ -29,6 +36,8 @@ class WebApp
 
   // cache for routers
   private static array $_routers;
+
+  protected static Dispatcher $_dispatcher;
 
   // app config
   private static array $_config = [
@@ -68,12 +77,37 @@ class WebApp
 
   public static function onWorkerStart(Worker $worker)
   {
+    // scan the class file and init the router info
+    AnnotationParser::run(APP_PATH, 'app\\');
+
+    static::$_dispatcher = Router::getDispatcher();
   }
 
   public static function onMessage(TcpConnection $connection, HttpRequest $request)
   {
-    $user = new UserController();
-    $user->index($request);
-    $connection->send('hello world.');
+    $routeInfo = static::$_dispatcher->dispatch($request->method(), $request->path());
+    switch ($routeInfo[0]) {
+      case Dispatcher::NOT_FOUND:
+        // ... 404 Not Found
+        break;
+      case Dispatcher::METHOD_NOT_ALLOWED:
+        $allowedMethods = $routeInfo[1];
+        // ... 405 Method Not Allowed 
+        break;
+      case Dispatcher::FOUND:
+        $handler = $routeInfo[1];
+        $vars = $routeInfo[2];
+        // 注入 HttpRequest 参数
+        if (in_array(HttpRequest::class, $handler['params'])) {
+          array_unshift($vars, $request);
+        }
+
+        $res = call_user_func_array(array($handler['obj'], $handler['method']), $vars);
+        $connection->send(new Response(200, [
+          'Content-Type' => 'application/json',
+          'X-Header-One' => 'Header Value'
+        ], $res));
+        break;
+    }
   }
 }
