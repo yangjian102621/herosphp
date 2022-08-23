@@ -27,7 +27,7 @@ use function FastRoute\simpleDispatcher;
 /**
  * WebApp main program
  * 
- * @author RockYang<yangjian102621@163.com>
+ * @author RockYang<yangjian102621@gmail.com>
  */
 class WebApp
 {

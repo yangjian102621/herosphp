@@ -18,7 +18,7 @@ use function FastRoute\simpleDispatcher;
 /**
  * Router class
  * 
- * @author RockYang<yangjian102621@163.com>
+ * @author RockYang<yangjian102621@gmail.com>
  */
 class Router
 {

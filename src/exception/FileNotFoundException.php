@@ -1,14 +1,18 @@
 <?php
-/**
- * File Not Found Exception
- * ---------------------------------------------------------------------
- * @author yangjian<yangjian102621@gmail.com>
- * @since 2013-05 v1.0.0
- */
+
+// * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// * Copyright 2014 The Herosphp Authors. All rights reserved.
+// * Use of this source code is governed by a MIT-style license
+// * that can be found in the LICENSE file.
+// * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+declare(strict_types=1);
 
 namespace herosphp\exception;
 
-class FileNotFoundException extends HeroException {
-
-    const ERROR_CODE = "100";
+/**
+ * @author RockYang<yangjian102621@gmail.com>
+ */
+class FileNotFoundException extends HeroException
+{
 }

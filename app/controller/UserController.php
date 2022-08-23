@@ -13,8 +13,7 @@ class UserController
   #[RequestMap(uri: "/admin/user/{username}/{id}", method: 'GET')]
   public function index(HttpRequest $request, $username, $id)
   {
-    var_dump($username);
-    var_dump($id);
-    return json_encode(['username' => $username, 'id' => $id]);
+    return var_dump_r($username, $id);
+    // return json_encode(['username' => $username, 'id' => $id,  'xxxx' => 1]);
   }
 }

@@ -12,13 +12,14 @@ namespace herosphp\core;
 /**
  * BeanContainer class
  * 
- * @author RockYang<yangjian102621@163.com>
+ * @author RockYang<yangjian102621@gmail.com>
  */
 class BeanContainer
 {
 
   protected static array $_instances = [];
 
+  // get beans
   public static function get(string $name): mixed
   {
     if (isset(static::$_instances[$name])) {
@@ -28,7 +29,18 @@ class BeanContainer
     return null;
   }
 
-  public static function register(string $name, object $value)
+  // register a new instance
+  public static function register(string $name, object $value): void
+  {
+    if (isset(static::$_instances[$name])) {
+      return;
+    }
+
+    static::$_instances[$name] = $value;
+  }
+
+  // add or update a new object
+  public static function put(string $name, object $value): void
   {
     static::$_instances[$name] = $value;
   }

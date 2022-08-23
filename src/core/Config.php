@@ -12,7 +12,7 @@ namespace herosphp\core;
 /**
  * 配置文档解析工具类
  * 
- * @author RockYang<yangjian102621@163.com>
+ * @author RockYang<yangjian102621@gmail.com>
  */
 class Config
 {

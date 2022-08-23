@@ -1,26 +1,33 @@
 <?php
-/**
- * HerosPHP 框架异常处理基类
- * ---------------------------------------------------------------------
- * @author yangjian<yangjian102621@gmail.com>
- * @since 2013-05 v1.0.0
- */
+
+// * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// * Copyright 2014 The Herosphp Authors. All rights reserved.
+// * Use of this source code is governed by a MIT-style license
+// * that can be found in the LICENSE file.
+// * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+declare(strict_types=1);
 
 namespace herosphp\exception;
 
-use Exception;
+use RuntimeException;
 
-class HeroException extends Exception {
+/**
+ * Base exception class for framework
+ * 
+ * @author RockYang<yangjian102621@gmail.com>
+ */
+class HeroException extends RuntimeException
+{
 
-    public function __construct( $message, $code ){
-        parent::__construct($message, $code);
+    public function __construct($message)
+    {
+        $this->message = $message;
     }
 
-    /**
-     * toString方法，用来记录错误日志
-     * @return string
-     */
-    public function toString() {
+
+    public function toString()
+    {
         return parent::__toString();
     }
 }

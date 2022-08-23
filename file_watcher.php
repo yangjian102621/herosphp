@@ -4,7 +4,8 @@ use Workerman\Worker;
 use Workerman\Timer;
 
 // watch Applications catalogue
-$monitor_dir = realpath(__DIR__ . '/src');
+$monitor_dir = realpath(__DIR__ . '/app');
+var_dump($monitor_dir);
 
 // worker
 $worker = new Worker();
@@ -26,7 +27,7 @@ function check_files_change($monitor_dir)
 {
     global $last_mtime;
     // recursive traversal directory
-    $dir_iterator = new RecursiveDirectoryIterator($monitor_dir[0]);
+    $dir_iterator = new RecursiveDirectoryIterator($monitor_dir);
     $iterator = new RecursiveIteratorIterator($dir_iterator);
     foreach ($iterator as $file) {
         // only check php files

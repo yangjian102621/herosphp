@@ -21,7 +21,9 @@
         "nikic/fast-route": "^1.3"
     },
     "autoload": {
-        "files": [],
+        "files": [
+            "src/functions.core.php"
+        ],
         "psr-4": {
             "herosphp\\": "./src",
             "app\\": "./app"

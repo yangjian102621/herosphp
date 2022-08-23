@@ -13,7 +13,7 @@ use Workerman\Protocols\Http\Request;
 
 /**
  * web http 请求封装类
- * @author RockYang<yangjian102621@163.com>
+ * @author RockYang<yangjian102621@gmail.com>
  */
 class HttpRequest extends Request
 {

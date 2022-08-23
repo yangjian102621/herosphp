@@ -14,7 +14,7 @@ use Attribute;
 /**
  * http Post annotation
  * 
- * @author RockYang<yangjian102621@163.com>
+ * @author RockYang<yangjian102621@gmail.com>
  */
 #[Attribute(Attribute::TARGET_METHOD)]
 class Post

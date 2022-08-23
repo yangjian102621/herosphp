@@ -11,15 +11,15 @@ namespace herosphp\annotation;
 
 use herosphp\core\BeanContainer;
 use herosphp\core\Router;
+use herosphp\exception\HeroException;
 use ReflectionClass;
-use RuntimeException;
 
 /**
  * Annotation parser tool class
  * 
  * scan class files in the specified dir, parser the annotation and extract Http-Request-Router and Injected-Beans
  * 
- * @author RockYang<yangjian102621@163.com>
+ * @author RockYang<yangjian102621@gmail.com>
  */
 class AnnotationParser
 {
@@ -104,7 +104,7 @@ class AnnotationParser
 
         $args = $a->getArguments();
         if (!isset($args['uri'])) {
-          throw new RuntimeException("The uri Attribute is needed.");
+          throw new HeroException("The uri Attribute is needed.");
         }
 
         // 处理特殊参数
@@ -122,13 +122,14 @@ class AnnotationParser
             break;
         }
 
-        // 注册路由
+        // get the controller instance
         $obj = BeanContainer::get($clazz->getName());
         if ($obj === null) {
           $obj = $clazz->newInstance();
           BeanContainer::register($clazz->getName(), $obj);
         }
         $handler = ['obj' => $obj, 'method' => $method->getName(), 'params' => $params];
+        // register route
         Router::add($args['uri'], $args['method'], $handler);
       }
     }
