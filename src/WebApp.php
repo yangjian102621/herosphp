@@ -50,7 +50,7 @@ class WebApp
   public static function run(): void
   {
     // loading app configs
-    $config = Config::get('app');
+    $config = Config::getValue('app', 'server');
     if (!empty($config)) {
       static::$_config = array_merge(static::$_config, $config);
     }
@@ -88,11 +88,11 @@ class WebApp
     $routeInfo = static::$_dispatcher->dispatch($request->method(), $request->path());
     switch ($routeInfo[0]) {
       case Dispatcher::NOT_FOUND:
-        // ... 404 Not Found
+        $connection->send('Page not found.');
+        // TODO: consider access the public resources
         break;
       case Dispatcher::METHOD_NOT_ALLOWED:
-        $allowedMethods = $routeInfo[1];
-        // ... 405 Method Not Allowed 
+        $connection->send('Method not allowed.');
         break;
       case Dispatcher::FOUND:
         $handler = $routeInfo[1];

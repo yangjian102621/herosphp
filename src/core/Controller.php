@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 控制器抽象基类, 所有的控制器类都必须继承此类。
  * 每个操作对应一个方法。
@@ -9,7 +10,8 @@
 
 namespace herosphp\core;
 
-abstract class Controller extends Template {
+abstract class Controller extends Template
+{
 
     /**
      * 视图模板名称
@@ -17,16 +19,19 @@ abstract class Controller extends Template {
      */
     private $view = null;
 
-	/**
+    /**
      * 控制器初始化方法，每次请求必须先调用的方法，action子类可以重写这个方法进行页面的初始化
-	 */
-	public function C_start() {}
+     */
+    public function C_start()
+    {
+    }
 
     /**
      * 设置视图模板
      * @param       string      $view      模板名称
      */
-    public function setView( $view ) {
+    public function setView($view)
+    {
         $this->view = $view;
     }
 
@@ -34,7 +39,8 @@ abstract class Controller extends Template {
      * 获取视图
      * @return string
      */
-    public function getView() {
+    public function getView()
+    {
         return $this->view;
     }
 
@@ -43,11 +49,10 @@ abstract class Controller extends Template {
     {
         $liseners = WebApplication::getInstance()->getListeners();
         //调用响应发送后生命周期监听器
-        if ( !empty($liseners) ) {
-            foreach ( $liseners as $listener ) {
+        if (!empty($liseners)) {
+            foreach ($liseners as $listener) {
                 $listener->actionInvokeFinally(WebApplication::getInstance()->getHttpRequest(), $this);
             }
         }
     }
-
 }

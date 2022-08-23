@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace herosphp\core;
 
 /**
- * 配置文档解析工具类
- * 
+ * Config file parser tool class
+ * ----------------------------------------------
  * @author RockYang<yangjian102621@gmail.com>
  */
 class Config
@@ -45,30 +45,6 @@ class Config
     }
 
     return $config[$key];
-  }
-
-  // get all configs 
-  public static function getAll(): array
-  {
-    // scan config dir and loading configs
-    $files = scandir(CONFIG_PATH);
-    foreach ($files as $file) {
-      if ($file === '.' || $file === '..') {
-        continue;
-      }
-
-      $configs = include CONFIG_PATH . $file;
-      $name = str_replace(static::$_extension, '', $file);
-
-      // override configs
-      if (isset(static::$_configs[$name])) {
-        static::$_configs[$name] = array_merge($configs, static::$_configs[$name]);
-      } else {
-        static::$_configs[$name] = $configs;
-      }
-    }
-
-    return static::$_configs;
   }
 
   public static function set($name, $data): void

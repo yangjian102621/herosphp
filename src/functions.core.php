@@ -11,11 +11,11 @@ declare(strict_types=1);
  * 框架公共的常用的全局函数
  * ---------------------------------------------------------------------
  * @author RockYang<yangjian102621@gmail.com>
- * @since v1.2.1
  */
 
 use herosphp\core\Config;
 use herosphp\exception\HeroException;
+use herosphp\utils\Logger;
 
 // get var_dump output and return it as a string
 if (!function_exists('var_dump_r')) {
@@ -64,7 +64,11 @@ if (!function_exists('printWarning')) {
 if (!function_exists('E')) {
     function E($message)
     {
-        throw new HeroException($message);
+        if (getAppConfig('debug')) {
+            throw new HeroException($message);
+        } else if (getAppConfig('log')) {
+            Logger::error($message);
+        }
     }
 }
 
