@@ -14,7 +14,7 @@ return [
   'server' => array(
     'listen' => 'http://0.0.0.0:2345',
     'context' => [],
-    'worker_count' => 4,
+    'worker_count' => 1,
     'reloadable' => 'true',
   ),
 ];

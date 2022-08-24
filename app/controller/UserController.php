@@ -6,10 +6,12 @@ use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
 use herosphp\annotation\Post;
 use herosphp\annotation\RequestMap;
+use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
+use Workerman\Protocols\Http\Response;
 
 #[Controller(IndexAction::class)]
-class UserController
+class UserController extends BaseController
 {
 
   #[RequestMap(uri: "/admin/user/{username}/{id}", method: 'GET')]
@@ -20,8 +22,8 @@ class UserController
   }
 
   #[Get(uri: "/user/add")]
-  public function get(HttpRequest $request)
+  public function get(HttpRequest $request): Response
   {
-    return var_dump_r($request);
+    return $this->jsonView(0, ['hello' => 'world']);
   }
 }

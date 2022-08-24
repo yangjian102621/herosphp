@@ -10,7 +10,9 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
-use herosphp\files\FileUtils;
+use herosphp\exception\FileNotFoundException;
+use herosphp\exception\HeroException;
+use herosphp\utils\FileUtils;
 
 /**
  * 模板编译类,将数据模型导入到模板并输出。
@@ -19,92 +21,61 @@ use herosphp\files\FileUtils;
  */
 class Template
 {
-    // 通过 assign 函数注册的变量临时存放数组
-    private array $_temp_var = [];
-
-    // 模板目录
+    // template root dir
     private string $_temp_dir = "";
 
-    // 编译目录
+    // complile root dir
     private string $_compile_dir = "";
 
-    // 是否开启编译缓存
+    // switch for template cache
     private static bool $_cache = true;
 
-    // 模板编译规则
+    // template compile rules
     private static array $_temp_rules = array(
-        /**
-         * 输出变量,数组
-         * {$varname}, {$array['key']}
-         */
+
+        // {$var}, {$array['key']}
         '/{\$([^\}|\.]{1,})}/i' => '<?php echo \$${1}?>',
-        /**
-         * 以 {$array.key} 形式输出一维数组元素
-         */
+
+        // array: {$array.key}
         '/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i'    => '<?php echo \$${1}[\'${2}\']?>',
-        /**
-         * 以 {$array.key1.key2} 形式输出二维数组
-         */
+
+        // two-demensional array
         '/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i'    => '<?php echo \$${1}[\'${2}\'][\'${3}\']?>',
 
-        //for 循环
+        // for loop
         '/{for ([^\}]+)}/i'    => '<?php for ${1} {?>',
         '/{\/for}/i'    => '<?php } ?>',
 
-        /**
-         * foreach key => value 形式循环输出
-         * foreach ( $array as $key => $value )
-         */
+        // foreach ( $array as $key => $value )
         '/{loop\s+\$([^\}]{1,})\s+\$([^\}]{1,})\s+\$([^\}]{1,})\s*}/i'   => '<?php foreach ( \$${1} as \$${2} => \$${3} ) { ?>',
         '/{\/loop}/i'    => '<?php } ?>',
 
-        /**
-         * foreach 输出
-         * foreach ( $array as $value )
-         */
+        // foreach ( $array as $value )
         '/{loop\s+\$(.*?)\s+\$([0-9a-z_]{1,})\s*}/i'    => '<?php foreach ( \$${1} as \$${2} ) { ?>',
         '/{\/loop}/i'    => '<?php } ?>',
 
-        /**
-         * {expr}标签： 执行php表达式
-         * {echo}标签：输出php表达式
-         * {url}标签：输出格式化的url
-         * {date}标签：根据时间戳输出格式化日期
-         * {cut}标签：裁剪字指定长度的字符串,注意截取的格式是UTF-8,多余的字符会用...表示
-         */
+        // expr: excute the php expression
+        // echo: print the php expression
         '/{expr\s+(.*?)}/i'   => '<?php ${1} ?>',
         '/{echo\s+(.*?)}/i'   => '<?php echo ${1} ?>',
-        '/{date\s+(.*?)(\s+(.*?))?}/i'   => '<?php echo $this->getDate(${1}, "${2}") ?>',
-        '/{cut\s+(.*?)(\s+(.*?))?}/i'   => '<?php echo $this->cutString(${1}, "${2}") ?>',
 
-        /**
-         * if语句标签
-         * if () {} elseif {}
-         */
+        // if else tag
         '/{if\s+(.*?)}/i'   => '<?php if ( ${1} ) { ?>',
         '/{else}/i'   => '<?php } else { ?>',
         '/{elseif\s+(.*?)}/i'   => '<?php } elseif ( ${1} ) { ?>',
         '/{\/if}/i'    => '<?php } ?>',
 
-        /**
-         * 导入模板
-         * require|include
-         */
+        // require|include tag
         '/{(require|include)\s{1,}([0-9a-z_\.\:]{1,})\s*}/i'
         => '<?php include $this->getIncludePath(\'${2}\')?>',
 
-        '/{(res)\s+([^\}]+)\s*}/i'
-        => '<?php echo $this->getResourceURL(\'${2}\')?>',
-
-        /**
-         * 引入静态资源 css file,javascript file
-         */
+        // tag to import css file,javascript file
         '/{(res):([a-z]{1,})\s+([^\}]+)\s*}/i'
         => '<?php echo $this->importResource(\'${2}\', "${3}")?>'
     );
 
 
-    // 静态资源模板
+    // static resource
     private static array $_res_temp = [
         'css'    => "<link rel=\"stylesheet\" type=\"text/css\" href=\"{url}\" />\n",
         'less'    => "<link rel=\"stylesheet/less\" type=\"text/css\" href=\"{url}\" />\n",
@@ -115,8 +86,11 @@ class Template
     public function __construct()
     {
         $configs = Config::getValue('app', 'template');
-        $this->addRules($configs['rules']);
         $skin = $configs['skin'];
+
+        if (!empty($configs['rules'])) {
+            $this->addRules($configs['rules']);
+        }
 
         $debug = Config::getValue('app', 'debug');
         if ($debug == true) {
@@ -129,11 +103,8 @@ class Template
         $this->_compile_dir = RUNTIME_PATH . "views/{$skin}/";
     }
 
-    /**
-     * 增加模板替换规则
-     * @param array $rules
-     */
-    public  function addRules(array $rules): void
+    // add new template rules
+    protected  function addRules(array $rules): void
     {
         if (is_array($rules) && !empty($rules)) {
             static::$_temp_rules = array_merge(static::$_temp_rules, $rules);
@@ -153,7 +124,7 @@ class Template
         // compile template 
         $content = @file_get_contents($tempFile);
         if ($content === false) {
-            E("加载模板文件 {" . $tempFile . "} 失败！请在相应的目录建立模板文件。");
+            E("failed to load template file {$tempFile}");
         }
         $content = preg_replace(array_keys(static::$_temp_rules), static::$_temp_rules, $content);
 
@@ -164,33 +135,12 @@ class Template
 
         // create compile file
         if (!file_put_contents($compileFile, $content, LOCK_EX)) {
-            E("生成编译文件 {$compileFile} 失败。");
+            E("failed to create compiled file {$compileFile}");
         }
     }
 
-    /**
-     * extract template vars and render template content
-     */
-    public function display(string $tempFile): void
-    {
-        if (empty($tempFile)) {
-            return;
-        }
-
-        $compileFile = $tempFile . '.php';
-        if (file_exists($this->_temp_dir . $tempFile)) {
-            $this->complieTemplate($this->_temp_dir . $tempFile, $this->_compile_dir . $compileFile);
-            extract($this->_temp_var);    // extract the temp vars
-            include $this->_compile_dir . $compileFile;
-        } else {
-            E("要编译的模板[" . $this->_temp_dir . $tempFile . "] 不存在！");
-        }
-    }
-
-    /**
-     * 获取被包含模板的路径，路径使用 . 替代 /, 如: user.profile => user/profile.html
-     */
-    public function getIncludePath($tempPath = null): string
+    // 获取被包含模板的路径，路径使用 . 替代 /, 如: user.profile => user/profile.html
+    protected function getIncludePath($tempPath = null): string
     {
         if (empty($tempPath)) {
             return '';
@@ -204,57 +154,32 @@ class Template
         return $compileFile;
     }
 
-    /**
-     * 获取日期
-     * @param $time
-     * @param $format
-     * @return string
-     */
-    private function _getDate($time, $format)
-    {
 
-        if (!$time) return '';
-        if (!$format) $format = 'Y-m-d H:i:s';
-        return date($format, $time);
-    }
-
-    /**
-     * 裁剪字符串，使用utf-8编码裁剪
-     * @param $str 要裁剪的字符串
-     * @param $length 字符串长度
-     * @return string
-     */
-    private function _cutString($str, $length)
-    {
-
-        if (mb_strlen($str, 'UTF-8') <= $length) {
-            return $str;
-        }
-        return mb_substr($str, 0, $length, 'UTF-8') . '...';
-    }
-
-    /**
-     * 引进静态资源如css，js
-     * @param string $type 资源类别
-     * @param string $path 资源路径
-     * @return string
-     */
-    public function importResource($type, $path)
+    protected function importResource($type, $path)
     {
         $template = static::$_res_temp[$type];
         $result = str_replace('{url}', $path, $template);
         return $result;
     }
 
-    /**
-     * 获取页面执行后的代码
-     * @param	string $tempFile
-     * @return	string $html
-     */
-    public function &getExecutedHtml($tempFile)
+    // 获取页面执行后的代码
+    protected function &getExecutedHtml($tempFile, $tempVar): string
     {
+        if (empty($_tempFile)) {
+            return '';
+        }
+
+        $tempFile = $this->_temp_dir . $_tempFile;
+        $compileFile = $this->_compile_dir . $_tempFile . '.php';
+        if (!file_exists($tempFile)) {
+            E("template file {$tempFile} not found.");
+        }
+
         ob_start();
-        $this->display($tempFile);
+        $this->complieTemplate($tempFile, $compileFile);
+        extract($tempVar);
+        include $compileFile;
+
         $html = ob_get_contents();
         ob_end_clean();
         return  $html;

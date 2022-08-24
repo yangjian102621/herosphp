@@ -87,6 +87,27 @@ class AnnotationParser
   public static function parseController(ReflectionClass $clazz)
   {
     foreach ($clazz->getMethods() as $method) {
+      if (!$method->isPublic()) {
+        continue;
+      }
+
+      $attrs = $method->getAttributes();
+      if (empty($attrs)) {
+        continue;
+      }
+
+      $attrs = $method->getAttributes(RequestMap::class);
+      if (empty($attrs)) {
+        $attrs = $method->getAttributes(Post::class);
+      }
+      if (empty($attrs)) {
+        $attrs = $method->getAttributes(Get::class);
+      }
+      if (empty($attrs)) {
+        continue;
+      }
+
+      $attr = $attrs[0];
       $params = [];
       foreach ($method->getParameters() as $p) {
         $t = $p->getType()?->getName();
@@ -95,43 +116,35 @@ class AnnotationParser
         }
       }
 
-      $attrs = $method->getAttributes();
-      foreach ($attrs as $a) {
-        // 过滤非路由注解
-        if (!in_array($a->getName(), static::$_route)) {
-          continue;
-        }
-
-        $args = $a->getArguments();
-        if (!isset($args['uri'])) {
-          throw new HeroException("The uri Attribute is needed.");
-        }
-
-        // 处理特殊参数
-        switch ($a->getName()) {
-          case RequestMap::class:
-            if (strtoupper($args['method']) === 'ANY') {
-              $args['method'] = static::$_http_method_any;
-            }
-            break;
-          case Post::class:
-            $args['method'] = 'POST';
-            break;
-          case Get::class:
-            $args['method'] = 'GET';
-            break;
-        }
-
-        // get the controller instance
-        $obj = BeanContainer::get($clazz->getName());
-        if ($obj === null) {
-          $obj = $clazz->newInstance();
-          BeanContainer::register($clazz->getName(), $obj);
-        }
-        $handler = ['obj' => $obj, 'method' => $method->getName(), 'params' => $params];
-        // register route
-        Router::add($args['uri'], $args['method'], $handler);
+      $args = $attr->getArguments();
+      if (!isset($args['uri'])) {
+        throw new HeroException("The uri Attribute is needed.");
       }
+
+      // 处理特殊参数
+      switch ($attr->getName()) {
+        case RequestMap::class:
+          if (strtoupper($args['method']) === 'ANY') {
+            $args['method'] = static::$_http_method_any;
+          }
+          break;
+        case Post::class:
+          $args['method'] = 'POST';
+          break;
+        case Get::class:
+          $args['method'] = 'GET';
+          break;
+      }
+
+      // get the controller instance
+      $obj = BeanContainer::get($clazz->getName());
+      if ($obj === null) {
+        $obj = $clazz->newInstance();
+        BeanContainer::register($clazz->getName(), $obj);
+      }
+      $handler = ['obj' => $obj, 'method' => $method->getName(), 'params' => $params];
+      // register route
+      Router::add($args['uri'], $args['method'], $handler);
     }
   }
 }

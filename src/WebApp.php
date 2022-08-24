@@ -17,6 +17,8 @@ use herosphp\annotation\AnnotationParser;
 use herosphp\core\HttpRequest;
 use herosphp\core\Config;
 use herosphp\core\Router;
+use herosphp\utils\Logger;
+use RuntimeException;
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
 use Workerman\Protocols\Http\Response;
@@ -85,29 +87,38 @@ class WebApp
 
   public static function onMessage(TcpConnection $connection, HttpRequest $request)
   {
-    $routeInfo = static::$_dispatcher->dispatch($request->method(), $request->path());
-    switch ($routeInfo[0]) {
-      case Dispatcher::NOT_FOUND:
-        $connection->send('Page not found.');
-        // TODO: consider access the public resources
-        break;
-      case Dispatcher::METHOD_NOT_ALLOWED:
-        $connection->send('Method not allowed.');
-        break;
-      case Dispatcher::FOUND:
-        $handler = $routeInfo[1];
-        $vars = $routeInfo[2];
-        // 注入 HttpRequest 参数
-        if (in_array(HttpRequest::class, $handler['params'])) {
-          array_unshift($vars, $request);
-        }
+    try {
+      $routeInfo = static::$_dispatcher->dispatch($request->method(), $request->path());
+      switch ($routeInfo[0]) {
+        case Dispatcher::NOT_FOUND:
+          $connection->send(static::response(404, 'Page not found.'));
+          // TODO: consider access the public resources
+          break;
+        case Dispatcher::METHOD_NOT_ALLOWED:
+          $connection->send(static::response(405, 'Method not allowed.'));
+          break;
+        case Dispatcher::FOUND:
+          $handler = $routeInfo[1];
+          $vars = $routeInfo[2];
+          // 注入 HttpRequest 参数
+          if (in_array(HttpRequest::class, $handler['params'])) {
+            array_unshift($vars, $request);
+          }
 
-        $res = call_user_func_array(array($handler['obj'], $handler['method']), $vars);
-        $connection->send(new Response(200, [
-          'Content-Type' => 'application/json',
-          'X-Header-One' => 'Header Value'
-        ], $res));
-        break;
+          $res = call_user_func_array(array($handler['obj'], $handler['method']), $vars);
+          $connection->send($res);
+          break;
+      }
+    } catch (RuntimeException $e) {
+      $connection->send(static::response(500, '系统开小差了'));
+      if (getAppConfig('log') === true) {
+        Logger::error($e);
+      }
     }
+  }
+
+  public static function response(int $code, string $body): Response
+  {
+    return new Response(status: $code, body: $body);
   }
 }

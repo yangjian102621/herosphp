@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 模型转换工具
  * -----------------
@@ -8,9 +9,9 @@
 
 namespace herosphp\utils;
 
-use herosphp\core\Loader;
 use herosphp\exception\HeroException;
 use herosphp\string\StringUtils;
+use ReflectionClass;
 
 class ModelTransformUtils
 {
@@ -21,11 +22,12 @@ class ModelTransformUtils
      * @return object|void
      * @throws HeroException
      */
-    public static function map2Model($class, $map) {
-        if( !$map ) return;
+    public static function map2Model($class, $map)
+    {
+        if (!$map) return;
         //字符串类路径
-        if( is_string($class) ) {
-            $refClass = new \ReflectionClass($class);
+        if (is_string($class)) {
+            $refClass = new ReflectionClass($class);
             $obj = $refClass->newInstance();
         } else {    //安装对象
             $obj = $class;
@@ -33,9 +35,9 @@ class ModelTransformUtils
         }
         $methodName = NULL;
         $method = NULL;
-        foreach( $map as $key => $value ) {
+        foreach ($map as $key => $value) {
             $methodName = "set" . ucwords(StringUtils::underline2hump($key));
-            if( $refClass->hasMethod($methodName )){
+            if ($refClass->hasMethod($methodName)) {
                 $method = $refClass->getMethod($methodName);
                 try {
                     $method->invoke($obj, $map[$key]);
@@ -53,17 +55,18 @@ class ModelTransformUtils
      * @return array
      * @throws HeroException
      */
-    public static function model2Map($model) {
+    public static function model2Map($model)
+    {
 
         $refClass = new \ReflectionClass($model);
         $properties = $refClass->getProperties();
         $map = array();
-        foreach ( $properties as $value ) {
+        foreach ($properties as $value) {
             $property = $value->getName();
-            if ( strpos($property, '_') ) {
+            if (strpos($property, '_')) {
                 $property = StringUtils::underline2hump($property); //转换成驼锋格式
             }
-            $method = 'get'.ucfirst($property);
+            $method = 'get' . ucfirst($property);
             $map[$property] = $model->$method();
         }
         return $map;
