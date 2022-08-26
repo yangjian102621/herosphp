@@ -14,14 +14,14 @@ use Workerman\Protocols\Http\Response;
 class UserController extends BaseController
 {
 
-  #[RequestMap(uri: "/admin/user/{username}/{id}", method: 'GET')]
+  #[RequestMap(uri: '/admin/user/{username}/{id}', method: 'GET')]
   public function index(HttpRequest $request, $username, $id)
   {
     return var_dump_r($username, $id, $request);
     // return json_encode(['username' => $username, 'id' => $id,  'xxxx' => 1]);
   }
 
-  #[Get(uri: "/user/add")]
+  #[Get(uri: ['/user/get', '/user/fetch'])]
   public function get(HttpRequest $request): Response
   {
     return $this->jsonView(0, ['hello' => 'world']);

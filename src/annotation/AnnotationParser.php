@@ -144,7 +144,13 @@ class AnnotationParser
       }
       $handler = ['obj' => $obj, 'method' => $method->getName(), 'params' => $params];
       // register route
-      Router::add($args['uri'], $args['method'], $handler);
+      if (is_array($args['uri'])) {
+        foreach ($args['uri'] as $val) {
+          Router::add($val, $args['method'], $handler);
+        }
+      } else {
+        Router::add($args['uri'], $args['method'], $handler);
+      }
     }
   }
 }

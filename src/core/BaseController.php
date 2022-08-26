@@ -24,10 +24,7 @@ use Workerman\Protocols\Http\Response;
 abstract class BaseController extends Template
 {
 
-    /**
-     * 控制器初始化方法，每次请求必须先调用的方法，action子类可以重写这个方法进行页面的初始化
-     */
-    protected function C_start()
+    protected function init()
     {
     }
 
