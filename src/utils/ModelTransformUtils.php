@@ -24,7 +24,9 @@ class ModelTransformUtils
      */
     public static function map2Model($class, $map)
     {
-        if (!$map) return;
+        if (!$map) {
+            return;
+        }
         //字符串类路径
         if (is_string($class)) {
             $refClass = new ReflectionClass($class);
@@ -33,10 +35,10 @@ class ModelTransformUtils
             $obj = $class;
             $refClass = new ReflectionClass($obj);
         }
-        $methodName = NULL;
-        $method = NULL;
+        $methodName = null;
+        $method = null;
         foreach ($map as $key => $value) {
-            $methodName = "set" . ucwords(StringUtils::underline2hump($key));
+            $methodName = 'set' . ucwords(StringUtils::underline2hump($key));
             if ($refClass->hasMethod($methodName)) {
                 $method = $refClass->getMethod($methodName);
                 try {
@@ -57,10 +59,9 @@ class ModelTransformUtils
      */
     public static function model2Map($model)
     {
-
         $refClass = new \ReflectionClass($model);
         $properties = $refClass->getProperties();
-        $map = array();
+        $map = [];
         foreach ($properties as $value) {
             $property = $value->getName();
             if (strpos($property, '_')) {

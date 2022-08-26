@@ -9,7 +9,6 @@
 
 namespace herosphp;
 
-use herosphp\core\Loader;
 use ReflectionClass;
 
 class Artisan
@@ -28,7 +27,7 @@ class Artisan
         // parse the cli url router
         $method = array_pop($urls);
         if (trim($method) == '') {
-            E("Method can not be empty.");
+            E('Method can not be empty.');
         }
         $className = array_pop($urls);
         $className = ucfirst($className) . 'Action';
@@ -38,6 +37,6 @@ class Artisan
         // create new instance
         $clazz = new ReflectionClass($classPath);
         $method = $clazz->getMethod($method);
-        $method->invoke($clazz->newInstance(), array_slice($params, 2,));
+        $method->invoke($clazz->newInstance(), array_slice($params, 2, ));
     }
 }

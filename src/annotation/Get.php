@@ -1,4 +1,5 @@
 <?php
+
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // * Copyright 2014 The Herosphp Authors. All rights reserved.
 // * Use of this source code is governed by a MIT-style license
@@ -13,13 +14,13 @@ use Attribute;
 
 /**
  * http Get annotation
- * 
+ *
  * @author RockYang<yangjian102621@gmail.com>
  */
 #[Attribute(Attribute::TARGET_METHOD)]
 class Get
 {
-  public function __construct(public string|array $uri, public string $desc)
-  {
-  }
+    public function __construct(public string|array $uri, public string $desc)
+    {
+    }
 }

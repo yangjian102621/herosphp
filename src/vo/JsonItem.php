@@ -1,4 +1,5 @@
 <?php
+
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // * Copyright 2014 The Herosphp Authors. All rights reserved.
 // * Use of this source code is governed by a MIT-style license
@@ -12,7 +13,9 @@ namespace herosphp\vo;
 class JsonItem implements JsonVo
 {
     public int $code;
+
     public string $message;
+
     public mixed $data;
 
     public function __construct(int $code, string $message, mixed $data)
@@ -29,10 +32,10 @@ class JsonItem implements JsonVo
 
     public function toString(): string
     {
-        return json_encode(array(
+        return json_encode([
             'code' => $this->code,
             'message' => $this->message,
             'data' => $this->data
-        ));
+        ]);
     }
 }

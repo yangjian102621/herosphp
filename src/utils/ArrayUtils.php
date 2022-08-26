@@ -6,19 +6,23 @@
  * @author yangjian<yangjian102621@gmail.com>
  * @since v1.2.1
  */
+
 namespace herosphp\utils;
 
-class ArrayUtils {
-
+class ArrayUtils
+{
     /**
      * 更改hash数组的key值, 注意：如果key不唯一则会产生覆盖
      * @param           array $array
      * @param           string $key
      * @return          array
      */
-    public static function &changeArrayKey( &$array, $key='id' ) {
-        $newArray = array();
-        foreach ( $array as $value ) $newArray[$value[$key]] = $value;
+    public static function &changeArrayKey(&$array, $key = 'id')
+    {
+        $newArray = [];
+        foreach ($array as $value) {
+            $newArray[$value[$key]] = $value;
+        }
         return $newArray;
     }
 
@@ -30,15 +34,14 @@ class ArrayUtils {
      * @param   array $array 被筛选的数组
      * @return  array
      */
-    public static function &filterArrayByKey( $key, $val, &$array ) {
-
-        $newArray = array();
-        foreach ( $array as $value ) {
-
-            if ( $value[$key]  == $val
-                || (is_array($val) && in_array($value[$key], $val)) )
+    public static function &filterArrayByKey($key, $val, &$array)
+    {
+        $newArray = [];
+        foreach ($array as $value) {
+            if ($value[$key] == $val
+                || (is_array($val) && in_array($value[$key], $val))) {
                 $newArray[] = $value;
-
+            }
         }
         return $newArray;
     }
@@ -48,8 +51,9 @@ class ArrayUtils {
      * @param $data
      * @return bool
      */
-    public static function isSerializedArray( $data ) {
-        $data = trim( $data );
+    public static function isSerializedArray($data)
+    {
+        $data = trim($data);
         return (unserialize($data) != false);
     }
 
@@ -59,11 +63,12 @@ class ArrayUtils {
      * @param $key
      * @return array
      */
-    public static function arrayGroup($arr, $key){
+    public static function arrayGroup($arr, $key)
+    {
         $result = [];
-        foreach($arr as $k=>$v){
+        foreach ($arr as $k => $v) {
             $result[$v[$key]][] = $v;
         }
         return $result;
     }
-} 
+}

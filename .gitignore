@@ -8,3 +8,4 @@ runtime
 /composer.lock
 /vendor
 res/upload
+.php-cs-fixer.cache

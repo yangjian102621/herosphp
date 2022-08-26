@@ -17,7 +17,7 @@ $worker->onWorkerStart = function () use ($monitor_dir) {
     //     global $monitor_dir;
     // watch files only in daemon mode
     if (!Worker::$daemonize) {
-        // chek mtime of files per second 
+        // chek mtime of files per second
         Timer::add(1, 'check_files_change', array($monitor_dir));
     }
 };

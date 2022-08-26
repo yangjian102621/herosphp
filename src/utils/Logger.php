@@ -1,4 +1,5 @@
 <?php
+
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // * Copyright 2014 The Herosphp Authors. All rights reserved.
 // * Use of this source code is governed by a MIT-style license
@@ -29,7 +30,6 @@ class Logger
         }
     }
 
-
     public static function info($message): bool
     {
         if (is_object($message)) {
@@ -38,10 +38,9 @@ class Logger
             $message = json_encode($message);
         }
 
-        $log_file = static::$_log_dir . date("Y-m-d") . 'log';
+        $log_file = static::$_log_dir . date('Y-m-d') . 'log';
         return file_put_contents($log_file, '[' . date('Y-m-d H:i:s') . '] [INFO] ' . $message . "\n", FILE_APPEND);
     }
-
 
     public static function warn($message): bool
     {
@@ -51,10 +50,9 @@ class Logger
             $message = json_encode($message);
         }
 
-        $log_file = static::$_log_dir . date("Y-m-d") . 'log';
+        $log_file = static::$_log_dir . date('Y-m-d') . 'log';
         return file_put_contents($log_file, '[' . date('Y-m-d H:i:s') . '] [WARN] ' . $message . "\n", FILE_APPEND);
     }
-
 
     public static function error($message): bool
     {
@@ -66,7 +64,7 @@ class Logger
             $message = json_encode($message);
         }
 
-        $log_file = static::$_log_dir . date("Y-m-d") . 'log';
+        $log_file = static::$_log_dir . date('Y-m-d') . 'log';
         return file_put_contents($log_file, '[' . date('Y-m-d H:i:s') . '] [ERROR] ' . $message . "\n", FILE_APPEND);
     }
 }

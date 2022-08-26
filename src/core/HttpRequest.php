@@ -12,7 +12,7 @@ namespace herosphp\core;
 use Workerman\Protocols\Http\Request;
 
 /**
- * web http 请求封装类
+ * web http request wrapper class
  * @author RockYang<yangjian102621@gmail.com>
  */
 class HttpRequest extends Request

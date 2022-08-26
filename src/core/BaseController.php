@@ -1,4 +1,5 @@
 <?php
+
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // * Copyright 2014 The Herosphp Authors. All rights reserved.
 // * Use of this source code is governed by a MIT-style license
@@ -16,34 +17,31 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
-use herosphp\utils\JsonResult;
 use herosphp\vo\JsonItem;
 use herosphp\vo\JsonVo;
-use Workerman\Protocols\Http\Response;
 
 abstract class BaseController extends Template
 {
-
     protected function init()
     {
     }
 
-    protected function view(string $template, array $data): Response
+    protected function view(string $template, array $data): HttpResponse
     {
         $html = $this->getExecutedHtml($template, $data);
-        return new Response(200, ['Content-Type' => 'text/html'], $html);
+        return new HttpResponse(200, ['Content-Type' => 'text/html'], $html);
     }
 
-    protected function jsonView(int $code, array|JsonVo $data): Response
+    protected function jsonView(int $code, array|JsonVo $data): HttpResponse
     {
         if (is_array($data)) {
-            return new Response(200, [
+            return new HttpResponse(200, [
                 'Content-Type' => 'application/json'
             ], JsonItem::create($code, '', $data)->toString());
-        } else if ($data instanceof JsonVo) {
-            return new Response(200, ['Content-Type' => 'application/json'], $data->toString());
+        } elseif ($data instanceof JsonVo) {
+            return new HttpResponse(200, ['Content-Type' => 'application/json'], $data->toString());
         }
 
-        return new Response(200, [], '');
+        return new HttpResponse(200, [], '');
     }
 }

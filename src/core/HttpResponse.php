@@ -5,22 +5,16 @@
 // * Use of this source code is governed by a MIT-style license
 // * that can be found in the LICENSE file.
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 declare(strict_types=1);
 
-namespace herosphp\annotation;
+namespace herosphp\core;
 
-use Attribute;
+use Workerman\Protocols\Http\Response;
 
 /**
- * RequestMap annotation
- *
+ * web http response wrapper class
  * @author RockYang<yangjian102621@gmail.com>
  */
-#[Attribute(Attribute::TARGET_METHOD)]
-class RequestMap
+class HttpResponse extends Response
 {
-    public function __construct(public string|array $uri, public string|array $method, public string $desc)
-    {
-    }
 }

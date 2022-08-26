@@ -1,4 +1,5 @@
 <?php
+
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // * Copyright 2014 The Herosphp Authors. All rights reserved.
 // * Use of this source code is governed by a MIT-style license
@@ -12,13 +13,18 @@ namespace herosphp\vo;
 class JsonList implements JsonVo
 {
     public int $code = 0;
-    public string $message;
-    public array $items = [];
-    public int $total = 0;
-    public int $page = 1;
-    public int $page_size = 10;
-    public mixed $extra_data;
 
+    public string $message;
+
+    public array $items = [];
+
+    public int $total = 0;
+
+    public int $page = 1;
+
+    public int $page_size = 10;
+
+    public mixed $extra_data;
 
     public function __construct(int $code, string $message, mixed $items)
     {
@@ -34,7 +40,7 @@ class JsonList implements JsonVo
 
     public function toString(): string
     {
-        return json_encode(array(
+        return json_encode([
             'code' => $this->code,
             'message' => $this->message,
             'items' => $this->items,
@@ -42,6 +48,6 @@ class JsonList implements JsonVo
             'page' => $this->page,
             'page_size' => $this->page_size,
             'extra_data' => $this->extra_data
-        ));
+        ]);
     }
 }

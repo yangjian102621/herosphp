@@ -14,17 +14,15 @@ use RuntimeException;
 
 /**
  * Base exception class for framework
- * 
+ *
  * @author RockYang<yangjian102621@gmail.com>
  */
 class HeroException extends RuntimeException
 {
-
     public function __construct($message)
     {
         $this->message = $message;
     }
-
 
     public function toString()
     {

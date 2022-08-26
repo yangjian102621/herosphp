@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
-use herosphp\exception\FileNotFoundException;
-use herosphp\exception\HeroException;
 use herosphp\utils\FileUtils;
 
 /**
@@ -22,48 +20,48 @@ use herosphp\utils\FileUtils;
 class Template
 {
     // template root dir
-    private string $_temp_dir = "";
+    private string $_temp_dir = '';
 
     // complile root dir
-    private string $_compile_dir = "";
+    private string $_compile_dir = '';
 
     // switch for template cache
     private static bool $_cache = true;
 
     // template compile rules
-    private static array $_temp_rules = array(
+    private static array $_temp_rules = [
 
         // {$var}, {$array['key']}
         '/{\$([^\}|\.]{1,})}/i' => '<?php echo \$${1}?>',
 
         // array: {$array.key}
-        '/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i'    => '<?php echo \$${1}[\'${2}\']?>',
+        '/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i' => '<?php echo \$${1}[\'${2}\']?>',
 
         // two-demensional array
-        '/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i'    => '<?php echo \$${1}[\'${2}\'][\'${3}\']?>',
+        '/{\$([0-9a-z_]{1,})\.([0-9a-z_]{1,})\.([0-9a-z_]{1,})}/i' => '<?php echo \$${1}[\'${2}\'][\'${3}\']?>',
 
         // for loop
-        '/{for ([^\}]+)}/i'    => '<?php for ${1} {?>',
-        '/{\/for}/i'    => '<?php } ?>',
+        '/{for ([^\}]+)}/i' => '<?php for ${1} {?>',
+        '/{\/for}/i' => '<?php } ?>',
 
         // foreach ( $array as $key => $value )
-        '/{loop\s+\$([^\}]{1,})\s+\$([^\}]{1,})\s+\$([^\}]{1,})\s*}/i'   => '<?php foreach ( \$${1} as \$${2} => \$${3} ) { ?>',
-        '/{\/loop}/i'    => '<?php } ?>',
+        '/{loop\s+\$([^\}]{1,})\s+\$([^\}]{1,})\s+\$([^\}]{1,})\s*}/i' => '<?php foreach ( \$${1} as \$${2} => \$${3} ) { ?>',
+        '/{\/loop}/i' => '<?php } ?>',
 
         // foreach ( $array as $value )
-        '/{loop\s+\$(.*?)\s+\$([0-9a-z_]{1,})\s*}/i'    => '<?php foreach ( \$${1} as \$${2} ) { ?>',
-        '/{\/loop}/i'    => '<?php } ?>',
+        '/{loop\s+\$(.*?)\s+\$([0-9a-z_]{1,})\s*}/i' => '<?php foreach ( \$${1} as \$${2} ) { ?>',
+        '/{\/loop}/i' => '<?php } ?>',
 
         // expr: excute the php expression
         // echo: print the php expression
-        '/{expr\s+(.*?)}/i'   => '<?php ${1} ?>',
-        '/{echo\s+(.*?)}/i'   => '<?php echo ${1} ?>',
+        '/{expr\s+(.*?)}/i' => '<?php ${1} ?>',
+        '/{echo\s+(.*?)}/i' => '<?php echo ${1} ?>',
 
         // if else tag
-        '/{if\s+(.*?)}/i'   => '<?php if ( ${1} ) { ?>',
-        '/{else}/i'   => '<?php } else { ?>',
-        '/{elseif\s+(.*?)}/i'   => '<?php } elseif ( ${1} ) { ?>',
-        '/{\/if}/i'    => '<?php } ?>',
+        '/{if\s+(.*?)}/i' => '<?php if ( ${1} ) { ?>',
+        '/{else}/i' => '<?php } else { ?>',
+        '/{elseif\s+(.*?)}/i' => '<?php } elseif ( ${1} ) { ?>',
+        '/{\/if}/i' => '<?php } ?>',
 
         // require|include tag
         '/{(require|include)\s{1,}([0-9a-z_\.\:]{1,})\s*}/i'
@@ -72,16 +70,14 @@ class Template
         // tag to import css file,javascript file
         '/{(res):([a-z]{1,})\s+([^\}]+)\s*}/i'
         => '<?php echo $this->importResource(\'${2}\', "${3}")?>'
-    );
-
+    ];
 
     // static resource
     private static array $_res_temp = [
-        'css'    => "<link rel=\"stylesheet\" type=\"text/css\" href=\"{url}\" />\n",
-        'less'    => "<link rel=\"stylesheet/less\" type=\"text/css\" href=\"{url}\" />\n",
-        'js'    => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"{url}\"></script>\n"
+        'css' => "<link rel=\"stylesheet\" type=\"text/css\" href=\"{url}\" />\n",
+        'less' => "<link rel=\"stylesheet/less\" type=\"text/css\" href=\"{url}\" />\n",
+        'js' => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"{url}\"></script>\n"
     ];
-
 
     public function __construct()
     {
@@ -104,38 +100,10 @@ class Template
     }
 
     // add new template rules
-    protected  function addRules(array $rules): void
+    protected function addRules(array $rules): void
     {
         if (is_array($rules) && !empty($rules)) {
             static::$_temp_rules = array_merge(static::$_temp_rules, $rules);
-        }
-    }
-
-    /**
-     * compile template
-     */
-    private function complieTemplate(string $tempFile, string $compileFile): void
-    {
-        // use compile cache
-        if (file_exists($compileFile) && static::$_cache === true) {
-            return;
-        }
-
-        // compile template 
-        $content = @file_get_contents($tempFile);
-        if ($content === false) {
-            E("failed to load template file {$tempFile}");
-        }
-        $content = preg_replace(array_keys(static::$_temp_rules), static::$_temp_rules, $content);
-
-        // create compile dir
-        if (!file_exists(dirname($compileFile))) {
-            FileUtils::makeFileDirs(dirname($compileFile));
-        }
-
-        // create compile file
-        if (!file_put_contents($compileFile, $content, LOCK_EX)) {
-            E("failed to create compiled file {$compileFile}");
         }
     }
 
@@ -153,7 +121,6 @@ class Template
         $this->complieTemplate($tempFile, $compileFile);
         return $compileFile;
     }
-
 
     protected function importResource($type, $path)
     {
@@ -183,5 +150,33 @@ class Template
         $html = ob_get_contents();
         ob_end_clean();
         return  $html;
+    }
+
+    /**
+     * compile template
+     */
+    private function complieTemplate(string $tempFile, string $compileFile): void
+    {
+        // use compile cache
+        if (file_exists($compileFile) && static::$_cache === true) {
+            return;
+        }
+
+        // compile template
+        $content = @file_get_contents($tempFile);
+        if ($content === false) {
+            E("failed to load template file {$tempFile}");
+        }
+        $content = preg_replace(array_keys(static::$_temp_rules), static::$_temp_rules, $content);
+
+        // create compile dir
+        if (!file_exists(dirname($compileFile))) {
+            FileUtils::makeFileDirs(dirname($compileFile));
+        }
+
+        // create compile file
+        if (!file_put_contents($compileFile, $content, LOCK_EX)) {
+            E("failed to create compiled file {$compileFile}");
+        }
     }
 }

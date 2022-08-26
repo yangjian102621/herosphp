@@ -1,4 +1,5 @@
 <?php
+
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // * Copyright 2014 The Herosphp Authors. All rights reserved.
 // * Use of this source code is governed by a MIT-style license
@@ -14,7 +15,6 @@ declare(strict_types=1);
  */
 
 use herosphp\core\Config;
-use herosphp\core\HttpRequest;
 use herosphp\exception\HeroException;
 
 // get var_dump output and return it as a string
@@ -39,7 +39,6 @@ function printSuccess($message)
     printf("\033[32m\033[1m{$message}\033[0m\n");
 }
 
-
 // 终端高亮打印红色
 function printError($message)
 {
@@ -61,7 +60,7 @@ function E($message)
 // get current time
 function timer()
 {
-    list($msec, $sec) = explode(' ', microtime());
+    [$msec, $sec] = explode(' ', microtime());
     return ((float)$msec + (float)$sec);
 }
 
@@ -74,9 +73,9 @@ function getAppConfig($key)
 // get cmd args
 function getCliArgs($argv)
 {
-    $params = array('__file__' => array_shift($argv), '__url__' => array_shift($argv));
+    $params = ['__file__' => array_shift($argv), '__url__' => array_shift($argv)];
     foreach ($argv as $v) {
-        if (strlen($v) < 3 || strncmp($v, "--", 2) != 0) {
+        if (strlen($v) < 3 || strncmp($v, '--', 2) != 0) {
             continue;
         }
 

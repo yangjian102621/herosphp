@@ -1,4 +1,5 @@
 <?php
+
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // * Copyright 2014 The Herosphp Authors. All rights reserved.
 // * Use of this source code is governed by a MIT-style license
@@ -16,7 +17,6 @@ namespace herosphp\utils;
  */
 class FileUtils
 {
-
     public static function makeFileDirs($path): bool
     {
         //必须考虑 "/" 和 "\" 两种目录分隔符
@@ -50,12 +50,11 @@ class FileUtils
      */
     public static function removeDirs($dir): bool
     {
-
         $handle = opendir($dir);
         //删除文件夹下面的文件
         while ($file = readdir($handle)) {
-            if ($file != "." && $file != "..") {
-                $filename = $dir . "/" . $file;
+            if ($file != '.' && $file != '..') {
+                $filename = $dir . '/' . $file;
                 if (!is_dir($filename)) {
                     @unlink($filename);
                 } else {
@@ -85,8 +84,9 @@ class FileUtils
         $handle = opendir($src);
         if ($handle !== false) {
             while (($filename = readdir($handle))) {
-
-                if ($filename == '.'  || $filename == '..') continue;
+                if ($filename == '.' || $filename == '..') {
+                    continue;
+                }
                 $fileSrc = $src . '/' . $filename;
                 $fileDst = $dst . '/' . $filename;
                 if (is_dir($fileSrc)) {
@@ -107,10 +107,11 @@ class FileUtils
     public static function isEmptyDir($dirName)
     {
         $handle = opendir($dirName);
-        if ($handle != FALSE) {
+        if ($handle != false) {
             while (($filename = readdir($handle)) != false) {
-                if ($filename != '.' && $filename != '..')
+                if ($filename != '.' && $filename != '..') {
                     return false;
+                }
             }
         }
         closedir($handle);
