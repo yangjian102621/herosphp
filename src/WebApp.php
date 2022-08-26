@@ -108,17 +108,26 @@ class WebApp
           $res = call_user_func_array(array($handler['obj'], $handler['method']), $vars);
           $connection->send($res);
           break;
+        default:
+          E("router parse error for {$request->path()}");
       }
     } catch (RuntimeException $e) {
-      $connection->send(static::response(500, '系统开小差了'));
+      $connection->send(static::response(500, 'Oops, it seems something went wrong.'));
       if (getAppConfig('log') === true) {
         Logger::error($e);
       }
     }
   }
 
+  // create a new Response
   public static function response(int $code, string $body): Response
   {
     return new Response(status: $code, body: $body);
+  }
+
+  // get the path for public static files
+  public static function getPublicFile(HttpRequest $request): string
+  {
+    return '';
   }
 }
