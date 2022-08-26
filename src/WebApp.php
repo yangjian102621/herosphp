@@ -33,10 +33,6 @@ class WebApp
 
     // worker instance for workerman
     private static Worker $_worker;
-
-    // cache for routers
-    private static array $_routers;
-
     // app config
     private static array $_config = [
         'listen' => 'http://0.0.0.0:2345',
@@ -79,6 +75,7 @@ class WebApp
         AnnotationParser::run(APP_PATH, 'app\\');
 
         static::$_dispatcher = Router::getDispatcher();
+        static::$_worker = $worker;
     }
 
     public static function onMessage(TcpConnection $connection, HttpRequest $request)
@@ -91,7 +88,7 @@ class WebApp
                     if ($file === '') {
                         $connection->send(static::response(404, 'Page not found.'));
                     } else {
-                        (new HttpResponse())->withFile($file);
+                        $connection->send((new HttpResponse())->withFile($file));
                     }
                     break;
                 case Dispatcher::METHOD_NOT_ALLOWED:
@@ -128,6 +125,10 @@ class WebApp
     // get the path for public static files
     public static function getPublicFile(string $path): string
     {
+        $file = PUBLIC_PATH . $path;
+        if (file_exists($file)) {
+            return $file;
+        }
         return '';
     }
 }
