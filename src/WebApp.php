@@ -110,7 +110,11 @@ class WebApp
             }
         } catch (RuntimeException $e) {
             $connection->send(static::response(500, 'Oops, it seems something went wrong.'));
-            if (getAppConfig('log') === true) {
+            if (getAppConfig('debug')) {
+                throw new RuntimeException($e->__toString());
+            }
+
+            if (getAppConfig('log')) {
                 Logger::error($e);
             }
         }

@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace herosphp\utils;
 
 use herosphp\exception\HeroException;
-use herosphp\files\FileUtils;
+use herosphp\utils\FileUtils;
 
 /**
  * 日志工具类

@@ -28,6 +28,8 @@ class Template
     // switch for template cache
     private static bool $_cache = true;
 
+    private static string $_temp_suffix = '.html';
+
     // template compile rules
     private static array $_temp_rules = [
 
@@ -115,7 +117,7 @@ class Template
         }
 
         $filename = str_replace('.', '/', $tempPath);
-        $tempFile = $this->_temp_dir . $filename;
+        $tempFile = $this->_temp_dir . $filename . static::$_temp_suffix;
         $compileFile = $this->_compile_dir . $filename . '.php';
 
         $this->complieTemplate($tempFile, $compileFile);
@@ -130,13 +132,13 @@ class Template
     }
 
     // 获取页面执行后的代码
-    protected function &getExecutedHtml($tempFile, $tempVar): string
+    protected function getExecutedHtml($_tempFile, $_tempVar): string
     {
         if (empty($_tempFile)) {
-            return '';
+            E("Template file is needed.");
         }
 
-        $tempFile = $this->_temp_dir . $_tempFile;
+        $tempFile = $this->_temp_dir . $_tempFile . static::$_temp_suffix;
         $compileFile = $this->_compile_dir . $_tempFile . '.php';
         if (!file_exists($tempFile)) {
             E("template file {$tempFile} not found.");
@@ -144,7 +146,7 @@ class Template
 
         ob_start();
         $this->complieTemplate($tempFile, $compileFile);
-        extract($tempVar);
+        extract($_tempVar);
         include $compileFile;
 
         $html = ob_get_contents();

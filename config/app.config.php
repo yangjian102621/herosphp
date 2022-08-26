@@ -4,7 +4,7 @@
 
 return [
   'debug' => true,
-  'log' => true, // whether to add logs for E() functions
+  'log' => false, // whether to add logs for E() functions
   'error_reporting' => E_ALL,
   'default_timezone' => 'Asia/Shanghai',
 

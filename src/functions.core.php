@@ -26,7 +26,9 @@ function var_dump_r(): string
     }
 
     ob_start();
-    var_dump($_args);
+    foreach ($_args as $val) {
+        var_dump($val);
+    }
     $output = ob_get_contents();
     ob_end_clean();
 

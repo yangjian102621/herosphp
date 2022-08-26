@@ -10,6 +10,7 @@ namespace app\controller;
 
 use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
+use herosphp\annotation\Post;
 use herosphp\annotation\RequestMap;
 use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
@@ -18,16 +19,27 @@ use herosphp\core\HttpResponse;
 #[Controller(IndexAction::class)]
 class UserController extends BaseController
 {
-    #[RequestMap(uri: '/admin/user/{username}/{id}', method: 'GET')]
-    public function index(HttpRequest $request, $username, $id)
+    #[RequestMap(uri: ['/', '/index'], method: 'GET')]
+    public function index(HttpRequest $request): HttpResponse
     {
-        return var_dump_r($username, $id, $request);
-        // return json_encode(['username' => $username, 'id' => $id,  'xxxx' => 1]);
+        return $this->view('index', ['title' => 'Hello, world!']);
     }
 
-    #[Get(uri: ['/user/get', '/user/fetch'])]
+    #[RequestMap(uri: '/user/{username}', method: 'GET')]
+    public function var(HttpRequest $request, $username)
+    {
+        return var_dump_r($username, $request);
+    }
+
+    #[Get(uri: ['/news/get', '/news/fetch'])]
     public function get(HttpRequest $request): HttpResponse
     {
-        return $this->jsonView(0, ['hello' => 'world']);
+        return $this->jsonView(0, ['hello' => 'world', 'var' => $request->get('var')]);
+    }
+
+    #[Post(uri: '/user/add')]
+    public function post(): string
+    {
+        return 'Not implemented yet.';
     }
 }
