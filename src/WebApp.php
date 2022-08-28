@@ -16,6 +16,7 @@ use herosphp\core\Config;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
 use herosphp\core\Router;
+use herosphp\exception\HeroException;
 use herosphp\utils\Logger;
 use RuntimeException;
 use Workerman\Connection\TcpConnection;
@@ -31,8 +32,6 @@ class WebApp
 {
     protected static Dispatcher $_dispatcher;
 
-    // worker instance for workerman
-    private static Worker $_worker;
     // app config
     private static array $_config = [
         'listen' => 'http://0.0.0.0:2345',
@@ -75,7 +74,6 @@ class WebApp
         AnnotationParser::run(APP_PATH, 'app\\');
 
         static::$_dispatcher = Router::getDispatcher();
-        static::$_worker = $worker;
     }
 
     public static function onMessage(TcpConnection $connection, HttpRequest $request)
@@ -108,14 +106,10 @@ class WebApp
                 default:
                     E("router parse error for {$request->path()}");
             }
-        } catch (RuntimeException $e) {
+        } catch (HeroException $e) {
             $connection->send(static::response(500, 'Oops, it seems something went wrong.'));
-            if (getAppConfig('debug')) {
-                throw new RuntimeException($e->__toString());
-            }
-
-            if (getAppConfig('log')) {
-                Logger::error($e);
+            if (get_app_Config('debug')) {
+                Logger::error($e->toString());
             }
         }
     }

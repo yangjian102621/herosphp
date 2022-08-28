@@ -4,7 +4,7 @@ use Workerman\Worker;
 use Workerman\Timer;
 
 // watch Applications catalogue
-$monitor_dir = realpath(__DIR__ . '/app');
+$monitor_dir = [realpath(__DIR__ . '/app'),realpath(__DIR__ . 'src')];
 var_dump($monitor_dir);
 
 // worker
@@ -18,7 +18,7 @@ $worker->onWorkerStart = function () use ($monitor_dir) {
     // watch files only in daemon mode
     if (!Worker::$daemonize) {
         // chek mtime of files per second
-        Timer::add(1, 'check_files_change', array($monitor_dir));
+        Timer::add(1, 'check_files_change', $monitor_dir);
     }
 };
 

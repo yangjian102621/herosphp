@@ -35,20 +35,26 @@ function var_dump_r(): string
     return $output;
 }
 
+// 终端高亮打印青色
+function print_info($message)
+{
+    printf("\033[36m\033[1m{$message}\033[0m\n");
+}
+
 // 终端高亮打印绿色
-function printSuccess($message)
+function print_success($message)
 {
     printf("\033[32m\033[1m{$message}\033[0m\n");
 }
 
 // 终端高亮打印红色
-function printError($message)
+function print_error($message)
 {
     printf("\033[31m\033[1m{$message}\033[0m\n");
 }
 
 // 终端高亮打印黄色
-function printWarning($message)
+function print_warning($message)
 {
     printf("\033[33m\033[1m{$message}\033[0m\n");
 }
@@ -67,13 +73,13 @@ function timer()
 }
 
 // get app config
-function getAppConfig($key)
+function get_app_config($key)
 {
     return Config::getValue('app', $key);
 }
 
 // get cmd args
-function getCliArgs($argv)
+function get_cli_args($argv)
 {
     $params = ['__file__' => array_shift($argv), '__url__' => array_shift($argv)];
     foreach ($argv as $v) {
