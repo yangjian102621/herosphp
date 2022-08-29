@@ -4,7 +4,6 @@
 
 return [
   'debug' => true,
-  'log' => false, // whether to add logs for E() functions
   'error_reporting' => E_ALL,
   'default_timezone' => 'Asia/Shanghai',
 
@@ -17,4 +16,6 @@ return [
     'worker_count' => 1,
     'reloadable' => 'true',
   ),
+
+  'machine_id' => 0x01 // machine id for generate UUID
 ];

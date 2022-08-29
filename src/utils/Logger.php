@@ -27,7 +27,7 @@ class Logger
     {
         static::$_log_dir = RUNTIME_PATH . 'logs/';
         if (!file_exists(static::$_log_dir)) {
-            FileUtils::makeFileDirs(static::$_log_dir);
+            FileUtil::makeFileDirs(static::$_log_dir);
         }
 
         if (get_app_config('debug')) {

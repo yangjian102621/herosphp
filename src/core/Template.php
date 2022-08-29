@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
-use herosphp\utils\FileUtils;
+use herosphp\utils\FileUtil;
 
 /**
  * 模板编译类,将数据模型导入到模板并输出。
@@ -172,7 +172,7 @@ class Template
 
         // create compile dir
         if (!file_exists(dirname($compileFile))) {
-            FileUtils::makeFileDirs(dirname($compileFile));
+            FileUtil::makeFileDirs(dirname($compileFile));
         }
 
         // create compile file

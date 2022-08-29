@@ -1,16 +1,22 @@
 <?php
+
+// * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// * Copyright 2014 The Herosphp Authors. All rights reserved.
+// * Use of this source code is governed by a MIT-style license
+// * that can be found in the LICENSE file.
+// * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 /**
  * 字符串工具类
  * ---------------------------------------------------------------------
- * @author yangjian<yangjian102621@gmail.com>
- * @since v1.2.1
+ * @author RockYang<yangjian102621@gmail.com>
  */
 
 namespace herosphp\string;
 
-use herosphp\lock\SynLockFactory;
+use herosphp\utils\Lock;
 
-class StringUtils
+class StringUtil
 {
     public const UUID_LOCK_KEY = 'herosphp_uuid_lock_key';
 
@@ -19,33 +25,34 @@ class StringUtils
      * 机器码(2位) + 时间(12位，精确到微秒)
      * @return mixed
      */
-    public static function genGlobalUid()
+    public static function genGlobalUid(): string
     {
-        $lock = SynLockFactory::getFileSynLock(self::UUID_LOCK_KEY);
-        $lock->tryLock();
-        usleep(5);
-        //获取服务器时间，精确到毫秒
-        $tArr = explode(' ', microtime());
-        $tsec = $tArr[1];
-        $msec = $tArr[0];
-        if (($sIdx = strpos($msec, '.')) !== false) {
-            $msec = substr($msec, $sIdx + 1);
-        }
+        $lock = Lock::get(self::UUID_LOCK_KEY);
+        if ($lock->tryLock()) {
+            //获取服务器时间，精确到毫秒
+            $tArr = explode(' ', microtime());
+            $tsec = $tArr[1];
+            $msec = $tArr[0];
+            if (($sIdx = strpos($msec, '.')) !== false) {
+                $msec = substr($msec, $sIdx + 1);
+            }
 
-        //获取服务器节点信息
-        if (!defined('SERVER_NODE')) {
-            $node = 0x01;
+            //获取服务器节点机器 ID
+            $mid = get_app_config('machine_id');
+            if (!$mid) {
+                $mid = 0x01;
+            }
+            $lock->unlock();
+
+            return sprintf(
+                '%02x%08x%08x',
+                $mid,
+                $tsec,
+                $msec
+            );
         } else {
-            $node = SERVER_NODE;
+            E('failed to aquire the lock.');
         }
-        $lock->unlock();
-
-        return sprintf(
-            '%02x%08x%08x',
-            $node,
-            $tsec,
-            $msec
-        );
     }
 
     /**
@@ -69,12 +76,8 @@ class StringUtils
         return json_decode($string, true);
     }
 
-    /**
-     * 下划线转驼峰
-     * @param $str
-     * @return string
-     */
-    public static function underline2hump($str)
+    // 下划线转驼峰
+    public static function ul2hump($str)
     {
         $str = trim($str);
         if (strpos($str, '_') === false) {
@@ -89,17 +92,13 @@ class StringUtils
         return $__str;
     }
 
-    /**
-     * 驼峰转下划线
-     * @param $str
-     * @return mixed
-     */
-    public static function hump2Underline($str)
+    // 驼峰转下划线
+    public static function hump2ul($str)
     {
         $arr = [];
         for ($i = 1; $i < strlen($str); $i++) {
             if (ord($str[$i]) > 64 && ord($str[$i]) < 91) {
-                $arr[] = '_'.strtolower($str[$i]);
+                $arr[] = '_' . strtolower($str[$i]);
             } else {
                 $arr[] = $str[$i];
             }
@@ -123,7 +122,7 @@ class StringUtils
                 'b' => hexdec(substr($color, 4, 2))
             ];
 
-        //2. 三位数表示形式
+            //2. 三位数表示形式
         } else {
             $color = $hexColor;
             $r = substr($color, 0, 1) . substr($color, 0, 1);
@@ -145,11 +144,13 @@ class StringUtils
      */
     public static function genRandomString($length)
     {
-        $letters = ['1','2','3','4','5','6','7','8','9','0',
-            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o',
-            'p','q','r','s','t','u','v','w','x','y','z','A','B','C','D',
-            'E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S',
-            'T','U','V','W','X','Y','Z'];
+        $letters = [
+            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+            'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
+            'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+            'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+        ];
         $str = [];
         $count = count($letters);
         while ($length-- > 0) {
@@ -164,8 +165,8 @@ class StringUtils
      * @param $salt
      * @return string
      */
-    public static function generatePassword($src, $salt)
+    public static function makePassword($src, $salt)
     {
-        return md5($src.md5($salt));
+        return sha1($src . sha1($salt));
     }
 }
