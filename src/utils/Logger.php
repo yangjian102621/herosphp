@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace herosphp\utils;
 
 use herosphp\exception\HeroException;
+use herosphp\string\StringUtil;
 
 /**
  * 日志工具类
@@ -57,7 +58,7 @@ class Logger
         } elseif (is_object($message)) {
             $message = serialize($message);
         } elseif (is_array($message)) {
-            $message = json_encode($message);
+            $message = StringUtil::jsonEncode($message);
         }
 
         $log = '';

@@ -10,6 +10,13 @@ declare(strict_types=1);
 
 namespace herosphp\vo;
 
+use herosphp\string\StringUtil;
+
+/**
+ * json data list
+ * ----------------------------------------------------
+ * @author RockYang<yangjian102621@gmail.com>
+ */
 class JsonList implements JsonVo
 {
     public int $code = 0;
@@ -40,7 +47,7 @@ class JsonList implements JsonVo
 
     public function toString(): string
     {
-        return json_encode([
+        return StringUtil::jsonEncode([
             'code' => $this->code,
             'message' => $this->message,
             'items' => $this->items,
@@ -48,6 +55,6 @@ class JsonList implements JsonVo
             'page' => $this->page,
             'page_size' => $this->page_size,
             'extra_data' => $this->extra_data
-        ], JSON_UNESCAPED_UNICODE);
+        ]);
     }
 }

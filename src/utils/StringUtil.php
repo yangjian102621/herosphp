@@ -106,11 +106,7 @@ class StringUtil
         return implode('', $arr);
     }
 
-    /**
-     * 将16进制的颜色转成成RGB
-     * @param string $hexColor
-     * @return array
-     */
+    // 将16进制的颜色转成成RGB
     public static function hex2rgb($hexColor)
     {
         $color = str_replace('#', '', $hexColor);
@@ -137,12 +133,8 @@ class StringUtil
         return $rgb;
     }
 
-    /**
-     * 生成随机字符串
-     * @param $length
-     * @return string
-     */
-    public static function genRandomString($length)
+    // 生成随机字符串
+    public static function genRandomStr($length)
     {
         $letters = [
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
@@ -157,16 +149,5 @@ class StringUtil
             $str[] = $letters[mt_rand() % $count];
         }
         return implode('', $str);
-    }
-
-    /**
-     * 根据明文和盐生成密码
-     * @param $src
-     * @param $salt
-     * @return string
-     */
-    public static function makePassword($src, $salt)
-    {
-        return sha1($src . sha1($salt));
     }
 }

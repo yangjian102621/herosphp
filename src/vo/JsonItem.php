@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace herosphp\vo;
 
+use herosphp\string\StringUtil;
+
 class JsonItem implements JsonVo
 {
     public int $code;
@@ -32,10 +34,10 @@ class JsonItem implements JsonVo
 
     public function toString(): string
     {
-        return json_encode([
+        return StringUtil::jsonEncode([
             'code' => $this->code,
             'message' => $this->message,
             'data' => $this->data
-        ], JSON_UNESCAPED_UNICODE);
+        ]);
     }
 }
