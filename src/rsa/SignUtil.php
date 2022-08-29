@@ -27,8 +27,8 @@ class SignUtil
     public static function sign($url, $params)
     {
         ksort($params);
-        $sourceSignString = $url.self::signString($params);
-        return md5($sourceSignString);
+        $sourceSignString = $url . self::signString($params);
+        return sha1($sourceSignString);
     }
 
     /**

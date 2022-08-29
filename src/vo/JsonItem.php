@@ -36,6 +36,6 @@ class JsonItem implements JsonVo
             'code' => $this->code,
             'message' => $this->message,
             'data' => $this->data
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
     }
 }

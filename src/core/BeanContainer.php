@@ -10,6 +10,9 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
+use herosphp\annotation\Inject;
+use ReflectionClass;
+
 /**
  * BeanContainer class
  *
@@ -43,5 +46,38 @@ class BeanContainer
     public static function put(string $name, object $value): void
     {
         static::$_instances[$name] = $value;
+    }
+
+    public static function build(string $class): object
+    {
+        $obj = static::get($class);
+        if ($obj != null) {
+            return $obj;
+        }
+
+        $clazz = new ReflectionClass($class);
+        $obj = $clazz->newInstance();
+        // inject propertys
+        foreach ($clazz->getProperties() as $property) {
+            $_attrs = $property->getAttributes(Inject::class);
+            if (empty($_attrs)) {
+                continue;
+            }
+
+            // find property class name
+            $_attr = $_attrs[0];
+            $name = $property->getType()->getName();
+            $_args = $_attr->getArguments();
+            if (!empty($_args)) {
+                $name = $_args[0];
+            }
+
+            // set property
+            $property->setAccessible(true);
+            $property->setValue($obj, static::build($name));
+        }
+
+        static::register($clazz->getName(), $obj);
+        return $obj;
     }
 }

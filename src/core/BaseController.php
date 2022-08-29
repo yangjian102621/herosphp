@@ -32,12 +32,12 @@ abstract class BaseController extends Template
         return new HttpResponse(200, ['Content-Type' => 'text/html'], $html);
     }
 
-    protected function jsonView(int $code, array|JsonVo $data): HttpResponse
+    protected function json(array|JsonVo $data): HttpResponse
     {
         if (is_array($data)) {
             return new HttpResponse(200, [
                 'Content-Type' => 'application/json'
-            ], JsonItem::create($code, '', $data)->toString());
+            ], JsonItem::create($data['code'], $data['message'], $data['data'])->toString());
         } elseif ($data instanceof JsonVo) {
             return new HttpResponse(200, ['Content-Type' => 'application/json'], $data->toString());
         }

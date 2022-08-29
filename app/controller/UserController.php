@@ -1,15 +1,13 @@
 <?php
 
-// * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// * Copyright 2014 The Herosphp Authors. All rights reserved.
-// * Use of this source code is governed by a MIT-style license
-// * that can be found in the LICENSE file.
-// * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+declare(strict_types=1);
 
 namespace app\controller;
 
+use app\service\UserService;
 use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
+use herosphp\annotation\Inject;
 use herosphp\annotation\Post;
 use herosphp\annotation\RequestMap;
 use herosphp\core\BaseController;
@@ -20,11 +18,13 @@ use herosphp\utils\Logger;
 #[Controller(IndexAction::class)]
 class UserController extends BaseController
 {
+    #[Inject(UserService::class)]
+    protected UserService $userService;
+
     #[RequestMap(uri: ['/', '/index'], method: 'GET')]
     public function index(HttpRequest $request): HttpResponse
     {
-        Logger::info('hello');
-        E('hello');
+        Logger::info('Hello World.');
         return $this->view('index', ['title' => 'Hello, world!']);
     }
 
@@ -37,7 +37,7 @@ class UserController extends BaseController
     #[Get(uri: ['/news/get', '/news/fetch'])]
     public function get(HttpRequest $request): HttpResponse
     {
-        return $this->jsonView(0, ['hello' => 'world', 'var' => $request->get('var')]);
+        return $this->json(['code' => 0, 'message' => 'hello world', 'var' => $request->get('var')]);
     }
 
     #[Post(uri: '/user/add')]

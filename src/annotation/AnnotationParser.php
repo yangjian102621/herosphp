@@ -13,6 +13,7 @@ namespace herosphp\annotation;
 use herosphp\core\BeanContainer;
 use herosphp\core\Router;
 use herosphp\exception\HeroException;
+use ReflectionAttribute;
 use ReflectionClass;
 
 /**
@@ -66,25 +67,31 @@ class AnnotationParser
     // do parse annotations
     public static function parse(string $namespace_prefix): void
     {
-        foreach (get_declared_classes() as $clazz) {
-            if (!str_starts_with($clazz, $namespace_prefix)) {
+        foreach (get_declared_classes() as $class) {
+            if (!str_starts_with($class, $namespace_prefix)) {
                 continue;
             }
 
-            $clazz = new ReflectionClass($clazz);
-            $class_attr = $clazz->getAttributes();
-            foreach ($class_attr as $attr) {
-                switch ($attr->getName()) {
-                    case Controller::class: // controller
-                        static::parseController($clazz);
-                        break;
-                }
-            }
+            static::parseAnnotations($class);
         }
     }
 
     // parse controller annotation
-    public static function parseController(ReflectionClass $clazz)
+    public static function parseAnnotations(string $class): void
+    {
+        // build instance
+        var_dump(BeanContainer::build($class));
+
+        // parse route(request map) annotations
+        $clazz = new ReflectionClass($class);
+        foreach ($clazz->getAttributes() as $attr) {
+            if ($attr->getName() === Controller::class) {
+                static::parseController($clazz);
+            }
+        }
+    }
+
+    protected static function parseController(ReflectionClass $clazz): void
     {
         foreach ($clazz->getMethods() as $method) {
             if (!$method->isPublic()) {
@@ -136,12 +143,7 @@ class AnnotationParser
                     break;
             }
 
-            // get the controller instance
             $obj = BeanContainer::get($clazz->getName());
-            if ($obj === null) {
-                $obj = $clazz->newInstance();
-                BeanContainer::register($clazz->getName(), $obj);
-            }
             $handler = ['obj' => $obj, 'method' => $method->getName(), 'params' => $params];
             // register route
             if (is_array($args['uri'])) {

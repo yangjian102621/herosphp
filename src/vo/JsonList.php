@@ -48,6 +48,6 @@ class JsonList implements JsonVo
             'page' => $this->page,
             'page_size' => $this->page_size,
             'extra_data' => $this->extra_data
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
     }
 }

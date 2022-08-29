@@ -19,7 +19,7 @@ class FileUtils
 {
     public static function makeFileDirs($path): bool
     {
-        //必须考虑 "/" 和 "\" 两种目录分隔符
+        // Both / and \ dir separators should be considered
         $files = preg_split('/[\/|\\\]/s', $path);
         $_dir = '';
         foreach ($files as $value) {
@@ -32,26 +32,18 @@ class FileUtils
         return file_exists($path);
     }
 
-    /**
-     * 获取文件后缀名称
-     * @param string  	文件名
-     * @return string
-     */
+    // get file extension
     public static function getFileExtension($filename): string
     {
         $_pos = strrpos($filename, '.');
         return strtolower(substr($filename, $_pos + 1));
     }
 
-    /**
-     * 递归删除文件夹
-     * @param $dir
-     * @return boolean
-     */
+
+    // delete dirs recursively
     public static function removeDirs($dir): bool
     {
         $handle = opendir($dir);
-        //删除文件夹下面的文件
         while ($file = readdir($handle)) {
             if ($file != '.' && $file != '..') {
                 $filename = $dir . '/' . $file;
@@ -67,20 +59,15 @@ class FileUtils
         return rmdir($dir);
     }
 
-    /**
-     * 拷贝目录
-     * @param $src 源文件
-     * @param $dst 目标文件
-     * @return boolean
-     */
-    public static function copyDir($src, $dst)
+    // copy a file or a dir
+    public static function copyDir($src, $dst): bool
     {
-        //如果是文件，则直接拷贝
+        // single file
         if (is_file($src)) {
             return copy($src, $dst);
         }
 
-        @mkdir($dst);   //创建目标目录
+        static::makeFileDirs($dst);
         $handle = opendir($src);
         if ($handle !== false) {
             while (($filename = readdir($handle))) {
@@ -99,12 +86,8 @@ class FileUtils
         closedir($src);
     }
 
-    /**
-     * 判断一个目录是否为空
-     * @param $dirName
-     * @return boolean
-     */
-    public static function isEmptyDir($dirName)
+    // check if a dir is empty
+    public static function isEmptyDir($dirName): bool
     {
         $handle = opendir($dirName);
         if ($handle != false) {
