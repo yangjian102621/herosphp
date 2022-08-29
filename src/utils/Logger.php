@@ -37,39 +37,20 @@ class Logger
 
     public static function info($message): void
     {
-        if (is_object($message)) {
-            $message = serialize($message);
-        } elseif (is_array($message)) {
-            $message = json_encode($message);
-        }
-
-        printf(date('Y-m-d H:i:s') . " \033[36m\033[1m[INFO] \033[0m {$message} \n");
-
-        if (static::$_debug) {
-            $log_file = static::$_log_dir . date('Y-m-d') . 'log';
-            file_put_contents($log_file, date('Y-m-d H:i:s') . ' [INFO]  ' . $message . "\n", FILE_APPEND | LOCK_EX);
-        }
+        static::log('info', $message);
     }
 
     public static function warn($message): void
     {
-        if (is_object($message)) {
-            $message = serialize($message);
-        } elseif (is_array($message)) {
-            $message = json_encode($message);
-        }
-
-        printf(date('Y-m-d H:i:s') . " \033[33m\033[1m[WARN] \033[0m {$message} \n");
-
-        if (static::$_debug) {
-            if (static::$_debug) {
-                $log_file = static::$_log_dir . date('Y-m-d') . 'log';
-                file_put_contents($log_file, date('Y-m-d H:i:s') . ' [WARN] ' . $message . "\n", FILE_APPEND | LOCK_EX);
-            }
-        }
+        static::log('warn', $message);
     }
 
     public static function error($message): void
+    {
+        static::log('error', $message);
+    }
+
+    private static function log($type, $message): void
     {
         if ($message instanceof HeroException) {
             $message = $message->toString();
@@ -79,12 +60,29 @@ class Logger
             $message = json_encode($message);
         }
 
-        printf(date('Y-m-d H:i:s') . " \033[31m\033[1m[ERROR]\033[0m {$message} \n");
-
+        $log = '';
+        $file = '';
         if (static::$_debug) {
-            $log_file = static::$_log_dir . date('Y-m-d') . 'log';
-            file_put_contents($log_file, date('Y-m-d H:i:s') . ' [ERROR] ' . $message . "\n", FILE_APPEND | LOCK_EX);
+            $array  = debug_backtrace();
+            $file = basename($array [1]['file']);
         }
+
+        switch ($type) {
+            case 'warn':
+                printf("%s \033[33m\033[1m[WARN] \033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                $log = sprintf("%s [WARN] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                break;
+            case 'error':
+                printf("%s \033[31m\033[1m[ERROR]\033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                $log = sprintf("%s [ERROR] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                break;
+            default:
+                printf("%s \033[36m\033[1m[INFO] \033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                $log = sprintf("%s [INFO] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+        }
+
+        $log_file = static::$_log_dir . date('Y-m-d') . 'log';
+        file_put_contents($log_file, $log, FILE_APPEND | LOCK_EX);
     }
 
     // enable|disabled debug mode

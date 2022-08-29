@@ -13,6 +13,7 @@ use herosphp\annotation\RequestMap;
 use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
+use herosphp\utils\Logger;
 
 #[Controller(IndexAction::class)]
 class UserController extends BaseController
@@ -29,6 +30,9 @@ class UserController extends BaseController
     #[RequestMap(uri: '/user/{username}', method: 'GET')]
     public function var(HttpRequest $request, $username)
     {
+        Logger::info('Not implemented yet.');
+        Logger::warn('Not implemented yet.');
+        Logger::error('Not implemented yet.');
         return var_dump_r($username, $request);
     }
 
