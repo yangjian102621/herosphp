@@ -66,12 +66,12 @@ class Template
         '/{\/if}/i' => '<?php } ?>',
 
         // require|include tag
-        '/{(require|include)\s{1,}([0-9a-z_\.\:]{1,})\s*}/i'
-        => '<?php include $this->getIncludePath(\'${2}\')?>',
+        '/{(require:|include:)\s{1,}([^\}|\.]{1,})\s*}/i'
+        => '<?php include $this->_getIncludePath(\'${2}\')?>',
 
         // tag to import css file,javascript file
         '/{(res):([a-z]{1,})\s+([^\}]+)\s*}/i'
-        => '<?php echo $this->importResource(\'${2}\', "${3}")?>'
+        => '<?php echo $this->_importResource(\'${2}\', "${3}")?>'
     ];
 
     // static resource
@@ -109,33 +109,11 @@ class Template
         }
     }
 
-    // 获取被包含模板的路径，路径使用 . 替代 /, 如: user.profile => user/profile.html
-    protected function getIncludePath($tempPath = null): string
-    {
-        if (empty($tempPath)) {
-            return '';
-        }
-
-        $filename = str_replace('.', '/', $tempPath);
-        $tempFile = $this->_temp_dir . $filename . static::$_temp_suffix;
-        $compileFile = $this->_compile_dir . $filename . '.php';
-
-        $this->complieTemplate($tempFile, $compileFile);
-        return $compileFile;
-    }
-
-    protected function importResource($type, $path)
-    {
-        $template = static::$_res_temp[$type];
-        $result = str_replace('{url}', $path, $template);
-        return $result;
-    }
-
     // 获取页面执行后的代码
     protected function getExecutedHtml($_tempFile, $_tempVar): string
     {
         if (empty($_tempFile)) {
-            E("Template file is needed.");
+            E('Template file is needed.');
         }
 
         $tempFile = $this->_temp_dir . $_tempFile . static::$_temp_suffix;
@@ -145,7 +123,7 @@ class Template
         }
 
         ob_start();
-        $this->complieTemplate($tempFile, $compileFile);
+        $this->_complieTemplate($tempFile, $compileFile);
         extract($_tempVar);
         include $compileFile;
 
@@ -154,10 +132,31 @@ class Template
         return  $html;
     }
 
+    // 获取被包含模板的路径，路径使用 . 替代 /, 如: user.profile => user/profile.html
+    private function _getIncludePath($tempPath = null): string
+    {
+        if (empty($tempPath)) {
+            return '';
+        }
+
+        $filename = str_replace('.', '/', $tempPath);
+        $tempFile = $this->_temp_dir . $filename . static::$_temp_suffix;
+        $compileFile = $this->_compile_dir . $filename . '.php';
+        $this->_complieTemplate($tempFile, $compileFile);
+        return $compileFile;
+    }
+
+    private function _importResource($type, $path)
+    {
+        $template = static::$_res_temp[$type];
+        $result = str_replace('{url}', $path, $template);
+        return $result;
+    }
+
     /**
      * compile template
      */
-    private function complieTemplate(string $tempFile, string $compileFile): void
+    private function _complieTemplate(string $tempFile, string $compileFile): void
     {
         // use compile cache
         if (file_exists($compileFile) && static::$_cache === true) {

@@ -39,7 +39,6 @@ class FileUtils
         return strtolower(substr($filename, $_pos + 1));
     }
 
-
     // delete dirs recursively
     public static function removeDirs($dir): bool
     {

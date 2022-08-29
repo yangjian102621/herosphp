@@ -13,7 +13,6 @@ namespace herosphp\annotation;
 use herosphp\core\BeanContainer;
 use herosphp\core\Router;
 use herosphp\exception\HeroException;
-use ReflectionAttribute;
 use ReflectionClass;
 
 /**
@@ -80,7 +79,7 @@ class AnnotationParser
     public static function parseAnnotations(string $class): void
     {
         // build instance
-        var_dump(BeanContainer::build($class));
+        BeanContainer::build($class);
 
         // parse route(request map) annotations
         $clazz = new ReflectionClass($class);

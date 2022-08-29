@@ -5,7 +5,6 @@ use Workerman\Timer;
 
 // watch Applications catalogue
 $monitor_dir = [realpath(__DIR__ . '/app'),realpath(__DIR__ . 'src')];
-var_dump($monitor_dir);
 
 // worker
 $worker = new Worker();

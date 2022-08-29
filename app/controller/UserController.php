@@ -13,7 +13,6 @@ use herosphp\annotation\RequestMap;
 use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
-use herosphp\utils\Logger;
 
 #[Controller(IndexAction::class)]
 class UserController extends BaseController
@@ -24,7 +23,6 @@ class UserController extends BaseController
     #[RequestMap(uri: ['/', '/index'], method: 'GET')]
     public function index(HttpRequest $request): HttpResponse
     {
-        Logger::info('Hello World.');
         return $this->view('index', ['title' => 'Hello, world!']);
     }
 

@@ -18,7 +18,6 @@ use herosphp\core\HttpResponse;
 use herosphp\core\Router;
 use herosphp\exception\HeroException;
 use herosphp\utils\Logger;
-use RuntimeException;
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
 use Workerman\Worker;

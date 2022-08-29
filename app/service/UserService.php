@@ -10,7 +10,6 @@ use herosphp\annotation\Service;
 #[Service(UserService::class)]
 class UserService
 {
-
     #[Inject(Message::class)]
     protected Message $message;
 }
