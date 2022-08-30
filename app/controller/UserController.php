@@ -30,10 +30,11 @@ class UserController extends BaseController
     #[RequestMap(uri: '/user/{username}', method: 'GET')]
     public function var(HttpRequest $request, $username)
     {
+        $request->session()->set('name', 'value');
         Logger::info('Not implemented yet.');
         Logger::warn('Not implemented yet.');
         Logger::error('Not implemented yet.');
-        return var_dump_r($username, $request);
+        return var_export_all($username, $request);
     }
 
     #[Get(uri: ['/news/get', '/news/fetch'])]

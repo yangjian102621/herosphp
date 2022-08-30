@@ -18,21 +18,19 @@ use herosphp\core\Config;
 use herosphp\exception\HeroException;
 
 // get var_dump output and return it as a string
-function var_dump_r(): string
+function var_export_all(): string
 {
     $_args = func_get_args();
     if (count($_args) === 0) {
         return '';
     }
 
-    ob_start();
+    $output = [];
     foreach ($_args as $val) {
-        var_dump($val);
+        $output[] = print_r($val, true);
     }
-    $output = ob_get_contents();
-    ob_end_clean();
 
-    return $output;
+    return implode(",", $output);
 }
 
 // 终端高亮打印青色

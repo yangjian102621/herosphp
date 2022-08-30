@@ -13,6 +13,6 @@ namespace herosphp\exception;
 /**
  * @author RockYang<yangjian102621@gmail.com>
  */
-class FileNotFoundException extends HeroException
+class SessionException extends HeroException
 {
 }
