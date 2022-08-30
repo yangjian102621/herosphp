@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace herosphp\utils;
 
 use herosphp\exception\HeroException;
-use herosphp\string\StringUtil;
 
 /**
  * 日志工具类
@@ -51,6 +50,12 @@ class Logger
         static::log('error', $message);
     }
 
+    // enable|disabled debug mode
+    public static function debug($debug): void
+    {
+        static::$_debug = $debug;
+    }
+
     private static function log($type, $message): void
     {
         if ($message instanceof HeroException) {
@@ -64,8 +69,8 @@ class Logger
         $log = '';
         $file = '';
         if (static::$_debug) {
-            $array  = debug_backtrace();
-            $file = basename($array [1]['file']);
+            $array = debug_backtrace();
+            $file = basename($array[1]['file']);
         }
 
         switch ($type) {
@@ -82,14 +87,8 @@ class Logger
                 $log = sprintf("%s [INFO] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
         }
 
-        $log_file = static::$_log_dir . date('Y-m-d') . 'log';
+        $log_file = static::$_log_dir . date('Y-m-d') . '.log';
         file_put_contents($log_file, $log, FILE_APPEND | LOCK_EX);
-    }
-
-    // enable|disabled debug mode
-    public static function debug($debug): void
-    {
-        static::$_debug = $debug;
     }
 }
 

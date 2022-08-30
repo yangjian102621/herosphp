@@ -1,11 +1,8 @@
 <?php
 
-
-
 namespace herosphp\utils;
 
 use herosphp\exception\HeroException;
-use herosphp\string\StringUtil;
 use ReflectionClass;
 
 /**
@@ -15,13 +12,12 @@ use ReflectionClass;
  */
 class ModelTransformUtils
 {
-    // 
-    public static function map2model(string $class, array $map): object
+    //
+    public static function map2model(string $class, array $map): object|null
     {
         if (empty($map)) {
             return null;
         }
-
         if (is_string($class)) { // create object
             $refClass = new ReflectionClass($class);
             $obj = $refClass->newInstance();

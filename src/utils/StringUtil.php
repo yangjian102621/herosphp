@@ -12,9 +12,8 @@
  * @author RockYang<yangjian102621@gmail.com>
  */
 
-namespace herosphp\string;
+namespace herosphp\utils;
 
-use herosphp\utils\Lock;
 
 class StringUtil
 {
@@ -50,9 +49,8 @@ class StringUtil
                 $tsec,
                 $msec
             );
-        } else {
-            E('failed to aquire the lock.');
         }
+        E('failed to aquire the lock.');
     }
 
     public static function jsonEncode($array)
@@ -108,7 +106,7 @@ class StringUtil
                 'b' => hexdec(substr($color, 4, 2))
             ];
 
-            //2. 三位数表示形式
+        //2. 三位数表示形式
         } else {
             $color = $hexColor;
             $r = substr($color, 0, 1) . substr($color, 0, 1);
