@@ -15,7 +15,7 @@ namespace herosphp\utils;
  * ---------------------------------------------------------------------
  * @author RockYang<yangjian102621@gmail.com>
  */
-class FileUtils
+class FileUtil
 {
     public static function makeFileDirs($path): bool
     {

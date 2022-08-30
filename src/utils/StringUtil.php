@@ -55,21 +55,11 @@ class StringUtil
         }
     }
 
-    /**
-     * 将中文数组json编码
-     * @param $array
-     * @return string
-     */
     public static function jsonEncode($array)
     {
         return json_encode($array, JSON_UNESCAPED_UNICODE);
     }
 
-    /**
-     * 中文 json 数据解码
-     * @param $string
-     * @return mixed
-     */
     public static function jsonDecode($string)
     {
         $string = trim($string, "\xEF\xBB\xBF");

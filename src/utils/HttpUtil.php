@@ -13,6 +13,7 @@ namespace herosphp\utils;
 
 use CurlHandle;
 use herosphp\exception\HeroException;
+use herosphp\string\StringUtil;
 
 /**
  * 发送 http 请求类
@@ -24,6 +25,8 @@ class HttpUtil
 {
     // curl handle
     private CurlHandle $_handler;
+
+    private array $_headers = [];
 
     // if return the header message of response
     private bool $_return_header = false;
@@ -45,136 +48,112 @@ class HttpUtil
 
     public function headers(array $headers): HttpUtil
     {
-        if (is_array($headers)) {
-            $_headers = [];
-            foreach ($headers as $key => $value) {
-                $_headers[] = "{$key}:$value";
-            }
-            curl_setopt($this->_handler, CURLOPT_HTTPHEADER, $_headers);
-        }
+        $this->_headers = array_merge($this->_headers, $headers);
         return $this;
     }
 
-    public function proxy(string $ip, int $port)
+    public function header(string $name, string $value): HttpUtil
+    {
+        $this->_headers[$name] = $value;
+        return $this;
+    }
+
+    public function proxy(string $ip, int $port): HttpUtil
     {
         curl_setopt($this->_handler, CURLOPT_PROXY, $ip);
         curl_setopt($this->_handler, CURLOPT_PROXYPORT, $port);
+        return $this;
     }
 
-    public function get(string $url, array $params,)
+    public function get(string $url, ?array $params = null)
     {
-        $params = http_build_query($params);
-        if (strpos($url, '?') == false) {
-            $url .= '?' . $params;
-        } else {
-            $url .= '&' . $params;
+        if ($params) {
+            $params = http_build_query($params);
+            if (str_contains($url, '?')) {
+                $url .= '?' . $params;
+            } else {
+                $url .= '&' . $params;
+            }
         }
 
         curl_setopt($this->_handler, CURLOPT_HTTPGET, true);
         return $this->_doRequest($url);
     }
 
-
-    /**
-     * 发送http POST 请求
-     * @param $url
-     * @param $params
-     * @param null $headers
-     * @return bool|mixed
-     */
-    public static function post($url, $params, $headers = null)
+    public function post(string $url, ?array $params = null)
     {
-        $self = new self();
-        if (is_array($params)) {
-            $params = http_build_query($params);
+
+        curl_setopt($this->_handler, CURLOPT_POST, true);
+        if ($params) {
+            curl_setopt($this->_handler, CURLOPT_POSTFIELDS, http_build_query($params));
         }
-        $curl = $self->_curlInit($url, $headers);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
 
-        return $self->_doRequest($curl, false);
-    }
-
-    /**
-     * 发送restful PUT请求
-     * @param $url
-     * @param $params
-     * @return mixed
-     */
-    public static function put($url, $params)
-    {
-        $self = new self();
-        if (is_array($params)) {
-            $params = StringUtils::jsonEncode($params);
-        }
-        $curl = $self->_curlInit($url, ['Content-Type' => 'application/json']);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-
-        return $self->_doRequest($curl, false);
-    }
-
-    /**
-     * 发送restful DELETE请求
-     * @param $url
-     * @param $params
-     * @return mixed
-     */
-    public static function delete($url, $params)
-    {
-        $self = new self();
-        if (is_array($params)) {
-            $params = StringUtils::jsonEncode($params);
-        }
-        $curl = $self->_curlInit($url, ['Content-Type' => 'application/json']);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-
-        return $self->_doRequest($curl, false);
+        return $this->_doRequest($url);
     }
 
 
-    private function _doRequest(string $url)
+    public function put(string $url, ?array $params = null)
+    {
+
+        $this->header('Content-Type', 'application/json');
+        curl_setopt($this->_handler, CURLOPT_CUSTOMREQUEST, 'PUT');
+        if ($params) {
+            curl_setopt($this->_handler, CURLOPT_POSTFIELDS, StringUtil::jsonEncode($params));
+        }
+
+        return $this->_doRequest($url);
+    }
+
+    public function delete(string $url, ?array $params = null)
+    {
+        $this->header('Content-Type', 'application/json');
+        curl_setopt($this->_handler, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        if ($params) {
+            curl_setopt($this->_handler, CURLOPT_POSTFIELDS, StringUtil::jsonEncode($params));
+        }
+
+        return $this->_doRequest($url);
+    }
+
+    public function patch(string $url, ?array $params = null)
+    {
+
+        $this->header('Content-Type', 'application/json');
+        curl_setopt($this->_handler, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        if ($params) {
+            curl_setopt($this->_handler, CURLOPT_POSTFIELDS, StringUtil::jsonEncode($params));
+        }
+        return $this->_doRequest($url);
+    }
+
+    private function _doRequest(string $url): mixed
     {
         curl_setopt($this->_handler, CURLOPT_URL, $url);
-        $ret = curl_exec($this->_handler);
-        $info = curl_getinfo($this->_handler);
 
+        if (!empty($this->_headers)) {
+            $headers = [];
+            foreach ($this->_headers as $key => $value) {
+                $headers[] = "{$key}:$value";
+            }
+            curl_setopt($this->_handler, CURLOPT_HTTPHEADER, $headers);
+        }
+
+        if (stripos($url, 'https://') !== false) {
+            curl_setopt($this->_handler, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($this->_handler, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+
+        $ret = curl_exec($this->_handler);
         curl_close($this->_handler);
         if ($ret == false) {
-            throw new HeroException('cURLException:' . curl_error($this->_handler));
+            E('cURLException:' . curl_error($this->_handler));
         }
 
         if ($this->_return_header) {
+            $info = curl_getinfo($this->_handler);
             return ['header' => $info, 'body' => $ret];
         }
         return $ret;
-    }
-
-    /**
-     * 创建curl对象
-     * @param $url
-     * @param $headers
-     * @return resource
-     */
-    private static function _curlInit($url, $headers)
-    {
-        $curl = curl_init();
-        if (stripos($url, 'https://') !== false) {
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        }
-
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        if (is_array($headers)) {
-            $_headers = [];
-            foreach ($headers as $key => $value) {
-                $_headers[] = "{$key}:$value";
-            }
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $_headers);
-        }
-        return $curl;
     }
 }

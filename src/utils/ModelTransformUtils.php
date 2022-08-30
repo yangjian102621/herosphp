@@ -1,44 +1,39 @@
 <?php
 
-/**
- * 模型转换工具
- * -----------------
- * @author yangjian<yangjian102621@gmail.com>
- * @since v1.2.1
- */
+
 
 namespace herosphp\utils;
 
 use herosphp\exception\HeroException;
-use herosphp\string\StringUtils;
+use herosphp\string\StringUtil;
 use ReflectionClass;
 
+/**
+ * 模型转换工具
+ * -----------------------------------------------
+ * @author RockYang<yangjian102621@gmail.com>
+ */
 class ModelTransformUtils
 {
-    /**
-     * map转换为数据模型
-     * @param string $class
-     * @param array $map
-     * @return object|void
-     * @throws HeroException
-     */
-    public static function map2Model($class, $map)
+    // 
+    public static function map2model(string $class, array $map): object
     {
-        if (!$map) {
-            return;
+        if (empty($map)) {
+            return null;
         }
-        //字符串类路径
-        if (is_string($class)) {
+
+        if (is_string($class)) { // create object
             $refClass = new ReflectionClass($class);
             $obj = $refClass->newInstance();
-        } else {    //安装对象
+        } else {
             $obj = $class;
             $refClass = new ReflectionClass($obj);
         }
+
         $methodName = null;
         $method = null;
-        foreach ($map as $key => $value) {
-            $methodName = 'set' . ucwords(StringUtils::underline2hump($key));
+        foreach ($map as $key => $val) {
+            $methodName = 'set' . ucwords(StringUtil::ul2hump($key));
             if ($refClass->hasMethod($methodName)) {
                 $method = $refClass->getMethod($methodName);
                 try {
@@ -51,21 +46,16 @@ class ModelTransformUtils
         return $obj;
     }
 
-    /**
-     * 模型对象转为map
-     * @param $model
-     * @return array
-     * @throws HeroException
-     */
-    public static function model2Map($model)
+    // 模型对象转为map
+    public static function model2map(object $model): array
     {
-        $refClass = new \ReflectionClass($model);
+        $refClass = new ReflectionClass($model);
         $properties = $refClass->getProperties();
         $map = [];
         foreach ($properties as $value) {
             $property = $value->getName();
             if (strpos($property, '_')) {
-                $property = StringUtils::underline2hump($property); //转换成驼锋格式
+                $property = StringUtil::ul2hump($property); //转换成驼锋格式
             }
             $method = 'get' . ucfirst($property);
             $map[$property] = $model->$method();
