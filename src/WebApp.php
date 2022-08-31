@@ -10,13 +10,16 @@ declare(strict_types=1);
 
 namespace herosphp;
 
+use app\exception\ExceptionHandler;
 use FastRoute\Dispatcher;
 use herosphp\annotation\AnnotationParser;
 use herosphp\core\Config;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
 use herosphp\core\Router;
+use herosphp\exception\ExceptionHandlerInterface;
 use herosphp\utils\Logger;
+use Throwable;
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
 use Workerman\Worker;
@@ -106,10 +109,7 @@ class WebApp
             }
             //throwable 捕获异常 、error 框架兜底
         } catch (\Throwable $e) {
-            $connection->send(static::response(500, 'Oops, it seems something went wrong.'));
-            if (get_app_config('debug')) {
-                Logger::error($e->getMessage());
-            }
+            $connection->send(static::exceptionResponse($e, $request));
         }
     }
 
@@ -127,5 +127,27 @@ class WebApp
             return $file;
         }
         return '';
+    }
+
+    /**
+     * 统一异常处理
+     * @param Throwable $e
+     * @param HttpRequest $request
+     * @return HttpResponse
+     */
+    protected static function exceptionResponse(Throwable $e, HttpRequest $request):HttpResponse
+    {
+        try {
+            /** @var ExceptionHandlerInterface $exceptionHandler */
+            //todo: $exceptionHandler instance from container
+            $exceptionHandler = new ExceptionHandler();
+            $exceptionHandler->report($e);
+            return $exceptionHandler->render($request, $e);
+        } catch (Throwable $e) {
+            if (get_app_config('debug')) {
+                Logger::error($e->getMessage());
+            }
+            return static::response(500, 'Oops, it seems something went wrong.');
+        }
     }
 }
