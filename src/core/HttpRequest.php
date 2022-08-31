@@ -58,4 +58,36 @@ class HttpRequest extends Request
 
         return $sessionId;
     }
+
+    /**
+     * @return bool
+     */
+    public function expectsJson(): bool
+    {
+        return ($this->isAjax() && !$this->isPjax()) || $this->acceptJson();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAjax(): bool
+    {
+        return $this->header('X-Requested-With') === 'XMLHttpRequest';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPjax(): bool
+    {
+        return (bool)$this->header('X-PJAX');
+    }
+
+    /**
+     * @return bool
+     */
+    public function acceptJson(): bool
+    {
+        return str_contains($this->header('accept', ''), 'json');
+    }
 }
