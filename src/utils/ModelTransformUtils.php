@@ -12,7 +12,7 @@ use ReflectionClass;
  */
 class ModelTransformUtils
 {
-    //
+    // convert map(key => value array) to entity object
     public static function map2model(string $class, array $map): object|null
     {
         if (empty($map)) {
@@ -42,7 +42,7 @@ class ModelTransformUtils
         return $obj;
     }
 
-    // 模型对象转为map
+    // convert model entity to map
     public static function model2map(object $model): array
     {
         $refClass = new ReflectionClass($model);

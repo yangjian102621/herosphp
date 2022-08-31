@@ -17,6 +17,7 @@ use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
 use herosphp\core\Router;
 use herosphp\utils\Logger;
+use Throwable;
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
 use Workerman\Worker;
@@ -93,7 +94,11 @@ class WebApp
                 case Dispatcher::FOUND:
                     $handler = $routeInfo[1];
                     $vars = $routeInfo[2];
-                    // 注入 HttpRequest 参数
+                    // inject request object
+                    // @Note: 路径参数的相对位置应该和方法参数的相对位置保持一致
+                    // 1. Controller methods can have no parameters.
+                    // 2. The first parameter must be HttpRequest object.
+                    // 3. Method parameters should keep the same order of the route path vars
                     if (in_array(HttpRequest::class, $handler['params'])) {
                         array_unshift($vars, $request);
                     }
@@ -104,8 +109,8 @@ class WebApp
                 default:
                     E("router parse error for {$request->path()}");
             }
-            //throwable 捕获异常 、error 框架兜底
-        } catch (\Throwable $e) {
+            // catch and handle the exception
+        } catch (Throwable $e) {
             $connection->send(static::response(500, 'Oops, it seems something went wrong.'));
             if (get_app_config('debug')) {
                 Logger::error($e->getMessage());

@@ -22,7 +22,7 @@ class UserController extends BaseController
     protected UserService $userService;
 
     #[RequestMap(uri: ['/', '/index'], method: 'GET')]
-    public function index(HttpRequest $request): HttpResponse
+    public function index(): HttpResponse
     {
         return $this->view('index', ['title' => 'Hello, world!']);
     }
@@ -30,7 +30,6 @@ class UserController extends BaseController
     #[RequestMap(uri: '/user/{username}', method: 'GET')]
     public function var(HttpRequest $request, $username)
     {
-        $request->session()->set('name', 'value');
         Logger::info('Not implemented yet.');
         Logger::warn('Not implemented yet.');
         Logger::error('Not implemented yet.');

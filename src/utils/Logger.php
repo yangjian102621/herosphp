@@ -35,28 +35,28 @@ class Logger
         }
     }
 
-    public static function info($message): void
+    public static function info(mixed $message): void
     {
         static::log('info', $message);
     }
 
-    public static function warn($message): void
+    public static function warn(mixed $message): void
     {
         static::log('warn', $message);
     }
 
-    public static function error($message): void
+    public static function error(mixed $message): void
     {
         static::log('error', $message);
     }
 
     // enable|disabled debug mode
-    public static function debug($debug): void
+    public static function debug(mixed $debug): void
     {
         static::$_debug = $debug;
     }
 
-    private static function log($type, $message): void
+    private static function log(string $type, mixed $message): void
     {
         if ($message instanceof HeroException) {
             $message = $message->toString();

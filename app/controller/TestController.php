@@ -7,6 +7,7 @@ namespace app\controller;
 use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
 use herosphp\core\BaseController;
+use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
 use herosphp\utils\StringUtil;
 use herosphp\utils\HttpUtil;
@@ -19,5 +20,13 @@ class TestController extends BaseController
     public function http()
     {
         return HttpUtil::init()->get('https://filfox.info/api/v1/stats/base-fee?duration=24h&samples=48');
+    }
+
+    #[Get(uri: '/test/session')]
+    public function session(HttpRequest $request)
+    {
+        $session = $request->session();
+        $session->set('name', 'value');
+        return 'Session test';
     }
 }
