@@ -8,7 +8,7 @@ use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
 use herosphp\core\BaseController;
 use herosphp\core\HttpResponse;
-use herosphp\string\StringUtil;
+use herosphp\utils\StringUtil;
 use herosphp\utils\HttpUtil;
 
 #[Controller(TestController::class)]

@@ -16,8 +16,6 @@ use herosphp\core\Config;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
 use herosphp\core\Router;
-use herosphp\exception\HeroException;
-use herosphp\string\StringUtil;
 use herosphp\utils\Logger;
 use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
@@ -106,10 +104,11 @@ class WebApp
                 default:
                     E("router parse error for {$request->path()}");
             }
-        } catch (HeroException $e) {
+            //throwable 捕获异常 、error 框架兜底
+        } catch (\Throwable $e) {
             $connection->send(static::response(500, 'Oops, it seems something went wrong.'));
-            if (get_app_Config('debug')) {
-                Logger::error($e->toString());
+            if (get_app_config('debug')) {
+                Logger::error($e->getMessage());
             }
         }
     }

@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace herosphp\vo;
 
-use herosphp\string\StringUtil;
+use herosphp\utils\StringUtil;
 
 class JsonItem implements JsonVo
 {
