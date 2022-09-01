@@ -24,11 +24,9 @@ trait InstanceTrait
 
     /**
      * @desc   回收单例对象
-     *
-     * @author limx
      */
     public function flushInstance(): void
     {
-        unset(self::$_instances[$this->instanceKey]);
+        unset(static::$_instances[$this->instanceKey]);
     }
 }
