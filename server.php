@@ -1,6 +1,4 @@
 <?php
-
-use herosphp\core\Env;
 use herosphp\WebApp;
 use Workerman\Worker;
 
@@ -22,8 +20,6 @@ if (!defined('RUNTIME_PATH')) {
 if (!defined('PUBLIC_PATH')) {
     define('PUBLIC_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'public/');
 }
-//loading application env config
-$env = new Env();
 
 // start the web application
 WebApp::run();

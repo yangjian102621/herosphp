@@ -9,4 +9,3 @@ runtime
 /vendor
 res/upload
 .php-cs-fixer.cache
-.env

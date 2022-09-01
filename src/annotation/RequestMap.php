@@ -20,7 +20,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_METHOD)]
 class RequestMap
 {
-    public function __construct(public string|array $uri, public string|array $method, public string $desc)
+    public function __construct(public string|array $uri, public string|array $method, public string $desc = '')
     {
     }
 }
