@@ -57,7 +57,7 @@ class BeanContainer
 
         $clazz = new ReflectionClass($class);
         $obj = $clazz->newInstance();
-        // inject propertys
+        // scan Inject propertys
         foreach ($clazz->getProperties() as $property) {
             $_attrs = $property->getAttributes(Inject::class);
             if (empty($_attrs)) {
@@ -77,6 +77,7 @@ class BeanContainer
             $property->setValue($obj, static::build($name));
         }
 
+        // register object to bean pool
         static::register($clazz->getName(), $obj);
         return $obj;
     }

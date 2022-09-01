@@ -8,8 +8,7 @@ use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
 use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
-use herosphp\core\HttpResponse;
-use herosphp\utils\StringUtil;
+use herosphp\exception\SessionException;
 use herosphp\utils\HttpUtil;
 
 #[Controller(TestController::class)]
@@ -25,8 +24,18 @@ class TestController extends BaseController
     #[Get(uri: '/test/session')]
     public function session(HttpRequest $request)
     {
-        $session = $request->session();
+        $session = $request->session(123);
+        if ($session === false) {
+            throw new SessionException('Failed to start the session');
+        }
+
         $session->set('name', 'value');
         return 'Session test';
+    }
+
+    #[Get(uri: '/test/temp')]
+    public function temp(HttpRequest $request)
+    {
+        return var_export_all($request->connection->getRemoteIp());
     }
 }
