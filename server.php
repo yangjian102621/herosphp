@@ -1,11 +1,15 @@
 <?php
 
+use herosphp\core\Env;
 use herosphp\WebApp;
 use Workerman\Worker;
 
 require_once 'vendor/autoload.php';
 require_once 'file_watcher.php';
 
+if (!defined('BASE_PATH')) {
+    define('BASE_PATH', __DIR__ . DIRECTORY_SEPARATOR);
+}
 if (!defined('APP_PATH')) {
     define('APP_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'app/');
 }
@@ -18,6 +22,8 @@ if (!defined('RUNTIME_PATH')) {
 if (!defined('PUBLIC_PATH')) {
     define('PUBLIC_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'public/');
 }
+//loading application env config
+$env = new Env();
 
 // start the web application
 WebApp::run();

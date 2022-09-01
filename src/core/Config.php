@@ -39,7 +39,6 @@ class Config
     // get config value with specified key
     public static function getValue(string $name, string $key): mixed
     {
-        $config = [];
         if (!isset(static::$_configs[$name])) {
             $config = static::get($name);
         } else {
@@ -64,5 +63,24 @@ class Config
         if (isset(static::$_configs[$name])) {
             static::$_configs[$name][$key] = $value;
         }
+    }
+
+    /**
+     * @author chenzifan
+     * @param string $key
+     * @param $default
+     * @return mixed
+     */
+    public static function getValueByPoint(string $key, $default = null): mixed
+    {
+        $keyArray = explode('.', $key);
+        $value = [$keyArray[0] => static::get($keyArray[0])];
+        foreach ($keyArray as $index) {
+            if (! isset($value[$index])) {
+                return $default;
+            }
+            $value = $value[$index];
+        }
+        return $value;
     }
 }
