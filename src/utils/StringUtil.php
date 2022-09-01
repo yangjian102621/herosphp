@@ -14,7 +14,6 @@
 
 namespace herosphp\utils;
 
-
 class StringUtil
 {
     public const UUID_LOCK_KEY = 'herosphp_uuid_lock_key';

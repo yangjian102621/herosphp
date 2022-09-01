@@ -1,6 +1,5 @@
 <?php
 
-
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // * Copyright 2014 The Herosphp Authors. All rights reserved.
 // * Use of this source code is governed by a MIT-style license
@@ -12,7 +11,6 @@ declare(strict_types=1);
 namespace herosphp\utils;
 
 use CurlHandle;
-use herosphp\exception\HeroException;
 use herosphp\string\StringUtil;
 
 /**
@@ -31,11 +29,6 @@ class HttpUtil
     // if return the header message of response
     private bool $_return_header = false;
 
-    public static function init(): HttpUtil
-    {
-        return new static();
-    }
-
     private function __construct()
     {
         $handler = curl_init();
@@ -46,19 +39,24 @@ class HttpUtil
         $this->_handler = $handler;
     }
 
-    public function headers(array $headers): HttpUtil
+    public static function init(): self
+    {
+        return new static();
+    }
+
+    public function headers(array $headers): self
     {
         $this->_headers = array_merge($this->_headers, $headers);
         return $this;
     }
 
-    public function header(string $name, string $value): HttpUtil
+    public function header(string $name, string $value): self
     {
         $this->_headers[$name] = $value;
         return $this;
     }
 
-    public function proxy(string $ip, int $port): HttpUtil
+    public function proxy(string $ip, int $port): self
     {
         curl_setopt($this->_handler, CURLOPT_PROXY, $ip);
         curl_setopt($this->_handler, CURLOPT_PROXYPORT, $port);
@@ -82,7 +80,6 @@ class HttpUtil
 
     public function post(string $url, ?array $params = null)
     {
-
         curl_setopt($this->_handler, CURLOPT_POST, true);
         if ($params) {
             curl_setopt($this->_handler, CURLOPT_POSTFIELDS, http_build_query($params));
@@ -91,10 +88,8 @@ class HttpUtil
         return $this->_doRequest($url);
     }
 
-
     public function put(string $url, ?array $params = null)
     {
-
         $this->header('Content-Type', 'application/json');
         curl_setopt($this->_handler, CURLOPT_CUSTOMREQUEST, 'PUT');
         if ($params) {
@@ -117,7 +112,6 @@ class HttpUtil
 
     public function patch(string $url, ?array $params = null)
     {
-
         $this->header('Content-Type', 'application/json');
         curl_setopt($this->_handler, CURLOPT_CUSTOMREQUEST, 'PATCH');
         if ($params) {
@@ -142,7 +136,6 @@ class HttpUtil
             curl_setopt($this->_handler, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($this->_handler, CURLOPT_SSL_VERIFYHOST, false);
         }
-
 
         $ret = curl_exec($this->_handler);
         curl_close($this->_handler);

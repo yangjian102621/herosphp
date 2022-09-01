@@ -24,13 +24,6 @@ use ReflectionClass;
  */
 class AnnotationParser
 {
-    // Annotations for router types
-    protected static array $_route = [RequestMap::class, Get::class, Post::class];
-
-    // Annotations for bean types
-    // TODO: if we should put the 'Controller' instance as a Bean?
-    protected static array $_bean = ['Dao', 'Service', 'Component'];
-
     protected static array $_http_method_any = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'];
 
     public static function run(string $class_dir, string $namespace_prefix): void

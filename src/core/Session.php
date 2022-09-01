@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
-use herosphp\exception\SessionException;
 use Workerman\Protocols\Http\Session\FileSessionHandler;
 use Workerman\Protocols\Http\Session\SessionHandlerInterface;
 
@@ -20,7 +19,31 @@ use Workerman\Protocols\Http\Session\SessionHandlerInterface;
 class Session
 {
     // error codes
-    const INVALID_SESSION_ID = 1 << 0;
+    const OK = 0;
+
+    // client disconnect
+    const ERR_LOSE_CONNECT = 1 << 0;
+
+    // invalid session token, such as the signature is not corrent
+    const ERR_INVALID_SESS_TOKEN = 1 << 1;
+
+    // client's ip address changed
+    const ERR_ADDR_CHANGED = 1 << 2;
+
+    // client's User-Agent changed
+    const ERR_DEVICE_CHANGED = 1 << 3;
+
+    // if login client number > max_client, the first one will be pushed off
+    const ERR_PUSHED_OFFLINE = 1 << 4;
+
+    // session expired, data be cleaned
+    const ERR_SESS_EXPIRED = 1 << 5;
+
+    const FIELD_CLIENTS = '__clients__';
+
+    const C_STATUS_OK = 1;
+
+    const C_STATUS_OFF = 0; // client is offline
 
     // Session name
     public static $name = 'heros-sess-token';
@@ -52,11 +75,11 @@ class Session
     // Gc probability
     public static array $gcProbability = [1, 1000];
 
+    // Session config
+    public static array $config = [];
+
     // Session andler class which implements SessionHandlerInterface
     protected static string $_handlerClass = FileSessionHandler::class;
-
-    // Session config
-    protected static array $_config = [];
 
     // Session handler instance
     protected static ?object $_handler = null;
@@ -65,23 +88,13 @@ class Session
     protected array $_data = [];
 
     // Session changed and need to save
-    protected $_needSave = false;
+    protected bool $_needSave = false;
 
     // Session id
-    protected $_sessionId = null;
+    protected ?string  $_sessionId = null;
 
-    // Session constructor
-    public function __construct(string $session_id)
-    {
-        static::checkSessionId($session_id);
-        if (static::$_handler === null) {
-            static::initHandler();
-        }
-        $this->_sessionId = $session_id;
-        if ($data = static::$_handler->read($session_id)) {
-            $this->_data = unserialize($data);
-        }
-    }
+    // Seed for client
+    protected string $_seed;
 
     public function __destruct()
     {
@@ -91,10 +104,73 @@ class Session
         }
     }
 
+    // Start Session
+    public function start(string $seed, string $session_id)
+    {
+        if (static::$_handler === null) {
+            static::initHandler();
+        }
+        $this->_seed = $seed;
+        $this->_sessionId = $session_id;
+        if ($data = static::$_handler->read($session_id)) {
+            $this->_data = unserialize($data);
+        }
+        if (!isset($this->_data[static::FIELD_CLIENTS])) {
+            $this->_data[static::FIELD_CLIENTS] = [];
+        }
+    }
+
     // Get session id
     public function getId()
     {
         return $this->_sessionId;
+    }
+
+    // Get session seed
+    public function getSeed(): string
+    {
+        return $this->_seed;
+    }
+
+    // Register a new client
+    public function addClient(array $client)
+    {
+        if (
+            static::$config['max_clients'] > 0 &&
+            count($this->_data[static::FIELD_CLIENTS]) >= static::$config['max_clients']
+        ) {
+            $minSeed = '';
+            foreach (array_keys($this->_data[static::FIELD_CLIENTS]) as $key) {
+                if ($key < $minSeed) {
+                    $minSeed = $key;
+                }
+            }
+            // mark this client offline
+            $this->_data[static::FIELD_CLIENTS][$minSeed]['status'] = static::C_STATUS_OFF;
+        }
+
+        $this->_data[static::FIELD_CLIENTS][$this->_seed] = $client;
+        $this->_needSave = true;
+    }
+
+    // Get the client with seed
+    public function getClient(string $seed)
+    {
+        if (!isset($this->_data[static::FIELD_CLIENTS][$seed])) {
+            return false;
+        }
+        return $this->_data[static::FIELD_CLIENTS][$seed];
+    }
+
+    // Remove the specified client
+    public function removeClient(string $seed): void
+    {
+        unset($this->_data[static::FIELD_CLIENTS][$seed]);
+    }
+
+    public function getAllClients(): array
+    {
+        return $this->_data[static::FIELD_CLIENTS];
     }
 
     // Get session
@@ -172,14 +248,14 @@ class Session
         }
 
         static::$cookieLifetime = $config['lifetime'];
-        static::$cookiePath = isset($config['secure']) ?? '/';
-        static::$secure = isset($config['secure']) ?? false;
-        static::$httpOnly = isset($config['httponly']) ?? true;
+        static::$cookiePath = isset($config['cookie_path']) ? $config['cookie_path'] : '/';
+        static::$secure = isset($config['secure']) ? $config['secure'] : false;
+        static::$httpOnly = isset($config['httponly']) ? $config['httponly'] : true;
         if (!empty($config['domain'])) {
             static::$domain = $config['domain'];
         }
 
-        static::$_config = $config;
+        static::$config = $config;
     }
 
     // Get cookie params
@@ -199,28 +275,27 @@ class Session
     public function gc()
     {
         static::$_handler->gc(static::$lifetime);
+        // clean offline clients
+        foreach ($this->_data[static::FIELD_CLIENTS] as $key => $val) {
+            if ($val['status'] === static::C_STATUS_OFF) {
+                unset($this->_data[static::FIELD_CLIENTS][$key]);
+            }
+        }
+    }
+
+    public static function buildSign(string $uid, string $seed, $addr)
+    {
+        $data = sprintf('%s-%s-%s-%s', $uid, static::$config['private_key'], $seed, $addr);
+        return sha1($data);
     }
 
     // Init session store handler
     protected static function initHandler()
     {
-        if (static::$_config['handler_config'] === null) {
+        if (static::$config['handler_config'] === null) {
             static::$_handler = new static::$_handlerClass();
         } else {
-            static::$_handler = new static::$_handlerClass(static::$_config['handler_config']);
-        }
-    }
-
-    /**
-     * Check session id: TODO
-     * 1. check if the session_id is valid
-     * 2. check if the session_id is expired
-     * 3. check if client info is changed
-     */
-    protected static function checkSessionId(string $session_id)
-    {
-        if (!\preg_match('/^[a-zA-Z0-9]+$/', $session_id)) {
-            throw new SessionException("session_id $session_id is invalid");
+            static::$_handler = new static::$_handlerClass(static::$config['handler_config']);
         }
     }
 }

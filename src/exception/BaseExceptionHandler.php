@@ -20,10 +20,10 @@ abstract class BaseExceptionHandler implements ExceptionHandlerInterface
 
     public function report(Throwable $e): void
     {
-        if ($this->shouldntReport($e)) {
+        if ($this->shouldNotReport($e)) {
             return;
         }
-        Logger::error((string)$e);
+        Logger::error($e);
     }
 
     /**
@@ -51,7 +51,7 @@ abstract class BaseExceptionHandler implements ExceptionHandlerInterface
      * @param Throwable $e
      * @return bool
      */
-    protected function shouldNtReport(Throwable $e): bool
+    protected function shouldNotReport(Throwable $e): bool
     {
         foreach ($this->dontReport as $type) {
             if ($e instanceof $type) {

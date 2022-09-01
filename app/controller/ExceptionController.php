@@ -17,12 +17,10 @@ class ExceptionController
         return 'biz';
     }
 
-
     #[Get(uri: '/e/auth', desc: '异常测试')]
     public function auth()
     {
         throw new AuthenticationException('请授权登录!');
         return 'auth';
     }
-
 }
