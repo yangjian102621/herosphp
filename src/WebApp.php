@@ -17,7 +17,6 @@ use herosphp\core\Config;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
 use herosphp\core\Router;
-use herosphp\exception\ExceptionHandlerInterface;
 use herosphp\utils\Logger;
 use Throwable;
 use Workerman\Connection\TcpConnection;

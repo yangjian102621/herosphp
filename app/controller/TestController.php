@@ -14,7 +14,6 @@ use herosphp\utils\HttpUtil;
 #[Controller(TestController::class)]
 class TestController extends BaseController
 {
-
     #[Get(uri: '/test/http')]
     public function http()
     {

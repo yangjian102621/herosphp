@@ -7,5 +7,4 @@ namespace app\exception;
  */
 class BizException extends \RuntimeException
 {
-
 }

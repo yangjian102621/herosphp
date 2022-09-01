@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
-use herosphp\exception\SessionException;
 use Workerman\Protocols\Http\Session\FileSessionHandler;
 use Workerman\Protocols\Http\Session\SessionHandlerInterface;
 
@@ -21,21 +20,29 @@ class Session
 {
     // error codes
     const OK = 0;
+
     // client disconnect
     const ERR_LOSE_CONNECT = 1 << 0;
+
     // invalid session token, such as the signature is not corrent
     const ERR_INVALID_SESS_TOKEN = 1 << 1;
+
     // client's ip address changed
     const ERR_ADDR_CHANGED = 1 << 2;
+
     // client's User-Agent changed
     const ERR_DEVICE_CHANGED = 1 << 3;
+
     // if login client number > max_client, the first one will be pushed off
     const ERR_PUSHED_OFFLINE = 1 << 4;
+
     // session expired, data be cleaned
     const ERR_SESS_EXPIRED = 1 << 5;
 
     const FIELD_CLIENTS = '__clients__';
+
     const C_STATUS_OK = 1;
+
     const C_STATUS_OFF = 0; // client is offline
 
     // Session name
@@ -89,6 +96,14 @@ class Session
     // Seed for client
     protected string $_seed;
 
+    public function __destruct()
+    {
+        $this->save();
+        if (random_int(1, static::$gcProbability[1]) <= static::$gcProbability[0]) {
+            $this->gc();
+        }
+    }
+
     // Start Session
     public function start(string $seed, string $session_id)
     {
@@ -102,14 +117,6 @@ class Session
         }
         if (!isset($this->_data[static::FIELD_CLIENTS])) {
             $this->_data[static::FIELD_CLIENTS] = [];
-        }
-    }
-
-    public function __destruct()
-    {
-        $this->save();
-        if (random_int(1, static::$gcProbability[1]) <= static::$gcProbability[0]) {
-            $this->gc();
         }
     }
 
@@ -155,7 +162,7 @@ class Session
         return $this->_data[static::FIELD_CLIENTS][$seed];
     }
 
-    // Remove the specified client 
+    // Remove the specified client
     public function removeClient(string $seed): void
     {
         unset($this->_data[static::FIELD_CLIENTS][$seed]);
@@ -276,6 +283,12 @@ class Session
         }
     }
 
+    public static function buildSign(string $uid, string $seed, $addr)
+    {
+        $data = sprintf('%s-%s-%s-%s', $uid, static::$config['private_key'], $seed, $addr);
+        return sha1($data);
+    }
+
     // Init session store handler
     protected static function initHandler()
     {
@@ -284,12 +297,6 @@ class Session
         } else {
             static::$_handler = new static::$_handlerClass(static::$config['handler_config']);
         }
-    }
-
-    public static function buildSign(string $uid, string $seed, $addr)
-    {
-        $data = sprintf("%s-%s-%s-%s", $uid, static::$config['private_key'], $seed, $addr);
-        return sha1($data);
     }
 }
 

@@ -24,7 +24,6 @@ use ReflectionClass;
  */
 class AnnotationParser
 {
-
     protected static array $_http_method_any = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'];
 
     public static function run(string $class_dir, string $namespace_prefix): void

@@ -116,7 +116,7 @@ class HttpRequest extends Request
         } else { // create new session
             $createNew = true;
             $uid = static::createSessionId();
-            $seed = sprintf("%.6f", microtime(true));
+            $seed = sprintf('%.6f', microtime(true));
             // build session token
             $sign = Session::buildSign($uid, $seed, $addr);
             $sessToken = base64_encode(json_encode(['uid' => $uid, 'seed' => $seed, 'addr' => $addr, 'sign' => $sign]));

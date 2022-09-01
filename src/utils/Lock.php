@@ -17,10 +17,9 @@ namespace herosphp\utils;
  */
 class Lock
 {
-
     private mixed $_handler;
 
-    private function __construct($key,)
+    private function __construct($key)
     {
         $lock_dir = RUNTIME_PATH . 'lock/';
         if (!file_exists($lock_dir)) {
@@ -30,7 +29,14 @@ class Lock
         $this->_handler = fopen($lock_dir . md5($key) . 'lock', 'w');
     }
 
-    public static function get(string $key): Lock
+    public function __destruct()
+    {
+        if ($this->_handler) {
+            fclose($this->_handler);
+        }
+    }
+
+    public static function get(string $key): self
     {
         $lock = new static($key);
         return $lock;
@@ -44,12 +50,5 @@ class Lock
     public function unlock()
     {
         return flock($this->_handler, LOCK_UN);
-    }
-
-    public function __destruct()
-    {
-        if ($this->_handler) {
-            fclose($this->_handler);
-        }
     }
 }

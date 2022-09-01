@@ -30,7 +30,7 @@ function var_export_all(): string
         $output[] = print_r($val, true);
     }
 
-    return implode(",", $output);
+    return implode(',', $output);
 }
 
 // 终端高亮打印青色
