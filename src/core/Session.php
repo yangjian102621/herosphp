@@ -18,26 +18,6 @@ use Workerman\Protocols\Http\Session\SessionHandlerInterface;
  */
 class Session
 {
-    // error codes
-    const OK = 0;
-
-    // client disconnect
-    const ERR_LOSE_CONNECT = 1 << 0;
-
-    // invalid session token, such as the signature is not corrent
-    const ERR_INVALID_SESS_TOKEN = 1 << 1;
-
-    // client's ip address changed
-    const ERR_ADDR_CHANGED = 1 << 2;
-
-    // client's User-Agent changed
-    const ERR_DEVICE_CHANGED = 1 << 3;
-
-    // if login client number > max_client, the first one will be pushed off
-    const ERR_PUSHED_OFFLINE = 1 << 4;
-
-    // session expired, data be cleaned
-    const ERR_SESS_EXPIRED = 1 << 5;
 
     const FIELD_CLIENTS = '__clients__';
 
@@ -105,14 +85,14 @@ class Session
     }
 
     // Start Session
-    public function start(string $seed, string $session_id)
+    public function start(string $seed, string $sessionId)
     {
         if (static::$_handler === null) {
             static::initHandler();
         }
         $this->_seed = $seed;
-        $this->_sessionId = $session_id;
-        if ($data = static::$_handler->read($session_id)) {
+        $this->_sessionId = $sessionId;
+        if ($data = static::$_handler->read($sessionId)) {
             $this->_data = unserialize($data);
         }
         if (!isset($this->_data[static::FIELD_CLIENTS])) {

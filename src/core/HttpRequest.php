@@ -21,38 +21,38 @@ class HttpRequest extends Request
     // Session instance
     protected ?Session $_session = null;
 
-    protected int $_sess_errno = Session::OK;
+    protected SessionError $_sess_errno = SessionError::OK;
 
     // Get session
     // You should pass the $userId for user login
-    public function session($uid = null): Session
+    public function session($uid = null)
     {
         if ($this->_session === null) {
             $this->_session = new Session();
             $sessToken = $this->startSession($uid);
             if ($sessToken === false) {
-                return false;
+                return null;
             }
 
             // set response cookie
-            $cookie_params = Session::getCookieParams();
+            $cookieParams = Session::getCookieParams();
             $this->connection->__header['Set-Cookie'] = [Session::$name . '=' . $sessToken
-                . (empty($cookie_params['domain']) ? '' : '; Domain=' . $cookie_params['domain'])
-                . (empty($cookie_params['lifetime']) ? '' : '; Max-Age=' . $cookie_params['lifetime'])
-                . (empty($cookie_params['path']) ? '' : '; Path=' . $cookie_params['path'])
-                . (empty($cookie_params['samesite']) ? '' : '; SameSite=' . $cookie_params['samesite'])
-                . (!$cookie_params['secure'] ? '' : '; Secure')
-                . (!$cookie_params['httponly'] ? '' : '; HttpOnly')];
+                . (empty($cookieParams['domain']) ? '' : '; Domain=' . $cookieParams['domain'])
+                . (empty($cookieParams['lifetime']) ? '' : '; Max-Age=' . $cookieParams['lifetime'])
+                . (empty($cookieParams['path']) ? '' : '; Path=' . $cookieParams['path'])
+                . (empty($cookieParams['samesite']) ? '' : '; SameSite=' . $cookieParams['samesite'])
+                . (!$cookieParams['secure'] ? '' : '; Secure')
+                . (!$cookieParams['httponly'] ? '' : '; HttpOnly')];
         }
         return $this->_session;
     }
 
     // start Session
-    public function startSession($uid = null): bool|string
+    public function startSession($uid = null): mixed
     {
         if ($this->connection === null) {
             Worker::safeEcho('Request->session() fail, header already send');
-            $this->_sess_errno = Session::ERR_LOSE_CONNECT;
+            $this->_sess_errno = SessionError::ERR_LOSE_CONNECT;
             return false;
         }
 
@@ -67,14 +67,15 @@ class HttpRequest extends Request
         if ($sessToken) {
             $token = @json_decode(@base64_decode($sessToken), true);
             if (empty($token)) {
-                $this->_sess_errno = Session::ERR_INVALID_SESS_TOKEN;
+                $this->_sess_errno = SessionError::ERR_INVALID_SESS_TOKEN;
                 return false;
             }
+
             // check the token keys
             // format: {"uid":"289","seed":"1661999704.960527","addr":1032967450,"sign":"102516669ed4de26576fe4ed6f464bacd76a717b510d1251fe0fffc7fc00ced2"}
             foreach (['uid', 'seed', 'addr', 'sign'] as $val) {
                 if (!isset($token[$val])) {
-                    $this->_sess_errno = Session::ERR_INVALID_SESS_TOKEN;
+                    $this->_sess_errno = SessionError::ERR_INVALID_SESS_TOKEN;
                     return false;
                 }
             }
@@ -82,32 +83,13 @@ class HttpRequest extends Request
             // check token sign
             $sign = Session::buildSign($token['uid'], $token['seed'], $token['addr']);
             if (strcmp($sign, $token['sign']) !== 0) {
-                $this->_sess_errno = Session::ERR_INVALID_SESS_TOKEN;
+                $this->_sess_errno = SessionError::ERR_INVALID_SESS_TOKEN;
                 return false;
             }
 
             // check if the ip address is changed
             if ($addr != $token['addr']) {
-                $this->_sess_errno = Session::ERR_ADDR_CHANGED;
-                return false;
-            }
-
-            // session expired check
-            $client = $this->_session->getClient($token['seed']);
-            if ($client === false) {
-                $this->_sess_errno === Session::ERR_SESS_EXPIRED;
-                return false;
-            }
-
-            // check if the client is offline
-            if ($client['status'] === Session::C_STATUS_OFF) {
-                $this->_sess_errno = Session::ERR_PUSHED_OFFLINE;
-                return false;
-            }
-
-            // check if the device change
-            if (strcmp($client['device'], $device) !== 0) {
-                $this->_sess_errno = Session::ERR_DEVICE_CHANGED;
+                $this->_sess_errno = SessionError::ERR_ADDR_CHANGED;
                 return false;
             }
 
@@ -130,11 +112,36 @@ class HttpRequest extends Request
                 'uid' => $uid,
                 'addr' => $addr,
                 'device' => $device,
+                'status' => Session::C_STATUS_OK,
                 'update-at' => time()
             ]);
+        } else {
+            // session expired check
+            $client = $this->_session->getClient($token['seed']);
+            if ($client === false) {
+                $this->_sess_errno = SessionError::ERR_SESS_EXPIRED;
+                return false;
+            }
+
+            // check if the client is offline
+            if ($client['status'] === Session::C_STATUS_OFF) {
+                $this->_sess_errno = SessionError::ERR_PUSHED_OFFLINE;
+                return false;
+            }
+
+            // check if the device change
+            if (strcmp($client['device'], $device) !== 0) {
+                $this->_sess_errno = SessionError::ERR_DEVICE_CHANGED;
+                return false;
+            }
         }
 
         return $sessToken;
+    }
+
+    public function getSessionErrNo()
+    {
+        return $this->_sess_errno;
     }
 
     /**

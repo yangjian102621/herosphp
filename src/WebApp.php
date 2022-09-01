@@ -23,6 +23,8 @@ use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
 use Workerman\Worker;
 
+define('X_POWER', 'Herosphp/4.0.0'); // define framework version
+
 /**
  * WebApp main program
  *
@@ -42,11 +44,21 @@ class WebApp
 
     public static function run(): void
     {
-        // loading app configs
-        $config = Config::getValue('app', 'server');
-        if (!empty($config)) {
-            static::$_config = array_merge(static::$_config, $config);
+        if (version_compare(PHP_VERSION, '8.1.0', '<')) {
+            print_warning('require PHP > 8.1.0 !');
+            exit();
         }
+
+        // loading app configs
+        $config = Config::get('app');
+        if (!empty($config)) {
+            static::$_config = array_merge(static::$_config, $config['server']);
+        }
+
+        // set timezone
+        date_default_timezone_set($config['timezone']);
+        // set error report level
+        error_reporting($config['error_reporting']);
 
         static::startServer();
     }

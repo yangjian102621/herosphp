@@ -29,7 +29,7 @@ abstract class BaseController extends Template
     protected function view(string $template, array $data): HttpResponse
     {
         $html = $this->getExecutedHtml($template, $data);
-        return new HttpResponse(200, ['Content-Type' => 'text/html'], $html);
+        return new HttpResponse(200, ['Content-Type' => 'text/html', 'X-Powered-By' => X_POWER], $html);
     }
 
     protected function json(array|JsonVo $data): HttpResponse
@@ -37,7 +37,7 @@ abstract class BaseController extends Template
         if (is_array($data)) {
             return new HttpResponse(
                 200,
-                ['Content-Type' => 'application/json'],
+                ['Content-Type' => 'application/json', 'X-Powered-By' => X_POWER],
                 JsonItem::create($data['code'], $data['message'], $data['data'])->toString()
             );
         } elseif ($data instanceof JsonVo) {

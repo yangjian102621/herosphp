@@ -24,8 +24,9 @@ class TestController extends BaseController
     public function session(HttpRequest $request)
     {
         $session = $request->session(123);
-        if ($session === false) {
-            throw new SessionException('Failed to start the session');
+        if ($session === null) {
+            var_dump($request->getSessionErrNo());
+            return;
         }
 
         $session->set('name', 'value');

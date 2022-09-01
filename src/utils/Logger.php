@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace herosphp\utils;
 
 use herosphp\exception\HeroException;
+use Throwable;
 
 /**
  * 日志工具类
@@ -58,8 +59,8 @@ class Logger
 
     private static function _log(string $type, mixed $message): void
     {
-        if ($message instanceof HeroException) {
-            $message = $message->toString();
+        if ($message instanceof Throwable) {
+            $message = $message->__toString();
         } elseif (is_object($message)) {
             $message = serialize($message);
         } elseif (is_array($message)) {
