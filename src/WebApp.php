@@ -35,6 +35,8 @@ class WebApp
 {
     protected static Dispatcher $_dispatcher;
 
+    public static HttpRequest $_request;
+
     // app config
     private static array $_config = [
         'listen' => 'http://0.0.0.0:2345',
@@ -93,6 +95,7 @@ class WebApp
     {
         try {
             $routeInfo = static::$_dispatcher->dispatch($request->method(), $request->path());
+            static::$_request = $request;
             switch ($routeInfo[0]) {
                 case Dispatcher::NOT_FOUND:
                     $file = static::getPublicFile($request->path());
