@@ -33,9 +33,9 @@ define('X_POWER', 'Herosphp/4.0.0'); // define framework version
  */
 class WebApp
 {
-    protected static Dispatcher $_dispatcher;
-
     public static HttpRequest $_request;
+
+    protected static Dispatcher $_dispatcher;
 
     // app config
     private static array $_config = [

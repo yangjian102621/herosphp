@@ -20,7 +20,6 @@ use herosphp\core\Config;
 
 class GF
 {
-
     // get var_dump output and return it as a string
     public static function exportVar(): string
     {

@@ -17,7 +17,6 @@ use Workerman\Protocols\Http\Session\FileSessionHandler;
  */
 class Session
 {
-
     const FIELD_CLIENTS = '__clients__';
 
     const C_STATUS_OK = 1;

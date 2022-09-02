@@ -12,7 +12,6 @@ namespace herosphp\utils;
 
 use CurlHandle;
 use herosphp\exception\HeroException;
-use herosphp\utils\StringUtil;
 
 /**
  * 发送 http 请求类

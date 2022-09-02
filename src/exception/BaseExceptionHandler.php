@@ -2,7 +2,6 @@
 
 namespace herosphp\exception;
 
-use herosphp\core\Config;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
 use herosphp\GF;

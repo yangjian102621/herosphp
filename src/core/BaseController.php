@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace herosphp\core;
 
 use herosphp\utils\StringUtil;
-use herosphp\vo\JsonItem;
 use herosphp\vo\JsonVo;
 
 abstract class BaseController extends Template

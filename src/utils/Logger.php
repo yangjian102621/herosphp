@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace herosphp\utils;
 
-use herosphp\exception\HeroException;
 use herosphp\GF;
 use Throwable;
 

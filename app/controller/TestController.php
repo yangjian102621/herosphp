@@ -35,9 +35,9 @@ class TestController extends BaseController
     #[Get(uri: '/test/log')]
     public function log()
     {
-        Logger::info("This is a info log");
-        Logger::warn("This is a warn log");
-        Logger::error("This is a error log");
+        Logger::info('This is a info log');
+        Logger::warn('This is a warn log');
+        Logger::error('This is a error log');
 
         return 'Logger test, please pay attension to console output.';
     }

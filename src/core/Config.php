@@ -50,9 +50,8 @@ class Config
                 $value = $value[$index];
             }
             return $value;
-        } else {
-            return static::$_data[$name][$key] ?? $default;
         }
+        return static::$_data[$name][$key] ?? $default;
     }
 
     public static function set(string $name, string $key = null, mixed $value)
