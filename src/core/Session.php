@@ -114,18 +114,26 @@ class Session
     // Register a new client
     public function addClient(array $client)
     {
+        if (isset($this->_data[static::FIELD_CLIENTS][$this->_seed])) {
+            return;
+        }
+
         if (
             static::$config['max_clients'] > 0 &&
             count($this->_data[static::FIELD_CLIENTS]) >= static::$config['max_clients']
         ) {
-            $minSeed = '';
-            foreach (array_keys($this->_data[static::FIELD_CLIENTS]) as $key) {
-                if ($key < $minSeed) {
-                    $minSeed = $key;
+            $keys = array_keys($this->_data[static::FIELD_CLIENTS]);
+            $offSeed = '';
+            foreach ($this->_data[static::FIELD_CLIENTS] as $key => $val) {
+                if ($val['status'] === static::C_STATUS_OK) {
+                    $offSeed = $key;
+                    break;
                 }
             }
             // mark this client offline
-            $this->_data[static::FIELD_CLIENTS][$minSeed]['status'] = static::C_STATUS_OFF;
+            if ($offSeed !== '') {
+                $this->_data[static::FIELD_CLIENTS][$offSeed]['status'] = static::C_STATUS_OFF;
+            }
         }
 
         $this->_data[static::FIELD_CLIENTS][$this->_seed] = $client;
@@ -145,6 +153,7 @@ class Session
     public function removeClient(string $seed): void
     {
         unset($this->_data[static::FIELD_CLIENTS][$seed]);
+        $this->_needSave = true;
     }
 
     public function getAllClients(): array

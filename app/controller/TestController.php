@@ -25,12 +25,10 @@ class TestController extends BaseController
     {
         $session = $request->session(123);
         if ($session === null) {
-            var_dump($request->getSessionErrNo());
-            return;
+            return GF::exportVar($request->getSessionErrNo()->getName());
         }
-
         $session->set('name', 'value');
-        return 'Session test';
+        return $this->json($session->getAllClients());
     }
 
     #[Get(uri: '/test/temp')]

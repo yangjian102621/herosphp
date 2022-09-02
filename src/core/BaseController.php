@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
+use herosphp\utils\StringUtil;
 use herosphp\vo\JsonItem;
 use herosphp\vo\JsonVo;
 
@@ -38,7 +39,7 @@ abstract class BaseController extends Template
             return new HttpResponse(
                 200,
                 ['Content-Type' => 'application/json', 'X-Powered-By' => X_POWER],
-                JsonItem::create($data['code'], $data['message'], $data['data'])->toString()
+                StringUtil::jsonEncode($data)
             );
         } elseif ($data instanceof JsonVo) {
             return new HttpResponse(200, ['Content-Type' => 'application/json'], $data->toString());
