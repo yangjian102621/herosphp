@@ -178,4 +178,47 @@ class HttpRequest extends Request
     {
         return str_contains($this->header('accept', ''), 'json');
     }
+
+    /**
+     * upload file
+     * @param string $name
+     * @return null|UploadFile[]|UploadFile
+     */
+    public function upload(string $name): array|UploadFile|null
+    {
+        $files = parent::file($name);
+        if (null === $files) {
+            return  null;
+        }
+        if (is_array(current($files))) {
+            return $this->parseFiles($files);
+        }
+        return $this->parseFile($files);
+    }
+
+    /**
+     * @param array $files
+     * @return array
+     */
+    protected function parseFiles(array $files): array
+    {
+        $uploadFiles = [];
+        foreach ($files as $key => $file) {
+            if (is_array(current($file))) {
+                $uploadFiles[$key] = $this->parseFiles($file);
+            } else {
+                $uploadFiles[$key] = $this->parseFile($file);
+            }
+        }
+        return $uploadFiles;
+    }
+
+    /**
+     * @param $file
+     * @return UploadFile
+     */
+    protected function parseFile($file): UploadFile
+    {
+        return new UploadFile($file['tmp_name'], $file['name'], $file['type'], $file['error']);
+    }
 }
