@@ -23,7 +23,7 @@ class Config
     private static string $_extension = '.config.php';
 
     // get configs with specified config filename
-    public static function get(string $name, string $key = null, string $default = null): mixed
+    public static function get(string $name, string $key = null, mixed $default = null): mixed
     {
         if (!isset(static::$_data[$name])) {
             $file = CONFIG_PATH . $name . static::$_extension;
