@@ -27,7 +27,7 @@ class Logger
 
     public static function init(): void
     {
-        static::$_log_dir = RUNTIME_PATH . 'logs/';
+        static::$_log_dir = GF::getAppConfig('log_path');
         if (!file_exists(static::$_log_dir)) {
             FileUtil::makeFileDirs(static::$_log_dir);
         }

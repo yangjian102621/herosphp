@@ -10,6 +10,7 @@ use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
 use herosphp\GF;
 use herosphp\utils\HttpUtil;
+use herosphp\utils\Logger;
 
 #[Controller(TestController::class)]
 class TestController extends BaseController
@@ -29,6 +30,16 @@ class TestController extends BaseController
         }
         $session->set('name', 'value');
         return $this->json($session->getAllClients());
+    }
+
+    #[Get(uri: '/test/log')]
+    public function log()
+    {
+        Logger::info("This is a info log");
+        Logger::warn("This is a warn log");
+        Logger::error("This is a error log");
+
+        return 'Logger test, please pay attension to console output.';
     }
 
     #[Get(uri: '/test/temp')]

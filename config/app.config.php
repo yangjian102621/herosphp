@@ -9,6 +9,8 @@ return [
 
   'template' => ['rules' => [], 'skin' => 'default'],
 
+  'log_path' => '/tmp/logs/',
+
   // server configs
   'server' => [
     'listen' => 'http://0.0.0.0:2345',
