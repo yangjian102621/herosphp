@@ -33,9 +33,6 @@ enum SessionError: int
         // if login client number > max_client, the first one will be pushed off
     case ERR_PUSHED_OFFLINE = 5;
 
-        // session expired, data be cleaned
-    case ERR_SESS_EXPIRED = 6;
-
     public function getName(): string
     {
         return match ($this) {
@@ -45,7 +42,6 @@ enum SessionError: int
             static::ERR_ADDR_CHANGED => 'client address changed',
             static::ERR_DEVICE_CHANGED => 'client device changed',
             static::ERR_PUSHED_OFFLINE => 'client have be pushed off',
-            static::ERR_SESS_EXPIRED => 'session expired'
         };
     }
 }
