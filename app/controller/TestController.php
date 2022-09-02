@@ -8,7 +8,7 @@ use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
 use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
-use herosphp\exception\SessionException;
+use herosphp\GF;
 use herosphp\utils\HttpUtil;
 
 #[Controller(TestController::class)]
@@ -36,6 +36,6 @@ class TestController extends BaseController
     #[Get(uri: '/test/temp')]
     public function temp(HttpRequest $request)
     {
-        return var_export_all($request->connection->getRemoteIp());
+        return GF::exportVar($request->connection->getRemoteIp());
     }
 }

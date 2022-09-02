@@ -13,6 +13,6 @@ namespace herosphp\exception;
 /**
  * @author RockYang<yangjian102621@gmail.com>
  */
-class SessionException extends HeroException
+class RouterException extends HeroException
 {
 }

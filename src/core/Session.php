@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace herosphp\core;
 
 use Workerman\Protocols\Http\Session\FileSessionHandler;
-use Workerman\Protocols\Http\Session\SessionHandlerInterface;
 
 /**
  * Class Session
@@ -212,8 +211,8 @@ class Session
     // Init session
     public static function init(): void
     {
-        if (($gc_probability = (int)ini_get('session.gc_probability')) && ($gc_divisor = (int)ini_get('session.gc_divisor'))) {
-            static::$gcProbability = [$gc_probability, $gc_divisor];
+        if (($gcProbability = (int)ini_get('session.gc_probability')) && ($gcDivisor = (int)ini_get('session.gc_divisor'))) {
+            static::$gcProbability = [$gcProbability, $gcDivisor];
         }
 
         $config = Config::get('session');
@@ -223,8 +222,8 @@ class Session
 
         if ($config['lifetime'] > 0) {
             static::$lifetime = $config['lifetime'];
-        } elseif ($gc_max_life_time = ini_get('session.gc_maxlifetime')) {
-            static::$lifetime = (int)$gc_max_life_time;
+        } elseif ($gcMaxLifetime = ini_get('session.gc_maxlifetime')) {
+            static::$lifetime = (int)$gcMaxLifetime;
         }
 
         static::$cookieLifetime = $config['lifetime'];

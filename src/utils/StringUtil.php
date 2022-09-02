@@ -14,6 +14,9 @@
 
 namespace herosphp\utils;
 
+use herosphp\exception\HeroException;
+use herosphp\GF;
+
 class StringUtil
 {
     public const UUID_LOCK_KEY = 'herosphp_uuid_lock_key';
@@ -36,7 +39,7 @@ class StringUtil
             }
 
             //获取服务器节点机器 ID
-            $mid = get_app_config('machine_id');
+            $mid = GF::getAppConfig('machine_id');
             if (!$mid) {
                 $mid = 0x01;
             }
@@ -49,7 +52,7 @@ class StringUtil
                 $msec
             );
         }
-        E('failed to aquire the lock.');
+        throw new HeroException('failed to aquire the lock.');
     }
 
     public static function jsonEncode($array)
@@ -105,7 +108,7 @@ class StringUtil
                 'b' => hexdec(substr($color, 4, 2))
             ];
 
-        //2. 三位数表示形式
+            //2. 三位数表示形式
         } else {
             $color = $hexColor;
             $r = substr($color, 0, 1) . substr($color, 0, 1);

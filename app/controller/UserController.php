@@ -13,6 +13,7 @@ use herosphp\annotation\RequestMap;
 use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
+use herosphp\GF;
 use herosphp\utils\Logger;
 
 #[Controller(IndexAction::class)]
@@ -33,7 +34,7 @@ class UserController extends BaseController
         Logger::info('Not implemented yet.');
         Logger::warn('Not implemented yet.');
         Logger::error('Not implemented yet.');
-        return var_export_all($username, $request);
+        return GF::exportVar($username, $request);
     }
 
     #[Get(uri: ['/news/get', '/news/fetch'])]

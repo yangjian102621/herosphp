@@ -2,8 +2,10 @@
 
 namespace herosphp\exception;
 
+use herosphp\core\Config;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
+use herosphp\GF;
 use herosphp\utils\Logger;
 use herosphp\utils\StringUtil;
 use Throwable;
@@ -33,7 +35,7 @@ abstract class BaseExceptionHandler implements ExceptionHandlerInterface
      */
     public function render(HttpRequest $request, Throwable $e): HttpResponse
     {
-        $_debug = get_app_config('debug');
+        $_debug = GF::getAppConfig('debug');
         $code = $e->getCode();
         if ($request->expectsJson()) {
             $json = ['code' => $code ?: 500, 'msg' => $_debug ? $e->getMessage() : 'Server internal error'];

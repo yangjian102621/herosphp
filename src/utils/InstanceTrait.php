@@ -14,7 +14,7 @@ trait InstanceTrait
     public static function getInstance(bool $refresh = false): static
     {
         $key = static::class;
-        if (! $refresh && isset(static::$_instances[$key]) && static::$_instances[$key] instanceof static) {
+        if (!$refresh && isset(static::$_instances[$key]) && static::$_instances[$key] instanceof static) {
             return static::$_instances[$key];
         }
         $client = new static();

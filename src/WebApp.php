@@ -17,6 +17,7 @@ use herosphp\core\Config;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
 use herosphp\core\Router;
+use herosphp\exception\RouterException;
 use herosphp\utils\Logger;
 use Throwable;
 use Workerman\Connection\TcpConnection;
@@ -45,7 +46,7 @@ class WebApp
     public static function run(): void
     {
         if (version_compare(PHP_VERSION, '8.1.0', '<')) {
-            print_warning('require PHP > 8.1.0 !');
+            GF::printWarning('require PHP > 8.1.0 !');
             exit();
         }
 
@@ -120,7 +121,7 @@ class WebApp
                     $connection->send($res);
                     break;
                 default:
-                    E("router parse error for {$request->path()}");
+                    throw new RouterException("router parse error for {$request->path()}");
             }
 
             // catch and handle the exception
@@ -159,7 +160,7 @@ class WebApp
             $exceptionHandler->report($e);
             return $exceptionHandler->render($request, $e);
         } catch (Throwable $e) {
-            if (get_app_config('debug')) {
+            if (GF::getAppConfig('debug')) {
                 Logger::error($e->getMessage());
             }
             return static::response(500, 'Oops, it seems something went wrong.');

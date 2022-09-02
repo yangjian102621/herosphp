@@ -11,7 +11,8 @@ declare(strict_types=1);
 namespace herosphp\utils;
 
 use CurlHandle;
-use herosphp\string\StringUtil;
+use herosphp\exception\HeroException;
+use herosphp\utils\StringUtil;
 
 /**
  * 发送 http 请求类
@@ -140,7 +141,7 @@ class HttpUtil
         $ret = curl_exec($this->_handler);
         curl_close($this->_handler);
         if ($ret == false) {
-            E('cURLException:' . curl_error($this->_handler));
+            throw new HeroException('cURLException:' . curl_error($this->_handler));
         }
 
         if ($this->_return_header) {

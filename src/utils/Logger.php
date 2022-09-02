@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace herosphp\utils;
 
 use herosphp\exception\HeroException;
+use herosphp\GF;
 use Throwable;
 
 /**
@@ -31,7 +32,7 @@ class Logger
             FileUtil::makeFileDirs(static::$_log_dir);
         }
 
-        if (get_app_config('debug')) {
+        if (GF::getAppConfig('debug')) {
             static::$_debug = true;
         }
     }

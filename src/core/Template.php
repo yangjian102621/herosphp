@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
+use herosphp\exception\TempateException;
+use herosphp\GF;
 use herosphp\utils\FileUtil;
 
 /**
@@ -83,14 +85,14 @@ class Template
 
     public function __construct()
     {
-        $configs = Config::getValue('app', 'template');
+        $configs = GF::getAppConfig('template');
         $skin = $configs['skin'];
 
         if (!empty($configs['rules'])) {
             $this->addRules($configs['rules']);
         }
 
-        $debug = Config::getValue('app', 'debug');
+        $debug = GF::getAppConfig('debug');
         if ($debug == true) {
             static::$_cache = false;
         } else {
@@ -110,21 +112,21 @@ class Template
     }
 
     // 获取页面执行后的代码
-    protected function getExecutedHtml($_tempFile, $_tempVar): string
+    protected function getExecutedHtml($file, $data): string
     {
-        if (empty($_tempFile)) {
-            E('Template file is needed.');
+        if (empty($file)) {
+            throw new TempateException('Template file is needed.');
         }
 
-        $tempFile = $this->_temp_dir . $_tempFile . static::$_temp_suffix;
-        $compileFile = $this->_compile_dir . $_tempFile . '.php';
+        $tempFile = $this->_temp_dir . $file . static::$_temp_suffix;
+        $compileFile = $this->_compile_dir . $file . '.php';
         if (!file_exists($tempFile)) {
-            E("template file {$tempFile} not found.");
+            throw new TempateException("template file {$tempFile} not found.");
         }
 
         ob_start();
         $this->_complieTemplate($tempFile, $compileFile);
-        extract($_tempVar);
+        extract($data);
         include $compileFile;
 
         $html = ob_get_contents();
@@ -166,7 +168,7 @@ class Template
         // compile template
         $content = @file_get_contents($tempFile);
         if ($content === false) {
-            E("failed to load template file {$tempFile}");
+            throw new TempateException("failed to load template file {$tempFile}");
         }
         $content = preg_replace(array_keys(static::$_temp_rules), static::$_temp_rules, $content);
 
@@ -177,7 +179,7 @@ class Template
 
         // create compile file
         if (!file_put_contents($compileFile, $content, LOCK_EX)) {
-            E("failed to create compiled file {$compileFile}");
+            throw new TempateException("failed to create compiled file {$compileFile}");
         }
     }
 }

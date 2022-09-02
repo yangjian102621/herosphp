@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
+/**
+ * Session error Enum
+ */
 enum SessionError: int
 {
 
