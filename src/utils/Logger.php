@@ -75,15 +75,15 @@ class Logger
 
         switch ($type) {
             case 'warn':
-                printf("%s \033[33m\033[1m[WARN] \033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                static::$_debug && printf("%s \033[33m\033[1m[WARN] \033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
                 $log = sprintf("%s [WARN] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
                 break;
             case 'error':
-                printf("%s \033[31m\033[1m[ERROR]\033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                static::$_debug && printf("%s \033[31m\033[1m[ERROR]\033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
                 $log = sprintf("%s [ERROR] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
                 break;
             default:
-                printf("%s \033[36m\033[1m[INFO] \033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                static::$_debug && printf("%s \033[36m\033[1m[INFO] \033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
                 $log = sprintf("%s [INFO] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
         }
 
