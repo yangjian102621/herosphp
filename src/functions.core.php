@@ -64,7 +64,7 @@ function E($message)
 }
 
 // get current time
-function timer()
+function timer(): float
 {
     [$msec, $sec] = explode(' ', microtime());
     return ((float)$msec + (float)$sec);
@@ -77,7 +77,7 @@ function get_app_config($key)
 }
 
 // get cmd args
-function get_cli_args($argv)
+function get_cli_args($argv): array
 {
     $params = ['__file__' => array_shift($argv), '__url__' => array_shift($argv)];
     foreach ($argv as $v) {
@@ -92,3 +92,4 @@ function get_cli_args($argv)
     }
     return $params;
 }
+

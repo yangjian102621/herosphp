@@ -1,11 +1,13 @@
 <?php
-
 use herosphp\WebApp;
 use Workerman\Worker;
 
 require_once 'vendor/autoload.php';
 require_once 'file_watcher.php';
 
+if (!defined('BASE_PATH')) {
+    define('BASE_PATH', __DIR__ . DIRECTORY_SEPARATOR);
+}
 if (!defined('APP_PATH')) {
     define('APP_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'app/');
 }

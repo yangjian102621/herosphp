@@ -67,7 +67,6 @@ class Logger
             $message = StringUtil::jsonEncode($message);
         }
 
-        $log = '';
         $file = '';
         if (static::$_debug) {
             $array = debug_backtrace();

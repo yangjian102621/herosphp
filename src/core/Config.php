@@ -37,16 +37,25 @@ class Config
     }
 
     // get config value with specified key
-    public static function getValue(string $name, string $key): mixed
+    public static function getValue(string $name, string $key, $default = null): mixed
     {
-        $config = [];
         if (!isset(static::$_configs[$name])) {
             $config = static::get($name);
         } else {
             $config = static::$_configs[$name];
         }
-
-        return $config[$key];
+        if (str_contains($key,".")){
+            $keyArray = explode('.', $key);
+            $value = $config;
+            foreach ($keyArray as $index) {
+                if (! isset($value[$index])) {
+                    return $default;
+                }
+                $value = $value[$index];
+            }
+            return $value;
+        }
+        return $config[$key] ?? $default;
     }
 
     public static function set($name, $data): void
