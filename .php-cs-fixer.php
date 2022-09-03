@@ -1,11 +1,10 @@
 <?php
 /**
- * This file is part of monda-worker.
- *
- * @contact  mondagroup_php@163.com
- *
+ * Php-Cs-Fixer config file 
  */
+
 use PhpCsFixer\Config;
+
 return (new Config())
     ->setRiskyAllowed(true)
     ->setRules([

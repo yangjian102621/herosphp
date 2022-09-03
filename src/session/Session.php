@@ -8,8 +8,9 @@
 
 declare(strict_types=1);
 
-namespace herosphp\core;
+namespace herosphp\session;
 
+use herosphp\core\Config;
 use Workerman\Protocols\Http\Session\FileSessionHandler;
 
 /**
@@ -121,7 +122,6 @@ class Session
             static::$config['max_clients'] > 0 &&
             count($this->_data[static::FIELD_CLIENTS]) >= static::$config['max_clients']
         ) {
-            $keys = array_keys($this->_data[static::FIELD_CLIENTS]);
             $offSeed = '';
             foreach ($this->_data[static::FIELD_CLIENTS] as $key => $val) {
                 if ($val['status'] === static::C_STATUS_OK) {

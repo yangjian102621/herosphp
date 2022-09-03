@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
+use herosphp\session\Session;
+use herosphp\session\SessionError;
 use Workerman\Protocols\Http\Request;
 use Workerman\Worker;
 

@@ -6,6 +6,7 @@ namespace app\controller;
 
 use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
+use herosphp\annotation\Post;
 use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
 use herosphp\GF;

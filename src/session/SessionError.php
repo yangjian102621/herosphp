@@ -1,4 +1,5 @@
 <?php
+
 // * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // * Copyright 2014 The Herosphp Authors. All rights reserved.
 // * Use of this source code is governed by a MIT-style license
@@ -7,29 +8,29 @@
 
 declare(strict_types=1);
 
-namespace herosphp\core;
+namespace herosphp\session;
 
 /**
  * Session error Enum
  */
 enum SessionError: int
 {
-    // error codes
+        // error codes
     case OK = 0;
 
-    // client disconnect
+        // client disconnect
     case ERR_LOSE_CONNECT = 1;
 
-    // invalid session token, such as the signature is not corrent
+        // invalid session token, such as the signature is not corrent
     case ERR_INVALID_SESS_TOKEN = 2;
 
-    // client's ip address changed
+        // client's ip address changed
     case ERR_ADDR_CHANGED = 3;
 
-    // client's User-Agent changed
+        // client's User-Agent changed
     case ERR_DEVICE_CHANGED = 4;
 
-    // if login client number > max_client, the first one will be pushed off
+        // if login client number > max_client, the first one will be pushed off
     case ERR_PUSHED_OFFLINE = 5;
 
     public function getName(): string
