@@ -29,6 +29,4 @@ echo '-----------------'.PHP_EOL;
 var_export($a1 === $a4);
 echo '-----------------'.PHP_EOL;
 
-var_export(Config::getValue('database','default',[1,2,3]));
-echo '-----------------'.PHP_EOL;
-var_export(Config::getValue('database','default.password',123));
+var_dump(Config::get('redis', null, []));

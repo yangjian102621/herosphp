@@ -12,7 +12,7 @@ use herosphp\utils\StringUtil;
 #[Controller(name: UploadAction::class)]
 class UploadAction
 {
-    #[Post(uri: '/upload',desc: 'upload demo')]
+    #[Post(uri: '/upload', desc: 'upload demo')]
     public function upload(HttpRequest $request): string
     {
         //src 数组 或者 单个文件

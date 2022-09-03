@@ -70,7 +70,7 @@ class StringUtil
     public static function ul2hump($str)
     {
         $str = trim($str);
-        if (strpos($str, '_') === false) {
+        if (!str_contains($str, '_')) {
             return $str;
         }
 
@@ -124,7 +124,7 @@ class StringUtil
     }
 
     // 生成随机字符串
-    public static function genRandomStr($length)
+    public static function genRandomStr($length): string
     {
         $letters = [
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',

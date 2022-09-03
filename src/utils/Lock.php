@@ -47,7 +47,7 @@ class Lock
         return flock($this->_handler, LOCK_EX);
     }
 
-    public function unlock()
+    public function unlock(): bool
     {
         return flock($this->_handler, LOCK_UN);
     }

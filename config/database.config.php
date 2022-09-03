@@ -2,11 +2,11 @@
 return [
     'default' => [
         'driver' => 'mysql',
-        'host' => '127.0.0.1',
+        'host' => '172.28.1.57', //inet地址
         'port' => '3306',
         'database' => 'test',
-        'username' => 'root',
-        'password' => '12345678',
+        'username' => 'php',
+        'password' => 'monda123',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
         'prefix' => '',
