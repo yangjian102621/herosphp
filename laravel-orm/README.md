@@ -1,4 +1,4 @@
-# laravel-orm
+# herosphp/laravel-orm
 
 `illuminate/database` 适配 `herosphp`
 

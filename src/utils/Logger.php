@@ -87,8 +87,8 @@ class Logger
                 $log = sprintf("%s [INFO] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
         }
 
-        $log_file = static::$_log_dir . date('Y-m-d') . '.log';
-        file_put_contents($log_file, $log, FILE_APPEND | LOCK_EX);
+        $logFile = static::$_log_dir . date('Y-m-d') . '.log';
+        file_put_contents($logFile, $log, FILE_APPEND | LOCK_EX);
     }
 }
 
