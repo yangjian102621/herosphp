@@ -282,6 +282,4 @@ class Table
         $res .= empty($this->borderStyle) ? '' : "\e[0m";
         return $res;
     }
-
-
 }

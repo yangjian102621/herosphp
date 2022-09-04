@@ -236,8 +236,7 @@ class Redis
      */
     public static function __callStatic($name, $arguments)
     {
-        $instance = self::getInstance();
-        return $instance->_redis->{$name}(...$arguments);
+        return self::getInstance()->_redis->{$name}(...$arguments);
     }
 
     /**

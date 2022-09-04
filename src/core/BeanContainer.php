@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace herosphp\core;
 
 use herosphp\annotation\Inject;
+use herosphp\exception\HeroException;
 use ReflectionClass;
 
 /**
@@ -46,6 +47,20 @@ class BeanContainer
     public static function put(string $name, object $value): void
     {
         static::$_instances[$name] = $value;
+    }
+
+    /**
+     * @todo put instance to bean container
+     * @param  string  $name
+     * @param  array  $constructor
+     * @return mixed
+     */
+    public static function make(string $name, array $constructor = []): mixed
+    {
+        if (! class_exists($name)) {
+            throw new HeroException("Class '$name' not found");
+        }
+        return new $name(...array_values($constructor));
     }
 
     public static function build(string $class): object

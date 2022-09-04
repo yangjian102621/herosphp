@@ -16,7 +16,9 @@ namespace herosphp;
  * @author RockYang<yangjian102621@gmail.com>
  */
 
+use herosphp\core\BeanContainer;
 use herosphp\core\Config;
+use Workerman\Worker;
 
 class GF
 {
@@ -71,5 +73,62 @@ class GF
     public static function getAppConfig(string $key)
     {
         return Config::get('app', $key);
+    }
+
+    // process run
+    /** @noinspection PhpObjectFieldsAreOnlyWrittenInspection */
+    public static function processRun(string $processName, array $config = []): void
+    {
+        $listen = $config['listen'] ?? null;
+        $content = $config['content'] ?? [];
+        $worker = new Worker($listen, $content);
+        $propertyMap = [
+            'count',
+            'user',
+            'group',
+            'reloadable',
+            'reusePort',
+            'transport',
+            'protocol',
+        ];
+        $worker->name = $processName;
+        foreach ($propertyMap as $property) {
+            if (isset($config[$property])) {
+                $worker->$property = $config[$property];
+            }
+        }
+        $worker->onWorkerStart = function ($worker) use ($config) {
+            if (isset($config['handler'])) {
+                if (!class_exists($config['handler'])) {
+                    echo "process error: class {$config['handler']} not exists\r\n";
+                    return;
+                }
+                $instance = BeanContainer::make($config['handler'], $config['constructor'] ?? []);
+                static::workerBind($worker, $instance);
+            }
+        };
+    }
+
+    // process bind callback
+    public static function workerBind(Worker $worker, $class)
+    {
+        $callbackMap = [
+            'onConnect',
+            'onMessage',
+            'onClose',
+            'onError',
+            'onBufferFull',
+            'onBufferDrain',
+            'onWorkerStop',
+            'onWebSocketConnect',
+        ];
+        foreach ($callbackMap as $name) {
+            if (method_exists($class, $name)) {
+                $worker->$name = [$class, $name];
+            }
+        }
+        if (method_exists($class, 'onWorkerStart')) {
+            call_user_func([$class, 'onWorkerStart'], $worker);
+        }
     }
 }
