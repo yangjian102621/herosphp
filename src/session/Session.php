@@ -11,7 +11,9 @@ declare(strict_types=1);
 namespace herosphp\session;
 
 use herosphp\core\Config;
+use SessionHandlerInterface;
 use Workerman\Protocols\Http\Session\FileSessionHandler;
+use Workerman\Protocols\Http\Session\SessionHandlerInterface as SessionSessionHandlerInterface;
 
 /**
  * Class Session
@@ -61,7 +63,7 @@ class Session
     protected static string $_handlerClass = FileSessionHandler::class;
 
     // Session handler instance
-    protected static ?object $_handler = null;
+    protected static ?SessionSessionHandlerInterface $_handler = null;
 
     // Session data
     protected array $_data = [];

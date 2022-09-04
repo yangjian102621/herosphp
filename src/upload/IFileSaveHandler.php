@@ -18,5 +18,7 @@ namespace herosphp\upload;
 interface IFileSaveHandler
 {
     // save upload file and return the saved path|url
-    public function save(string $srcFile): string;
+    public function save(string $srcFile, string $filename): string|false;
+
+    public function saveBase64($data, string $filename): string|false;
 }

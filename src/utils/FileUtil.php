@@ -35,8 +35,7 @@ class FileUtil
     // get file extension
     public static function getFileExtension($filename): string
     {
-        $_pos = strrpos($filename, '.');
-        return strtolower(substr($filename, $_pos + 1));
+        return strtolower(substr(strrchr($filename, '.'), 1));
     }
 
     // delete dirs recursively

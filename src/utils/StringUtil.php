@@ -30,7 +30,7 @@ class StringUtil
     {
         $lock = Lock::get(self::UUID_LOCK_KEY);
         if ($lock->tryLock()) {
-            //获取服务器时间，精确到毫秒
+            //获取服务器时间，精确到微秒
             $tArr = explode(' ', microtime());
             $tsec = $tArr[1];
             $msec = $tArr[0];
@@ -43,6 +43,9 @@ class StringUtil
             if (!$mid) {
                 $mid = 0x01;
             }
+
+            usleep(1);
+
             $lock->unlock();
 
             return sprintf(

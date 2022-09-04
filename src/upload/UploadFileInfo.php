@@ -36,21 +36,27 @@ class UploadFileInfo
     public string $mimeType;
 
     // mark for image
-    public bool $isImage;
+    public bool $isImage = false;
 
-    // image width
-    public int $width;
-
-    // image height
-    public int $height;
-
-    public function __construct(string $localName, string $name, string $path, int $fileSize, string $extension, string $mimeType)
+    public function __construct(string $localName, int $fileSize, string $extension, string $mimeType)
     {
         $this->localName = $localName;
-        $this->name = $name;
-        $this->path = $path;
-        $this->filesize = $fileSize;
+        $this->fileSize = $fileSize;
         $this->extension = $extension;
         $this->mimeType = $mimeType;
+    }
+
+    public function getImageSize(): array|bool
+    {
+        if ($this->isImage === false) {
+            return false;
+        }
+
+        $size = getimagesize($this->path);
+        if ($size === false) {
+            return false;
+        }
+
+        return ['width' => $size[0], 'height' => $size[1]];
     }
 }

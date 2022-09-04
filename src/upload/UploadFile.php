@@ -8,6 +8,8 @@
 
 namespace herosphp\upload;
 
+use herosphp\utils\FileUtil;
+
 /**
  * 文件上传类, 支持多文件上传不重名覆盖。支持base64编码文件上传
  * ---------------------------------------------------------------------
@@ -15,240 +17,173 @@ namespace herosphp\upload;
  */
 class UploadFile
 {
-    // 配置参数
+    // Upload configuration
     protected array $_config = [
-        //上传文件的根目录
-        'upload_dir' => RUNTIME_PATH . 'upload/',
-        //允许上传的文件类型
+        // File save handler
+        'save_handler' => FileSaveLocalHandler::class,
+        'handler_config' => ['upload_dir' => RUNTIME_PATH . 'upload'],
+        // Allowed file extension
         'allow_ext' => 'jpg|jpeg|png|gif|txt|pdf|rar|zip|swf|bmp|c|java|mp3',
-        //图片的最大宽度, 0 代表不限制
-        'max_width' => 0,
-        //图片的最大高度, 0 代表不限制
-        'max_height' => 0,
-        //文件的最大尺寸，单位 KiB，0 代表不限制大小
-        'max_size' => 1024,
+        // Allowed max file size, default value is  5MiB,
+        // if no limits, set it to 0
+        'max_size' => 5242880
     ];
 
-    // 返回文件信息，如果上传了多个文件则返回一个 UploadFileInfo 数组
-    protected array|UploadFileInfo $_fileInfo = [];
+    /**
+     * File info of the uploaded file
+     * @see UploadFileInfo
+     */
+    protected array $_fileInfos = [];
 
-    // 上传错误代码
+    // Upload error code
     protected UploadError $_errorNo = UploadError::SUCCESS;
 
-    protected string $_handlerClass = FileSaveLocalHandler::class;
+    // File save handler
     protected ?IFileSaveHandler $_handler = null;
 
-
     // Constructor
-    public function __construct($config = null)
+    public function __construct(array $config = null)
     {
         if ($config !== null) {
             $this->_config = array_merge($this->_config, $config);
         }
-        ini_set('upload_max_filesize', ceil($this->config['max_size'] / 1024) . 'M');
+        ini_set('upload_max_filesize', ceil($this->_config['max_size'] / 1048576) . 'M');
+
+        // init file save handler
+        if ($this->_config['handler_config'] === null) {
+            $this->_handler = new $this->_config['save_handler']();
+        } else {
+            $this->_handler = new $this->_config['save_handler']($this->_config['handler_config']);
+        }
     }
 
-    /**
-     * upload file method.
-     * @param        sting $_field name of form elements.
-     * @param        bool $_base64
-     * @return       mixed false or file info array.
-     */
-    public function upload($_field, $_base64 = false)
+    // Upload file
+    public function upload(array $files = null): array|bool|UploadFileInfo
     {
-        if (!$this->checkUploadDir()) {
-            $this->errNum = 6;
+        if (empty($files)) {
             return false;
         }
 
-        if ($_base64) {
-            $_data = $_POST[$_field];
-            return $this->makeBase64Image($_data);
-        }
-
-        $_localFile = $_FILES[$_field]['name'];
-        if (!$_localFile) {
-            $this->errNum = 10;
-            return false;
-        }
-        $_tempFile = $_FILES[$_field]['tmp_name']; //原来是这样
-        //$_tempFile = str_replace('\\\\', '\\', $_FILES[$_field]['tmp_name']);//MAGIC_QUOTES_GPC=OFF时，做了这样处理：$_FILES = daddslashes($_FILES);图片上传后tmp_name值变成 X:\\Temp\\php668E.tmp，结果move_uploaded_file() 函数判断为不合法的文件而返回FALSE。
-        $_error_no = $_FILES[$_field]['error'];
-        $this->fileInfo['file_type'] = $_FILES[$_field]['type'];
-        $this->fileInfo['local_name'] = $_localFile;
-        $this->fileInfo['file_size'] = $_FILES[$_field]['size'];
-
-        $this->errNum = $_error_no;
-        if ($this->errNum == 0) {
-            $this->checkFileType($_localFile);
-            if ($this->errNum == 0) {
-                $this->checkFileSize($_tempFile);
-                if ($this->errNum == 0) {
-                    if (is_uploaded_file($_tempFile)) {
-                        $_new_filename = $this->getFileName($_localFile);
-                        $this->fileInfo['file_path'] = $this->config['upload_dir'] . DIRECTORY_SEPARATOR . $_new_filename;
-                        if (move_uploaded_file($_tempFile, $this->fileInfo['file_path'])) {
-                            $_filename = $_new_filename;
-                            $this->fileInfo['file_name'] = $_filename;
-                            $pathinfo = pathinfo($this->fileInfo['file_path']);
-                            $this->fileInfo['file_ext'] = $pathinfo['extension'];
-                            $this->fileInfo['raw_name'] = $pathinfo['filename'];
-
-                            return $this->fileInfo;
-                        }
-                        $this->errNum = 7;
-                    }
+        if ($this->_isMultiple($files)) {
+            foreach ($files as $file) {
+                $filename = $this->_doUpload($file);
+                if ($filename !== false) {
+                    $this->_fileInfos[] = $filename;
                 }
             }
+        } else {
+            return $this->_doUpload($files);
         }
 
-        return false;
-    }
-
-    /**
-     * 获取新的文件名
-     * @param $filename
-     * @return string
-     */
-    public function getFileName($filename)
-    {
-        $_ext = $this->getFileExt($filename);
-        return time() . '-' . mt_rand(100000, 999999) . '.' . $_ext;
-    }
-
-    /**
-     * 创建多级目录
-     * @param $path
-     * @return bool
-     */
-    public static function makeFileDirs($path)
-    {
-        //必须考虑 "/" 和 "\" 两种目录分隔符
-        $files = preg_split('/[\/|\\\]/s', $path);
-        $_dir = '';
-        foreach ($files as $value) {
-            $_dir .= $value . DIRECTORY_SEPARATOR;
-            if (!file_exists($_dir)) {
-                mkdir($_dir);
-            }
+        if (empty($this->_fileInfos)) {
+            return false;
         }
-        return true;
-    }
 
-    /**
-     * get upload message
-     * @return       string
-     */
-    public function getUploadMessage()
-    {
-        if ($this->errNum == 9) {
-            return "尺寸超出{$this->config['max_width']}x{$this->config['max_height']}";
+        if (count($this->_fileInfos) !== count($files)) {
+            $this->_errorNo = UploadError::PART_UPLOADED;
         }
+
+        return $this->_fileInfos;
     }
 
-    /**
-     * 接收base64位参数，转存图片
-     * @param $_base64_data
-     * @return bool|string
-     */
-    protected function makeBase64Image($_base64_data)
+    // get upload error code
+    public function getUploadErrNo()
     {
-        $_img = base64_decode($_base64_data);
-        $this->fileInfo['local_name'] = time() . '.png';
-        $_filename = $this->getFileName($this->fileInfo['local_name']);
-        $this->fileInfo['file_name'] = $_filename;
-        $this->fileInfo['file_path'] = $this->config['upload_dir'] . DIRECTORY_SEPARATOR . $_filename;
-        if (file_put_contents($this->fileInfo['file_path'], $_img) && file_exists($this->fileInfo['file_path'])) {
-            $size = getimagesize($this->fileInfo['file_path']);
-            if (($this->config['max_width'] > 0 && $size[0] > $this->config['max_width'])
-                || ($this->config['max_height'] > 0 && $size[1] > $this->config['max_height'])
-            ) {
-                $this->errNum = 9;
-                return false;
-            }
-            $this->fileInfo['image_width'] = $size[0];
-            $this->fileInfo['image_height'] = $size[1];
-            //初始化mimeType
-            $this->fileInfo['file_type'] = 'image/png';
-            $this->fileInfo['is_image'] = 1;
-            $this->fileInfo['file_size'] = filesize($this->fileInfo['file_path']);
+        return $this->_errorNo;
+    }
 
-            $pathinfo = pathinfo($this->fileInfo['file_path']);
-            $this->fileInfo['file_ext'] = $pathinfo['extension'];
-            $this->fileInfo['raw_name'] = $pathinfo['filename'];
-
-            return $this->fileInfo;
+    // upload base64 image data
+    protected function uploadBase64($data): UploadFileInfo|bool
+    {
+        $image = base64_decode($data);
+        if (!$image) {
+            $this->_errorNo = UploadError::IMG_DECODE_FAIL;
+            return false;
         }
-        $this->errNum = 8;
 
-        return false;
-    }
+        $filename = static::_genFilename('png');
+        $fileInfo = new UploadFileInfo($filename, strlen($image), 'png', 'image/png');
+        $fileInfo->name = $filename;
 
-    /**
-     * 检测上传目录
-     * @return bool
-     */
-    protected function checkUploadDir()
-    {
-        if (!file_exists($this->config['upload_dir'])) {
-            return self::makeFileDirs($this->config['upload_dir']);
+        $path = $this->_handler->saveBase64($data, $fileInfo->name);
+        if ($path === false) {
+            $this->_errorNo = UploadError::SAVE_FILE_FAIL;
+            return false;
         }
-        return true;
+
+        if (str_starts_with($fileInfo->mimeType, 'image')) {
+            $fileInfo->isImage = true;
+        }
+
+        $fileInfo->path = $path;
+
+        return $fileInfo;
     }
 
-    /**
-     * 检测文件类型是否合法
-     * @param $filename
-     * @return boolean
-     */
-    protected function checkFileType($filename)
+    // do upload single file
+    protected function _doUpload(array $file): UploadFileInfo|bool
     {
-        if ($this->config['allow_ext'] == '*') {
+        $ext = FileUtil::getFileExtension($file['name']);
+        $check = $this->_checkFileExtension($ext) && $this->_checkFileSize($file['tmp_name']);
+        if ($check === false) {
+            return false;
+        }
+
+        $fileInfo = new UploadFileInfo($file['name'], $file['size'], $ext, $file['type']);
+        $fileInfo->name = static::_genFilename($ext);
+        if (str_starts_with($fileInfo->mimeType, 'image')) {
+            $fileInfo->isImage = true;
+        }
+
+        $path = $this->_handler->save($file['tmp_name'], $fileInfo->name);
+        if ($path === false) {
+            $this->_errorNo = UploadError::SAVE_FILE_FAIL;
+            return false;
+        }
+
+        $fileInfo->path = $path;
+
+        return $fileInfo;
+    }
+
+    // generate a filename
+    protected static function _genFilename(string $ext): string
+    {
+        return bin2hex(pack('d', microtime(true)) . random_bytes(8)) . ".{$ext}";
+    }
+
+    // check if is multiple upload
+    protected function _isMultiple(array $files): bool
+    {
+        $value = array_values($files);
+        $diff = array_diff_key($files, $value);
+        return empty($diff);
+    }
+
+    // check file extension
+    protected function _checkFileExtension(string $ext): bool
+    {
+        if ($this->_config['allow_ext'] === '*') {
             return true;
         }
-        $_ext = strtolower(self::getFileExt($filename));
-        $_allow_ext = explode('|', $this->config['allow_ext']);
-        if (!in_array($_ext, $_allow_ext)) {
-            $this->errNum = 5;
+
+        $ext = strtolower($ext);
+        $allowedExt = explode('|', $this->_config['allow_ext']);
+        if (!in_array($ext, $allowedExt)) {
+            $this->_errorNo = UploadError::EXT_NOT_ALLOW;
             return false;
         }
         return true;
     }
 
-    /**
-     * 获取文件名后缀
-     * @param $filename
-     * @return string
-     */
-    protected function getFileExt($filename)
+    // check file size
+    protected function _checkFileSize($path): bool
     {
-        $_pos = strrpos($filename, '.');
-        return strtolower(substr($filename, $_pos + 1));
-    }
-
-    /**
-     * 检查文件大小是否合格
-     * @param $filename
-     */
-    protected function checkFileSize($filename)
-    {
-        if (filesize($filename) > $this->config['max_size']) {
-            $this->errNum = 1;
+        if (filesize($path) > $this->_config['max_size']) {
+            $this->_errorNo = UploadError::FILESIZE_OVER_LIMIT;
+            return false;
         }
 
-        //如果是图片还要检查图片的宽度和高度是否超标
-        $size = getimagesize($filename);
-        if ($size != false) {
-            $this->fileInfo['is_image'] = 1;
-            if (($this->config['max_width'] > 0 && $size[0] > $this->config['max_width'])
-                || ($this->config['max_height'] > 0 && $size[1] > $this->config['max_height'])
-            ) {
-                $this->errNum = 9;
-            }
-            $this->fileInfo['image_width'] = $size[0];
-            $this->fileInfo['image_height'] = $size[1];
-        } else {
-            $this->fileInfo['is_image'] = 0;
-        }
+        return true;
     }
 }

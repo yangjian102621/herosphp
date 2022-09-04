@@ -10,11 +10,42 @@ declare(strict_types=1);
 
 namespace herosphp\upload;
 
+use herosphp\utils\FileUtil;
+
 class FileSaveLocalHandler implements IFileSaveHandler
 {
+    protected array $_config = [];
 
-  public function save(string $srcFile): string
-  {
-    return '';
-  }
+    public function __construct($config = null)
+    {
+        if ($config !== null) {
+            $this->_config = $config;
+        }
+
+        // create upload dir
+        if (!file_exists($this->_config['upload_dir'])) {
+            FileUtil::makeFileDirs($this->_config['upload_dir']);
+        }
+    }
+
+    public function save(string $srcFile, string $filename): string|false
+    {
+        $dstFile = $this->_config['upload_dir'] . DIRECTORY_SEPARATOR . $filename;
+        // 此处不能用 move_uploaded_file() 函数， 不支持 Workerman 的上传协议
+        if (file_exists($srcFile) && rename($srcFile, $dstFile)) {
+            return $dstFile;
+        }
+
+        return false;
+    }
+
+    public function saveBase64($data, string $filename): string|false
+    {
+        $dstFile = $this->_config['upload_dir'] . DIRECTORY_SEPARATOR . $filename;
+        if (file_put_contents($dstFile, $data)) {
+            return $dstFile;
+        }
+
+        return false;
+    }
 }
