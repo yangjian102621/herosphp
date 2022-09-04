@@ -11,6 +11,7 @@ namespace process;
 
 use Exception;
 use herosCron\Crontab;
+use herosphp\utils\Lock;
 use Workerman\Connection\AsyncTcpConnection;
 use Workerman\Worker;
 
@@ -21,6 +22,8 @@ use Workerman\Worker;
  */
 class CrontabWorker
 {
+
+
     // 定时任务列表 memo:定时任务的备注，该属性为可选属性，没有任何逻辑上的意义，仅供开发人员查阅帮助对该定时任务的理解。
     protected static array $cronList = [
        [
@@ -31,10 +34,10 @@ class CrontabWorker
     ];
 
     /**
-     * @param Worker|null $worker
+     * @param Worker $worker
      * @return void
      */
-    public function onWorkerStart(?Worker $worker): void
+    public function onWorkerStart(Worker $worker): void
     {
         foreach (static::$cronList ?? [] as $cron) {
             new Crontab($cron['rule'], static function () use ($cron) {
@@ -44,19 +47,23 @@ class CrontabWorker
     }
 
     /**
-     *
-     * @todo 加锁，判断当前的任务是否在异步任务存在
      * 投递到异步进程. 一个定时任务执行比较久，间隔设置时间比较短，加锁。一个任务一个时刻仅有一个运行.
      *
      * @throws Exception
      */
     private static function delivery(string $clazz, string $method, string $memo): void
     {
-        $taskConnection = new AsyncTcpConnection('tcp://127.0.0.1:8182');
-        $taskConnection->send(json_encode(['clazz' => $clazz, 'method' => $method]));
-        $taskConnection->onMessage = function (AsyncTcpConnection $asyncTcpConnection, $taskResult) use ($memo) {
-            $asyncTcpConnection->close();
-        };
-        $taskConnection->connect();
+        $lock = Lock::get("{$clazz}{$method}");
+        if ($lock->tryLock()) {
+            $taskConnection = new AsyncTcpConnection('tcp://127.0.0.1:8182');
+            $taskConnection->send(json_encode(['clazz' => $clazz, 'method' => $method]));
+            $taskConnection->onMessage = function (AsyncTcpConnection $asyncTcpConnection, $taskResult) use ($lock) {
+                $asyncTcpConnection->close();
+                $lock->unlock();
+            };
+            $taskConnection->connect();
+        }
+
+
     }
 }
