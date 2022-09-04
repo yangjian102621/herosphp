@@ -10,7 +10,7 @@ use herosphp\annotation\Get;
 #[Controller(DBController::class)]
 class DBController
 {
-    #[Get(uri: '/db/query')]
+    #[Get(uri: '/db/query', desc: '查询')]
     public function index():string
     {
         $str = '';
