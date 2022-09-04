@@ -27,7 +27,7 @@
         "psr-4": {
             "herosphp\\": "./src",
             "app\\": "./app",
-            "process\\": "./process"
+            "process\\": "./libs/process"
         }
     },
     "require-dev": {
@@ -37,15 +37,15 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./laravel-orm"
+            "url": "./libs/laravel-orm"
         },
         {
             "type": "path",
-            "url": "./event"
+            "url": "./libs/event"
         },
         {
             "type": "path",
-            "url": "./contrab"
+            "url": "./libs/contrab"
         }
     ],
     "minimum-stability": "dev"
