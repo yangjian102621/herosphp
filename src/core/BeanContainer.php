@@ -57,12 +57,13 @@ class BeanContainer
      */
     public static function make(string $name, array $constructor = []): mixed
     {
-        if (! class_exists($name)) {
+        if (!class_exists($name)) {
             throw new HeroException("Class '$name' not found");
         }
         return new $name(...array_values($constructor));
     }
 
+    // build a instance with specified class path
     public static function build(string $class): object
     {
         $obj = static::get($class);

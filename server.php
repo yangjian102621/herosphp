@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use herosphp\core\Config;
@@ -14,14 +15,14 @@ define('PUBLIC_PATH', BASE_PATH . 'public/');
 
 require_once BASE_PATH . 'vendor/autoload.php';
 
-// start the web application
+// start the web application worker
 WebApp::run();
 
 // Windows does not support custom processes.
-if (\DIRECTORY_SEPARATOR === '/') {
-    $processes = Config::get(name:'process', default:[]);
+if (str_contains(PHP_OS, 'Linux')) {
+    $processes = Config::get(name: 'process', default: []);
     foreach ($processes as $processName => $config) {
-        if (! ($config['enable'] ?? false)) {
+        if (!($config['enable'] ?? false)) {
             continue;
         }
         GF::processRun($processName, $config);
