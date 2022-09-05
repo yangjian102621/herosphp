@@ -26,7 +26,7 @@ abstract class BaseController extends Template
     {
     }
 
-    protected function view(string $template, array $data): HttpResponse
+    protected function view(string $template, array $data = []): HttpResponse
     {
         $html = $this->getExecutedHtml($template, $data);
         return new HttpResponse(200, ['Content-Type' => 'text/html', 'X-Powered-By' => X_POWER], $html);

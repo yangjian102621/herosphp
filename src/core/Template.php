@@ -150,6 +150,10 @@ class Template
 
     private function _importResource($type, $path)
     {
+        if (!str_starts_with($path, '/')) {
+            $path = '/' . $path;
+        }
+
         $template = static::$_res_temp[$type];
         $result = str_replace('{url}', $path, $template);
         return $result;

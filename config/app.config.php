@@ -13,6 +13,7 @@ return [
 
   // server configs
   'server' => [
+    'name' => 'WebApp',
     'listen' => 'http://0.0.0.0:2345',
     'context' => [],
     'worker_count' => 1,

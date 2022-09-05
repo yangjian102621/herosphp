@@ -93,8 +93,12 @@ class UploadFile
     }
 
     // upload base64 image data
-    protected function uploadBase64($data): UploadFileInfo|bool
+    public function uploadBase64($data): UploadFileInfo|bool
     {
+        if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $data, $match)) {
+            $data = str_replace($match[1], '', $data);
+        }
+
         $image = base64_decode($data);
         if (!$image) {
             $this->_errorNo = UploadError::IMG_DECODE_FAIL;
@@ -105,7 +109,7 @@ class UploadFile
         $fileInfo = new UploadFileInfo($filename, strlen($image), 'png', 'image/png');
         $fileInfo->name = $filename;
 
-        $path = $this->_handler->saveBase64($data, $fileInfo->name);
+        $path = $this->_handler->saveBase64($image, $fileInfo->name);
         if ($path === false) {
             $this->_errorNo = UploadError::SAVE_FILE_FAIL;
             return false;

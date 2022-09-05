@@ -8,9 +8,10 @@
 
 declare(strict_types=1);
 
-namespace herosphp\upload;
+namespace HerosUpload;
 
 use herosphp\exception\HeroException;
+use herosphp\upload\IFileSaveHandler;
 
 /**
  * 阿里云 OSS 文件上传 Handler 实现

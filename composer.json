@@ -20,7 +20,8 @@
         "nikic/fast-route": "^1.3",
         "herosphp/laravel-orm": "*@dev",
         "herosphp/event": "*@dev",
-        "herosphp/crontab": "*@dev"
+        "herosphp/crontab": "*@dev",
+        "herosphp/upload": "*@dev"
     },
     "autoload": {
         "files": [],
@@ -33,7 +34,6 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.4"
     },
-
     "repositories": [
         {
             "type": "path",
@@ -46,6 +46,10 @@
         {
             "type": "path",
             "url": "./libs/contrab"
+        },
+        {
+            "type": "path",
+            "url": "./libs/upload"
         }
     ],
     "minimum-stability": "dev"

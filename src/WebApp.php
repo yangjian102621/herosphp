@@ -73,6 +73,7 @@ class WebApp
         $worker = new Worker(static::$_config['listen'], static::$_config['context']);
         $worker->count = static::$_config['worker_count'];
         $worker->reloadable = static::$_config['reloadable'];
+        $worker->name = static::$_config['name'];
 
         $worker->onWorkerStart = function ($w) {
             static::onWorkerStart($w);
