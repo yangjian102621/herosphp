@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace herosEvent;
 
 class EventStarter
 {
-    protected static bool $debugList = false;
+    protected static bool $debug = false;
 
     /**
      * @var array
@@ -17,7 +18,7 @@ class EventStarter
     public static function init(array $config = []): void
     {
         static::getEvents($config);
-        if (static::$debugList) {
+        if (static::$debug) {
             $table = new Table();
             $table->setCellStyle(Table::COLOR_GREEN);
             foreach (Event::list() as $id => $item) {
@@ -26,7 +27,7 @@ class EventStarter
                 if (is_array($callback) && is_object($callback[0])) {
                     $callback[0] = get_class($callback[0]);
                 }
-                $cb = $callback instanceof \Closure ? 'Closure' : (is_array($callback) ? json_encode($callback) : var_export($callback, 1));
+                $cb = $callback instanceof \Closure ? 'Closure' : (is_array($callback) ? json_encode($callback) : var_export($callback, true));
                 $table->row([
                     'id' => $id,
                     'event_name' => $eventName,

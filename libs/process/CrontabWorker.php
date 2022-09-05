@@ -22,8 +22,6 @@ use Workerman\Worker;
  */
 class CrontabWorker
 {
-
-
     // 定时任务列表 memo:定时任务的备注，该属性为可选属性，没有任何逻辑上的意义，仅供开发人员查阅帮助对该定时任务的理解。
     protected static array $cronList = [
        [
@@ -63,7 +61,5 @@ class CrontabWorker
             };
             $taskConnection->connect();
         }
-
-
     }
 }

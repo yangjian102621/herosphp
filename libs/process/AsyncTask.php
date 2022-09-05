@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace process;
 
-use app\entity\User;
 use app\init\LaravelStarter;
 use herosphp\core\Config;
 

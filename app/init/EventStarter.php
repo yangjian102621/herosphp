@@ -7,7 +7,7 @@ use herosphp\utils\Logger;
 
 class EventStarter extends \herosEvent\EventStarter
 {
-    protected static bool $debugList = true;
+    protected static bool $debug = false;
 }
 
 try {

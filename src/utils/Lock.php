@@ -38,8 +38,7 @@ class Lock
 
     public static function get(string $key): self
     {
-        $lock = new static($key);
-        return $lock;
+        return new static($key);
     }
 
     public function tryLock(): bool

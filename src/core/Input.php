@@ -30,9 +30,8 @@ class Input
     {
         if (isset($this->_data[$name])) {
             return $this->_data[$name];
-        } else {
-            return $default;
         }
+        return $default;
     }
 
     public function getInt(string $name, int $default = 0)

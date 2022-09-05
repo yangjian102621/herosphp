@@ -13,6 +13,7 @@ namespace herosphp;
 use app\exception\ExceptionHandler;
 use FastRoute\Dispatcher;
 use herosphp\annotation\AnnotationParser;
+use herosphp\core\BeanContainer;
 use herosphp\core\Config;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
@@ -180,8 +181,7 @@ class WebApp
     protected static function exceptionResponse(Throwable $e, HttpRequest $request): HttpResponse
     {
         try {
-            //todo: $exceptionHandler instance from container
-            $exceptionHandler = new ExceptionHandler();
+            $exceptionHandler = BeanContainer::get(ExceptionHandler::class);
             $exceptionHandler->report($e);
             return $exceptionHandler->render($request, $e);
         } catch (Throwable $e) {

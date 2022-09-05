@@ -18,7 +18,7 @@ class LaravelDbStarter
 
     protected static bool $autoPageResolver = false;
 
-    protected static bool $debugSQL = false;
+    protected static bool $debug = false;
 
     public static function init(array $connections = [])
     {
@@ -39,7 +39,7 @@ class LaravelDbStarter
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
 
-        if (static::$debugSQL) {
+        if (static::$debug) {
             Db::listen(function ($query) {
                 $sql = $query->sql;
                 $bindings = [];

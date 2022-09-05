@@ -10,6 +10,6 @@ use herosphp\core\Config;
  */
 class LaravelStarter extends LaravelDbStarter
 {
-    protected static bool $debugSQL = true;
+    protected static bool $debug = true;
 }
 LaravelStarter::init(Config::get(name:'database', default: []));

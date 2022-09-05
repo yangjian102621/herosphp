@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 namespace app\exception;
 
+use herosphp\annotation\Component;
 use herosphp\core\HttpRequest;
 use herosphp\core\HttpResponse;
 use herosphp\exception\BaseExceptionHandler;
 use Throwable;
 
-/**
- * 异常处理
- */
+#[Component(name: '异常处理')]
 class ExceptionHandler extends BaseExceptionHandler
 {
     protected array $dontReport = [

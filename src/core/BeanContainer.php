@@ -51,13 +51,17 @@ class BeanContainer
     }
 
     // create an instance with specified constructor args
-    // TODO: should we put instance to bean container?
     public static function make(string $name, array $constructor = []): mixed
     {
         if (!class_exists($name)) {
             throw new HeroException("Class '$name' not found");
         }
-        return new $name(...array_values($constructor));
+        if (isset(static::$_instances[$name])) {
+            return static::$_instances[$name];
+        }
+        $value = new $name(...array_values($constructor));
+        static::put($name, $value);
+        return $value;
     }
 
     /**
