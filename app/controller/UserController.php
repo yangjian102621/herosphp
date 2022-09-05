@@ -25,6 +25,7 @@ class UserController extends BaseController
     #[RequestMap(uri: ['/', '/index'], method: 'GET')]
     public function index(): HttpResponse
     {
+        $this->userService->login();
         return $this->view('index', ['title' => 'Hello, world!']);
     }
 

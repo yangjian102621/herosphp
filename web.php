@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use herosphp\core\Config;
-use herosphp\GF;
 use herosphp\WebApp;
 use Workerman\Worker;
 

@@ -71,7 +71,7 @@ class ClientApp
 
         try {
             $path = static::$_uri;
-            $routeInfo = static::$_dispatcher->dispatch('CMD', static::$_uri);
+            $routeInfo = static::$_dispatcher->dispatch('CMD', $path);
             switch ($routeInfo[0]) {
                 case Dispatcher::NOT_FOUND:
                     GF::printError("Action '{$path}' not found.");
@@ -105,7 +105,18 @@ class ClientApp
 
         // parse parameters
         $query = substr($str, $pos + 1);
-        $params = explode(':', $query);
-        var_dump($params, $query);
+        $arr = explode(':', $query);
+
+        $params = [];
+        foreach ($arr as $val) {
+            if (!str_contains($val, '=')) {
+                continue;
+            }
+
+            $p = explode('=', $val);
+            $params[$p[0]] = $p[1];
+        }
+
+        static::$_params = new Input($params);
     }
 }

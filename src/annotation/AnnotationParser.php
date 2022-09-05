@@ -60,7 +60,7 @@ class AnnotationParser
                 static::scanClassFiles($path);
             } elseif (is_file($path) && str_ends_with($path, '.php') && static::needParse($path)) {
                 // require source class file
-                require_once $path;
+                require $path;
             }
         }
     }
@@ -120,12 +120,9 @@ class AnnotationParser
             }
 
             $attrs = $method->getAttributes(RequestMap::class);
-            if (empty($attrs)) {
-                $attrs = $method->getAttributes(Post::class);
-            }
-            if (empty($attrs)) {
-                $attrs = $method->getAttributes(Get::class);
-            }
+            $attrs = empty($attrs) ? $method->getAttributes(Post::class) : $attrs;
+            $attrs = empty($attrs) ? $method->getAttributes(Get::class) : $attrs;
+            $attrs = empty($attrs) ? $method->getAttributes(Command::class) : $attrs;
             if (empty($attrs)) {
                 continue;
             }
