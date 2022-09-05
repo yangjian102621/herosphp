@@ -26,27 +26,35 @@ class AnnotationParser
 {
     protected static array $_http_method_any = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'];
 
-    public static function run(string $class_dir, string $namespace_prefix): void
-    {
-        static::scanClassFiles($class_dir);
+    protected static array $_parse_class_annotations = [Component::class,Controller::class,Service::class];
 
-        static::parse($namespace_prefix);
+    /**
+     * @param string $classDir
+     * @param string $namespacePrefix
+     * @return void
+     * @throws \ReflectionException
+     */
+    public static function run(string $classDir, string $namespacePrefix): void
+    {
+        static::scanClassFiles($classDir);
+
+        static::parse($namespacePrefix);
     }
 
     /**
      * scan class files
      *
-     * @param $class_dir the dir to be scaned, must be a absolute path
+     * @param string $classDir the dir to be scaned, must be a absolute path
      */
-    public static function scanClassFiles(string $class_dir): void
+    public static function scanClassFiles(string $classDir): void
     {
-        $handler = opendir($class_dir);
+        $handler = opendir($classDir);
         while (($filename = readdir($handler)) !== false) {
             if ($filename === '.' || $filename === '..') {
                 continue;
             }
 
-            $path = $class_dir . DIRECTORY_SEPARATOR . $filename;
+            $path = $classDir . DIRECTORY_SEPARATOR . $filename;
             if (is_dir($path)) {
                 static::scanClassFiles($path);
             } elseif (is_file($path) && str_ends_with($path, '.php')) {
@@ -56,31 +64,56 @@ class AnnotationParser
         }
     }
 
-    // do parse annotations
-    public static function parse(string $namespace_prefix): void
+    /**
+     * do parse annotations
+     * @throws \ReflectionException
+     */
+    public static function parse(string $namespacePrefix): void
     {
         foreach (get_declared_classes() as $class) {
-            if (!str_starts_with($class, $namespace_prefix)) {
+            if (!str_starts_with($class, $namespacePrefix)) {
                 continue;
             }
-
             static::parseAnnotations($class);
         }
     }
 
-    // parse controller annotation
+    /**
+     * parse controller annotation
+     * @throws \ReflectionException
+     */
     public static function parseAnnotations(string $class): void
     {
+        // parse route(request map) annotations
+        $clazz = new \ReflectionClass($class);
+
+        if (!static::checkClassAnnotationExist($clazz)) {
+            return;
+        }
         // build instance
         BeanContainer::build($class);
-
-        // parse route(request map) annotations
-        $clazz = new ReflectionClass($class);
         foreach ($clazz->getAttributes() as $attr) {
             if ($attr->getName() === Controller::class) {
                 static::parseController($clazz);
             }
         }
+    }
+
+    /**
+     * @param ReflectionClass $clazz
+     * @return bool
+     */
+    protected static function checkClassAnnotationExist(\ReflectionClass $clazz): bool
+    {
+        //only build $_parse_class_annotations classes
+        if ($clazz->getAttributes()) {
+            foreach ($clazz->getAttributes() as $attr) {
+                if (in_array($attr->getName(), static::$_parse_class_annotations)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     protected static function parseController(ReflectionClass $clazz): void
