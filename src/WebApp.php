@@ -102,7 +102,11 @@ class WebApp
                     if ($file === '') {
                         $connection->send(static::response(404, 'Page not found.'));
                     } else {
-                        $connection->send((new HttpResponse())->withFile($file));
+                        if (static::notModifiedSince($file)) {
+                            $connection->send((new HttpResponse(304)));
+                        } else {
+                            $connection->send((new HttpResponse())->withFile($file));
+                        }
                     }
                     break;
                 case Dispatcher::METHOD_NOT_ALLOWED:
@@ -147,6 +151,19 @@ class WebApp
             return $file;
         }
         return '';
+    }
+
+    /**
+     * @param string $file
+     * @return bool
+     */
+    protected static function notModifiedSince(string $file): bool
+    {
+        $ifModifiedSince = self::$_request->header('if-modified-since');
+        if ($ifModifiedSince === null || !($mtime = \filemtime($file))) {
+            return false;
+        }
+        return $ifModifiedSince === \gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
     }
 
     /**
