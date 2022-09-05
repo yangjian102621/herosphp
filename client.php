@@ -9,6 +9,7 @@ define('APP_PATH', BASE_PATH . 'app/');
 define('CONFIG_PATH', BASE_PATH . 'config/');
 define('RUNTIME_PATH', BASE_PATH . 'runtime/');
 define('PUBLIC_PATH', BASE_PATH . 'public/');
+define('RUN_CLI_MODE', true);
 
 require_once BASE_PATH . 'vendor/autoload.php';
 

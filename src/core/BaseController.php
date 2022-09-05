@@ -22,7 +22,7 @@ use herosphp\vo\JsonVo;
 
 abstract class BaseController extends Template
 {
-    protected function init()
+    public function __init()
     {
     }
 

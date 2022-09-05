@@ -15,6 +15,11 @@ use herosphp\utils\Logger;
 #[Controller(TestController::class)]
 class TestController extends BaseController
 {
+    public function __init()
+    {
+        var_dump('Controller initialized.');
+    }
+
     #[Get(uri: '/test/http')]
     public function http()
     {

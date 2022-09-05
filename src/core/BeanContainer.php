@@ -49,12 +49,8 @@ class BeanContainer
         static::$_instances[$name] = $value;
     }
 
-    /**
-     * @todo put instance to bean container
-     * @param  string  $name
-     * @param  array  $constructor
-     * @return mixed
-     */
+    // create an instance with specified constructor args
+    // TODO: should we put instance to bean container?
     public static function make(string $name, array $constructor = []): mixed
     {
         if (!class_exists($name)) {
@@ -64,6 +60,7 @@ class BeanContainer
     }
 
     // build a instance with specified class path
+    // auto inject the properties and put it to bean container.
     public static function build(string $class): object
     {
         $obj = static::get($class);

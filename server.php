@@ -19,7 +19,7 @@ require_once BASE_PATH . 'vendor/autoload.php';
 WebApp::run();
 
 // Windows does not support custom processes.
-if (str_contains(PHP_OS, 'Linux')) {
+if (str_contains(PHP_OS, 'WINNT') === false) {
     $processes = Config::get(name: 'process', default: []);
     foreach ($processes as $processName => $config) {
         if (!($config['enable'] ?? false)) {

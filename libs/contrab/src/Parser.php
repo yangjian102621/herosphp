@@ -1,4 +1,5 @@
 <?php
+
 namespace herosCron;
 
 class Parser
@@ -24,12 +25,13 @@ class Parser
      */
     public function parse(string $crontab_string, $start_time = null): array
     {
-        if (! $this->isValid($crontab_string)) {
-            throw new \InvalidArgumentException('Invalid cron string: '.$crontab_string);
+        if (!$this->isValid($crontab_string)) {
+            throw new \InvalidArgumentException('Invalid cron string: ' . $crontab_string);
         }
         $start_time = $start_time ? $start_time : time();
         $date = $this->parseDate($crontab_string);
-        if (in_array((int) date('i', $start_time), $date['minutes'])
+        if (
+            in_array((int) date('i', $start_time), $date['minutes'])
             && in_array((int) date('G', $start_time), $date['hours'])
             && in_array((int) date('j', $start_time), $date['day'])
             && in_array((int) date('w', $start_time), $date['week'])
@@ -48,8 +50,8 @@ class Parser
 
     public function isValid(string $crontab_string): bool
     {
-        if (! preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontab_string))) {
-            if (! preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontab_string))) {
+        if (!preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontab_string))) {
+            if (!preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontab_string))) {
                 return false;
             }
         }
@@ -73,7 +75,7 @@ class Parser
         } elseif (false !== strpos($string, ',')) {
             $exploded = explode(',', $string);
             foreach ($exploded as $value) {
-                if (! $this->between((int) $value, (int) ($min > $start ? $min : $start), (int) $max)) {
+                if (!$this->between((int) $value, (int) ($min > $start ? $min : $start), (int) $max)) {
                     continue;
                 }
                 $result[] = (int) $value;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace process;
@@ -16,7 +17,7 @@ class AsyncTask
     public function run(): string
     {
         $count = 2;
-        echo  date('Y-m-d H:i:s')."-i am running，async worker db query:{$count}".PHP_EOL;
+        //echo  date('Y-m-d H:i:s')."-i am running，async worker db query:{$count}".PHP_EOL;
         return 'success';
     }
 }

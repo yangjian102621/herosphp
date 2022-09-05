@@ -124,6 +124,10 @@ class WebApp
                         array_unshift($vars, $request);
                     }
 
+                    if (method_exists($handler['obj'], '__init')) {
+                        $handler['obj']->__init();
+                    }
+
                     $res = call_user_func_array([$handler['obj'], $handler['method']], $vars);
                     $connection->send($res);
                     break;
