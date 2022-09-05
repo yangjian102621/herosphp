@@ -16,24 +16,28 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
-use herosphp\GF;
-
 abstract class CliBaseController
 {
     public const CLI_PROC_RUNNING = 0;
+
     public const CLI_PROC_EXIT = 1;
 
-    protected static $_signalMapping = array(
-        SIGHUP  => NULL,    // Hangup (POSIX)
-        SIGINT  => NULL,    // Interrupt (ANSI)
-        SIGQUIT => NULL,    // Quit (POSIX)
-        SIGTERM => NULL,    // Termination (ANSI)
-    );
+    protected static $_signalMapping = [
+        SIGHUP,    // Hangup (POSIX)
+        SIGINT,    // Interrupt (ANSI)
+        SIGQUIT,    // Quit (POSIX)
+        SIGTERM,    // Termination (ANSI)
+    ];
 
     // process run state
     protected int $_processState = 0;
 
-    protected function __init()
+    public function __construct()
+    {
+        $this->__init();
+    }
+
+    public function __init()
     {
         $this->_processState = static::CLI_PROC_RUNNING;
 

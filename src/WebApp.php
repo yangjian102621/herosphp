@@ -120,7 +120,7 @@ class WebApp
                     // 1. Controller methods can have no parameters.
                     // 2. The first parameter must be HttpRequest object.
                     // 3. Method parameters should keep the same order of the route path vars
-                    if (in_array(HttpRequest::class, $handler['params'])) {
+                    if (in_array(HttpRequest::class, $handler['params_type'])) {
                         array_unshift($vars, $request);
                     }
 

@@ -11,7 +11,11 @@ declare(strict_types=1);
 namespace herosphp;
 
 use FastRoute\Dispatcher;
+use herosphp\annotation\AnnotationParser;
 use herosphp\core\Input;
+use herosphp\core\Router;
+use herosphp\exception\RouterException;
+use Throwable;
 
 /**
  * Command line client main program
@@ -36,23 +40,23 @@ class ClientApp
         }
 
         // run ONLY for command line
-        if (RUN_CLI_MODE == false ) {
-            GF::printError("Error: Access only for cli sapi.");
+        if (RUN_CLI_MODE === false) {
+            GF::printError('Error: Access only for cli sapi.');
             exit(0);
         }
 
         if (extension_loaded('posix') === false) {
-            GF::printError("Error: Posix extension is required to run the script.");
+            GF::printError('Error: Posix extension is required to run the script.');
             exit(0);
         }
 
         if (extension_loaded('pcntl') === false) {
-            GF::printError("Error: Pcntl extension is required to run the script.");
+            GF::printError('Error: Pcntl extension is required to run the script.');
             exit(0);
         }
 
         // parse uri and query string
-        if ($argc == 1) {
+        if ($argc === 1) {
             GF::printError('Invalid action uri');
             exit(1);
         }
@@ -60,51 +64,32 @@ class ClientApp
         // parse url
         static::_parseArgs($argv[1]);
 
+        // scan the class file and init the router info
+        AnnotationParser::run(APP_PATH, 'app\\');
+        // init dispatcher
+        static::$_dispatcher = Router::getDispatcher();
+
         try {
-            $routeInfo = static::$_dispatcher->dispatch($request->method(), $request->path());
-            static::$_request = $request;
+            $path = static::$_uri;
+            $routeInfo = static::$_dispatcher->dispatch('CMD', static::$_uri);
             switch ($routeInfo[0]) {
                 case Dispatcher::NOT_FOUND:
-                    $file = static::getPublicFile($request->path());
-                    if ($file === '') {
-                        $connection->send(static::response(404, 'Page not found.'));
-                    } else {
-                        if (static::notModifiedSince($file)) {
-                            $connection->send((new HttpResponse(304)));
-                        } else {
-                            $connection->send((new HttpResponse())->withFile($file));
-                        }
-                    }
+                    GF::printError("Action '{$path}' not found.");
                     break;
                 case Dispatcher::METHOD_NOT_ALLOWED:
-                    $connection->send(static::response(405, 'Method not allowed.'));
+                    GF::printError("Method not allowed for '{$path}'.");
                     break;
                 case Dispatcher::FOUND:
                     $handler = $routeInfo[1];
-                    $vars = $routeInfo[2];
-                    // inject request object
-                    // @Note: 路径参数的相对位置应该和方法参数的相对位置保持一致
-                    // 1. Controller methods can have no parameters.
-                    // 2. The first parameter must be HttpRequest object.
-                    // 3. Method parameters should keep the same order of the route path vars
-                    if (in_array(HttpRequest::class, $handler['params'])) {
-                        array_unshift($vars, $request);
-                    }
-
-                    $res = call_user_func_array([$handler['obj'], $handler['method']], $vars);
-                    $connection->send($res);
+                    call_user_func([$handler['obj'], $handler['method']], static::$_params);
                     break;
                 default:
                     throw new RouterException("router parse error for {$request->path()}");
             }
-
-            // catch and handle the exception
         } catch (Throwable $e) {
-            ->send(static::exceptionResponse($e, $request));
+            GF::printError($e->getMessage());
         }
     }
-
-
 
     // parse args
     protected static function _parseArgs(string $str): void

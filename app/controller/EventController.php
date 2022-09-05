@@ -12,7 +12,7 @@ class EventController
     #[Get(uri: '/event/ex', desc: 'demo')]
     public function ex(): string
     {
-        Event::emit('user.login', 'abc');
+        //Event::emit('user.login', 'abc');
         return 'ok';
     }
 }

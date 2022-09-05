@@ -24,21 +24,22 @@ use ReflectionClass;
  */
 class AnnotationParser
 {
-    protected static array $_http_method_any = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'];
+    protected static array $_httpMethodAny = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'];
 
-    protected static array $_parse_class_annotations = [Component::class,Controller::class,Service::class];
+    protected static array $_parseClassAnnotations = [Component::class, Controller::class, Service::class];
 
-    /**
-     * @param string $classDir
-     * @param string $namespacePrefix
-     * @return void
-     * @throws \ReflectionException
-     */
+    // annotation parse enter method
     public static function run(string $classDir, string $namespacePrefix): void
     {
         static::scanClassFiles($classDir);
 
-        static::parse($namespacePrefix);
+        // parse annotations
+        foreach (get_declared_classes() as $class) {
+            if (!str_starts_with($class, $namespacePrefix)) {
+                continue;
+            }
+            static::parseAnnotations($class);
+        }
     }
 
     /**
@@ -64,30 +65,13 @@ class AnnotationParser
         }
     }
 
-    /**
-     * do parse annotations
-     * @throws \ReflectionException
-     */
-    public static function parse(string $namespacePrefix): void
-    {
-        foreach (get_declared_classes() as $class) {
-            if (!str_starts_with($class, $namespacePrefix)) {
-                continue;
-            }
-            static::parseAnnotations($class);
-        }
-    }
-
-    /**
-     * parse controller annotation
-     * @throws \ReflectionException
-     */
+    // do parse annotation
     public static function parseAnnotations(string $class): void
     {
         // parse route(request map) annotations
-        $clazz = new \ReflectionClass($class);
+        $clazz = new ReflectionClass($class);
 
-        if (!static::checkClassAnnotationExist($clazz)) {
+        if (!static::needParse($clazz)) {
             return;
         }
         // build instance
@@ -99,16 +83,13 @@ class AnnotationParser
         }
     }
 
-    /**
-     * @param ReflectionClass $clazz
-     * @return bool
-     */
-    protected static function checkClassAnnotationExist(\ReflectionClass $clazz): bool
+    // check if the class need be parsed
+    protected static function needParse(ReflectionClass $clazz): bool
     {
-        //only build $_parse_class_annotations classes
+        //only build classes with the specified Annotations
         if ($clazz->getAttributes()) {
             foreach ($clazz->getAttributes() as $attr) {
-                if (in_array($attr->getName(), static::$_parse_class_annotations)) {
+                if (in_array($attr->getName(), static::$_parseClassAnnotations)) {
                     return true;
                 }
             }
@@ -140,11 +121,11 @@ class AnnotationParser
             }
 
             $attr = $attrs[0];
-            $params = [];
+            $paramsType = [];
             foreach ($method->getParameters() as $p) {
                 $t = $p->getType()?->getName();
-                if ($p->getType()?->getName() !== null) {
-                    $params[] = $t;
+                if ($t !== null) {
+                    $paramsType[] = $t;
                 }
             }
 
@@ -157,7 +138,7 @@ class AnnotationParser
             switch ($attr->getName()) {
                 case RequestMap::class:
                     if (strtoupper($args['method']) === 'ANY') {
-                        $args['method'] = static::$_http_method_any;
+                        $args['method'] = static::$_httpMethodAny;
                     }
                     break;
                 case Post::class:
@@ -166,10 +147,13 @@ class AnnotationParser
                 case Get::class:
                     $args['method'] = 'GET';
                     break;
+                case Command::class:
+                    $args['method'] = 'CMD';
+                    break;
             }
 
             $obj = BeanContainer::get($clazz->getName());
-            $handler = ['obj' => $obj, 'method' => $method->getName(), 'params' => $params];
+            $handler = ['obj' => $obj, 'method' => $method->getName(), 'params_type' => $paramsType];
             // register route
             if (is_array($args['uri'])) {
                 foreach ($args['uri'] as $val) {

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace app\controller;
 
+use herosphp\annotation\Command;
 use herosphp\annotation\Controller;
 use herosphp\core\CliBaseController;
 
-#[Controller(CliBaseController::class)]
+#[Controller(CommandController::class)]
 class CommandController extends CliBaseController
 {
-    protected function __init()
+    #[Command(uri: '/cli/test')]
+    public function test()
     {
-        var_dump('Controller initialized.');
     }
 }
