@@ -26,7 +26,7 @@ class AnnotationParser
 {
     protected static array $_httpMethodAny = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'];
 
-    protected static array $_parseClassAnnotations = [Component::class, Controller::class, Service::class];
+    protected static array $_parseClassAnnotations = ['#[Component(', '#[Controller(', '#[Service('];
 
     // annotation parse enter method
     public static function run(string $classDir, string $namespacePrefix): void
@@ -58,7 +58,7 @@ class AnnotationParser
             $path = $classDir . DIRECTORY_SEPARATOR . $filename;
             if (is_dir($path)) {
                 static::scanClassFiles($path);
-            } elseif (is_file($path) && str_ends_with($path, '.php')) {
+            } elseif (is_file($path) && str_ends_with($path, '.php') && static::needParse($path)) {
                 // require source class file
                 require_once $path;
             }
@@ -68,14 +68,11 @@ class AnnotationParser
     // do parse annotation
     public static function parseAnnotations(string $class): void
     {
-        // parse route(request map) annotations
-        $clazz = new ReflectionClass($class);
-
-        if (!static::needParse($clazz)) {
-            return;
-        }
         // build instance
         BeanContainer::build($class);
+
+        // parse route(request map) annotations
+        $clazz = new ReflectionClass($class);
         foreach ($clazz->getAttributes() as $attr) {
             if ($attr->getName() === Controller::class) {
                 static::parseController($clazz);
@@ -83,18 +80,31 @@ class AnnotationParser
         }
     }
 
-    // check if the class need be parsed
-    protected static function needParse(ReflectionClass $clazz): bool
+    // check if the class need to be parsed
+    // we ONLY build classes with the specified Annotations
+    protected static function needParse(string $classFile): bool
     {
-        //only build classes with the specified Annotations
-        if ($clazz->getAttributes()) {
-            foreach ($clazz->getAttributes() as $attr) {
-                if (in_array($attr->getName(), static::$_parseClassAnnotations)) {
-                    return true;
+        $handler = fopen($classFile, 'r');
+        if ($handler === false) {
+            throw new HeroException("faild to open class file '{$classFile}'.");
+        }
+
+        $res = false;
+        while (($line = fgets($handler, 1024))) {
+            if (str_starts_with($line, 'class ')) {
+                break;
+            }
+
+            foreach (static::$_parseClassAnnotations as $prefix) {
+                if (str_contains($line, $prefix)) {
+                    $res = true;
+                    break;
                 }
             }
         }
-        return false;
+
+        fclose($handler);
+        return $res;
     }
 
     protected static function parseController(ReflectionClass $clazz): void

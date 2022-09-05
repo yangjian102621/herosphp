@@ -1,17 +1,28 @@
 <?php
+
 declare(strict_types=1);
+
 namespace app\controller;
 
 use app\entity\User;
+use app\init\LaravelStarter;
 use herosLdb\Db;
 use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
+use herosphp\core\BaseController;
+use herosphp\core\Config;
 
 #[Controller(DBController::class)]
-class DBController
+class DBController extends BaseController
 {
+    public function __init()
+    {
+        parent::__init();
+        LaravelStarter::init(Config::get(name: 'database', default: []));
+    }
+
     #[Get(uri: '/db/query', desc: '查询')]
-    public function index():string
+    public function index(): string
     {
         $str = '';
         $count = Db::connection('default')->table('user')->count();
@@ -31,7 +42,7 @@ class DBController
      * http://127.0.0.1:2345/db/page?page=2
      */
     #[Get(uri: '/db/page')]
-    public function page():string
+    public function page(): string
     {
         $str = '';
         $users = User::query()->paginate(1);
