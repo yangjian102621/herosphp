@@ -13,6 +13,7 @@ namespace herosphp\core;
 use herosphp\annotation\Inject;
 use herosphp\exception\HeroException;
 use ReflectionClass;
+use ReflectionException;
 
 /**
  * BeanContainer class
@@ -59,8 +60,11 @@ class BeanContainer
         return new $name(...array_values($constructor));
     }
 
-    // build a instance with specified class path
-    // auto inject the properties and put it to bean container.
+    /**
+     * build a instance with specified class path
+     * auto inject the properties and put it to bean container.
+     * @throws ReflectionException
+     */
     public static function build(string $class): object
     {
         $obj = static::get($class);
@@ -70,7 +74,7 @@ class BeanContainer
 
         $clazz = new ReflectionClass($class);
         $obj = $clazz->newInstance();
-        // scan Inject propertys
+        // scan Inject getProperties
         foreach ($clazz->getProperties() as $property) {
             $_attrs = $property->getAttributes(Inject::class);
             if (empty($_attrs)) {

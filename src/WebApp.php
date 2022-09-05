@@ -59,13 +59,14 @@ class WebApp
         }
 
         // set timezone
-        date_default_timezone_set($config['timezone']);
+        date_default_timezone_set($config['timezone'] ?? 'Asia/Shanghai');
         // set error report level
-        error_reporting($config['error_reporting']);
+        error_reporting($config['error_reporting'] ?? E_ALL);
 
         static::startServer();
     }
 
+    /** @noinspection PhpObjectFieldsAreOnlyWrittenInspection */
     public static function startServer()
     {
         // create a http worker
@@ -87,7 +88,6 @@ class WebApp
     {
         // scan the class file and init the router info
         AnnotationParser::run(APP_PATH, 'app\\');
-
         static::$_dispatcher = Router::getDispatcher();
     }
 
