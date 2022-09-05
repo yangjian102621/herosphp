@@ -44,10 +44,10 @@ class UploadController extends BaseController
         $config = [
             'save_handler' => FileSaveQiniuHandler::class,
             'handler_config' => [
-                'access_key' => 'GNe0CvAqccBXHBJnwEoBDn-MGx607CHViYZ_ZSyj',
-                'secret_key' => '0fGtlEBG7phDSnlr_BkZ3pFxsmCzJHRsIaHekX-Y',
-                'bucket' => 'kindeditor',
-                'domain' => 'http://nk.img.r9it.com/',
+                'access_key' => getenv('QINIU_ACCESS_KEY'),
+                'secret_key' => getenv('QINIU_SECRET_KEY'),
+                'bucket' => getenv('QINIU_BUCKET'),
+                'domain' => getenv('QINIU_DOMAIN'),
             ],
         ];
         $file = new UploadFile($config);
