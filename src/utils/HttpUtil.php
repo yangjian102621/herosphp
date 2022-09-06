@@ -32,10 +32,8 @@ class HttpUtil
     private function __construct()
     {
         $handler = curl_init();
-
         curl_setopt($handler, CURLOPT_HEADER, 0);
         curl_setopt($handler, CURLOPT_RETURNTRANSFER, 1);
-
         $this->_handler = $handler;
     }
 
@@ -142,7 +140,6 @@ class HttpUtil
         if ($ret == false) {
             throw new HeroException('cURLException:' . curl_error($this->_handler));
         }
-
         if ($this->_return_header) {
             $info = curl_getinfo($this->_handler);
             return ['header' => $info, 'body' => $ret];

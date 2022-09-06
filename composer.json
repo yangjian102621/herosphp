@@ -57,5 +57,8 @@
             "url": "./libs/upload"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "suggest": {
+        "ext-event": "For better performance. "
+    }
 }
