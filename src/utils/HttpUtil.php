@@ -115,6 +115,7 @@ class HttpUtil
         if ($params) {
             curl_setopt($this->_handler, CURLOPT_POSTFIELDS, StringUtil::jsonEncode($params));
         }
+
         return $this->_doRequest($url);
     }
 
@@ -140,10 +141,12 @@ class HttpUtil
         if ($ret == false) {
             throw new HeroException('cURLException:' . curl_error($this->_handler));
         }
+
         if ($this->_return_header) {
             $info = curl_getinfo($this->_handler);
             return ['header' => $info, 'body' => $ret];
         }
+
         return $ret;
     }
 }

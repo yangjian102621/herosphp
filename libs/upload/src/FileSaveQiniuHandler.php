@@ -57,20 +57,19 @@ class FileSaveQiniuHandler implements IFileSaveHandler
         if ($err !== null) {
             Logger::warn($err);
             return false;
-        } else {
-            return static::$_config['domain'] . $ret['key'];
         }
+        return static::$_config['domain'] . $ret['key'];
     }
 
     public function saveBase64($data, string $filename): string|false
     {
         // 上传文件服务地址
-        // 华东空间：upload.qiniu.com 
+        // 华东空间：upload.qiniu.com
         // 华北空间: upload-z1.qiniu.com
         // 华南空间: upload-z2.qiniu.com
         // 北美空间: upload-na0.qiniu.com
 
-        $url = "http://upload-z2.qiniu.com/putb64/-1/key/" . base64_encode($filename);
+        $url = 'http://upload-z2.qiniu.com/putb64/-1/key/' . base64_encode($filename);
         $headers = [
             'Content-Type:image/png',
             'Authorization:UpToken ' . static::$_token,
@@ -91,8 +90,7 @@ class FileSaveQiniuHandler implements IFileSaveHandler
         if (isset($ret['error']) && $ret['error'] !== null) {
             Logger::warn($ret['error']);
             return false;
-        } else {
-            return static::$_config['domain'] . $ret['key'];
         }
+        return static::$_config['domain'] . $ret['key'];
     }
 }

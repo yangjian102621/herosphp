@@ -6,9 +6,7 @@ namespace app\controller;
 
 use herosphp\annotation\Action;
 use herosphp\annotation\Command;
-use herosphp\annotation\Controller;
 use herosphp\core\BaseCommand;
-use herosphp\core\CliBaseController;
 use herosphp\core\Input;
 
 #[Command(TestCmd::class)]
