@@ -41,7 +41,7 @@ class FileSaveQiniuHandler implements IFileSaveHandler
     public function save(string $srcFile, string $filename): string|false
     {
         $uploadMgr = new UploadManager();
-        list($ret, $err) = $uploadMgr->putFile(static::$_token, $filename, $srcFile, null, 'application/octet-stream', true, null, 'v2');
+        [$ret, $err] = $uploadMgr->putFile(static::$_token, $filename, $srcFile, null, 'application/octet-stream', true, null, 'v2');
         if ($err !== null) {
             Logger::warn($err);
         } else {

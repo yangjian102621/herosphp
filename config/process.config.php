@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use herosRQueue\Consumer;
 use process\AsyncTaskWorker;
 use process\CrontabWorker;
 use process\Monitor;
@@ -34,5 +35,14 @@ return [
         'listen' => 'tcp://127.0.0.1:8182',
         'handler' => AsyncTaskWorker::class,
         'count' => 1
-    ]
+    ],
+
+    'redis-queue' => [
+        'enable' => true,
+        'handler' => Consumer::class,
+        'count' => 1,
+        'constructor' => [
+            'consumer_dir' => APP_PATH.'queue',
+        ],
+    ],
 ];

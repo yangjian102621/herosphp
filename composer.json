@@ -21,7 +21,8 @@
         "herosphp/laravel-orm": "*@dev",
         "herosphp/event": "*@dev",
         "herosphp/crontab": "*@dev",
-        "herosphp/upload": "*@dev"
+        "herosphp/upload": "*@dev",
+        "herosphp/redis-queue": "*@dev"
     },
     "autoload": {
         "files": [],
@@ -46,6 +47,10 @@
         {
             "type": "path",
             "url": "./libs/contrab"
+        },
+        {
+            "type": "path",
+            "url": "./libs/redis-queue"
         },
         {
             "type": "path",
