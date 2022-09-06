@@ -9,14 +9,14 @@
 declare(strict_types=1);
 
 /**
- * 命令行控制器基类，通过命令行调用 Controller 对应 Action 的操作
+ * 命令行控制器基类
  * ---------------------------------------------------------------------
  * @author yangjian<yangjian102621@gmail.com>
  */
 
 namespace herosphp\core;
 
-abstract class CliBaseController
+abstract class BaseCommand
 {
     public const CLI_PROC_RUNNING = 0;
 
@@ -31,11 +31,6 @@ abstract class CliBaseController
 
     // process run state
     protected int $_processState = 0;
-
-    public function __construct()
-    {
-        $this->__init();
-    }
 
     public function __init()
     {

@@ -13,14 +13,14 @@ namespace herosphp\annotation;
 use Attribute;
 
 /**
- * component annotation
+ * Component annotation
  *
  * @author RockYang<yangjian102621@gmail.com>
  */
 #[Attribute(Attribute::TARGET_CLASS)]
 class Component
 {
-    public function __construct(public string $name)
+    public function __construct(public string $name, public string $desc = '')
     {
     }
 }

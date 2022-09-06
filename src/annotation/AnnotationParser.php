@@ -26,11 +26,18 @@ class AnnotationParser
 {
     protected static array $_httpMethodAny = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'];
 
-    protected static array $_parseClassAnnotations = ['#[Component(', '#[Controller(', '#[Service('];
+    // Annotations that need to be parsed
+    protected static array $_parseClassAnnotations = ['#[Component(', '#[Service('];
 
     // annotation parse enter method
     public static function run(string $classDir, string $namespacePrefix): void
     {
+        if (defined('RUN_WEB_MODE') && RUN_WEB_MODE === true) {
+            static::$_parseClassAnnotations[] = '#[Controller(';
+        } elseif (defined('RUN_CLI_MODE') && RUN_CLI_MODE === true) {
+            static::$_parseClassAnnotations[] = '#[Command(';
+        }
+
         static::scanClassFiles($classDir);
 
         // parse annotations
@@ -74,8 +81,9 @@ class AnnotationParser
         // parse route(request map) annotations
         $clazz = new ReflectionClass($class);
         foreach ($clazz->getAttributes() as $attr) {
-            if ($attr->getName() === Controller::class) {
-                static::parseController($clazz);
+            $name = $attr->getName();
+            if ($name === Controller::class || $name === Command::class) {
+                static::parseRouter($clazz);
             }
         }
     }
@@ -107,7 +115,7 @@ class AnnotationParser
         return $res;
     }
 
-    protected static function parseController(ReflectionClass $clazz): void
+    protected static function parseRouter(ReflectionClass $clazz): void
     {
         foreach ($clazz->getMethods() as $method) {
             if (!$method->isPublic()) {
@@ -122,7 +130,8 @@ class AnnotationParser
             $attrs = $method->getAttributes(RequestMap::class);
             $attrs = empty($attrs) ? $method->getAttributes(Post::class) : $attrs;
             $attrs = empty($attrs) ? $method->getAttributes(Get::class) : $attrs;
-            $attrs = empty($attrs) ? $method->getAttributes(Command::class) : $attrs;
+            $attrs = empty($attrs) ? $method->getAttributes(Action::class) : $attrs;
+
             if (empty($attrs)) {
                 continue;
             }
@@ -154,7 +163,7 @@ class AnnotationParser
                 case Get::class:
                     $args['method'] = 'GET';
                     break;
-                case Command::class:
+                case Action::class:
                     $args['method'] = 'CMD';
                     break;
             }
