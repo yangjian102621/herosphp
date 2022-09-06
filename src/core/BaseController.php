@@ -17,13 +17,41 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
+use app\controller\UserValidate;
+use herosphp\annotation\Validate;
 use herosphp\utils\StringUtil;
 use herosphp\vo\JsonVo;
+use herosphp\WebApp;
 
 abstract class BaseController extends Template
 {
     public function __init()
     {
+    }
+
+    /**
+     * 验证器
+     * @param array $handler
+     * @return void
+     * @throws \ReflectionException
+     */
+    final public function __validate(array $handler)
+    {
+        $reflectionMethod = new \ReflectionMethod($handler['obj'], $handler['method']);
+        $reflectionAttributes = $reflectionMethod->getAttributes(Validate::class);
+        if (!$reflectionAttributes) {
+            return;
+        }
+        foreach ($reflectionAttributes as $validAttribute) {
+            /** @var Validate $methodValidInstance */
+            $methodValidInstance = $validAttribute->newInstance();
+            /** @var UserValidate $methodVInstance*/
+            $methodVInstance = new ($methodValidInstance->class);
+            if (! $methodVInstance instanceof \herosphp\validate\Validate) {
+                continue;
+            }
+            $methodVInstance->scene($methodValidInstance->scene)->check([...WebApp::$_request->get(),...WebApp::$_request->post()]);
+        }
     }
 
     protected function view(string $template, array $data = []): HttpResponse

@@ -24,10 +24,9 @@ class ExceptionHandler extends BaseExceptionHandler
      */
     public function render(HttpRequest $request, Throwable $e): HttpResponse
     {
-        switch (get_class($e)) {
-            case AuthenticationException::class:
-                return new HttpResponse(status: 200, body: 'auth');
-                break;
-        }
+        return match (get_class($e)) {
+            AuthenticationException::class => new HttpResponse(status: 200, body: 'auth'),
+            default => new HttpResponse(status: 500, body: $e->getMessage()),
+        };
     }
 }

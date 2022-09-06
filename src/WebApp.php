@@ -130,6 +130,10 @@ class WebApp
                         $handler['obj']->__init();
                     }
 
+                    // web app validate
+                    if (method_exists($handler['obj'], '__validate')) {
+                        $handler['obj']->__validate($handler);
+                    }
                     $res = call_user_func_array([$handler['obj'], $handler['method']], $vars);
                     $connection->send($res);
                     break;
