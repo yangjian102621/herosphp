@@ -46,6 +46,12 @@ class FileSaveLocalHandler implements IFileSaveHandler
 
     public function saveBase64($data, string $filename): string|false
     {
+        $image = base64_decode($data);
+        if (!$image) {
+            $this->_errorNo = UploadError::IMG_DECODE_FAIL;
+            return false;
+        }
+
         $dstFile = $this->_config['upload_dir'] . DIRECTORY_SEPARATOR . $filename;
         if (file_put_contents($dstFile, $data)) {
             return $dstFile;

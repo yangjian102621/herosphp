@@ -99,17 +99,11 @@ class UploadFile
             $data = str_replace($match[1], '', $data);
         }
 
-        $image = base64_decode($data);
-        if (!$image) {
-            $this->_errorNo = UploadError::IMG_DECODE_FAIL;
-            return false;
-        }
-
         $filename = static::_genFilename('png');
-        $fileInfo = new UploadFileInfo($filename, strlen($image), 'png', 'image/png');
+        $fileInfo = new UploadFileInfo($filename, strlen($data), 'png', 'image/png');
         $fileInfo->name = $filename;
 
-        $path = $this->_handler->saveBase64($image, $fileInfo->name);
+        $path = $this->_handler->saveBase64($data, $fileInfo->name);
         if ($path === false) {
             $this->_errorNo = UploadError::SAVE_FILE_FAIL;
             return false;

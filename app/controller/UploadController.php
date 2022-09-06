@@ -17,6 +17,28 @@ use HerosUpload\FileSaveQiniuHandler;
 #[Controller(name: UploadAction::class)]
 class UploadController extends BaseController
 {
+    protected static array $_uploadConfig = [];
+
+    public function __init()
+    {
+        parent::__init();
+
+        static::$_uploadConfig = [
+            'save_handler' => FileSaveLocalHandler::class,
+            'handler_config' => ['upload_dir' => RUNTIME_PATH . 'upload'],
+        ];
+
+        static::$_uploadConfig = [
+            'save_handler' => FileSaveQiniuHandler::class,
+            'handler_config' => [
+                'access_key' => getenv('QINIU_ACCESS_KEY'),
+                'secret_key' => getenv('QINIU_SECRET_KEY'),
+                'bucket' => getenv('QINIU_BUCKET'),
+                'domain' => getenv('QINIU_DOMAIN'),
+            ],
+        ];
+    }
+
     #[Get(uri: '/upload', desc: 'upload demo')]
     public function upload(): HttpResponse
     {
@@ -26,31 +48,7 @@ class UploadController extends BaseController
     #[Post(uri: '/upload/do')]
     public function doUpload(HttpRequest $request)
     {
-        $config = [
-            'save_handler' => FileSaveLocalHandler::class,
-            'handler_config' => ['upload_dir' => RUNTIME_PATH . 'upload'],
-        ];
-        $file = new UploadFile($config);
-        $info = $file->upload($request->file('src'));
-        if ($file->getUploadErrNo() === UploadError::SUCCESS) {
-            return GF::exportVar($info);
-        }
-        return '文件上传失败.';
-    }
-
-    #[Post(uri: '/upload/qiniu')]
-    public function qiniu(HttpRequest $request)
-    {
-        $config = [
-            'save_handler' => FileSaveQiniuHandler::class,
-            'handler_config' => [
-                'access_key' => getenv('QINIU_ACCESS_KEY'),
-                'secret_key' => getenv('QINIU_SECRET_KEY'),
-                'bucket' => getenv('QINIU_BUCKET'),
-                'domain' => getenv('QINIU_DOMAIN'),
-            ],
-        ];
-        $file = new UploadFile($config);
+        $file = new UploadFile(static::$_uploadConfig);
         $info = $file->upload($request->file('src'));
         if ($file->getUploadErrNo() === UploadError::SUCCESS) {
             return GF::exportVar($info);
@@ -67,11 +65,7 @@ class UploadController extends BaseController
     #[Post(uri: '/upload/base64/do')]
     public function doBase64Upload(HttpRequest $request)
     {
-        $config = [
-            'save_handler' => FileSaveLocalHandler::class,
-            'handler_config' => ['upload_dir' => RUNTIME_PATH . 'upload'],
-        ];
-        $file = new UploadFile($config);
+        $file = new UploadFile(static::$_uploadConfig);
         $info = $file->uploadBase64($request->post('img'));
 
         if ($file->getUploadErrNo() === UploadError::SUCCESS) {
