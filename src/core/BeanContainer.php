@@ -93,7 +93,8 @@ class BeanContainer
                 $name = $_args[0];
             }
 
-            // set property
+            // set property accessibility
+            // @Note: As of PHP 8.1.0, calling this method has no effect; all properties are accessible by default.
             $property->setAccessible(true);
             $property->setValue($obj, static::build($name));
         }

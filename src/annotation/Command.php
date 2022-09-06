@@ -13,14 +13,14 @@ namespace herosphp\annotation;
 use Attribute;
 
 /**
- * command line action annotation
+ * command line class annotation
  *
  * @author RockYang<yangjian102621@gmail.com>
  */
-#[Attribute(Attribute::TARGET_METHOD)]
+#[Attribute(Attribute::TARGET_CLASS)]
 class Command
 {
-    public function __construct(public string|array $uri, public string $desc = '')
+    public function __construct(public string $name, public string $desc = '')
     {
     }
 }

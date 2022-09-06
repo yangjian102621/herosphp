@@ -40,7 +40,7 @@ class ClientApp
         }
 
         // run ONLY for command line
-        if (RUN_CLI_MODE === false) {
+        if (!defined('RUN_CLI_MODE') || RUN_CLI_MODE === false) {
             GF::printError('Error: Access only for cli sapi.');
             exit(0);
         }
@@ -84,10 +84,10 @@ class ClientApp
                     call_user_func([$handler['obj'], $handler['method']], static::$_params);
                     break;
                 default:
-                    throw new RouterException("router parse error for {$request->path()}");
+                    throw new RouterException("router parse error for {$path}");
             }
         } catch (Throwable $e) {
-            GF::printError($e->getMessage());
+            GF::printError($e->__toString());
         }
     }
 
@@ -97,6 +97,7 @@ class ClientApp
         $pos = strpos($str, '?', 0);
         if ($pos === false) {
             static::$_uri = $str;
+            static::$_params = new Input();
             return;
         }
 
