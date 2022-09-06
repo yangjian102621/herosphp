@@ -10,7 +10,6 @@ require 'Monitor.php';
 
 define('RUN_WEB_MODE', true);
 
-
 // Start Web Application worker
 WebApp::run();
 
