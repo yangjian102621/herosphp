@@ -9,6 +9,7 @@ use herosphp\GF;
 
 class ControllerMiddleware implements MiddlewareInterface
 {
+    const LOGIN_USER = 'logined_user_info';
     public function process(HttpRequest $request, callable $handler)
     {
         GF::printInfo('Controller START');
@@ -17,7 +18,7 @@ class ControllerMiddleware implements MiddlewareInterface
         $userVo = new LoginUser();
         $userVo->setId('zhangsan');
         //end
-        $request->putVARS($userVo);
+        $request->putMidData(static::LOGIN_USER, $userVo);
 
         $res = $handler($request);
         GF::printInfo('Controller END');

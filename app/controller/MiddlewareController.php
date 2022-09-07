@@ -1,11 +1,15 @@
 <?php
+
 declare(strict_types=1);
+
 namespace app\controller;
 
 use app\model\LoginUser;
 use herosphp\annotation\Controller;
 use herosphp\annotation\Get;
 use herosphp\core\BaseController;
+use herosphp\core\HttpRequest;
+use Illuminate\Support\Facades\Http;
 
 #[Controller(name: MiddlewareController::class)]
 class MiddlewareController extends BaseController
@@ -15,8 +19,9 @@ class MiddlewareController extends BaseController
     ];
 
     #[Get(uri: '/midd/demo', desc: '')]
-    public function demo(LoginUser $loginUser): string
+    public function demo(HttpRequest $request): string
     {
-        return $loginUser->getId();
+        $user = $request->getMidData(ControllerMiddleware::LOGIN_USER);
+        return $user->getId();
     }
 }

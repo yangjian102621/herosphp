@@ -148,7 +148,6 @@ class AnnotationParser
             foreach ($method->getParameters() as $p) {
                 $t = $p->getType()?->getName();
                 if ($t !== null) {
-                    // method param name not allow same
                     $paramsType[$p->getName()] = $t;
                 }
             }

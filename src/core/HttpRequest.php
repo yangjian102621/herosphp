@@ -20,13 +20,13 @@ use Workerman\Worker;
  */
 class HttpRequest extends Request
 {
+    // middleware data store key
+    const MID_DATA_KEY = '__MIDDLEWARE_DATA_KEY__';
+
     // Session instance
     protected ?Session $_session = null;
 
     protected SessionError $_sess_errno = SessionError::OK;
-
-    //cus method vars
-    protected array $__VARS__ = [];
 
     // Get session
     // You should pass the $userId for user login
@@ -87,7 +87,7 @@ class HttpRequest extends Request
             }
 
             // check the token keys
-            // format: {"uid":"289","seed":"1661999704.960527","addr":1032967450,"sign":"102516669ed4de26576fe4ed6f464bacd76a717b510d1251fe0fffc7fc00ced2"}
+            // format: {"uid":"xxx","seed":"xxx","addr":"xxx","sign":"xxx"}
             foreach (['uid', 'seed', 'addr', 'sign'] as $val) {
                 if (!isset($token[$val])) {
                     $this->_sess_errno = SessionError::ERR_INVALID_SESS_TOKEN;
@@ -184,21 +184,29 @@ class HttpRequest extends Request
         return str_contains($this->header('accept', ''), 'json');
     }
 
-    /**
-     * @param string $className
-     * @return object|null
-     */
-    public function getVARS(string $className): ?object
+    // store middleware data
+    public function putMidData(string $name, mixed $value)
     {
-        return $this->__VARS__[$className] ?? null;
+        if (!isset($this->_data[static::MID_DATA_KEY])) {
+            $this->_data[static::MID_DATA_KEY] = [];
+        }
+
+        $this->_data[static::MID_DATA_KEY][$name] = $value;
     }
 
-    /**
-     * @param object $obj
-     * @return void
-     */
-    public function putVARS(object $obj)
+    // get middleware data
+    public function getMidData(string $name): mixed
     {
-        $this->__VARS__[get_class($obj)] = $obj;
+        if (!isset($this->_data[static::MID_DATA_KEY])) {
+            return false;
+        }
+
+        return $this->_data[static::MID_DATA_KEY][$name];
+    }
+
+    // get all middleware datas
+    public function getAllMidData(): array
+    {
+        return $this->_data[static::MID_DATA_KEY];
     }
 }
