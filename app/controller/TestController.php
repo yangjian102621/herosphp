@@ -19,7 +19,8 @@ class TestController extends BaseController
         ControllerMiddleware::class
     ];
 
-    public function __init()
+    #[Get(uri: '/test/bench')]
+    public function bench()
     {
         var_dump('Controller initialized.');
     }
