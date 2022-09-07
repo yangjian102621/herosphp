@@ -54,7 +54,7 @@ class Config
         return static::$_data[$name][$key] ?? $default;
     }
 
-    public static function set(string $name, string $key = null, mixed $value)
+    public static function set(string $name, string $key = null, mixed $value = null)
     {
         if (!isset(static::$_data[$name]) || $key == null) {
             static::$_data[$name] = $value;

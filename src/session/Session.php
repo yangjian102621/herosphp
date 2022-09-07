@@ -30,7 +30,7 @@ class Session
     public static $name = 'heros-sess-token';
 
     // Auto update timestamp
-    public static $autoUpdateTimestamp = false;
+    public static bool $autoUpdateTimestamp = false;
 
     // Session lifetime
     public static int $lifetime = 1440;

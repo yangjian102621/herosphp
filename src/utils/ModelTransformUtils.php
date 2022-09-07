@@ -12,8 +12,11 @@ use ReflectionClass;
  */
 class ModelTransformUtils
 {
-    // convert map(key => value array) to entity object
-    public static function map2model(string $class, array $map): object|null
+    /**
+     * convert map(key => value array) to entity object
+     * @throws \ReflectionException
+     */
+    public static function map2model(string|object $class, array $map): object|null
     {
         if (empty($map)) {
             return null;

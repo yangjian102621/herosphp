@@ -19,13 +19,4 @@ use RuntimeException;
  */
 class HeroException extends RuntimeException
 {
-    public function __construct($message)
-    {
-        $this->message = $message;
-    }
-
-    public function toString()
-    {
-        return parent::__toString();
-    }
 }

@@ -66,7 +66,7 @@ class BeanContainer
 
     /**
      * build a instance with specified class path
-     * auto inject the properties and put it to bean container.
+     * auto-inject the properties and put it to bean container.
      * @throws ReflectionException
      */
     public static function build(string $class): object
@@ -95,7 +95,7 @@ class BeanContainer
 
             // set property accessibility
             // @Note: As of PHP 8.1.0, calling this method has no effect; all properties are accessible by default.
-            $property->setAccessible(true);
+            // $property->setAccessible(true);
             $property->setValue($obj, static::build($name));
         }
 

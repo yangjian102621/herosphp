@@ -137,6 +137,7 @@ class GF
      * 转Vo
      * @param string $class
      * @return object
+     * @throws \ReflectionException
      */
     public static function params2vo(string $class):object
     {
