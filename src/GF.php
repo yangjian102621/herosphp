@@ -18,6 +18,7 @@ namespace herosphp;
 
 use herosphp\core\BeanContainer;
 use herosphp\core\Config;
+use herosphp\utils\ModelTransformUtils;
 use Workerman\Worker;
 
 class GF
@@ -130,5 +131,27 @@ class GF
         if (method_exists($class, 'onWorkerStart')) {
             call_user_func([$class, 'onWorkerStart'], $worker);
         }
+    }
+
+    /**
+     * 转Vo
+     * @param string $class
+     * @return object
+     */
+    public static function params2vo(string $class):object
+    {
+        return ModelTransformUtils::map2model($class, [...WebApp::$_request->get(),...WebApp::$_request->post()]);
+    }
+
+    /**
+     * middlewares pipeline
+     */
+    public static function pipeline(array $classes, callable $initial): callable
+    {
+        return array_reduce(array_reverse($classes), function ($res, $currClass) {
+            return function ($request) use ($res, $currClass) {
+                return (new $currClass())->process($request, $res);
+            };
+        }, $initial);
     }
 }

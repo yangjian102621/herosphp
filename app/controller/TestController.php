@@ -15,6 +15,10 @@ use herosphp\utils\Logger;
 #[Controller(TestController::class)]
 class TestController extends BaseController
 {
+    public array $middlewares = [
+        ControllerMiddleware::class
+    ];
+
     public function __init()
     {
         var_dump('Controller initialized.');
@@ -51,5 +55,11 @@ class TestController extends BaseController
     public function temp(HttpRequest $request)
     {
         return GF::exportVar($request->connection->getRemoteIp());
+    }
+
+    #[Get(uri: '/test/a/{id}')]
+    public function a(HttpRequest $httpRequest, string $id): string
+    {
+        return $id;
     }
 }

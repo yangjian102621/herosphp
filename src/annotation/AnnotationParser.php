@@ -30,6 +30,9 @@ class AnnotationParser
     protected static array $_parseClassAnnotations = ['#[Component(', '#[Service('];
 
     // annotation parse enter method
+    /**
+     * @throws \ReflectionException
+     */
     public static function run(string $classDir, string $namespacePrefix): void
     {
         if (defined('RUN_WEB_MODE') && RUN_WEB_MODE === true) {
@@ -73,6 +76,10 @@ class AnnotationParser
     }
 
     // do parse annotation
+
+    /**
+     * @throws \ReflectionException
+     */
     public static function parseAnnotations(string $class): void
     {
         // build instance
@@ -94,7 +101,7 @@ class AnnotationParser
     {
         $handler = fopen($classFile, 'r');
         if ($handler === false) {
-            throw new HeroException("faild to open class file '{$classFile}'.");
+            throw new HeroException("failed to open class file '{$classFile}'.");
         }
 
         $res = false;

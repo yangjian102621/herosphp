@@ -26,8 +26,6 @@ class ModelTransformUtils
             $refClass = new ReflectionClass($obj);
         }
 
-        $methodName = null;
-        $method = null;
         foreach ($map as $key => $val) {
             $methodName = 'set' . ucwords(StringUtil::ul2hump($key));
             if ($refClass->hasMethod($methodName)) {

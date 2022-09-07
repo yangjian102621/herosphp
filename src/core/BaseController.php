@@ -25,6 +25,9 @@ use herosphp\WebApp;
 
 abstract class BaseController extends Template
 {
+    // controller middlewares
+    public array $middlewares = [];
+
     public function __init()
     {
     }

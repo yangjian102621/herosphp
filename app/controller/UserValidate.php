@@ -9,7 +9,7 @@ class UserValidate extends Validate
 {
     protected array $rule = [
         'name' => 'require|max:25',
-        'age' => 'number|between:1,120',
+        'age' => 'require|number|between:1,120',
         'email' => 'email',
     ];
 

@@ -7,6 +7,7 @@ use herosphp\annotation\Get;
 use herosphp\annotation\Validate;
 use herosphp\core\BaseController;
 use herosphp\core\HttpRequest;
+use herosphp\GF;
 
 #[Controller(name: ValidateController::class)]
 class ValidateController extends BaseController
@@ -23,5 +24,14 @@ class ValidateController extends BaseController
     public function annotation(HttpRequest $request): string
     {
         return 'ok';
+    }
+
+    #[Validate(class: UserValidate::class, scene: 'add')]
+    #[Get(uri: '/valid/vo')]
+    public function vo(): string
+    {
+        /** @var UserVo $userVo*/
+        $userVo = GF::params2vo(UserVo::class);
+        return $userVo->getName().'-'.$userVo->getAge();
     }
 }

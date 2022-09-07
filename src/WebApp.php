@@ -117,25 +117,32 @@ class WebApp
                 case Dispatcher::FOUND:
                     $handler = $routeInfo[1];
                     $vars = $routeInfo[2];
-                    // inject request object
-                    // @Note: 路径参数的相对位置应该和方法参数的相对位置保持一致
-                    // 1. Controller methods can have no parameters.
-                    // 2. The first parameter must be HttpRequest object.
-                    // 3. Method parameters should keep the same order of the route path vars
-                    if (in_array(HttpRequest::class, $handler['params_type'])) {
-                        array_unshift($vars, $request);
-                    }
 
-                    if (method_exists($handler['obj'], '__init')) {
-                        $handler['obj']->__init();
-                    }
+                    // sort middlewares
+                    $middlewares = static::sortMiddlewares($handler['obj']);
 
-                    // web app validate
-                    if (method_exists($handler['obj'], '__validate')) {
-                        $handler['obj']->__validate($handler);
-                    }
-                    $res = call_user_func_array([$handler['obj'], $handler['method']], $vars);
-                    $connection->send($res);
+                    $res = GF::pipeline($middlewares, static function ($request) use ($handler, $vars) {
+                        // inject request object
+                        // @Note: 路径参数的相对位置应该和方法参数的相对位置保持一致
+                        // 1. Controller methods can have no parameters.
+                        // 2. The first parameter must be HttpRequest object.
+                        // 3. Method parameters should keep the same order of the route path vars
+                        if (in_array(HttpRequest::class, $handler['params_type'])) {
+                            array_unshift($vars, $request);
+                        }
+
+                        if (method_exists($handler['obj'], '__init')) {
+                            $handler['obj']->__init();
+                        }
+
+                        // web app validate
+                        if (method_exists($handler['obj'], '__validate')) {
+                            $handler['obj']->__validate($handler);
+                        }
+
+                        return call_user_func_array([$handler['obj'], $handler['method']], $vars);
+                    });
+                    $connection->send($res($request));
                     break;
                 default:
                     throw new RouterException("router parse error for {$request->path()}");
@@ -161,6 +168,19 @@ class WebApp
             return $file;
         }
         return '';
+    }
+
+    /**
+     * @param $controllerObj
+     * @return array
+     */
+    protected static function sortMiddlewares($controllerObj):array
+    {
+        $middlewares = Config::get(name: 'middleware', default: []);
+        if (property_exists($controllerObj, 'middlewares')) {
+            $middlewares = array_merge($middlewares, $controllerObj->middlewares);
+        }
+        return $middlewares;
     }
 
     /**
