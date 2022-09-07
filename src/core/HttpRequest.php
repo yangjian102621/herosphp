@@ -25,6 +25,9 @@ class HttpRequest extends Request
 
     protected SessionError $_sess_errno = SessionError::OK;
 
+    //cus method vars
+    protected array $__VARS__ = [];
+
     // Get session
     // You should pass the $userId for user login
     public function session($uid = null): Session | null
@@ -179,5 +182,23 @@ class HttpRequest extends Request
     public function acceptJson(): bool
     {
         return str_contains($this->header('accept', ''), 'json');
+    }
+
+    /**
+     * @param string $className
+     * @return object|null
+     */
+    public function getVARS(string $className): ?object
+    {
+        return $this->__VARS__[$className] ?? null;
+    }
+
+    /**
+     * @param object $obj
+     * @return void
+     */
+    public function putVARS(object $obj)
+    {
+        $this->__VARS__[get_class($obj)] = $obj;
     }
 }

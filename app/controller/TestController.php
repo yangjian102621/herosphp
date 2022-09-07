@@ -15,10 +15,6 @@ use herosphp\utils\Logger;
 #[Controller(TestController::class)]
 class TestController extends BaseController
 {
-    public array $middlewares = [
-        ControllerMiddleware::class
-    ];
-
     #[Get(uri: '/test/bench')]
     public function bench()
     {
@@ -61,6 +57,13 @@ class TestController extends BaseController
     #[Get(uri: '/test/a/{id}')]
     public function a(HttpRequest $httpRequest, string $id): string
     {
+        return $id;
+    }
+
+    #[Get(uri: '/test/b/{id}')]
+    public function b(string $id, HttpRequest $httpRequest): string
+    {
+        var_dump($id);
         return $id;
     }
 }

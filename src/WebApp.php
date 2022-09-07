@@ -122,14 +122,14 @@ class WebApp
                     $middlewares = static::sortMiddlewares($handler['obj']);
 
                     $res = GF::pipeline($middlewares, static function ($request) use ($handler, $vars) {
-                        // inject request object
-                        // @Note: 路径参数的相对位置应该和方法参数的相对位置保持一致
-                        // 1. Controller methods can have no parameters.
-                        // 2. The first parameter must be HttpRequest object.
-                        // 3. Method parameters should keep the same order of the route path vars
-                        if (in_array(HttpRequest::class, $handler['params_type'])) {
-                            array_unshift($vars, $request);
-                        }
+//                        // inject request object
+//                        // @Note: 路径参数的相对位置应该和方法参数的相对位置保持一致
+//                        // 1. Controller methods can have no parameters.
+//                        // 2. The first parameter must be HttpRequest object.
+//                        // 3. Method parameters should keep the same order of the route path vars
+//                        if (in_array(HttpRequest::class, $handler['params_type'])) {
+//                            array_unshift($vars, $request);
+//                        }
 
                         if (method_exists($handler['obj'], '__init')) {
                             $handler['obj']->__init();
@@ -140,7 +140,10 @@ class WebApp
                             $handler['obj']->__validate($handler);
                         }
 
-                        return call_user_func_array([$handler['obj'], $handler['method']], $vars);
+                        //inject request sorted object
+                        $sortVars = static::sortActionParameters($handler['params_type'], $vars, $request);
+
+                        return call_user_func_array([$handler['obj'], $handler['method']], $sortVars);
                     });
                     $connection->send($res($request));
                     break;
@@ -168,6 +171,32 @@ class WebApp
             return $file;
         }
         return '';
+    }
+
+    /**
+     * @param array $paramTypes
+     * @param array $pathVars
+     * @param HttpRequest $request
+     * @return array
+     */
+    protected static function sortActionParameters(array $paramTypes, array $pathVars, HttpRequest $request): array
+    {
+        $vars = [];
+        if (!$paramTypes) {
+            return $vars;
+        }
+        foreach ($paramTypes as $key => $type) {
+            if (str_contains($type, '\\')) {
+                if ($type === HttpRequest::class) {
+                    $vars[] = $request;
+                } else {
+                    $vars[] = $request->getVARS($type);
+                }
+            } else {
+                $vars[] = $pathVars[$key] ?? null;
+            }
+        }
+        return $vars;
     }
 
     /**
