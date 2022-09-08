@@ -10,6 +10,7 @@ use herosphp\GF;
 class ControllerMiddleware implements MiddlewareInterface
 {
     const LOGIN_USER = 'logined_user_info';
+
     public function process(HttpRequest $request, callable $handler)
     {
         GF::printInfo('Controller START');

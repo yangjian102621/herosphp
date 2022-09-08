@@ -1,5 +1,5 @@
+#!/usr/bin/env php
 <?php
-
 declare(strict_types=1);
 
 use herosphp\GF;
@@ -7,9 +7,25 @@ use herosphp\utils\FileUtil;
 use herosphp\WebApp;
 use Workerman\Worker;
 
-require 'boot.php';
+function is_phar(): bool
+{
+    return \class_exists(\Phar::class, false) && Phar::running();
+}
 
+define('BASE_PATH', __DIR__ . DIRECTORY_SEPARATOR);
+// Phar support.
+if (\is_phar()) {
+    define('RUNTIME_PATH', \dirname(Phar::running(false)).DIRECTORY_SEPARATOR.'runtime/');
+} else {
+    define('RUNTIME_PATH', BASE_PATH . 'runtime/');
+}
+
+define('APP_PATH', BASE_PATH . 'app/');
+define('CONFIG_PATH', BASE_PATH . 'config/');
+define('PUBLIC_PATH', BASE_PATH . 'public/');
 define('RUN_WEB_MODE', true);
+
+require BASE_PATH . 'vendor/autoload.php';
 
 //opcache
 Worker::$onMasterReload = static function () {
@@ -24,6 +40,7 @@ Worker::$onMasterReload = static function () {
     }
 };
 
+// create dir
 FileUtil::makeFileDirs(dirname(GF::getAppConfig('worker_log_path')));
 //set worker log
 Worker::$pidFile = GF::getAppConfig('pid_path');
