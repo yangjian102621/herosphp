@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
+use herosphp\GF;
 use herosphp\session\Session;
 use herosphp\session\SessionError;
 use Workerman\Protocols\Http\Request;
@@ -208,5 +209,25 @@ class HttpRequest extends Request
     public function getAllMidData(): array
     {
         return $this->_data[static::MID_DATA_KEY];
+    }
+
+    /**
+     * get real ip
+     * @param bool $safeMode
+     * @return string
+     */
+    public function getRealIp(bool $safeMode = true): string
+    {
+        $remoteIp = $this->connection->getRemoteIp();
+        if ($safeMode && !GF::isIntranetIp($remoteIp)) {
+            return $remoteIp;
+        }
+        return $this->header('client-ip', $this->header(
+            'x-forwarded-for',
+            $this->header('x-real-ip', $this->header(
+                'x-client-ip',
+                $this->header('via', $remoteIp)
+            ))
+        ));
     }
 }
