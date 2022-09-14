@@ -201,6 +201,6 @@ class GF
      */
     public static function isPhar(): bool
     {
-        return \class_exists(\Phar::class, false) && Phar::running();
+        return \class_exists(Phar::class, false) && Phar::running();
     }
 }
