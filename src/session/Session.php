@@ -165,7 +165,7 @@ class Session
     // Get session
     public function get(string $name, mixed $default = null): mixed
     {
-        return isset($this->_data[$name]) ? $this->_data[$name] : $default;
+        return $this->_data[$name] ?? $default;
     }
 
     // Store data in the session
@@ -237,9 +237,9 @@ class Session
         }
 
         static::$cookieLifetime = $config['lifetime'];
-        static::$cookiePath = isset($config['cookie_path']) ? $config['cookie_path'] : '/';
-        static::$secure = isset($config['secure']) ? $config['secure'] : false;
-        static::$httpOnly = isset($config['httponly']) ? $config['httponly'] : true;
+        static::$cookiePath = $config['cookie_path'] ?? '/';
+        static::$secure = $config['secure'] ?? false;
+        static::$httpOnly = $config['httponly'] ?? true;
         if (!empty($config['domain'])) {
             static::$domain = $config['domain'];
         }

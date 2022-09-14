@@ -43,7 +43,9 @@ class WebApp
         'listen' => 'http://0.0.0.0:2345',
         'context' => [],
         'worker_count' => 4,
-        'reloadable' => 'true',
+        'reloadable' => true,
+        // https://www.workerman.net/doc/workerman/worker/reuse-port.html
+        'reusePort' => true,
     ];
 
     public static function run(): void
@@ -75,6 +77,7 @@ class WebApp
         $worker->count = static::$_config['worker_count'];
         $worker->reloadable = static::$_config['reloadable'];
         $worker->name = static::$_config['name'];
+        $worker->reusePort = static::$_config['reusePort'];
 
         $worker->onWorkerStart = function ($w) {
             static::onWorkerStart($w);
