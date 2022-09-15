@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
-use herosphp\GF;
 use herosphp\utils\Logger;
 
 abstract class BaseCommand
@@ -58,7 +57,7 @@ abstract class BaseCommand
             case SIGINT:
             case SIGQUIT:
             case SIGTERM:
-                Logger::warn("Reciving an interupt signal, program is exiting...");
+                Logger::warn('Reciving an interupt signal, program is exiting...');
                 $this->_processState = self::CLI_PROC_EXIT;
                 break;
             default:

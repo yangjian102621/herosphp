@@ -777,8 +777,8 @@ class Validate
     /**
      * 验证是否为合格的域名或者IP 支持A，MX，NS，SOA，PTR，CNAME，AAAA，A6， SRV，NAPTR，TXT 或者 ANY类型
      * @access public
-     * @param mixed $value 字段值
-     * @param mixed $rule  验证规则
+     * @param string $value 字段值
+     * @param string $rule  验证规则
      * @return bool
      */
     public function activeUrl(string $value, string $rule = 'MX'): bool
@@ -793,11 +793,11 @@ class Validate
     /**
      * 验证是否有效IP
      * @access public
-     * @param mixed $value 字段值
-     * @param mixed $rule  验证规则 ipv4 ipv6
+     * @param string $value 字段值
+     * @param string $rule  验证规则 ipv4 ipv6
      * @return bool
      */
-    public function ip($value, string $rule = 'ipv4'): bool
+    public function ip(string $value, string $rule = 'ipv4'): bool
     {
         if (!in_array($rule, ['ipv4', 'ipv6'])) {
             $rule = 'ipv4';
@@ -1389,8 +1389,8 @@ class Validate
     /**
      * 获取验证规则的错误提示信息
      * @access protected
-     * @param string $msg   错误信息
-     * @param mixed  $rule  验证规则数据
+     * @param string $msg 错误信息
+     * @param mixed $rule 验证规则数据
      * @param string $title 字段描述名
      * @return string|array
      */
@@ -1399,10 +1399,6 @@ class Validate
         if (str_starts_with($msg, '{%')) {
             $msg = substr($msg, 2, -1);
         }
-        if (is_array($msg)) {
-            return $this->errorMsgIsArray($msg, $rule, $title);
-        }
-
         // rule若是数组则转为字符串
         if (is_array($rule)) {
             $rule = implode(',', $rule);
