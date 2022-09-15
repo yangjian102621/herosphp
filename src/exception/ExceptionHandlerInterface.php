@@ -10,7 +10,7 @@ interface ExceptionHandlerInterface
 {
     /**
      * @param Throwable $e
-     * @return mixed
+     * @return void
      */
     public function report(Throwable $e): void;
 

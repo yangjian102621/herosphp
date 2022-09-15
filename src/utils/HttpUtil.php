@@ -76,13 +76,19 @@ class HttpUtil
         return $this->_doRequest($url);
     }
 
-    public function post(string $url, ?array $params = null)
+    public function post(string $url, ?array $params = null, bool $isJson = false)
     {
         curl_setopt($this->_handler, CURLOPT_POST, true);
         if ($params) {
-            curl_setopt($this->_handler, CURLOPT_POSTFIELDS, http_build_query($params));
+            if ($isJson) {
+                $jsonStr = StringUtil::jsonEncode($params);
+                $this->header('Content-Type', 'application/json; charset=utf-8');
+                $this->header('Content-Length', (string)strlen($jsonStr));
+                curl_setopt($this->_handler, CURLOPT_POSTFIELDS, $jsonStr);
+            } else {
+                curl_setopt($this->_handler, CURLOPT_POSTFIELDS, http_build_query($params));
+            }
         }
-
         return $this->_doRequest($url);
     }
 

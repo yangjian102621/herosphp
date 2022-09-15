@@ -1,5 +1,10 @@
 版本更新记录
 ======
+## version 4.0.1
+1. 增加Bootstrap注解，启动时候loading class。
+2. httpUtil增加post json的选项
+3. fix template.php require|include。
+
 ## version 4.0.0 (重构)
 1. 基于`workerman`重新定义`herosphp`，实现简单、轻量、超高性能的共存的框架。
 2. 实现了基于注解的方式定义路由和服务注入。

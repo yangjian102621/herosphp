@@ -24,7 +24,7 @@ class Template
     // template root dir
     private string $_temp_dir = '';
 
-    // complile root dir
+    // compile root dir
     private string $_compile_dir = '';
 
     // switch for template cache
@@ -68,7 +68,7 @@ class Template
         '/{\/if}/i' => '<?php } ?>',
 
         // require|include tag
-        '/{(require:|include:)\s{1,}([^\}|\.]{1,})\s*}/i'
+        '/{(require|include)\s{1,}([0-9a-z_\.]{1,})\s*}/i'
         => '<?php include $this->_getIncludePath(\'${2}\')?>',
 
         // tag to import css file,javascript file
@@ -125,7 +125,7 @@ class Template
         }
 
         ob_start();
-        $this->_complieTemplate($tempFile, $compileFile);
+        $this->_compileTemplate($tempFile, $compileFile);
         extract($data);
         include $compileFile;
 
@@ -144,7 +144,7 @@ class Template
         $filename = str_replace('.', '/', $tempPath);
         $tempFile = $this->_temp_dir . $filename . static::$_temp_suffix;
         $compileFile = $this->_compile_dir . $filename . '.php';
-        $this->_complieTemplate($tempFile, $compileFile);
+        $this->_compileTemplate($tempFile, $compileFile);
         return $compileFile;
     }
 
@@ -155,14 +155,13 @@ class Template
         }
 
         $template = static::$_res_temp[$type];
-        $result = str_replace('{url}', $path, $template);
-        return $result;
+        return str_replace('{url}', $path, $template);
     }
 
     /**
      * compile template
      */
-    private function _complieTemplate(string $tempFile, string $compileFile): void
+    private function _compileTemplate(string $tempFile, string $compileFile): void
     {
         // use compile cache
         if (file_exists($compileFile) && static::$_cache === true) {

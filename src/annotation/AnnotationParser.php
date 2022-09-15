@@ -27,7 +27,7 @@ class AnnotationParser
     protected static array $_httpMethodAny = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'];
 
     // Annotations that need to be parsed
-    protected static array $_parseClassAnnotations = ['#[Component(', '#[Service('];
+    protected static array $_parseClassAnnotations = ['#[Component(', '#[Service(', '#[Bootstrap('];
 
     // annotation parse enter method
     /**

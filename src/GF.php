@@ -19,6 +19,7 @@ namespace herosphp;
 use herosphp\core\BeanContainer;
 use herosphp\core\Config;
 use herosphp\utils\ModelTransformUtils;
+use Phar;
 use Workerman\Worker;
 
 class GF
@@ -192,5 +193,14 @@ class GF
             }
         }
         return false;
+    }
+
+    /**
+     * check is phar env
+     * @return bool
+     */
+    public static function isPhar(): bool
+    {
+        return \class_exists(Phar::class, false) && Phar::running();
     }
 }

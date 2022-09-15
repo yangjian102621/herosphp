@@ -1,0 +1,16 @@
+parameters:
+  inferPrivatePropertyTypeFromConstructor: true
+  treatPhpDocTypesAsCertain: true
+  reportUnmatchedIgnoredErrors: false
+  ignoreErrors:
+  - '#Unsafe usage of new static\(\).#'
+  - '#Constant BASE_PATH not found.#'
+  - '#Constant APP_PATH not found.#'
+  - '#Constant RUNTIME_PATH not found.#'
+  - '#Constant PUBLIC_PATH not found.#'
+  - '#Constant CONFIG_PATH not found.#'
+  - '#Class app\\exception\\ExceptionHandler not found.#'
+  - '#Access to an undefined property Workerman\\Worker::\$onWebSocketConnect.#'
+  - '#Method herosphp\\core\\Template::_getIncludePath\(\) is unused.#'
+  - '#Method herosphp\\core\\Template::_importResource\(\) is unused.#'
+  - '#Call to an undefined method ReflectionType::getName\(\).#'
