@@ -16,6 +16,9 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
+use herosphp\GF;
+use herosphp\utils\Logger;
+
 abstract class BaseCommand
 {
     public const CLI_PROC_RUNNING = 0;
@@ -44,6 +47,7 @@ abstract class BaseCommand
 
     public function registerSignal($signo): bool
     {
+        Logger::info($signo);
         return pcntl_signal($signo, [$this, 'signalHandler']);
     }
 
@@ -54,10 +58,16 @@ abstract class BaseCommand
             case SIGINT:
             case SIGQUIT:
             case SIGTERM:
+                Logger::warn("Reciving an interupt signal, program is exiting.");
                 $this->_processState = static::CLI_PROC_EXIT;
                 break;
             default:
                 break;
         }
+    }
+
+    public function isRunning(): bool
+    {
+        return $this->_processState === static::CLI_PROC_RUNNING;
     }
 }

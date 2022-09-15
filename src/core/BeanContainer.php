@@ -90,7 +90,7 @@ class BeanContainer
             $name = $property->getType()->getName();
             $_args = $_attr->getArguments();
             if (!empty($_args)) {
-                $name = $_args[0];
+                $name = array_shift($_args);
             }
 
             // set property accessibility
