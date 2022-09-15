@@ -27,10 +27,21 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.4"
+        "friendsofphp/php-cs-fixer": "^3.4",
+        "phpstan/phpstan": "^1.7",
+        "roave/security-advisories": "dev-latest"
     },
     "minimum-stability": "dev",
     "suggest": {
         "ext-event": "For better performance. "
+    },
+    "prefer-stable": true,
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix $1",
+        "analyse": "phpstan analyse --memory-limit=-1 -l 5 -c phpstan.neon"
     }
 }
