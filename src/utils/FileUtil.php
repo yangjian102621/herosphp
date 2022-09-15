@@ -82,6 +82,7 @@ class FileUtil
             }
         }
         closedir($src);
+        return true;
     }
 
     // check if a dir is empty
