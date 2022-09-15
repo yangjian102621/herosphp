@@ -81,6 +81,11 @@ class ClientApp
                     break;
                 case Dispatcher::FOUND:
                     $handler = $routeInfo[1];
+
+                    if (method_exists($handler['obj'], '__init')) {
+                        $handler['obj']->__init();
+                    }
+
                     call_user_func([$handler['obj'], $handler['method']], static::$_params);
                     break;
                 default:

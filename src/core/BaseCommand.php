@@ -58,7 +58,7 @@ abstract class BaseCommand
             case SIGINT:
             case SIGQUIT:
             case SIGTERM:
-                Logger::warn("Reciving an interupt signal, program is exiting.");
+                Logger::warn("Reciving an interupt signal, program is exiting...");
                 $this->_processState = static::CLI_PROC_EXIT;
                 break;
             default:
@@ -68,6 +68,10 @@ abstract class BaseCommand
 
     public function isRunning(): bool
     {
-        return $this->_processState === static::CLI_PROC_RUNNING;
+        pcntl_signal_dispatch();
+        if ($this->_processState === static::CLI_PROC_EXIT) {
+            return false;
+        }
+        return true;
     }
 }
