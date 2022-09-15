@@ -18,9 +18,9 @@ namespace herosphp\core;
 class Config
 {
     // config data
-    private static array $_data = [];
+    protected static array $_data = [];
 
-    private static string $_extension = '.config.php';
+    protected static string $_extension = '.config.php';
 
     // get configs with specified config filename
     public static function get(string $name, string $key = null, mixed $default = null): mixed

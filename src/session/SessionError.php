@@ -15,33 +15,33 @@ namespace herosphp\session;
  */
 enum SessionError: int
 {
-    // error codes
+        // error codes
     case OK = 0;
 
-    // client disconnect
+        // client disconnect
     case ERR_LOSE_CONNECT = 1;
 
-    // invalid session token, such as the signature is not corrent
+        // invalid session token, such as the signature is not corrent
     case ERR_INVALID_SESS_TOKEN = 2;
 
-    // client's ip address changed
+        // client's ip address changed
     case ERR_ADDR_CHANGED = 3;
 
-    // client's User-Agent changed
+        // client's User-Agent changed
     case ERR_DEVICE_CHANGED = 4;
 
-    // if login client number > max_client, the first one will be pushed off
+        // if login client number > max_client, the first one will be pushed off
     case ERR_PUSHED_OFFLINE = 5;
 
     public function getName(): string
     {
         return match ($this) {
-            static::OK => 'Success',
-            static::ERR_LOSE_CONNECT => 'client disconnect',
-            static::ERR_INVALID_SESS_TOKEN => 'invalid session token',
-            static::ERR_ADDR_CHANGED => 'client address changed',
-            static::ERR_DEVICE_CHANGED => 'client device changed',
-            static::ERR_PUSHED_OFFLINE => 'client have be pushed off',
+            SessionError::OK => 'Success',
+            SessionError::ERR_LOSE_CONNECT => 'client disconnect',
+            SessionError::ERR_INVALID_SESS_TOKEN => 'invalid session token',
+            SessionError::ERR_ADDR_CHANGED => 'client address changed',
+            SessionError::ERR_DEVICE_CHANGED => 'client device changed',
+            SessionError::ERR_PUSHED_OFFLINE => 'client have be pushed off',
         };
     }
 }

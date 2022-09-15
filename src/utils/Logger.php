@@ -57,7 +57,7 @@ class Logger
         static::$_debug = $debug;
     }
 
-    private static function _log(string $type, mixed $message): void
+    protected static function _log(string $type, mixed $message): void
     {
         if ($message instanceof Throwable) {
             $message = $message->__toString();

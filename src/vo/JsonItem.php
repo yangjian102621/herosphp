@@ -27,9 +27,9 @@ class JsonItem implements JsonVo
         $this->data = $data;
     }
 
-    public static function create(int $code, string $message, mixed $data)
+    public static function create(int $code, string $message, mixed $data): self
     {
-        return new static($code, $message, $data);
+        return new self($code, $message, $data);
     }
 
     public function toString(): string

@@ -39,7 +39,7 @@ class WebApp
     protected static Dispatcher $_dispatcher;
 
     // app config
-    private static array $_config = [
+    protected static array $_config = [
         'listen' => 'http://0.0.0.0:2345',
         'context' => [],
         'worker_count' => 4,

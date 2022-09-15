@@ -37,7 +37,7 @@ abstract class BaseCommand
 
     public function __init()
     {
-        $this->_processState = static::CLI_PROC_RUNNING;
+        $this->_processState = self::CLI_PROC_RUNNING;
 
         // register signal
         foreach (static::$_signalMapping as $val) {
@@ -45,13 +45,13 @@ abstract class BaseCommand
         }
     }
 
-    public function registerSignal($signo): bool
+    public function registerSignal(int $signo): bool
     {
         Logger::info($signo);
         return pcntl_signal($signo, [$this, 'signalHandler']);
     }
 
-    public function signalHandler($signo)
+    public function signalHandler(int $signo)
     {
         switch ($signo) {
             case SIGHUP:
@@ -59,7 +59,7 @@ abstract class BaseCommand
             case SIGQUIT:
             case SIGTERM:
                 Logger::warn("Reciving an interupt signal, program is exiting...");
-                $this->_processState = static::CLI_PROC_EXIT;
+                $this->_processState = self::CLI_PROC_EXIT;
                 break;
             default:
                 break;
@@ -69,7 +69,7 @@ abstract class BaseCommand
     public function isRunning(): bool
     {
         pcntl_signal_dispatch();
-        if ($this->_processState === static::CLI_PROC_EXIT) {
+        if ($this->_processState === self::CLI_PROC_EXIT) {
             return false;
         }
         return true;

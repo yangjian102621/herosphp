@@ -21,8 +21,7 @@ enum UploadError: int
     case FILESIZE_OVER_LIMIT = 1;
     case EXT_NOT_ALLOW = 2;
     case SAVE_FILE_FAIL = 3;
-    case IMG_DECODE_FAIL = 4;
-    case PART_UPLOADED = 5;
+    case PART_UPLOADED = 4;
 
     public function getName(): string
     {
@@ -31,7 +30,6 @@ enum UploadError: int
             static::FILESIZE_OVER_LIMIT => '文件超出大小限制',
             static::EXT_NOT_ALLOW => '非法的文件后缀名',
             static::SAVE_FILE_FAIL => '保存上传文件失败',
-            static::IMG_DECODE_FAIL => 'Base64 图片解码失败',
             static::PART_UPLOADED => '部分文件上传成功',
         };
     }

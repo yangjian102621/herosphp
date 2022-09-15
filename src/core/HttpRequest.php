@@ -31,7 +31,7 @@ class HttpRequest extends Request
 
     // Get session
     // You should pass the $userId for user login
-    public function session($uid = null): Session | null
+    public function session($uid = null): Session | \Workerman\Protocols\Http\Session| null
     {
         if ($this->_session === null) {
             $this->_session = new Session();
@@ -48,7 +48,7 @@ class HttpRequest extends Request
         return $this->_session;
     }
 
-    public function setCookie($value, $remove = false)
+    public function setCookie($value, $remove = false): void
     {
         $cookieParams = Session::getCookieParams();
         if ($remove) {
@@ -148,7 +148,7 @@ class HttpRequest extends Request
         return $sessToken;
     }
 
-    public function getSessionErrNo()
+    public function getSessionErrNo(): SessionError
     {
         return $this->_sess_errno;
     }

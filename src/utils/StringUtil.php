@@ -24,7 +24,6 @@ class StringUtil
     /**
      * 生成一个唯一分布式UUID,根据机器不同生成. 长度为18位。
      * 机器码(2位) + 时间(12位，精确到微秒)
-     * @return mixed
      */
     public static function genGlobalUid(): string
     {
@@ -111,7 +110,7 @@ class StringUtil
                 'b' => hexdec(substr($color, 4, 2))
             ];
 
-        //2. 三位数表示形式
+            //2. 三位数表示形式
         } else {
             $color = $hexColor;
             $r = substr($color, 0, 1) . substr($color, 0, 1);

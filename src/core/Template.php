@@ -22,18 +22,18 @@ use herosphp\utils\FileUtil;
 class Template
 {
     // template root dir
-    private string $_temp_dir = '';
+    protected string $_temp_dir = '';
 
     // compile root dir
-    private string $_compile_dir = '';
+    protected string $_compile_dir = '';
 
     // switch for template cache
-    private static bool $_cache = true;
+    protected static bool $_cache = true;
 
-    private static string $_temp_suffix = '.html';
+    protected static string $_temp_suffix = '.html';
 
     // template compile rules
-    private static array $_temp_rules = [
+    protected static array $_temp_rules = [
 
         // {$var}, {$array['key']}
         '/{\$([^\}|\.]{1,})}/i' => '<?php echo \$${1}?>',
@@ -54,7 +54,6 @@ class Template
 
         // foreach ( $array as $value )
         '/{loop\s+\$(.*?)\s+\$([0-9a-z_]{1,})\s*}/i' => '<?php foreach ( \$${1} as \$${2} ) { ?>',
-        '/{\/loop}/i' => '<?php } ?>',
 
         // expr: excute the php expression
         // echo: print the php expression
@@ -77,7 +76,7 @@ class Template
     ];
 
     // static resource
-    private static array $_res_temp = [
+    protected static array $_res_temp = [
         'css' => "<link rel=\"stylesheet\" type=\"text/css\" href=\"{url}\" />\n",
         'less' => "<link rel=\"stylesheet/less\" type=\"text/css\" href=\"{url}\" />\n",
         'js' => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"{url}\"></script>\n"

@@ -48,7 +48,6 @@ class FileSaveLocalHandler implements IFileSaveHandler
     {
         $image = base64_decode($data);
         if (!$image) {
-            $this->_errorNo = UploadError::IMG_DECODE_FAIL;
             return false;
         }
 

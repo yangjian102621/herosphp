@@ -33,16 +33,16 @@ class JsonList implements JsonVo
 
     public mixed $extra_data;
 
-    public function __construct(int $code, string $message, mixed $items)
+    public function __construct(int $code, string $message, array $items)
     {
         $this->code = $code;
         $this->message = $message;
         $this->items = $items;
     }
 
-    public static function create(int $code, string $message, mixed $data)
+    public static function create(int $code, string $message, array $data): self
     {
-        return new static($code, $message, $data);
+        return new self($code, $message, $data);
     }
 
     public function toString(): string

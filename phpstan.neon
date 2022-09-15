@@ -14,3 +14,5 @@ parameters:
   - '#Method herosphp\\core\\Template::_getIncludePath\(\) is unused.#'
   - '#Method herosphp\\core\\Template::_importResource\(\) is unused.#'
   - '#Call to an undefined method ReflectionType::getName\(\).#'
+  - '#Access to an undefined property Workerman\\Connection\\TcpConnection::\$__header.#'
+  - '#herosphp\\validate\\#'
