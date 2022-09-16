@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace herosphp\core;
 
+use herosphp\exception\HeroException;
+
 /**
  * Config file parser tool class
  * ----------------------------------------------
@@ -27,11 +29,11 @@ class Config
     {
         if (!isset(static::$_data[$name])) {
             $file = CONFIG_PATH . $name . static::$_extension;
-            if (file_exists($file)) {
-                static::$_data[$name] = include $file;
-            } else {
-                static::$_data[$name] = [];
+            if (!file_exists($file)) {
+                throw new HeroException("config file {$file} not exits.");
             }
+
+            static::$_data[$name] = include $file;
         }
 
         // return all configs
