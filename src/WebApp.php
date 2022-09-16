@@ -25,7 +25,7 @@ use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
 use Workerman\Worker;
 
-require('./constants.php');
+require __DIR__ . DIRECTORY_SEPARATOR . 'constants.php';
 
 /**
  * WebApp main program

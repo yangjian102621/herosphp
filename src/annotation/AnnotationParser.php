@@ -82,12 +82,18 @@ class AnnotationParser
      */
     public static function parseAnnotations(string $class): void
     {
+        // parse route(request map) annotations
+        $clazz = new ReflectionClass($class);
+        $attrs = $clazz->getAttributes();
+        if (empty($attrs)) {
+            return;
+        }
+
         // build instance
         BeanContainer::build($class);
 
-        // parse route(request map) annotations
-        $clazz = new ReflectionClass($class);
-        foreach ($clazz->getAttributes() as $attr) {
+
+        foreach ($attrs as $attr) {
             $name = $attr->getName();
             if ($name === Controller::class || $name === Command::class) {
                 static::parseRouter($clazz);
