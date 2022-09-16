@@ -22,18 +22,18 @@ use herosphp\utils\FileUtil;
 class Template
 {
     // template root dir
-    protected string $_temp_dir = '';
+    private string $_temp_dir = '';
 
     // compile root dir
-    protected string $_compile_dir = '';
+    private string $_compile_dir = '';
 
     // switch for template cache
-    protected static bool $_cache = true;
+    private static bool $_cache = true;
 
-    protected static string $_temp_suffix = '.html';
+    private static string $_temp_suffix = '.html';
 
     // template compile rules
-    protected static array $_temp_rules = [
+    private static array $_temp_rules = [
 
         // {$var}, {$array['key']}
         '/{\$([^\}|\.]{1,})}/i' => '<?php echo \$${1}?>',
@@ -76,7 +76,7 @@ class Template
     ];
 
     // static resource
-    protected static array $_res_temp = [
+    private static array $_res_temp = [
         'css' => "<link rel=\"stylesheet\" type=\"text/css\" href=\"{url}\" />\n",
         'less' => "<link rel=\"stylesheet/less\" type=\"text/css\" href=\"{url}\" />\n",
         'js' => "<script charset=\"utf-8\" type=\"text/javascript\" src=\"{url}\"></script>\n"
@@ -93,9 +93,9 @@ class Template
 
         $debug = GF::getAppConfig('debug');
         if ($debug == true) {
-            static::$_cache = false;
+            self::$_cache = false;
         } else {
-            static::$_cache = true;
+            self::$_cache = true;
         }
 
         $this->_temp_dir = APP_PATH . "views/{$skin}/";
@@ -106,7 +106,7 @@ class Template
     protected function addRules(array $rules): void
     {
         if (is_array($rules) && !empty($rules)) {
-            static::$_temp_rules = array_merge(static::$_temp_rules, $rules);
+            self::$_temp_rules = array_merge(self::$_temp_rules, $rules);
         }
     }
 
@@ -117,7 +117,7 @@ class Template
             throw new TempateException('Template file is needed.');
         }
 
-        $tempFile = $this->_temp_dir . $file . static::$_temp_suffix;
+        $tempFile = $this->_temp_dir . $file . self::$_temp_suffix;
         $compileFile = $this->_compile_dir . $file . '.php';
         if (!file_exists($tempFile)) {
             throw new TempateException("template file {$tempFile} not found.");
@@ -141,7 +141,7 @@ class Template
         }
 
         $filename = str_replace('.', '/', $tempPath);
-        $tempFile = $this->_temp_dir . $filename . static::$_temp_suffix;
+        $tempFile = $this->_temp_dir . $filename . self::$_temp_suffix;
         $compileFile = $this->_compile_dir . $filename . '.php';
         $this->_compileTemplate($tempFile, $compileFile);
         return $compileFile;
@@ -153,7 +153,7 @@ class Template
             $path = '/' . $path;
         }
 
-        $template = static::$_res_temp[$type];
+        $template = self::$_res_temp[$type];
         return str_replace('{url}', $path, $template);
     }
 
@@ -163,7 +163,7 @@ class Template
     private function _compileTemplate(string $tempFile, string $compileFile): void
     {
         // use compile cache
-        if (file_exists($compileFile) && static::$_cache === true) {
+        if (file_exists($compileFile) && self::$_cache === true) {
             return;
         }
 
@@ -172,7 +172,7 @@ class Template
         if ($content === false) {
             throw new TempateException("failed to load template file {$tempFile}");
         }
-        $content = preg_replace(array_keys(static::$_temp_rules), static::$_temp_rules, $content);
+        $content = preg_replace(array_keys(self::$_temp_rules), self::$_temp_rules, $content);
 
         // create compile dir
         if (!file_exists(dirname($compileFile))) {
