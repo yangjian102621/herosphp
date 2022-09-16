@@ -17,6 +17,8 @@ use herosphp\core\Router;
 use herosphp\exception\RouterException;
 use Throwable;
 
+require './constants.php';
+
 /**
  * Command line client main program
  *

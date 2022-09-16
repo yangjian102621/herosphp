@@ -25,7 +25,7 @@ use Workerman\Connection\TcpConnection;
 use Workerman\Protocols\Http;
 use Workerman\Worker;
 
-define('X_POWER', 'Herosphp/4.0.0'); // define framework version
+require('./constants.php');
 
 /**
  * WebApp main program
@@ -52,7 +52,13 @@ class WebApp
     {
         if (version_compare(PHP_VERSION, '8.1.0', '<')) {
             GF::printWarning('require PHP > 8.1.0 !');
-            exit();
+            exit(0);
+        }
+
+        // run ONLY for web mode
+        if (!defined('RUN_WEB_MODE') || RUN_WEB_MODE === false) {
+            GF::printError('Error: Access only for web sapi.');
+            exit(0);
         }
 
         // loading app configs
