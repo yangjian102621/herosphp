@@ -1,6 +1,6 @@
 {
     "name": "herosphp/framework",
-    "description": "a lightweight PHP development framework - herosphp Framework",
+    "description": "a lightweight PHP web development framework base on Workerman",
     "type": "framework",
     "keywords": [
         "php framework",
