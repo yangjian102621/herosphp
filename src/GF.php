@@ -140,9 +140,9 @@ class GF
      * @return object
      * @throws \ReflectionException
      */
-    public static function params2vo(string $class):object
+    public static function params2vo(string $class): object
     {
-        return ModelTransformUtils::map2model($class, [...WebApp::$_request->get(),...WebApp::$_request->post()]);
+        return ModelTransformUtils::map2model($class, [...WebApp::$_request->get(), ...WebApp::$_request->post()]);
     }
 
     /**
@@ -202,5 +202,27 @@ class GF
     public static function isPhar(): bool
     {
         return \class_exists(Phar::class, false) && Phar::running();
+    }
+
+    // BKDR hash 算法实现
+    public static function bkdrHash(string $str): int
+    {
+        $hval = 0;
+        $len  = strlen($str);
+
+        /*
+         * 4-bytes integer we will directly take
+         * its int value as the final hash value.
+        */
+        $seed = 131;    // 31 131 1313 13131 131313 etc..
+        if ($len <= 11 && is_numeric($str)) {
+            $hval = intval($str);
+        } else {
+            for ($i = 0; $i < $len; $i++) {
+                $hval = (int) ($hval * $seed + (ord($str[$i]) % 127));
+            }
+        }
+
+        return ($hval & 0x7FFFFFFF);
     }
 }

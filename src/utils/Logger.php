@@ -68,23 +68,26 @@ class Logger
         }
 
         $file = '';
+        $line = '';
         if (static::$_debug) {
             $array = debug_backtrace();
             $file = basename($array[1]['file']);
+            $line = $array[1]['line'];
         }
+        $trace = "$file:$line";
 
         switch ($type) {
             case 'warn':
-                static::$_debug && printf("%s \033[33m\033[1m[WARN] \033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
-                $log = sprintf("%s [WARN] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                static::$_debug && printf("%s \033[33m\033[1m[WARN] \033[0m %s %s\n", date('Y-m-d H:i:s'), $trace, $message);
+                $log = sprintf("%s [WARN] %s %s\n", date('Y-m-d H:i:s'), $trace, $message);
                 break;
             case 'error':
-                static::$_debug && printf("%s \033[31m\033[1m[ERROR]\033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
-                $log = sprintf("%s [ERROR] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                static::$_debug && printf("%s \033[31m\033[1m[ERROR]\033[0m %s %s\n", date('Y-m-d H:i:s'), $trace, $message);
+                $log = sprintf("%s [ERROR] %s %s\n", date('Y-m-d H:i:s'), $trace, $message);
                 break;
             default:
-                static::$_debug && printf("%s \033[36m\033[1m[INFO] \033[0m %s %s\n", date('Y-m-d H:i:s'), $file, $message);
-                $log = sprintf("%s [INFO] %s %s\n", date('Y-m-d H:i:s'), $file, $message);
+                static::$_debug && printf("%s \033[36m\033[1m[INFO] \033[0m %s %s\n", date('Y-m-d H:i:s'), $trace, $message);
+                $log = sprintf("%s [INFO] %s %s\n", date('Y-m-d H:i:s'), $trace, $message);
         }
 
         $logFile = static::$_log_dir . date('Y-m-d') . '.log';

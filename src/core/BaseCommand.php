@@ -46,7 +46,6 @@ abstract class BaseCommand
 
     public function registerSignal(int $signo): bool
     {
-        Logger::info($signo);
         return pcntl_signal($signo, [$this, 'signalHandler']);
     }
 

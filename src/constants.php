@@ -19,13 +19,5 @@ if (!defined('PUBLIC_PATH')) {
     define('PUBLIC_PATH', BASE_PATH . 'public/');
 }
 
-if (!defined('RUN_CLI_MODE')) {
-    define('RUN_CLI_MODE', false);
-}
-
-if (!defined('RUN_WEB_MODE')) {
-    define('RUN_WEB_MODE', true);
-}
-
 // define framework version
 define('X_POWER', 'Herosphp/4.0.1');

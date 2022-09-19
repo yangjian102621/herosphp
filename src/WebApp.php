@@ -56,7 +56,7 @@ class WebApp
         }
 
         // run ONLY for web mode
-        if (!defined('RUN_WEB_MODE') || RUN_WEB_MODE === false) {
+        if (!defined('RUN_WEB_MODE')) {
             GF::printError('Error: Access only for web sapi.');
             exit(0);
         }

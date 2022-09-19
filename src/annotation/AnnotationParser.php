@@ -35,12 +35,13 @@ class AnnotationParser
      */
     public static function run(string $classDir, string $namespacePrefix): void
     {
-        if (defined('RUN_WEB_MODE') && RUN_WEB_MODE === true) {
+        if (defined('RUN_WEB_MODE')) {
             static::$_parseClassAnnotations[] = '#[Controller(';
-        } elseif (defined('RUN_CLI_MODE') && RUN_CLI_MODE === true) {
+        } elseif (defined('RUN_CLI_MODE')) {
             static::$_parseClassAnnotations[] = '#[Command(';
         }
 
+        // scan class files
         static::scanClassFiles($classDir);
 
         // parse annotations

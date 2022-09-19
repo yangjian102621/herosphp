@@ -15,6 +15,7 @@ use herosphp\annotation\AnnotationParser;
 use herosphp\core\Input;
 use herosphp\core\Router;
 use herosphp\exception\RouterException;
+use herosphp\utils\FileUtil;
 use Throwable;
 
 require __DIR__ . DIRECTORY_SEPARATOR . 'constants.php';
@@ -42,7 +43,7 @@ class ClientApp
         }
 
         // run ONLY for command line
-        if (!defined('RUN_CLI_MODE') || RUN_CLI_MODE === false) {
+        if (!defined('RUN_CLI_MODE')) {
             GF::printError('Error: Access only for cli sapi.');
             exit(0);
         }
@@ -63,8 +64,39 @@ class ClientApp
             exit(1);
         }
 
+        // disable timeout for execution
+        set_time_limit(0);
+
         // parse url
         static::_parseArgs($argv[1]);
+
+        $opt = $argv[2] ?? '';
+        if ($opt === '-d') {    // run the process in deamon mode
+            $pid = pcntl_fork();
+            if ($pid > 0) {
+                $dir = RUNTIME_PATH . 'clients/';
+                if (!file_exists($dir)) {
+                    FileUtil::makeFileDirs($dir);
+                }
+
+                $pidFile = $dir . sha1(static::$_uri) . '.pid';
+                file_put_contents($pidFile, $pid);
+                exit(0);
+            }
+        } elseif ($opt === 'stop') { // stop the deamon process
+            $pidFile = RUNTIME_PATH . 'clients/' . sha1(static::$_uri) . '.pid';
+            if (!file_exists($pidFile)) {
+                GF::printWarning("Process is alredy exited.");
+                exit(0);
+            }
+
+            $pid = (int) file_get_contents($pidFile);
+            if (posix_kill($pid, SIGINT)) {
+                GF::printSuccess("Killed process $pid successfully.");
+                @unlink($pidFile);
+            }
+            exit(0);
+        }
 
         // scan the class file and init the router info
         AnnotationParser::run(APP_PATH, 'app\\');
