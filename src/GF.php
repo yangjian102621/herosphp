@@ -208,7 +208,7 @@ class GF
     public static function bkdrHash(string $str): int
     {
         $hval = 0;
-        $len  = strlen($str);
+        $len = strlen($str);
 
         /*
          * 4-bytes integer we will directly take

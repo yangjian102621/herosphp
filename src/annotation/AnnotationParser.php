@@ -93,7 +93,6 @@ class AnnotationParser
         // build instance
         BeanContainer::build($class);
 
-
         foreach ($attrs as $attr) {
             $name = $attr->getName();
             if ($name === Controller::class || $name === Command::class) {

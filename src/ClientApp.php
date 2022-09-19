@@ -86,7 +86,7 @@ class ClientApp
         } elseif ($opt === 'stop') { // stop the deamon process
             $pidFile = RUNTIME_PATH . 'clients/' . sha1(static::$_uri) . '.pid';
             if (!file_exists($pidFile)) {
-                GF::printWarning("Process is alredy exited.");
+                GF::printWarning('Process is alredy exited.');
                 exit(0);
             }
 
